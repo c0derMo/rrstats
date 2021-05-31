@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RR Player Statistics</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+    </head>
+    <body>
+        <div class="ui container">
+            <br>
+            <h1 class="ui header">RR Matches</h1>
+            <br><br>
+            <select class="ui selection dropdown" id="competition">
+                <option value="">Competition</option>
+                <option value="RR4">Roulette Rivals 4</option>
+                <option value="RRWC">Roulette Rivals World Championship</option>
+                <option value="RR3">Roulette Rivals 3</option>
+                <option value="RR2">Roulette Rivals 2</option>
+                <option value="RR1">Roulette Rivals 1</option>
+            </select>
+            <br><br>
+            <table class="ui structured celled table">
+                <thead>
+                    <th>Competition</th>
+                    <th>Platform</th>
+                    <th>Round</th>
+                    <th>Overall winner</th>
+                    <th>Player 1</th>
+                    <th>Score</th>
+                    <th>Player 2</th>
+                    <th>Map</th>
+                    <th>Won by:</th>
+                    <th>Map</th>
+                    <th>Won by:</th>
+                    <th>Map</th>
+                    <th>Won by:</th>
+                    <th>Map</th>
+                    <th>Won by:</th>
+                    <th>Map</th>
+                    <th>Won by:</th>
+                </thead>
+                <tbody id="table">
+
+                </tbody>
+            </table>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script>
+            $('#competition').on("change", (e) => {
+                $.get("/backend/api/competition", {competition: $('#competition').val()}, (data, status, x) => {
+                    if(status === "success") {
+                        $("#table").html("")
+                        data.forEach(element => {
+                            if(element.maps.length <= 5) {
+                                let row = $('<tr></tr>');
+                                row.append("<td>" + element.competition + "</td>");
+                                row.append("<td>" + element.platform + "</td>");
+                                row.append("<td>" + element.round + "</td>");
+                                row.append("<td>" + element.winner + "</td>");
+                                row.append("<td>" + element.player1 + "</td>");
+                                row.append("<td>" + element.score + "</td>");
+                                row.append("<td>" + element.player2 + "</td>");
+                                element.maps.forEach(m => {
+                                    row.append("<td>" + m.map + "</td>");
+                                    row.append("<td>" + m.winner + "</td>");
+                                });
+                                $('#table').append(row);
+                            } else {
+                                let row1 = $('<tr></tr>');
+                                row1.append($("<td>" + element.competition + "</td>").attr("rowspan", 2));
+                                row1.append($("<td>" + element.platform + "</td>").attr("rowspan", 2));
+                                row1.append($("<td>" + element.round + "</td>").attr("rowspan", 2));
+                                row1.append($("<td>" + element.winner + "</td>").attr("rowspan", 2));
+                                row1.append($("<td>" + element.player1 + "</td>").attr("rowspan", 2));
+                                row1.append($("<td>" + element.score + "</td>").attr("rowspan", 2));
+                                row1.append($("<td>" + element.player2 + "</td>").attr("rowspan", 2));
+                                element.maps.slice(0,5).forEach(m => {
+                                    row1.append("<td>" + m.map + "</td>");
+                                    row1.append("<td>" + m.winner + "</td>");
+                                });
+
+                                let row2 = $('<tr></tr>');
+                                element.maps.slice(5).forEach(m => {
+                                    row2.append("<td>" + m.map + "</td>");
+                                    row2.append("<td>" + m.winner + "</td>");
+                                });
+
+                                $('#table').append(row1);
+                                $('#table').append(row2);
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

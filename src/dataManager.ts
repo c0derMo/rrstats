@@ -64,11 +64,19 @@ const _getAllPlayers = () => {
     return a;
 }
 
+const _getStoredCompetition = (comp) => {
+    if(configs["general"].competitions.includes(comp)) {
+        return configs[comp];
+    }
+    return [];
+}
+
 module.exports = {
     getNewestCompetitionData: _getNewestCompetitionData,
     getStoredMatches: _getStoredMatches,
     loadConfigs: _loadConfigs,
     getPlayerAbreviationOverride: _getPlayerAbreviationOverride,
     getPlayerInfo: _getPlayerInfo,
-    getAllPlayers: _getAllPlayers
+    getAllPlayers: _getAllPlayers,
+    getStoredCompetition: _getStoredCompetition
 }
