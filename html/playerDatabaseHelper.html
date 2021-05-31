@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>F7SC Player Stats - Player Database Helper</title>
+    </head>
+    <body>
+        <div>
+            Playername: <input type="text" id="playername"><br>
+            Title: <input type="text" id="title"><br>
+            Competition: <input type="text" id="competition"><br>
+            Placement: <input type="text" id="placement">
+            <br><br><br><br>
+            <button id="import">Import</button><button id="export">Export</button><br>
+            <textarea id="io"></textarea>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script>
+            let playerDB = {}
+
+            $('#import').on("click", () => {
+                playerDB = JSON.parse($('#io').val());
+            });
+
+            $('#export').on('click', () => {
+                $('#io').val(JSON.stringify(playerDB));
+            });
+
+            $(document).on("keydown", (evt) => {
+                if(evt.originalEvent.code == "Enter") {
+
+                    if(playerDB[$('#playername').val()] === undefined) {
+                        playerDB[$('#playername').val()] = {
+                            "discordId": "",
+                            "title": "",
+                            "competitions": []
+                        }
+                    }
+
+                    if($('#title').val() !== "") {
+                        playerDB[$('#playername').val()].title = $('#title').val();
+                    }
+
+                    if($('#competition') !== "") {
+                        playerDB[$('#playername').val()].competitions.push({"competition": $('#competition').val(), "placement": $('#placement').val()});
+                    }
+
+                    $('#playername').val("").focus();
+                    $('#title').val("");
+                    $('#placement').val("");
+
+                }
+            });
+        </script>
+    </body>
+</html>

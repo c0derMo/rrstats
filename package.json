@@ -1,0 +1,18 @@
+{
+  "name": "RRPlayerStatistics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@hapi/hapi": "^20.1.3",
+    "@hapi/inert": "^6.0.3",
+    "@types/node": "^15.6.0",
+    "axios": "^0.21.1"
+  },
+  "scripts": {
+    "build": "tsc && cp -R -f data out && cp -R -f html out",
+    "start": "node out/index.js",
+    "deploy": "yarn build && cp -R -f out deploy && cp run.sh deploy && cp yarn.lock deploy && cp package.json deploy",
+    "clean": "rm -r out deploy"
+  }
+}
