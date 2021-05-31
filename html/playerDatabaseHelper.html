@@ -41,7 +41,7 @@
                         playerDB[$('#playername').val()].title = $('#title').val();
                     }
 
-                    if($('#competition') !== "") {
+                    if($('#competition').val() !== "") {
                         playerDB[$('#playername').val()].competitions.push({"competition": $('#competition').val(), "placement": $('#placement').val()});
                     }
 
