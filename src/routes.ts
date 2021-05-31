@@ -2,10 +2,7 @@ const gDriveToMatchlist = require('./gDriveIntegration');
 // @ts-ignore
 const axios = require('axios');
 const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers } = require("./dataManager");
-
-const doneCompetitions = ["RR1", "RR2", "RR3", "RRWC", "RR4"]
-const runningCompetition = "RR5"
-const runningID = "1HULrS_x4dyd82oRuufW0ibA_TC-Itd9O15EXHyYrao4"
+const { getDiscordProfilePictureURL } = require("./httpClient");
 
 const _addRoutes = (server) => {
 
@@ -145,7 +142,7 @@ const _addRoutes = (server) => {
             });
 
             const obj = {
-                avatar: "/defaultPB.png",
+                avatar: await getDiscordProfilePictureURL(playerInfo.discordId),
                 name: request.params.player,
                 title: playerInfo.title,
                 competitions: playerInfo.competitions,
