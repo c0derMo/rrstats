@@ -36,6 +36,16 @@ const _addBackendRoutes = (server) => {
 
             return h.redirect('/backend')
         }
+    });
+    
+    server.route({
+        method: 'GET',
+        path: '/backend/logout',
+        handler: (request, h) => {
+            request.cookieAuth.clear();
+
+            return h.redirect("/");
+        }
     })
 
 
@@ -90,10 +100,7 @@ const _addBackendRoutes = (server) => {
         path: '/backend/api/competition',
         handler: async(request, h) => {
             let { comp, changes } = request.payload;
-            console.log(request.payload);
             changes = JSON.parse(changes);
-            console.log(comp);
-            console.log(changes);
             if(await patchStoredComptition(comp, changes)) {
                 return {status: "ok"}
             } else {

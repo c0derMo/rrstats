@@ -10,8 +10,8 @@ const crypt = require("crypto");
 const init = async() => {
 
     const server = Hapi.server({
-        port: 8000,
-        host: 'localhost'
+        port: process.env.PORT || 8000,
+        host: process.env.HOST || 'localhost'
     });
 
     await server.register(Inert);
@@ -22,7 +22,7 @@ const init = async() => {
             name: 'sid-rrstats',
             password: crypt.randomBytes(256).toString('hex'),
             isSecure: false,
-            ttl: 3600000
+            ttl: 14400000
         },
         redirectTo: "/backend/login",
         validateFunc: async(request, session) => {

@@ -104,11 +104,26 @@
                         comp: $('#competition').val(),
                         changes: JSON.stringify(changes)
                     },
-                    method: 'PATCH'
+                    method: 'PATCH',
+                    success: (data, status, x) => {
+                        if(data.status === "ok") {
+                            $('body').toast({
+                                message: 'Changes sent to the database.'
+                            })
+                        } else {
+                            $('body').toast({
+                                message: 'An error occured when sending changes to the database!',
+                                class: 'failure'
+                            })
+                        }
+                    },
+                    error: (data, status, x) => {
+                        $('body').toast({
+                            message: 'An error occured when sending changes to the database: ' + status,
+                            class: 'failure'
+                        });
+                    }
                 });
-                $('body').toast({
-                    message: 'Changes sent to the database.'
-                })
             });
 
             $('.ui.accordion').accordion();
