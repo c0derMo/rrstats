@@ -31,22 +31,17 @@
             });
 
             function updateTable() {
-                rows = [];
-                Object.keys(playerDB).forEach(e => {
-                    if(playerDB[e].discordId === "") {
-                        rows.push(e);
-                        let row = $('<tr></tr>');
-                        row.append($('<td>' + e + '</td>'));
-                        row.append($('<td><input type="text" id="dID_' + e.replace(" ", "") + '""></td>'));
-                        $('#tb').append(row);
-                    }
+                playerDB.forEach(e => {
+                    e.maps.forEach((m, idx) => {
+                        if(idx == 0) m.picked = 1;
+                        if(idx == 1) m.picked = 2;
+                        if(idx > 1) m.picked = 0;
+                    });
                 });
             }
 
             function updatePlayerDB() {
-                rows.forEach(e => {
-                    playerDB[e].discordId = $('#dID_' + e.replace(" ", "")).val()
-                });
+                
             }
         </script>
     </body>

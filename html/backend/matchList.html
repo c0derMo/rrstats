@@ -3,11 +3,52 @@
     <head>
         <title>RR Player Statistics</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+        <style>
+            .score {
+                width: 50px;
+            }
+            .map {
+                width: 50px;
+            }
+            .selectWinPick {
+                width: 65px;
+            }
+        </style>
     </head>
     <body>
+        <div class="ui basic modal" id="saveConfirmModal">
+            <div class="ui icon header">
+                <i class="save icon"></i>
+                Save changes
+            </div>
+            <div class="content">
+                <p>Are you sure that you want to push <span id="amountChanges"></span> changes to the database?</p>
+                <div class="ui inverted accordion">
+                    <div class="title">
+                        <i class="dropdown icon"></i>
+                        List all changes
+                    </div>
+                    <div class="content">
+                        <div class="ui bulleted list" id="listedChanges">
+                            
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="ui red basic cancel inverted button">
+                            <i class="remove icon"></i>
+                            No
+                        </div>
+                        <div class="ui green ok inverted button" id="saveConfirm">
+                            <i class="checkmark icon"></i>
+                            Yes
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="ui container">
             <br>
-            <h1 class="ui header">RR Matches</h1>
+            <h1 class="ui header"><a href="/backend"><i class="small reply icon"></i></a>RR Matches</h1>
             <br><br>
             <select class="ui selection dropdown" id="competition">
                 <option value="">Competition</option>
@@ -17,81 +58,180 @@
                 <option value="RR2">Roulette Rivals 2</option>
                 <option value="RR1">Roulette Rivals 1</option>
             </select>
-            <br><br>
-            <table class="ui structured celled table">
-                <thead>
-                    <th>Competition</th>
-                    <th>Platform</th>
-                    <th>Round</th>
-                    <th>Overall winner</th>
-                    <th>Player 1</th>
-                    <th>Score</th>
-                    <th>Player 2</th>
-                    <th>Map</th>
-                    <th>Won by:</th>
-                    <th>Map</th>
-                    <th>Won by:</th>
-                    <th>Map</th>
-                    <th>Won by:</th>
-                    <th>Map</th>
-                    <th>Won by:</th>
-                    <th>Map</th>
-                    <th>Won by:</th>
-                </thead>
-                <tbody id="table">
-
-                </tbody>
-            </table>
         </div>
+        <br><br>
+        <button class="ui right floated positive button" id="save"><i class="save icon"></i>Save</button>
+        <table class="ui structured small celled table">
+            <thead>
+                <th>Platform</th>
+                <th>Round</th>
+                <th>Match win</th>
+                <th>Player 1</th>
+                <th>Score</th>
+                <th>Player 2</th>
+                <th>Map</th>
+                <th>Won by:</th>
+                <th>Picked by:</th>
+                <th>Map</th>
+                <th>Won by:</th>
+                <th>Picked by:</th>
+                <th>Map</th>
+                <th>Won by:</th>
+                <th>Picked by:</th>
+            </thead>
+            <tbody id="table">
+
+            </tbody>
+        </table>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
         <script>
+            let pageData = [];
+            let changes = {};
+
+            $('#save').on("click", () => {
+                $('#amountChanges').text(Object.keys(changes).length);
+                $('#listedChanges').html("")
+                Object.keys(changes).forEach(k => {
+                    $('#listedChanges').append("<div class='item'>" + k + ": " + changes[k] + "</div>");
+                });
+                $('#saveConfirmModal').modal('show');
+            });
+
+            $('#saveConfirm').on("click", () => {
+                $.ajax("/backend/api/competition", {
+                    data: {
+                        comp: $('#competition').val(),
+                        changes: JSON.stringify(changes)
+                    },
+                    method: 'PATCH'
+                });
+                $('body').toast({
+                    message: 'Changes sent to the database.'
+                })
+            });
+
+            $('.ui.accordion').accordion();
+
             $('#competition').on("change", (e) => {
                 $.get("/backend/api/competition", {competition: $('#competition').val()}, (data, status, x) => {
                     if(status === "success") {
+                        pageData = data
+
                         $("#table").html("")
-                        data.forEach(element => {
-                            if(element.maps.length <= 5) {
-                                let row = $('<tr></tr>');
-                                row.append("<td>" + element.competition + "</td>");
-                                row.append("<td>" + element.platform + "</td>");
-                                row.append("<td>" + element.round + "</td>");
-                                row.append("<td>" + element.winner + "</td>");
-                                row.append("<td>" + element.player1 + "</td>");
-                                row.append("<td>" + element.score + "</td>");
-                                row.append("<td>" + element.player2 + "</td>");
-                                element.maps.forEach(m => {
-                                    row.append("<td>" + m.map + "</td>");
-                                    row.append("<td>" + m.winner + "</td>");
-                                });
-                                $('#table').append(row);
-                            } else {
-                                let row1 = $('<tr></tr>');
-                                row1.append($("<td>" + element.competition + "</td>").attr("rowspan", 2));
-                                row1.append($("<td>" + element.platform + "</td>").attr("rowspan", 2));
-                                row1.append($("<td>" + element.round + "</td>").attr("rowspan", 2));
-                                row1.append($("<td>" + element.winner + "</td>").attr("rowspan", 2));
-                                row1.append($("<td>" + element.player1 + "</td>").attr("rowspan", 2));
-                                row1.append($("<td>" + element.score + "</td>").attr("rowspan", 2));
-                                row1.append($("<td>" + element.player2 + "</td>").attr("rowspan", 2));
-                                element.maps.slice(0,5).forEach(m => {
-                                    row1.append("<td>" + m.map + "</td>");
-                                    row1.append("<td>" + m.winner + "</td>");
-                                });
-
-                                let row2 = $('<tr></tr>');
-                                element.maps.slice(5).forEach(m => {
-                                    row2.append("<td>" + m.map + "</td>");
-                                    row2.append("<td>" + m.winner + "</td>");
-                                });
-
-                                $('#table').append(row1);
-                                $('#table').append(row2);
-                            }
+                        data.forEach((element, idx) => {
+                            addMatch(element, idx);
                         });
+
+                        // Add listeners
+                        $('input[type="text"]').on("change", inputChanged);
+                        $('.score').on("change", inputChanged);
+                        $('.map').on("change", inputChanged);
+                        $('.selectWinPick').on("change", inputChanged);
                     }
                 });
             });
+
+            function getJSONPath(obj, path) {
+                let split = path.split(".").reverse();
+                let response = obj;
+                while(split.length > 0) {
+                    response = response[split.pop()];
+                }
+                return response;
+            }
+
+            function inputChanged(e) {
+                if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
+                    delete changes[$(e.target).attr("id")]
+                } else {
+                    changes[$(e.target).attr("id")] = $(e.target).val();
+                }
+            }
+
+            function addMatch(match, idx) {
+                let amountRows = Math.max(Math.ceil(match.maps.length / 3), 1);
+
+                let rows = [];
+                for (let index = 0; index < amountRows; index++) {
+                    rows.push($('<tr></tr>'));
+                }
+                rows[0].append($("<td></td>").attr("rowspan", amountRows).append($("<input type='text' value='" + match.platform + "'>").attr("id", idx + ".platform")));
+                rows[0].append($("<td></td>").attr("rowspan", amountRows).append($("<input type='text' value='" + match.round + "'>").attr("id", idx + ".round")));
+
+                let winnerSelectRow = $('<select class="selectWinPick" id="' + idx + '.winner"></select>');
+                if(match.winner === 1) {
+                    winnerSelectRow.append("<option value='1' selected>1 (" + match.player1 + ")</option>");
+                    winnerSelectRow.append("<option value='2'>2 (" + match.player2 + ")</option>");
+                } else {
+                    winnerSelectRow.append("<option value='1'>1 (" + match.player1 + ")</option>");
+                    winnerSelectRow.append("<option value='2' selected>2 (" + match.player2 + ")</option>");
+                }
+                rows[0].append($("<td></td>").attr("rowspan", amountRows).append(winnerSelectRow));
+
+                rows[0].append($("<td><input type='text' value='" + match.player1 + "' id='" + idx + ".player1'></td>").attr("rowspan", amountRows));
+                rows[0].append($("<td><input class='score' type='text' value='" + match.score + "' id='" + idx + ".score'></td>").attr("rowspan", amountRows));
+                rows[0].append($("<td><input type='text' value='" + match.player2 + "' id='" + idx + ".player2'></td>").attr("rowspan", amountRows));
+
+                match.maps.forEach((m, midx) => {
+                    let row = Math.floor(midx / 3);
+                    rows[row].append("<td><input class='map' type='text' value='" + m.map + "' id='" + idx + ".maps." + midx + ".map'></td>");
+
+                    let winnerSelectMap = $("<select class='selectWinPick'></select>").attr("id", idx + ".maps." + midx + ".winner");
+                    switch(m.winner) {
+                        case 0:
+                            winnerSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");
+                            winnerSelectMap.append("<option value='2'>2 (" + match.player2 + ")</option>");
+                            winnerSelectMap.append("<option value='0' selected>0 (Tie)</option>");
+                            break;
+                        case 1:
+                            winnerSelectMap.append("<option value='1' selected>1 (" + match.player1 + ")</option>");
+                            winnerSelectMap.append("<option value='2'>2 (" + match.player2 + ")</option>");
+                            winnerSelectMap.append("<option value='0'>0 (Tie)</option>");
+                            break;
+                        case 2:
+                            winnerSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");
+                            winnerSelectMap.append("<option value='2' selected>2 (" + match.player2 + ")</option>");
+                            winnerSelectMap.append("<option value='0'>0 (Tie)</option>");
+                            break;
+                        default:
+                            winnerSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");
+                            winnerSelectMap.append("<option value='2'>2 (" + match.player2 + ")</option>");
+                            winnerSelectMap.append("<option value='0' selected>0 (Tie)</option>");
+                            break;
+                    }
+                    rows[row].append($("<td></td>").append(winnerSelectMap));
+                    
+                    let pickedSelectMap = $('<select class="selectWinPick"></select>').attr("id", idx + ".maps." + midx + ".picked");
+                    switch(m.picked) {
+                        case 0:
+                            pickedSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");
+                            pickedSelectMap.append("<option value='2'>2 (" + match.player2 + ")</option>");
+                            pickedSelectMap.append("<option value='0' selected>0 (RNG)</option>");
+                            break;
+                        case 1:
+                            pickedSelectMap.append("<option value='1' selected>1 (" + match.player1 + ")</option>");
+                            pickedSelectMap.append("<option value='2'>2 (" + match.player2 + ")</option>");
+                            pickedSelectMap.append("<option value='0'>0 (RNG)</option>");
+                            break;
+                        case 2:
+                            pickedSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");
+                            pickedSelectMap.append("<option value='2' selected>2 (" + match.player2 + ")</option>");
+                            pickedSelectMap.append("<option value='0'>0 (RNG)</option>");
+                            break;
+                        default:
+                            pickedSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");
+                            pickedSelectMap.append("<option value='2'>2 (" + match.player2 + ")</option>");
+                            pickedSelectMap.append("<option value='0' selected>0 (RNG)</option>");
+                            break;
+                    }
+                    rows[row].append($("<td></td>").append(pickedSelectMap));
+                })
+
+                rows.forEach(r => {
+                    $('#table').append(r);
+                });
+            }
         </script>
     </body>
 </html>

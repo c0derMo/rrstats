@@ -1,5 +1,6 @@
 // @ts-ignore
 const fs = require('fs/promises');
+const { setJSONPath } = require("./utils");
 
 let configs = {}
 
@@ -71,6 +72,18 @@ const _getStoredCompetition = (comp) => {
     return [];
 }
 
+const _patchStoredComptition = async (comp, changes) => {
+    if(configs["general"].competitions.includes(comp)) {
+        Object.keys(changes).forEach(c => {
+            setJSONPath(configs[comp], c, changes[c]);
+        })
+
+        await fs.writeFile(__dirname + "/data/" + comp + ".json", JSON.stringify(configs[comp]), 'utf8');
+        return true
+    }
+    return false
+}
+
 module.exports = {
     getNewestCompetitionData: _getNewestCompetitionData,
     getStoredMatches: _getStoredMatches,
@@ -78,5 +91,6 @@ module.exports = {
     getPlayerAbreviationOverride: _getPlayerAbreviationOverride,
     getPlayerInfo: _getPlayerInfo,
     getAllPlayers: _getAllPlayers,
-    getStoredCompetition: _getStoredCompetition
+    getStoredCompetition: _getStoredCompetition,
+    patchStoredComptition: _patchStoredComptition
 }

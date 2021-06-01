@@ -1,5 +1,5 @@
 const { setMaintenanceMode } = require("./routes");
-const { getStoredCompetition } = require("./dataManager");
+const { getStoredCompetition, patchStoredComptition } = require("./dataManager");
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
@@ -83,7 +83,28 @@ const _addBackendRoutes = (server) => {
             auth: 'session',
             plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
         }
-    })
+    });
+
+    server.route({
+        method: 'PATCH',
+        path: '/backend/api/competition',
+        handler: async(request, h) => {
+            let { comp, changes } = request.payload;
+            console.log(request.payload);
+            changes = JSON.parse(changes);
+            console.log(comp);
+            console.log(changes);
+            if(await patchStoredComptition(comp, changes)) {
+                return {status: "ok"}
+            } else {
+                return {status: "error"}
+            }
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
 
 }
 
