@@ -4,12 +4,20 @@ const axios = require('axios');
 const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers } = require("./dataManager");
 const { getDiscordProfilePictureURL } = require("./httpClient");
 
+
+let maintenanceMode = false;
+
+const _setMaintenanceMode = (mode) => {
+    maintenanceMode = mode;
+}
+
 const _addRoutes = (server) => {
 
     server.route({
         method: 'GET',
         path: '/',
         handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/index.html");
         }
     });
@@ -18,6 +26,7 @@ const _addRoutes = (server) => {
         method: 'GET',
         path: '/{player}',
         handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/playerpage.html");
 
         }
@@ -27,6 +36,7 @@ const _addRoutes = (server) => {
         method: 'GET',
         path: '/darkly.css',
         handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/darkly.css");
         }
     })
@@ -35,6 +45,7 @@ const _addRoutes = (server) => {
         method: 'GET',
         path: '/defaultPB.png',
         handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/profile.png")
         }
     })
@@ -43,6 +54,7 @@ const _addRoutes = (server) => {
         method: 'GET',
         path: '/utils.js',
         handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/utils.js");
         }
     })
@@ -51,6 +63,7 @@ const _addRoutes = (server) => {
         method: 'GET',
         path: '/background.jpg',
         handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/background.jpg");
         }
     })
@@ -59,6 +72,7 @@ const _addRoutes = (server) => {
         method: 'GET',
         path: '/allPlayers.js',
         handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
             return "const players = " + JSON.stringify(getAllPlayers()) + ";";
         }
     })
@@ -67,6 +81,7 @@ const _addRoutes = (server) => {
         method: 'GET',
         path: '/api/{player}',
         handler: async(request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
 
             // Query for player info
             const playerInfo = getPlayerInfo(request.params.player);
@@ -155,4 +170,7 @@ const _addRoutes = (server) => {
 
 }
 
-module.exports = _addRoutes;
+module.exports = {
+    addRoutes: _addRoutes,
+    setMaintenanceMode: _setMaintenanceMode
+};

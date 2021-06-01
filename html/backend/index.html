@@ -2,12 +2,15 @@
 <html>
     <head>
         <title>RR Player Statistics</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
     </head>
     <body>
         <div class="ui container">
             <br>
+            <div id="messages" style="z-index: 1;"></div>
             <h1 class="ui header">RR Player Stats - Backend</h1>
+            <button class="negative ui right floated button"><i class="sign out alternative icon"></i>Logout</button>
+            <br>
             <br>
             <br>
             <div class="ui middle aligned divided list">
@@ -24,10 +27,46 @@
                         <div class="description">Activates maintenance mode for the entire site. The frontend + API will become unavailable.</div>
                     </div>
                 </div>
+                <div class="item">
+                    <div class="right floated content">
+                        <button class="ui button" href="/backend/competitons"><i class="share icon"></i></button>
+                    </div>
+                    <div class="content">
+                        <a class="header" style="font-weight: bold;">Competitions</a>
+                        <div class="description">Lists all the matches of a competition.</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script>
+            $('#maintenance-mode').on("click", (e) => {
+                if($('#maintenance-mode').prop("checked")) {
+                    $.get("/backend/api/maintenance", {mode: "on"}, (data, status, x) => {
+                        console.log(data);
+                        console.log(status);
+                        $('body').toast({
+                            message: "Maintenance mode: enabled.",
+                            showProgress: 'top',
+                            class: 'success',
+                            displayTime: 15000
+                        })
+                    });
+                } else {
+                    $.get("/backend/api/maintenance", {mode: "off"}, (data, status, x) => {
+                        console.log(data);
+                        console.log(status);
+                        $('body').toast({
+                            message: "Maintenance mode: enabled.",
+                            showProgress: 'top',
+                            class: 'success',
+                            displayTime: 15000
+                        })
+                    });
+                }
+            });
+        </script>
     </body>
 </html>
