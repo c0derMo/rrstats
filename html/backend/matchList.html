@@ -144,7 +144,7 @@
                         $('input[type="text"]').on("change", inputChanged);
                         $('.score').on("change", inputChanged);
                         $('.map').on("change", inputChanged);
-                        $('.selectWinPick').on("change", inputChanged);
+                        $('.selectWinPick').on("change", selectChanged);
                     }
                 });
             });
@@ -162,11 +162,15 @@
                 if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
                     delete changes[$(e.target).attr("id")]
                 } else {
-                    if($(e.target).is("select")) {
-                        changes[$(e.target).attr("id")] = parseInt($(e.target).val());
-                    } else {
-                        changes[$(e.target).attr("id")] = $(e.target).val();
-                    }
+                    changes[$(e.target).attr("id")] = $(e.target).val();
+                }
+            }
+
+            function selectChanged(e) {
+                if(parseInt($(e.target).val()) === getJSONPath(pageData, $(e.target).attr("id"))) {
+                    delete changes[$(e.target).attr("id")];
+                } else {
+                    changes[$(e.target).attr("id")] = parseInt($(e.target).val());
                 }
             }
 
