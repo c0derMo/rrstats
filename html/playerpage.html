@@ -48,12 +48,15 @@
                             <td rowspan="2"></td>
                             <td rowspan="2"></td>
                             <td rowspan="2"></td>
-                            <td rowspan="2" style="font-weight: bold;">Player 1</td>
-                            <td rowspan="2"></td>
-                            <td rowspan="2" style="font-weight: bold;">Player 2</td>
+                            <td style="font-weight: bold;">Player 1</td>
+                            <td></td>
+                            <td style="font-weight: bold;">Player 2</td>
                             <td colspan="5" style="font-weight: bold;">Maps</td>
                         </tr>
                         <tr>
+                            <td colspan="3">
+                                <input type="text" placeholder="Search for opponent" id="rivalSearch">
+                            </td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -104,6 +107,21 @@
         <script>
             let pageData = {};
 
+            $('#rivalSearch').on("input", () => {
+                let all = $('tr', '#matches');
+                let accepted = [];
+                let notAccepted = [];
+                all.each((idx, e) => {
+                    if($(e).attr("rival").toLowerCase().search($('#rivalSearch').val().toLowerCase()) === -1) {
+                        notAccepted.push(e);
+                    } else {
+                        accepted.push(e);
+                    }
+                });
+                accepted.forEach(e => {$(e).fadeIn()});
+                notAccepted.forEach(e => {$(e).fadeOut()});
+            });
+
             function addMoreMatches() {
                 const startIndex = parseInt($('#matchesLoadMore').attr("startIndex"));
 
@@ -128,6 +146,15 @@
             function addMatch(data) {
                 const row = $("<tr></tr>");
                 const localPlayer = (data.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == pageData.name) ? 1 : 2;
+                if(localPlayer == 1) {
+                    row.attr("rival", data.player2);
+                } else {
+                    row.attr("rival", data.player1);
+                }
+
+                if($(row).attr("rival").toLowerCase().search($('#rivalSearch').val().toLowerCase()) === -1) {
+                    row.hide(0);
+                }
 
                 if(data.maps.length <= 5) {
                     row.append($("<td></td>").text(data.competition));
@@ -178,6 +205,16 @@
 
 
                     const row2 = $('<tr></tr>');
+                    if(localPlayer == 1) {
+                        row2.attr("rival", data.player2);
+                    } else {
+                        row2.attr("rival", data.player1);
+                    }
+
+                    if($(row2).attr("rival").toLowerCase().search($('#rivalSearch').val().toLowerCase()) === -1) {
+                        row.hide(0);
+                    }
+
                     data.maps.slice(5).forEach(element => {
                         if(element.winner == localPlayer) {
                             row2.append($("<td></td>").text(element.map).addClass("positive"))
