@@ -110,6 +110,7 @@
                             $('body').toast({
                                 message: 'Changes sent to the database.'
                             })
+                            changes = {};
                         } else {
                             $('body').toast({
                                 message: 'An error occured when sending changes to the database!',
@@ -132,6 +133,7 @@
                 $.get("/backend/api/competition", {competition: $('#competition').val()}, (data, status, x) => {
                     if(status === "success") {
                         pageData = data
+                        changes = {};
 
                         $("#table").html("")
                         data.forEach((element, idx) => {
