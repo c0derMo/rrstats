@@ -160,7 +160,11 @@
                 if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
                     delete changes[$(e.target).attr("id")]
                 } else {
-                    changes[$(e.target).attr("id")] = $(e.target).val();
+                    if($(e.target).is("select")) {
+                        changes[$(e.target).attr("id")] = parseInt($(e.target).val());
+                    } else {
+                        changes[$(e.target).attr("id")] = $(e.target).val();
+                    }
                 }
             }
 
