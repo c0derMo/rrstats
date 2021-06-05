@@ -1,5 +1,6 @@
 const { setMaintenanceMode } = require("./routes");
-const { getStoredCompetition, patchStoredComptition } = require("./dataManager");
+// @ts-expect-error
+const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs } = require("./dataManager");
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
@@ -62,6 +63,17 @@ const _addBackendRoutes = (server) => {
         }
     })
 
+    server.route({
+        method: 'GET',
+        path: '/backend/players',
+        handler: (request, h) => {
+            return h.file("html/backend/playerList.html");
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
 
     // API Calls below
 
@@ -106,6 +118,62 @@ const _addBackendRoutes = (server) => {
             } else {
                 return {status: "error"}
             }
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/players',
+        handler: (request, h) => {
+            return getAllPlayersDetailed();
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'PATCH',
+        path: '/backend/api/players',
+        handler: async (request, h) => {
+            let { changes } = request.payload;
+            changes = JSON.parse(changes);
+            if(await patchUsers(changes)) {
+                return {status: 'ok'}
+            } else {
+                return {status: 'error'}
+            }
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/reloadConfigs',
+        handler: async (request, h) => {
+            await loadConfigs();
+            return {status: 'ok'}
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/shutdown',
+        handler: (request, h) => {
+            server.stop();
+            return "";
         },
         options: {
             auth: 'session',

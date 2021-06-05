@@ -84,6 +84,19 @@ const _patchStoredComptition = async (comp, changes) => {
     return false
 }
 
+const _getAllPlayersDetailed = () => {
+    return configs["playerDB"];
+}
+
+const _patchUsers = async (changes) => {
+    Object.keys(changes).forEach(c => {
+        setJSONPath(configs["playerDB"], c, changes[c]);
+    });
+
+    await fs.writeFile(__dirname + "/data/playerDatabase.json", JSON.stringify(configs["playerDB"]), 'utf8');
+    return true;
+}
+
 module.exports = {
     getNewestCompetitionData: _getNewestCompetitionData,
     getStoredMatches: _getStoredMatches,
@@ -92,5 +105,7 @@ module.exports = {
     getPlayerInfo: _getPlayerInfo,
     getAllPlayers: _getAllPlayers,
     getStoredCompetition: _getStoredCompetition,
-    patchStoredComptition: _patchStoredComptition
+    patchStoredComptition: _patchStoredComptition,
+    getAllPlayersDetailed: _getAllPlayersDetailed,
+    patchUsers: _patchUsers
 }

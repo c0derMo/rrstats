@@ -6,8 +6,26 @@
     </head>
     <body>
         <div class="ui container">
+            <div class="ui basic modal" id="shutdownConfirmModal">
+                <div class="ui icon header">
+                    <i class="power off icon"></i>
+                    Shutdown server
+                </div>
+                <div class="content">
+                    <p>Are you sure that you want to <span style="font-weight: bold;">shutdown the server?</span></p>
+                    <div class="actions">
+                        <div class="ui red basic cancel inverted button">
+                            <i class="remove icon"></i>
+                            No
+                        </div>
+                        <div class="ui green ok inverted button" id="shutdownConfirm">
+                            <i class="checkmark icon"></i>
+                            Yes
+                        </div>
+                    </div>
+                </div>
+            </div>
             <br>
-            <div id="messages" style="z-index: 1;"></div>
             <h1 class="ui header">RR Player Stats - Backend</h1>
             <a class="negative ui right floated button" href="/backend/logout"><i class="sign out alternative icon"></i>Logout</a>
             <br>
@@ -37,6 +55,37 @@
                         <div class="description">Lists all the matches of a competition.</div>
                     </div>
                 </div>
+                <div class="item">
+                    <div class="right floated content">
+                        <a class="ui button" href="/backend/players"><i class="share icon"></i></a>
+                    </div>
+                    <i class="large edit middle aligned icon"></i>
+                    <div class="content">
+                        <a class="header" style="font-weight: bold;">Players</a>
+                        <div class="description">Lists all the players.</div>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="right floated content">
+                        <button class="ui button" id="reload"><i class="upload icon"></i></button>
+                    </div>
+                    <i class="large upload middle aligned icon"></i>
+                    <div class="content">
+                        <a class="header" style="font-weight: bold;">Reload configs</a>
+                        <div class="description">Reloads all the config files from disk.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="right floated content">
+                        <button class="ui negative button" id="shutdown"><i class="exclamation icon"></i></button>
+                    </div>
+                    <i class="large power off middle aligned icon"></i>
+                    <div class="content">
+                        <a class="header" style="font-weight: bold;">Shutdown server</a>
+                        <div class="description">Shuts down the entire server.</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -60,7 +109,7 @@
                         console.log(data);
                         console.log(status);
                         $('body').toast({
-                            message: "Maintenance mode: enabled.",
+                            message: "Maintenance mode: disabled.",
                             showProgress: 'top',
                             class: 'success',
                             displayTime: 15000
@@ -68,6 +117,38 @@
                     });
                 }
             });
+
+            $('#reload').on("click", (e) => {
+                $.get("/backend/api/reloadConfigs", (data, status, x) => {
+                    if(status === "success" && data.status === "ok") {
+                        $('body').toast({
+                            message: 'Successfully reloaded the config files.',
+                            showProgress: 'top',
+                            class: 'success'
+                        });
+                    } else {
+                        $('body').toast({
+                            message: "Failed to reload the files.",
+                            showProgress: 'top',
+                            class: 'failure'
+                        })
+                    }
+                })
+            });
+
+            $('#shutdown').on("click", (e) => {
+                $('#shutdownConfirmModal').modal("show");
+            })
+
+            $('#shutdownConfirm').on("click", (e) => {
+                $.get("/backend/api/shutdown", (data, status, x) => {
+                    $('body').toast({
+                        message: 'Sent shutdown command.',
+                        showProgress: 'top',
+                        class: 'success'
+                    });
+                })
+            })
         </script>
     </body>
 </html>

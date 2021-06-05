@@ -3,6 +3,7 @@
 const Hapi = require("@hapi/hapi");
 const Inert = require("@hapi/inert");
 const { addRoutes } = require("./routes");
+// @ts-expect-error 
 const { loadConfigs } = require("./dataManager");
 const addBackendRoutes = require("./backendRoutes");
 const crypt = require("crypto");
