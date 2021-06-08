@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-ignore-error
 const fs = require('fs/promises');
 const { setJSONPath } = require("./utils");
 

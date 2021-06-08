@@ -1,5 +1,5 @@
 const gDriveToMatchlist = require('./gDriveIntegration');
-// @ts-ignore
+// @ts-expect-error
 const axios = require('axios');
 const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers } = require("./dataManager");
 const { getDiscordProfilePictureURL } = require("./httpClient");

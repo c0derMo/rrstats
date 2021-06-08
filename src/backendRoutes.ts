@@ -3,7 +3,6 @@ const { setMaintenanceMode } = require("./routes");
 const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition } = require("./dataManager");
 // @ts-expect-error
 const axios = require("axios");
-// @ts-expect-error
 const gDriveObjectToMatchlist = require('./gDriveIntegration');
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";

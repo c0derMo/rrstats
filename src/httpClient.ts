@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 const axios = require('axios');
 
 const cache = {
