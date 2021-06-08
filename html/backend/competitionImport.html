@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RR Player Statistics</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+    </head>
+    <body>
+        <div class="ui container">
+            <br>
+            <h1 class="ui header"><a href="/backend"><i class="small reply icon"></i></a>Import table</h1>
+            <br>
+            <div class="ui steps">
+                <div class="active step" id="step1">
+                    <i class="pen icon"></i>
+                    <div class="content">
+                        <div class="title">Table information</div>
+                    </div>
+                </div>
+                <div class="step" id="step2">
+                    <i class="cogs icon"></i>
+                    <div class="content">
+                        <div class="title">Working magic</div>
+                    </div>
+                </div>
+                <div class="step" id="step3">
+                    <i class="file alternate icon"></i>
+                    <div class="content">
+                        <div class="title">Check result</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <i class="share icon"></i>
+                    <div class="content">
+                        <div class="title" style="font-style: italic">Add standings</div>
+                        <div class="description" style="font-style: italic">(optional)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui basic segment" id="step1_content">
+                <div class="ui fluid input">
+                    <input type="text" placeholder="ID of the spreadsheet" id="inputID">
+                </div>
+                <div class="ui fluid input">
+                    <input type="text" placeholder="Tab-number of the spreadsheet" id="inputTab">
+                </div>
+                <div class="ui fluid input">
+                    <input type="text" placeholder="Competition string (e.g. RRWC)" id="inputComp">
+                </div>
+                <div class="ui fluid input">
+                    <input type="text" placeholder="(Optional) Column assignment override" id="inputColAs">
+                </div>
+                <button id="step1_finish" class="ui button">Load spreadsheet data</button>
+            </div>
+            <div class="ui basic segment" id="step2_content" hidden>
+                Please wait while the server does it's magic...
+            </div>
+            <div class="ui basic segment" id="step3_content" hidden>
+                Competition <span id="title"></span> imported with <span id="amountMatches"></span> matches.<br>
+                You can now optionally go and <a href="#">add standings in bulk</a>.
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script>
+            $('#step1_finish').on("click", () => {
+                $('#step1_content').slideUp();
+                $('#step2_content').slideDown();
+                $('#step1').removeClass("active").addClass("completed");
+                $('#step2').addClass("active");
+
+                $.ajax("/backend/api/importSpreadsheet", {
+                    data: {
+                        sID: $('#inputID').val(),
+                        tabID: $('#inputTab').val(),
+                        comp: $('#inputComp').val(),
+                        cA: $('#inputColAs').val()
+                    },
+                    method: 'POST',
+                    success: (data, status, x) => {
+                        $('#title').text($('#inputComp').val());
+                        $('#amountMatches').text(data.length);
+                        $('#step2').removeClass('active').addClass('completed');
+                        $('#step3').addClass('active');
+                        $('#step2_content').slideUp();
+                        $('#step3_content').slideDown();
+                    },
+                    error: (data, status, x) => {
+                        console.log(data);
+                    }
+                })
+            });
+        </script>
+    </body>
+</html>

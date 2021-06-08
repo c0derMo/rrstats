@@ -97,6 +97,13 @@ const _patchUsers = async (changes) => {
     return true;
 }
 
+const _addCompetition = async (compName, compData) => {
+    configs["general"].competitions.push(compName);
+    configs[compName] = compData;
+    await fs.writeFile(__dirname + "/data/" + compName + ".json", JSON.stringify(compData), 'utf8');
+    await fs.writeFile(__dirname + "/data/config.json", JSON.stringify(configs["general"]), 'utf8')
+}
+
 module.exports = {
     getNewestCompetitionData: _getNewestCompetitionData,
     getStoredMatches: _getStoredMatches,
@@ -107,5 +114,6 @@ module.exports = {
     getStoredCompetition: _getStoredCompetition,
     patchStoredComptition: _patchStoredComptition,
     getAllPlayersDetailed: _getAllPlayersDetailed,
-    patchUsers: _patchUsers
+    patchUsers: _patchUsers,
+    addCompetition: _addCompetition
 }

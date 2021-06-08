@@ -1,6 +1,10 @@
 const { setMaintenanceMode } = require("./routes");
 // @ts-expect-error
-const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs } = require("./dataManager");
+const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition } = require("./dataManager");
+// @ts-expect-error
+const axios = require("axios");
+// @ts-expect-error
+const gDriveObjectToMatchlist = require('./gDriveIntegration');
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
@@ -68,6 +72,17 @@ const _addBackendRoutes = (server) => {
         path: '/backend/players',
         handler: (request, h) => {
             return h.file("html/backend/playerList.html");
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/importSpreadsheet',
+        handler: (request, h) => {
+            return h.file("html/backend/competitionImport.html");
         },
         options: {
             auth: 'session'
@@ -180,6 +195,27 @@ const _addBackendRoutes = (server) => {
             plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
         }
     });
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/importSpreadsheet',
+        handler: async (request, h) => {
+            const { sID, tabID, comp, cA } = request.payload;
+            let req = await axios.get("https://spreadsheets.google.com/feeds/cells/" + sID + "/" + tabID + "/public/values?alt=json-in-script");
+            let fancyData;
+            if(cA === "") {
+                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(28, req.data.length-2)), comp, true);
+            } else {
+                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(28, req.data.length-2)), comp, true, JSON.parse(cA));
+            }
+            await addCompetition(comp, fancyData);
+            return fancyData;
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    })
 
 }
 
