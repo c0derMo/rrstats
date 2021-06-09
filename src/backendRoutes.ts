@@ -88,6 +88,17 @@ const _addBackendRoutes = (server) => {
         }
     })
 
+    server.route({
+        method: 'GET',
+        path: '/backend/importStandings',
+        handler: (request, h) => {
+            return h.file('html/backend/standingsImport.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
 
     // API Calls below
 

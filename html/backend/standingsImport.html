@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RR Player Statistics</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+    </head>
+    <body>
+        <div class="ui basic modal" id="saveConfirmModal">
+            <div class="ui icon header">
+                <i class="save icon"></i>
+                Save changes
+            </div>
+            <div class="content">
+                <p>Are you sure that you want to add those standings to the database?</p>
+                <div class="actions">
+                    <div class="ui red basic cancel inverted button">
+                        <i class="remove icon"></i>
+                        No
+                    </div>
+                    <div class="ui green ok inverted button" id="saveConfirm">
+                        <i class="checkmark icon"></i>
+                        Yes
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui container">
+            <br>
+            <h1 class="ui header"><a href="/backend"><i class="small reply icon"></i></a>Import standings</h1>
+            <br><br>
+            <span style="font-style: italic">Enter each player as a row with his placement, seperated by colons.</span><br>
+            <div class="ui input">
+                <input type="text" placeholder="competition" id="comp">
+            </div>
+            <button class="ui right floated positive button" id="save"><i class="save icon"></i>Save</button>
+            <br><br>
+            <div class="ui fluid input">
+                <textarea id="placements" style="width: 100%" rows=20> Player: Placement...</textarea>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script>
+            $('#save').on("click", () => {
+                $.getJSON('/backend/api/players', {}, (data, status, x) => {
+                    if(status == "success") {
+                        let undefinedUsers = [];
+                        $('#placements').val().split("\n").forEach(e => {
+                            if(data[e.split(": ")[0]] === undefined) {
+                                undefinedUsers.push(e.split(": ")[0]);
+                            }
+                        });
+                        if(undefinedUsers.length == 0) {
+                            $('#saveConfirmModal').modal("show");
+                        } else {
+                            $('body').toast({
+                                message: 'The following users were not found: ' + undefinedUsers.join(", "),
+                                class: 'error',
+                                showProgress: 'top'
+                            })
+                        }
+                    }
+                })
+            });
+            
+            $('#saveConfirm').on("click", () => {
+                $.getJSON('/backend/api/players', {}, (data, status, x) => {
+                    if(status === "success") {
+                        let changes = {}
+                        let comp = $('#comp').val()
+                        $('#placements').val().split("\n").forEach(e => {
+                            let user = e.split(": ")[0];
+                            let placement = e.split(": ")[1];
+                            data[user].competitions.unshift({competition: comp, placement: placement});
+                            changes[user + '.competitions'] = data[user].competitions;
+                        });
+                        $.ajax('/backend/api/players', {
+                            data: {
+                                changes: JSON.stringify(changes)
+                            },
+                            method: 'PATCH',
+                            success: (data, status, x) => {
+                                if(data.status === "ok") {
+                                    $('body').toast({
+                                        message: 'Changes sent to the database.'
+                                    })
+                                } else {
+                                    $('body').toast({
+                                        message: 'An error occured when sending changes to the database!',
+                                        class: 'failure'
+                                    })
+                                }
+                            },
+                            error: (xhr, status, x) => {
+                                $('body').toast({
+                                    message: 'An error occured when sending changes to the database: ' + status,
+                                    class: 'failure'
+                                });
+                            }
+                        })
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
