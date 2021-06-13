@@ -58,6 +58,7 @@ const _gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, co
                 }
             } else {
                 let maps = [];
+                let index = 0;
                 (columnDefinitions[5] as number[]).forEach(e => {
                     if(element[e] !== "" && element[e] !== "N/A" && element[e] !== "-") {
                         let wonBy = 0;
@@ -70,10 +71,19 @@ const _gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, co
                                 wonBy = 2;
                             }
                         }
+                        let picked = 0;
+                        if(index == 0) {
+                            picked = 1;
+                        } else if(index == 1) {
+                            picked = 2;
+                        }
                         maps.push({
                             map: element[e],
-                            winner: wonBy
+                            winner: wonBy,
+                            picked: picked
                         })
+
+                        index++;
                     }
                 });
                 const scoreArr = element[columnDefinitions[4] as number].split("-");
