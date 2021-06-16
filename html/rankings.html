@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RR Player Statistics</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+        <link rel="stylesheet" href="darkly.css">
+    </head>
+    <body>
+        <table>
+            <tbody id="ranking">
+
+            </tbody>
+        </table>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script src="utils.js"></script>
+        <script>
+            $(document).ready(() => {
+                const urlSearchParams = new URLSearchParams(window.location.search);
+                const params = Object.fromEntries(urlSearchParams.entries());
+                let query = "";
+                if(params["map"] === undefined || params["map"] === "") {
+                    query = "/api/rankings?stat=" + params["stat"]
+                } else {
+                    query = "/api/rankings?stat=" + params["stat"] + "&map=" + params["map"];
+                }
+                $.getJSON(query, (data, success, x) => {
+                    //if(success === "success") {
+                        data.order.forEach(e => {
+                            let row = $('<tr></tr>');
+                            row.append($("<td></td>").text(e));
+                            switch(params["stat"]) {
+                                case 'WR':
+                                    row.append($("<td></td>").text(data.rankings[e].won/data.rankings[e].matches));
+                                    break;
+                                case 'RRParticipations':
+                                    row.append($("<td></td>").text(data.rankings[e].rrCompetitions.length));
+                                    break;
+                                case 'RRWCParticipations':
+                                    row.append($("<td></td>").text(data.rankings[e].rrwcCompetitions.length));
+                                    break;
+                                case 'Matches':
+                                    row.append($("<td></td>").text(data.rankings[e].matches));
+                                    break;
+                                case 'PercentageDecider':
+                                    row.append($("<td></td>").text(data.rankings[e].matchesWithDecider/data.rankings[e].matches));
+                                    break;
+                                case 'FinalAppearances':
+                                    row.append($("<td></td>").text(data.rankings[e].grandFinalAppearances));
+                                    break;
+                                case 'LongestWinSpree':
+                                    row.append($("<td></td>").text(data.rankings[e].longestWinningSpree));
+                                    break;
+                                case 'MapPlayed':
+                                    row.append($("<td></td>").text(data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex(params["map"])]));
+                                    break;
+                                case 'MapWR':
+                                    row.append($("<td></td>").text(data.rankings[e].mapsWon[mapAbreviationToArrayIndex(params["map"])]/data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex(params["map"])]));
+                                    break;   
+                            }
+                            $('#ranking').append(row);
+                        });
+                    //}
+                })
+            });
+        </script>
+    </body>
+</html>

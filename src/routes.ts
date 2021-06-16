@@ -1,7 +1,7 @@
 const gDriveToMatchlist = require('./gDriveIntegration');
 // @ts-expect-error
 const axios = require('axios');
-const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers } = require("./dataManager");
+const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking } = require("./dataManager");
 const { getDiscordProfilePictureURL } = require("./httpClient");
 
 
@@ -28,9 +28,17 @@ const _addRoutes = (server) => {
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/playerpage.html");
-
         }
     });
+
+    server.route({
+        method: 'GET',
+        path: '/rankings',
+        handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
+            return h.file("html/rankings.html");
+        }
+    })
 
     server.route({
         method: 'GET',
@@ -165,6 +173,22 @@ const _addRoutes = (server) => {
             }
 
             return "setPageContent(" + JSON.stringify(obj) + ");"
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/api/rankings',
+        handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
+
+            const { stat, map } = request.query;
+
+            if(map === undefined || map === "") {
+                return getRanking(stat);
+            } else {
+                return getRanking(stat, map);
+            }
         }
     })
 

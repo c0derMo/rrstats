@@ -16,7 +16,57 @@ function _setJSONPath(obj, path, value) {
     response[split.pop()] = value;
 }
 
+const _mapAbreviationToArrayIndex = (abv) => {
+    switch(abv) {
+        // Season 1
+        case "PAR":
+            return 0
+        case "SAP":
+            return 1
+        case "MAR":
+            return 2
+        case "BKK":
+            return 3
+        case "COL":
+            return 4
+        case "HOK":
+            return 5
+        
+        // Season 2
+        case "MIA":
+            return 6
+        case "SF":
+            return 7
+        case "MUM":
+            return 8
+        case "WC":
+            return 9
+        case "SGA":
+            return 10
+        case "NY":
+            return 11
+        case "HAV":
+            return 12
+
+        // Season 3
+        case "DUB":
+            return 13
+        case "DAR":
+            return 14
+        case "BER":
+            return 15
+        case "CHO":
+            return 16
+        case "MEN":
+            return 17
+        
+        default:
+            return "Unknown"
+    }
+}
+
 module.exports = {
     getJSONPath: _getJSONPath,
-    setJSONPath: _setJSONPath
+    setJSONPath: _setJSONPath,
+    mapAbreviationToArrayIndex: _mapAbreviationToArrayIndex
 }
