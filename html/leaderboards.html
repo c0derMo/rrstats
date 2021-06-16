@@ -22,9 +22,9 @@
                 const params = Object.fromEntries(urlSearchParams.entries());
                 let query = "";
                 if(params["map"] === undefined || params["map"] === "") {
-                    query = "/api/rankings?stat=" + params["stat"]
+                    query = "/api/leaderboards?stat=" + params["stat"]
                 } else {
-                    query = "/api/rankings?stat=" + params["stat"] + "&map=" + params["map"];
+                    query = "/api/leaderboards?stat=" + params["stat"] + "&map=" + params["map"];
                 }
                 $.getJSON(query, (data, success, x) => {
                     //if(success === "success") {

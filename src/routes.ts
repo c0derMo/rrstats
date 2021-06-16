@@ -33,10 +33,10 @@ const _addRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/rankings',
+        path: '/leaderboards',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-            return h.file("html/rankings.html");
+            return h.file("html/leaderboards.html");
         }
     })
 
@@ -178,7 +178,7 @@ const _addRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/api/rankings',
+        path: '/api/leaderboards',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
 

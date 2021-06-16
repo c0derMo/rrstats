@@ -19,7 +19,7 @@ const _loadConfigs = async () => {
     configs["playerDB"] = playerDatabaseJSON;
 
     try {
-        const rankings = await fs.readFile(__dirname + "/data/rankings.json", "utf8");
+        const rankings = await fs.readFile(__dirname + "/data/leaderboards.json", "utf8");
         const rankingsJSON = JSON.parse(rankings);
         configs["rankings"] = rankingsJSON
     } catch(e) {
@@ -191,7 +191,7 @@ const _recalculateRankings = async () => {
 
     competitions.forEach(element => {
         const comp = _getStoredCompetition(element);
-        comp.forEach(match => {
+        comp.reverse().forEach(match => {
             let player1 = match.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
             let player2 = match.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
 
@@ -255,7 +255,7 @@ const _recalculateRankings = async () => {
 
             
             // Winrate & winningspree stuff
-            if(match.winner == 1) {
+            if (match.winner == 1) {
                 rankings[player1].won += 1
                 currentWinningSprees[player1] += 1
 
@@ -295,7 +295,7 @@ const _recalculateRankings = async () => {
     });
 
     configs["rankings"] = rankings;
-    await fs.writeFile(__dirname + "/data/rankings.json", JSON.stringify(rankings), 'utf8');
+    await fs.writeFile(__dirname + "/data/leaderboards.json", JSON.stringify(rankings), 'utf8');
 }
 
 module.exports = {
