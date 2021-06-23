@@ -97,6 +97,16 @@
                 </div>
                 <div class="item">
                     <div class="right floated content">
+                        <button class="ui button" id="recalcLeaderboard"><i class="calculator icon"></i></button>
+                    </div>
+                    <i class="large calculator middle aligned icon"></i>
+                    <div class="content">
+                        <a class="header" style="font-weight: bold;">Recalculate leaderboards</a>
+                        <div class="description">Recalculate all leaderboard data.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="right floated content">
                         <button class="ui negative button" id="shutdown"><i class="exclamation icon"></i></button>
                     </div>
                     <i class="large power off middle aligned icon"></i>
@@ -148,6 +158,25 @@
                     } else {
                         $('body').toast({
                             message: "Failed to reload the files.",
+                            showProgress: 'top',
+                            class: 'failure'
+                        })
+                    }
+                })
+            });
+
+
+            $('#recalcLeaderboard').on("click", (e) => {
+                $.get("/backend/api/recalculateLeaderboards", (data, status, x) => {
+                    if(status === "success" && data.status === "ok") {
+                        $('body').toast({
+                            message: 'Successfully recalculated leaderboard info.',
+                            showProgress: 'top',
+                            class: 'success'
+                        });
+                    } else {
+                        $('body').toast({
+                            message: "Failed to recalculate leaderboard info.",
                             showProgress: 'top',
                             class: 'failure'
                         })

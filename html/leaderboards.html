@@ -8,32 +8,110 @@
         <link rel="stylesheet" href="darkly.css">
     </head>
     <body>
-        <table>
-            <tbody id="ranking">
-
-            </tbody>
-        </table>
+        <div class="ui container">
+            <br>
+            <h1 class="ui header" style="font-weight: bold; font-size: 3.2rem;">Leaderboards</h1>
+            <br><br>
+            <select class="ui selection dropdown" id="stat">
+                <option value="" selected disabled>-- Select a statistic --</option>
+                <option value="WR">Winrate</option>
+                <option value="RRParticipations">Participations in Roulette Rivals Tournaments</option>
+                <option value="RRWCParticipations">Participations in Roulette Rivals World Championships</option>
+                <option value="Matches">Amount of matches</option>
+                <option value="PercentageDecider">Percentage of matches with decider</option>
+                <option value="LongestWinSpree">Longest winning-spree</option>
+                <option value="MapPlayed">Amount of matches on one map</option>
+                <option value="MapWR">Winrate on one map</option>
+            </select>
+            <select class="ui selection dropdown" id="map" style="display: none;">
+                <option disabled>-- Season 1</option>
+                <option value="PAR" selected>Paris</option>
+                <option value="SAP">Sapienza</option>
+                <option value="MAR">Marrakesh</option>
+                <option value="BKK">Bangkok</option>
+                <option value="COL">Colorado</option>
+                <option value="HOK">Hokkaido</option>
+                <option disabled>-- Season 2</option>
+                <option value="MIA">Miami</option>
+                <option value="SF">Santa Fortuna</option>
+                <option value="MUM">Mumbai</option>
+                <option value="WC">Whittleton Creek</option>
+                <option value="SGA">Isle of Sgàil</option>
+                <option value="NY">New York</option>
+                <option value="HAV">Haven Island</option>
+                <option disabled>-- Season 3</option>
+                <option value="DUB">Dubai</option>
+                <option value="DAR">Dartmoor</option>
+                <option value="BER">Berlin</option>
+                <option value="CHO">Chongqing</option>
+                <option value="MEN">Mendoza</option>
+            </select>
+            <br><br>
+            <table class="ui structured celled inverted table">
+                <thead>
+                    <tr>
+                        <th>Placement</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th><input type="text" class="ui input" placeholder="Search for player" id="player"></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="ranking">
+                </tbody>
+            </table>
+        </div>
+        <div style="bottom: 5px; width: 100%; text-align: center; font-style: italic; position: relative; color: lightgray; margin-top: 10px;">Made with precision german engineering & calculated hungarian stats.</div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
         <script src="utils.js"></script>
         <script>
-            $(document).ready(() => {
-                const urlSearchParams = new URLSearchParams(window.location.search);
-                const params = Object.fromEntries(urlSearchParams.entries());
-                let query = "";
-                if(params["map"] === undefined || params["map"] === "") {
-                    query = "/api/leaderboards?stat=" + params["stat"]
+            $('#player').on("input", () => {
+                let all = $('tr', '#ranking');
+                let accepted = [];
+                let notAccepted = [];
+                all.each((idx, e) => {
+                    if($(e).attr("player").toLowerCase().search($('#player').val().toLowerCase()) === -1) {
+                        notAccepted.push(e);
+                    } else {
+                        accepted.push(e);
+                    }
+                });
+                accepted.forEach(e => {$(e).fadeIn()});
+                notAccepted.forEach(e => {$(e).fadeOut()});
+            });
+
+            $('#stat').on("change", () => {
+                if($('#stat').val() === "MapPlayed" || $('#stat').val() === "MapWR") {
+                    $('#map').show();
                 } else {
-                    query = "/api/leaderboards?stat=" + params["stat"] + "&map=" + params["map"];
+                    $('#map').hide();
+                }
+                updateTable();
+            });
+
+            $('#map').on("change", () => {
+                updateTable();
+            });
+
+            function updateTable() {
+                $('#ranking').html("");
+                let query = "/api/leaderboards?stat=" + $('#stat').val();
+                if($('#stat').val() === "MapPlayed" || $('#stat').val() === "MapWR") {
+                    query += "&map=" + $('#map').val();
                 }
                 $.getJSON(query, (data, success, x) => {
-                    //if(success === "success") {
-                        data.order.forEach(e => {
-                            let row = $('<tr></tr>');
-                            row.append($("<td></td>").text(e));
-                            switch(params["stat"]) {
+                    if(success === "success") {
+                        data.order.forEach((e, idx) => {
+                            let row = $('<tr></tr>').attr("player", e);
+                            row.append($('<td></td>').text(idx+1 + "."));
+                            row.append($('<td></td>').text(e));
+                            switch($('#stat').val()) {
                                 case 'WR':
-                                    row.append($("<td></td>").text(data.rankings[e].won/data.rankings[e].matches));
+                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].won/data.rankings[e].matches)*1000)/10 + "%"));
                                     break;
                                 case 'RRParticipations':
                                     row.append($("<td></td>").text(data.rankings[e].rrCompetitions.length));
@@ -45,7 +123,7 @@
                                     row.append($("<td></td>").text(data.rankings[e].matches));
                                     break;
                                 case 'PercentageDecider':
-                                    row.append($("<td></td>").text(data.rankings[e].matchesWithDecider/data.rankings[e].matches));
+                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].matchesWithDecider/data.rankings[e].matches)*1000)/10 + "%"));
                                     break;
                                 case 'FinalAppearances':
                                     row.append($("<td></td>").text(data.rankings[e].grandFinalAppearances));
@@ -54,17 +132,17 @@
                                     row.append($("<td></td>").text(data.rankings[e].longestWinningSpree));
                                     break;
                                 case 'MapPlayed':
-                                    row.append($("<td></td>").text(data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex(params["map"])]));
+                                    row.append($("<td></td>").text(data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex($('#map').val())]));
                                     break;
                                 case 'MapWR':
-                                    row.append($("<td></td>").text(data.rankings[e].mapsWon[mapAbreviationToArrayIndex(params["map"])]/data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex(params["map"])]));
+                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].mapsWon[mapAbreviationToArrayIndex($('#map').val())]/data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex($('#map').val())])*1000)/10 + "%"));
                                     break;   
                             }
                             $('#ranking').append(row);
-                        });
-                    //}
+                        })
+                    }
                 })
-            });
+            }
         </script>
     </body>
 </html>

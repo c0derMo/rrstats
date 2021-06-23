@@ -1,6 +1,6 @@
 const { setMaintenanceMode } = require("./routes");
 // @ts-expect-error
-const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition } = require("./dataManager");
+const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition, recalculateRankings } = require("./dataManager");
 // @ts-expect-error
 const axios = require("axios");
 const gDriveObjectToMatchlist = require('./gDriveIntegration');
@@ -220,6 +220,19 @@ const _addBackendRoutes = (server) => {
             }
             await addCompetition(comp, fancyData);
             return fancyData;
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/recalculateLeaderboards',
+        handler: async (request, h) => {
+            await recalculateRankings();
+            return {status: 'ok'}
         },
         options: {
             auth: 'session',
