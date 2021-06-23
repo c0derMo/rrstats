@@ -202,8 +202,8 @@ const _recalculateRankings = async () => {
                     rrwcCompetitions: [],
                     matches: 0,
                     won: 0,
-                    mapsPlayed: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    mapsWon: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    mapsPlayed: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    mapsWon: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     longestWinningSpree: 0,
                     matchesWithDecider: 0,
                     grandFinalAppearances: 0
@@ -218,8 +218,8 @@ const _recalculateRankings = async () => {
                     rrwcCompetitions: [],
                     matches: 0,
                     won: 0,
-                    mapsPlayed: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    mapsWon: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    mapsPlayed: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    mapsWon: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     longestWinningSpree: 0,
                     matchesWithDecider: 0,
                     grandFinalAppearances: 0
