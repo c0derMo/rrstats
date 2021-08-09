@@ -15,6 +15,9 @@
     "build": "tsc && cp -R -f data out && cp -R -f html out",
     "start": "node out/index.js",
     "deploy": "yarn build && cp -R -f out deploy && cp run.sh deploy && cp yarn.lock deploy && cp package.json deploy",
-    "clean": "rm -r out deploy"
+    "clean": "rm -r out deploy",
+    "build-win": "tsc && xcopy data out\\data /s /i /y && xcopy html out\\html /s /i /y",
+    "clean-win": "rmdir /S /Q out deploy",
+    "deploy-win": "yarn build-win && xcopy out deploy /s /i && xcopy run.sh deploy && xcopy yarn.lock deploy && xcopy package.json deploy"
   }
 }
