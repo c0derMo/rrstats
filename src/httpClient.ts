@@ -3,8 +3,12 @@ const axios = require('axios');
 require('dotenv').config();
 
 const cache = {
-    "discordPB": {},
-    "gDrive": {}
+    discordPB: {},
+    gDrive: {
+        link: "",
+        requestTime: 0,
+        data: ""
+    }
 }
 
 const discordID = process.env.DISCORD_TOKEN;
@@ -51,6 +55,24 @@ const _getDiscordProfilePictureURL = async (uID) => {
     return "/defaultPB.png"
 }
 
+const _getGDriveData = async (link) => {
+    //Check for cache, if the link in the cache isn't the same, we need to get something new anyways
+    if(cache.gDrive !== undefined) {
+        // Cache stays for 15 minutes.
+        if(cache.gDrive.link === link && Date.now() - cache.gDrive.requestTime < 900000) {
+            console.log("Returning cached GDrive");
+            return cache.gDrive.data;
+        }
+    }
+    const req = await axios.get(link);
+    cache.gDrive.link = link;
+    cache.gDrive.requestTime = Date.now();
+    cache.gDrive.data = req.data;
+    console.log("Returning new GDrive");
+    return req.data;
+}
+
 module.exports = {
-    getDiscordProfilePictureURL: _getDiscordProfilePictureURL
+    getDiscordProfilePictureURL: _getDiscordProfilePictureURL,
+    getGDriveData: _getGDriveData
 }

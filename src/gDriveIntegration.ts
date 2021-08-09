@@ -52,6 +52,7 @@ const _gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, co
     // Filtering matches by looking at the score-column[6] (let's hope In4 never changes the layout of the spreadsheet LUL)
     betterData.forEach(element => {
         if(element[columnDefinitions[4] as number].match(/[0-9]+-[0-9]+/)) {
+            if(debugLog) console.log("[DBG] First check passed")
             if(element[columnDefinitions[1] as number] == "Grand Final" || element[columnDefinitions[1] as number] == "RRWC \nGrand Final") {
                 if(debugLog) {
                     console.log("[DBG] Grand final detected! Avoiding.");

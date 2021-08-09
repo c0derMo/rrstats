@@ -1,8 +1,6 @@
 const gDriveToMatchlist = require('./gDriveIntegration');
-// @ts-expect-error
-const axios = require('axios');
 const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking } = require("./dataManager");
-const { getDiscordProfilePictureURL } = require("./httpClient");
+const { getDiscordProfilePictureURL, getGDriveData } = require("./httpClient");
 
 
 let maintenanceMode = false;
@@ -108,8 +106,8 @@ const _addRoutes = (server) => {
             // Query for matches in newest competition
             const newestCompData = getNewestCompetitionData();
             if(newestCompData.name !== "") {
-                const newestDoc = await axios.get(newestCompData.link);
-                const newestData = gDriveToMatchlist(JSON.parse(newestDoc.data.substring(28, newestDoc.data.length-2)), "RR5");
+                const newestDoc = await getGDriveData(newestCompData.link);
+                const newestData = gDriveToMatchlist(JSON.parse(newestDoc.substring(28, newestDoc.length-2)), newestCompData.name);
     
                 matches = matches.concat(newestData.filter(e => {
                     return (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player || e.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player);
