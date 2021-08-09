@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RR Player Statistics</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+    </head>
+    <body>
+        <div class="ui container">
+            <br>
+            <h1 class="ui header"><a href="/backend"><i class="small reply icon"></i></a>Database Checks</h1>
+            <br>
+            <div class="ui steps">
+                <div class="active step" id="step1">
+                    <i class="pen icon"></i>
+                    <div class="content">
+                        <div class="title">Select checks</div>
+                    </div>
+                </div>
+                <div class="step" id="step2">
+                    <i class="cogs icon"></i>
+                    <div class="content">
+                        <div class="title">Working magic</div>
+                    </div>
+                </div>
+                <div class="step" id="step3">
+                    <i class="file alternate icon"></i>
+                    <div class="content">
+                        <div class="title">Check result</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui basic segment" id="step1_content">
+                <h3>Please select the checks to run.</h3>
+                <div class="ui relaxed divided list">
+                    <div class="item">
+                        <div class="right floated content">
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" id="score">
+                                <label></label>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <a class="header" style="font-weight: bold;">Score</a>
+                            <div class="description">Checks for invalid scores, map- & match-winners</div>
+                        </div>
+                    </div>
+                </div>
+                <button id="step1_finish" class="ui button">Run checks</button>
+            </div>
+            <div class="ui basic segment" id="step2_content" hidden>
+                Please wait while the server does it's magic...
+            </div>
+            <div class="ui basic segment" id="step3_content" hidden>
+                <h3>Results:</h3>
+                <table class="ui table">
+                    <thead>
+                        <tr><th></th><th></th></tr>
+                    </thead>
+                    <tbody id="results">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script>
+
+            $('#step1_finish').on("click", () => {
+                $('#step1_content').slideUp();
+                $('#step2_content').slideDown();
+                $('#step1').removeClass("active").addClass("completed");
+                $('#step2').addClass("active");
+
+                let chks = [];
+
+                if($('#score').is(':checked')) chks.push("score");
+
+                $.ajax("/backend/api/runDatabaseChecks", {
+                    data: {
+                        checks: JSON.stringify(chks)
+                    },
+                    method: 'POST',
+                    success: (data, status, x) => {
+                        data.warnings.forEach(element => {
+                            $('#results').append($('<tr></tr>').append($("<td><i class='question icon'></i></td>")).append($("<td></td>").text(element)).addClass("warning"));
+                        });
+                        data.errors.forEach(element => {
+                            $('#results').append($('<tr></tr>').append($("<td><i class='exclamation icon'></i></td>")).append($("<td></td>").text(element)).addClass("negative"));
+                        });
+
+                        if(data.warnings.length === 0 && data.errors.length === 0) {
+                            $('#results').append($('<tr></tr>').addClass("positive").append($('<td></td>')).append($('<td>No errors found!</td>')))
+                        }
+                        $('#step2').removeClass("active").addClass("completed");
+                        $('#step3').addClass("active");
+                        $('#step2_content').slideUp();
+                        $('#step3_content').slideDown();
+                    },
+                    error: (data, status, x) => {
+                        console.log(data);
+                    }
+                })
+            });
+
+        </script>
+    </body>
+</html>

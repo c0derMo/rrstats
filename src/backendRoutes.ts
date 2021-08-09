@@ -4,6 +4,7 @@ const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patc
 // @ts-expect-error
 const axios = require("axios");
 const gDriveObjectToMatchlist = require('./gDriveIntegration');
+const { runChecks } = require('./databaseChecks');
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
@@ -93,6 +94,17 @@ const _addBackendRoutes = (server) => {
         path: '/backend/importStandings',
         handler: (request, h) => {
             return h.file('html/backend/standingsImport.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/databaseChecks',
+        handler: (reqeust, h) => {
+            return h.file('html/backend/databaseChecks.html');
         },
         options: {
             auth: 'session'
@@ -233,6 +245,19 @@ const _addBackendRoutes = (server) => {
         handler: async (request, h) => {
             await recalculateRankings();
             return {status: 'ok'}
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/runDatabaseChecks',
+        handler: (request, h) => {
+            const { checks } = request.payload;
+            return runChecks(JSON.parse(checks));
         },
         options: {
             auth: 'session',
