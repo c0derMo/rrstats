@@ -77,24 +77,78 @@
             <div class="row">
                 <div class="seven wide column">
                     <table class="ui striped inverted sortable structured table">
-                        <thead><tr>
-                            <td class="twelve wide" style="font-weight: bold;">Map <span style="font-weight: unset;">(Only RR5)</span></td>
-                            <td class="four wide" style="font-weight: bold;">Picked</td>
-                        </tr></thead>
+                        <thead>
+                            <tr>
+                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapPicksTournaments">(RR3, RRWC, RR4, RR5, RR6)</span> <i id="mapPicksTournamentEdit" class="pen icon"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="twelve wide" style="font-weight: bold;">Map</td>
+                                <td class="four wide" style="font-weight: bold;">Picked</td>
+                            </tr>
+                        </thead>
                         <tbody id="pickrate">
                         </tbody>
                     </table>
+                    <div class="ui popup" id="mapPicksTournamentPopup">
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mp_RR6" class="tourneySelect" checked>
+                            <label>RR6</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mp_RR5" class="tourneySelect" checked>
+                            <label>RR5</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mp_RR4" class="tourneySelect" checked>
+                            <label>RR4</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mp_RRWC" class="tourneySelect" checked>
+                            <label>RRWC</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mp_RR3" class="tourneySelect" checked>
+                            <label>RR3</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="seven wide column">
                     <table class="ui striped inverted sortable structured table">
-                        <thead><tr>
-                            <td class="eleven wide" style="font-weight: bold;">Map</td>
-                            <td class="three wide" style="font-weight: bold;">Winrate</td>
-                            <td class="three wide" style="font-weight: bold;">Won/Played</td>
-                        </tr></thead>
+                        <thead>
+                            <tr>
+                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapWinsTournaments">(RR3, RRWC, RR4, RR5, RR6)</span> <i id="mapWinsTournamentEdit" class="pen icon"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="eleven wide" style="font-weight: bold;">Map</td>
+                                <td class="three wide" style="font-weight: bold;">Winrate</td>
+                                <td class="three wide" style="font-weight: bold;">Won/Played</td>
+                            </tr>
+                        </thead>
                         <tbody id="winrateTable">
                         </tbody>
                     </table>
+                    <div class="ui popup" id="mapWinsTournamentPopup">
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mw_RR6" class="tourneySelect" checked>
+                            <label>RR6</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mw_RR5" class="tourneySelect" checked>
+                            <label>RR5</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mw_RR4" class="tourneySelect" checked>
+                            <label>RR4</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mw_RRWC" class="tourneySelect" checked>
+                            <label>RRWC</label>
+                        </div>
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mw_RR3" class="tourneySelect" checked>
+                            <label>RR3</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,6 +160,34 @@
 
         <script>
             let pageData = {};
+
+            $('#mapPicksTournamentEdit').popup({
+                popup: '#mapPicksTournamentPopup',
+                hoverable: true
+            });
+
+            $('#mapWinsTournamentEdit').popup({
+                popup: '#mapWinsTournamentPopup',
+                hoverable: true
+            })
+
+            $('.tourneySelect').on('change', () => {
+                let pickComps = []
+                if($('#mp_RR3').is(':checked')) pickComps.push("RR3");
+                if($('#mp_RRWC').is(':checked')) pickComps.push("RRWC");
+                if($('#mp_RR4').is(':checked')) pickComps.push("RR4");
+                if($('#mp_RR5').is(':checked')) pickComps.push("RR5");
+                if($('#mp_RR6').is(':checked')) pickComps.push("RR6");
+                $('#mapPicksTournaments').text("(" + pickComps.join(",") + ")");
+                let winComps = [];
+                if($('#mw_RR3').is(":checked")) winComps.push("RR3");
+                if($('#mw_RRWC').is(":checked")) winComps.push("RRWC");
+                if($('#mw_RR4').is(":checked")) winComps.push("RR4");
+                if($('#mw_RR5').is(":checked")) winComps.push("RR5");
+                if($('#mw_RR6').is(":checked")) winComps.push("RR6");
+                $('#mapWinsTournaments').text("(" + winComps.join(",") + ")");
+                calculateMapPicksWins(pageData, pickComps, winComps);
+            });
 
             $('#rivalSearch').on("input", () => {
                 let all = $('tr', '#matches');
@@ -165,11 +247,14 @@
                     row.append($("<td></td>").text(data.player2));
                     data.maps.forEach(element => {
                         if(element.winner == localPlayer) {
-                            row.append($("<td></td>").text(element.map).addClass("positive"))
+                            row.append($("<td></td>").text(element.map).addClass("positive")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else if(element.winner == 0) {
-                            row.append($("<td></td>").text(element.map).addClass("warning"))
+                            row.append($("<td></td>").text(element.map).addClass("warning")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else {
-                            row.append($("<td></td>").text(element.map).addClass("negative"))
+                            row.append($("<td></td>").text(element.map).addClass("negative")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         }
                     });
 
@@ -189,11 +274,14 @@
                     row.append($("<td></td>").text(data.player2).attr("rowspan", "2"));
                     data.maps.slice(0, 5).forEach(element => {
                         if(element.winner == localPlayer) {
-                            row.append($("<td></td>").text(element.map).addClass("positive"))
+                            row.append($("<td></td>").text(element.map).addClass("positive")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else if(element.winner == -1) {
-                            row.append($("<td></td>").text(element.map).addClass("warning"))
+                            row.append($("<td></td>").text(element.map).addClass("warning")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else {
-                            row.append($("<td></td>").text(element.map).addClass("negative"))
+                            row.append($("<td></td>").text(element.map).addClass("negative")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         }
                     });
                     if(data.winner == localPlayer) {
@@ -261,22 +349,10 @@
                 $('#competitions').append(row);
             }
 
-            function setPageContent(data) {
-                pageData = data;
-
-                $('#avatar').attr("src", data.avatar);
-                $('#name').text(data.name);
-                $('#title').text(data.title);
-
-                // Calculate matches played & winrate
-                $('#matchesPlayed').text(data.matches.length);
-                let wonMatches = 0;
-                data.matches.forEach(e => {
-                    const localPlayer = (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == data.name) ? 1 : 2;
-                    if(e.winner == localPlayer) wonMatches++;
-                });
-                $('#winrate').text(Math.round((wonMatches / data.matches.length)*1000)/10 + "%");
-
+            function calculateMapPicksWins(data, pickComps, winComps) {
+                // Clear tables
+                $('#pickrate').html("");
+                $('#winrateTable').html("");
 
                 // Calculate map picks & wins
                 let mapPicks = getDefaultMapPickObj();
@@ -286,13 +362,15 @@
                     e.maps.forEach((map, idx) => {
                         let tmpPicks = mapPicks[mapAbreviationToArrayIndex(map.map)];
                         let tmpWins = mapWins[mapAbreviationToArrayIndex(map.map)];
-                        // Only newest comp workaround
-                        if(idx+1 == localPlayer && e.competition === "RR5") {
+                        // Only selected comps
+                        if(idx+1 == localPlayer && pickComps.includes(e.competition)) {
                             tmpPicks.picked += 1;
                         }
-                        tmpWins.played += 1;
-                        if(map.winner == localPlayer) {
-                            tmpWins.won += 1;
+                        if(winComps.includes(e.competition)) {
+                            tmpWins.played += 1;
+                            if(map.winner == localPlayer) {
+                                tmpWins.won += 1;
+                            }
                         }
                         mapWins[mapAbreviationToArrayIndex(map.map)] = tmpWins;
                         mapPicks[mapAbreviationToArrayIndex(map.map)] = tmpPicks;
@@ -315,7 +393,27 @@
                 }).forEach(e => {
                     $('#winrateTable').append($('<tr><td>' + mapAbreviationToFullName(e.map) + '</td><td>' + Math.round((e.won / e.played)*1000)/10 + '%</td><td>' + e.won + '/' + e.played + '</td></tr>'));
                 });
+            }
+
+            function setPageContent(data) {
+                pageData = data;
+
+                $('#avatar').attr("src", data.avatar);
+                $('#name').text(data.name);
+                $('#title').text(data.title);
+
+                // Calculate matches played & winrate
+                $('#matchesPlayed').text(data.matches.length);
+                let wonMatches = 0;
+                data.matches.forEach(e => {
+                    const localPlayer = (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == data.name) ? 1 : 2;
+                    if(e.winner == localPlayer) wonMatches++;
+                });
+                $('#winrate').text(Math.round((wonMatches / data.matches.length)*1000)/10 + "%");
                 
+
+                calculateMapPicksWins(data,["RR6", "RR5", "RR4", "RRWC", "RR3"],["RR6", "RR5", "RR4", "RRWC", "RR3"]);
+
                 addMoreCompetitions();
                 addMoreMatches();
 

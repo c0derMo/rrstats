@@ -141,3 +141,15 @@ const getDefaultMapWinObj = () => {
         {map: "MEN", played: 0, won: 0}
     ]
 }
+
+const getMapPicker = (picker, player1, player2) => {
+    if(picker == 1) return player1;
+    if(picker == 2) return player2;
+    return "RNG";
+}
+
+const getMapWinner = (winner, player1, player2) => {
+    if(winner == 1) return player1;
+    if(winner == 2) return player2;
+    return "Tie";
+}
