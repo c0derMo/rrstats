@@ -1,12 +1,13 @@
 // @ts-expect-error
 const axios = require('axios');
+require('dotenv').config();
 
 const cache = {
     "discordPB": {},
     "gDrive": {}
 }
 
-const discordID = "***REMOVED***";
+const discordID = process.env.DISCORD_TOKEN;
 
 const _getDiscordProfilePictureURL = async (uID) => {
     console.log("Starting DC");

@@ -8,7 +8,8 @@
     "@hapi/hapi": "^20.1.3",
     "@hapi/inert": "^6.0.3",
     "@types/node": "^15.6.0",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0"
   },
   "scripts": {
     "build": "tsc && cp -R -f data out && cp -R -f html out",
