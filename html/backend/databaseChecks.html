@@ -44,6 +44,30 @@
                             <div class="description">Checks for invalid scores, map- & match-winners</div>
                         </div>
                     </div>
+                    <div class="item">
+                        <div class="right floated content">
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" id="matchesWithoutPlayers">
+                                <label></label>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <a class="header" style="font-weight: bold;">Matches without player-objects</a>
+                            <div class="description">Checks for matches with players that don't have an external player-object.</div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="right floated content">
+                            <div class="ui toggle checkbox">
+                                <input type="checkbox" id="playersWithoutMatches">
+                                <label></label>
+                            </div>
+                        </div>
+                        <div class="content">
+                            <a class="header" style="font-weight: bold;">Players without matches</a>
+                            <div class="description">Checks for players that don't have any matches assigned.</div>
+                        </div>
+                    </div>
                 </div>
                 <button id="step1_finish" class="ui button">Run checks</button>
             </div>
@@ -66,6 +90,8 @@
         <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
         <script>
 
+            let rr1SupressionToggle = true;
+
             $('#step1_finish').on("click", () => {
                 $('#step1_content').slideUp();
                 $('#step2_content').slideDown();
@@ -75,6 +101,8 @@
                 let chks = [];
 
                 if($('#score').is(':checked')) chks.push("score");
+                if($('#matchesWithoutPlayers').is(':checked')) chks.push("matchesWithoutPlayers");
+                if($('#playersWithoutMatches').is(':checked')) chks.push("playersWithoutMatches");
 
                 $.ajax("/backend/api/runDatabaseChecks", {
                     data: {
@@ -82,15 +110,27 @@
                     },
                     method: 'POST',
                     success: (data, status, x) => {
-                        data.warnings.forEach(element => {
-                            $('#results').append($('<tr></tr>').append($("<td><i class='question icon'></i></td>")).append($("<td></td>").text(element)).addClass("warning"));
-                        });
+                        let rr1Supression = 0;
                         data.errors.forEach(element => {
-                            $('#results').append($('<tr></tr>').append($("<td><i class='exclamation icon'></i></td>")).append($("<td></td>").text(element)).addClass("negative"));
+                            if(element.includes("RR1") && rr1SupressionToggle) {
+                                rr1Supression += 1;
+                            } else {
+                                $('#results').append($('<tr></tr>').append($("<td><i class='exclamation icon'></i></td>")).append($("<td></td>").text(element)).addClass("negative"));
+                            }
+                        });
+                        data.warnings.forEach(element => {
+                            if(element.includes("RR1") && rr1SupressionToggle) {
+                                rr1Supression += 1;
+                            } else {
+                                $('#results').append($('<tr></tr>').append($("<td><i class='question icon'></i></td>")).append($("<td></td>").text(element)).addClass("warning"));
+                            }
                         });
 
                         if(data.warnings.length === 0 && data.errors.length === 0) {
                             $('#results').append($('<tr></tr>').addClass("positive").append($('<td></td>')).append($('<td>No errors found!</td>')))
+                        }
+                        if(rr1Supression > 0) {
+                            $('#results').append($('<tr></tr>').addClass("warning").append($('<td><i class="question icon"></i></td>')).append($('<td>Suppressed RR1 warnings & errors: ' + rr1Supression + '</td>')))
                         }
                         $('#step2').removeClass("active").addClass("completed");
                         $('#step3').addClass("active");

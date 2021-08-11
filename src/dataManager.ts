@@ -60,7 +60,8 @@ const _getPlayerInfo = (player) => {
     return {
         discordId: "",
         title: "",
-        competitions: []
+        competitions: [],
+        notSet: true
     }
 }
 

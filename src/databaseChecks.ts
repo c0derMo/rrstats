@@ -1,5 +1,5 @@
 // @ts-expect-error
-const { getAllCompetitions, getStoredCompetition } = require("./dataManager");
+const { getAllCompetitions, getStoredCompetition, getPlayerInfo, getAllPlayersDetailed } = require("./dataManager");
 
 //
 // each db check is a function that returns an object
@@ -10,6 +10,14 @@ const { getAllCompetitions, getStoredCompetition } = require("./dataManager");
 // }
 //
 
+const _formatMessage = (competition, match, p1, p2, message) => {
+    return "Competition " + competition + " Match " + match + " (" + p1 + " vs " + p2 + "): " + message;
+}
+
+const _normalizePlayerName = (pname) => {
+    return pname.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
+}
+
 const _runChecks = (checks) => {
     let result = {
         warnings: [],
@@ -17,6 +25,16 @@ const _runChecks = (checks) => {
     };
     if(checks.includes("score")) {
         let tmp = _scoreCheck();
+        result.warnings = result.warnings.concat(tmp.warnings);
+        result.errors = result.errors.concat(tmp.errors);
+    }
+    if(checks.includes("playersWithoutMatches")) {
+        let tmp = _playerWithoutMatches();
+        result.warnings = result.warnings.concat(tmp.warnings);
+        result.errors = result.errors.concat(tmp.errors);
+    }
+    if(checks.includes("matchesWithoutPlayers")) {
+        let tmp = _matchWithoutPlayer();
         result.warnings = result.warnings.concat(tmp.warnings);
         result.errors = result.errors.concat(tmp.errors);
     }
@@ -51,13 +69,69 @@ const _scoreCheck = () => {
             });
 
             if(p1Score !== p1MapScore) {
-                result.errors.push("Competition " + element + " Match " + idx + " (" + match.player1 + " vs " + match.player2 + "): Player 1 Score doesnt align with map wins: Score: " + match.score + " P1MapWins: " + p1MapScore);
+                result.errors.push(_formatMessage(element, idx, match.player1, match.player2, "Player 1 Score doesnt align with map wins: Score: " + match.score + " P1MapWins: " + p1MapScore));
             }
             if(p2Score !== p2MapScore) {
-                result.errors.push("Competition " + element + " Match " + idx + " (" + match.player1 + " vs " + match.player2 + "): Player 2 Score doesnt align with map wins: Score: " + match.score + " P2MapWins: " + p2MapScore);
+                result.errors.push(_formatMessage(element, idx, match.player1, match.player2, "Player 2 Score doesnt align with map wins: Score: " + match.score + " P2MapWins: " + p2MapScore));
             }
         });
     });
+
+    return result;
+}
+
+const _matchWithoutPlayer = () => {
+    let result = {
+        warnings: [],
+        errors: []
+    }
+
+    getAllCompetitions().forEach(element => {
+        getStoredCompetition(element).forEach((match, idx) => {
+            if(getPlayerInfo(_normalizePlayerName(match.player1)).notSet === true) {
+                result.warnings.push(_formatMessage(element, idx, match.player1, match.player2, "Player " + match.player1 + " has no external player entry."));
+            };
+            if(getPlayerInfo(_normalizePlayerName(match.player2)).notSet === true) {
+                result.warnings.push(_formatMessage(element, idx, match.player1, match.player2, "Player " + match.player2 + " has no external player entry."));
+            }
+        });
+    });
+
+    return result;
+}
+
+const _playerWithoutMatches = () => {
+    let result = {
+        warnings: [],
+        errors: []
+    }
+
+    let playersToCheck = [];
+    let allPlayers = getAllPlayersDetailed()
+    Object.keys(allPlayers).forEach((p) => {
+        let hasGMT = false;
+        allPlayers[p].competitions.forEach(element => {
+            if(element.competition.includes("Ghost Mode")) hasGMT = true;
+        });
+        if(!hasGMT) playersToCheck.push(p);
+    });
+
+    getAllCompetitions().forEach(element => {
+        getStoredCompetition(element).forEach(match => {
+            if(playersToCheck.includes(_normalizePlayerName(match.player1))) {
+                playersToCheck = playersToCheck.filter((e) => {return e !== _normalizePlayerName(match.player1)});
+            }
+            if(playersToCheck.includes(_normalizePlayerName(match.player2))) {
+                playersToCheck = playersToCheck.filter((e) => {return e !== _normalizePlayerName(match.player2)});
+            }
+        });
+    });
+
+    if(playersToCheck.length > 0) {
+        playersToCheck.forEach((e) => {
+            result.errors.push("Player " + e + " has no matches assigned and isn't a GMT player");
+        })
+    }
 
     return result;
 }
