@@ -1,6 +1,8 @@
 // @ts-expect-error
 const axios = require('axios');
 require('dotenv').config();
+// @ts-expect-error
+const { recalculateRankings } = require('./dataManager');
 
 const cache = {
     discordPB: {},
@@ -69,6 +71,9 @@ const _getGDriveData = async (link) => {
     cache.gDrive.requestTime = Date.now();
     cache.gDrive.data = req.data;
     console.log("Returning new GDrive");
+
+    // Also, we want to recalculate the leaderboard everytime we get new google data (i think)
+    await recalculateRankings();
     return req.data;
 }
 
