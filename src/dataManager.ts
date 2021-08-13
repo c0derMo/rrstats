@@ -25,6 +25,10 @@ const _loadConfigs = async () => {
     } catch(e) {
         await _recalculateRankings();
     }
+
+    const records = await fs.readFile(__dirname + "/data/records.json", "utf8");
+    const recordsJSON = JSON.parse(records);
+    configs["records"] = recordsJSON;
 }
 
 const _getStoredMatches = (playername) => {
@@ -299,6 +303,19 @@ const _recalculateRankings = async () => {
     await fs.writeFile(__dirname + "/data/leaderboards.json", JSON.stringify(rankings), 'utf8');
 }
 
+const _getRecords = () => {
+    return configs["records"];
+}
+
+const _patchRecords = async (changes) => {
+    Object.keys(changes).forEach(e => {
+        setJSONPath(configs["records"], e, changes[e]);
+    });
+
+    await fs.writeFile(__dirname + "/data/records.json", JSON.stringify(configs["records"]), 'utf8');
+    return true;
+}
+
 module.exports = {
     getNewestCompetitionData: _getNewestCompetitionData,
     getStoredMatches: _getStoredMatches,
@@ -313,5 +330,7 @@ module.exports = {
     addCompetition: _addCompetition,
     getAllCompetitions: _getAllCompetitions,
     getRanking: _getRanking,
-    recalculateRankings: _recalculateRankings
+    recalculateRankings: _recalculateRankings,
+    getRecords: _getRecords,
+    patchRecords: _patchRecords
 }

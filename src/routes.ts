@@ -1,6 +1,6 @@
 const gDriveToMatchlist = require('./gDriveIntegration');
 // @ts-expect-error
-const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking } = require("./dataManager");
+const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } = require("./dataManager");
 const { getDiscordProfilePictureURL, getGDriveData } = require("./httpClient");
 
 
@@ -36,6 +36,15 @@ const _addRoutes = (server) => {
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             return h.file("html/leaderboards.html");
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/records',
+        handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
+            return h.file("html/records.html");
         }
     })
 
@@ -188,6 +197,15 @@ const _addRoutes = (server) => {
             } else {
                 return getRanking(stat, map);
             }
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/api/records',
+        handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
+            return getRecords();
         }
     })
 
