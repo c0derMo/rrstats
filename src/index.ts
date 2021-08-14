@@ -31,6 +31,32 @@ const init = async() => {
         }
     });
 
+    server.events.on({ name: 'request', channels: 'app' }, (request, event, tags) => {
+        
+        let logMessage = new Date().toString();
+        
+        if(tags.info) {
+            logMessage = "\x1b[34m" + logMessage + "      "
+        } else if(tags.warning) {
+            logMessage = "\x1b[33m" + logMessage + " WARN "
+        } else if(tags.error) {
+            logMessage = "\x1b[31m" + logMessage + " ERR  "
+        }
+
+        if(tags.get) {
+            logMessage += "GET   "
+        } else if(tags.post) {
+            logMessage += "POST  "
+        } else if(tags.patch) {
+            logMessage += "PATCH "
+        }
+
+        logMessage += event.data;
+        logMessage += "\x1b[0m"
+
+        console.log(logMessage);
+    });
+
     addRoutes(server);
     addBackendRoutes(server);
 

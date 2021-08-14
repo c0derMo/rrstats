@@ -1,6 +1,7 @@
 const gDriveToMatchlist = require('./gDriveIntegration');
 // @ts-expect-error
 const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } = require("./dataManager");
+// @ts-expect-error
 const { getDiscordProfilePictureURL, getGDriveData } = require("./httpClient");
 
 
@@ -17,6 +18,7 @@ const _addRoutes = (server) => {
         path: '/',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/');
             return h.file("html/index.html");
         }
     });
@@ -26,6 +28,7 @@ const _addRoutes = (server) => {
         path: '/{player}',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/' + request.params.player);
             return h.file("html/playerpage.html");
         }
     });
@@ -35,6 +38,7 @@ const _addRoutes = (server) => {
         path: '/leaderboards',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/leaderboards');
             return h.file("html/leaderboards.html");
         }
     });
@@ -44,6 +48,7 @@ const _addRoutes = (server) => {
         path: '/records',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/records');
             return h.file("html/records.html");
         }
     })
@@ -53,6 +58,7 @@ const _addRoutes = (server) => {
         path: '/darkly.css',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/darkly.css');
             return h.file("html/darkly.css");
         }
     })
@@ -62,6 +68,7 @@ const _addRoutes = (server) => {
         path: '/defaultPB.png',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/defaultPB.png');
             return h.file("html/profile.png")
         }
     })
@@ -80,6 +87,7 @@ const _addRoutes = (server) => {
         path: '/background.jpg',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/background.jpg');
             return h.file("html/background.jpg");
         }
     })
@@ -89,6 +97,7 @@ const _addRoutes = (server) => {
         path: '/allPlayers.js',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/allPlayers.js');
             return "const players = " + JSON.stringify(getAllPlayers()) + ";";
         }
     })
@@ -180,6 +189,7 @@ const _addRoutes = (server) => {
                 matches: matches
             }
 
+            request.log(['get', 'info'], '/api/' + request.params.player);
             return "setPageContent(" + JSON.stringify(obj) + ");"
         }
     });
@@ -192,6 +202,7 @@ const _addRoutes = (server) => {
 
             const { stat, map } = request.query;
 
+            request.log(['get', 'info'], '/api/leaderboards');
             if(map === undefined || map === "") {
                 return getRanking(stat);
             } else {
@@ -205,6 +216,7 @@ const _addRoutes = (server) => {
         path: '/api/records',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/api/records');
             return getRecords();
         }
     })

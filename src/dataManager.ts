@@ -1,5 +1,7 @@
 const fs = require('fs/promises');
 const { setJSONPath, mapAbreviationToArrayIndex } = require("./utils");
+// @ts-expect-error
+const { getGDriveData } = require('./gDriveIntegration');
 
 let configs = {}
 

@@ -14,6 +14,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend');
             return h.file("html/backend/index.html")
         },
         options: {
@@ -25,6 +26,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/login',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/login');
             return h.file("html/backend/login.html")
         }
     });
@@ -33,6 +35,7 @@ const _addBackendRoutes = (server) => {
         method: 'POST',
         path: '/backend/login',
         handler: (request, h) => {
+            request.log(['info', 'post'], '/login');
             if(request.payload.token !== accessToken) {
                 return h.redirect('/backend/login')
             }
@@ -48,7 +51,7 @@ const _addBackendRoutes = (server) => {
         path: '/backend/logout',
         handler: (request, h) => {
             request.cookieAuth.clear();
-
+            request.log(['get', 'info'], '/backend/logout');
             return h.redirect("/");
         }
     })
@@ -60,6 +63,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/competitions',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/competitions');
             return h.file("html/backend/matchList.html");
         },
         options: {
@@ -71,6 +75,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/players',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/players');
             return h.file("html/backend/playerList.html");
         },
         options: {
@@ -82,6 +87,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/importSpreadsheet',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/importSpreadsheet');
             return h.file("html/backend/competitionImport.html");
         },
         options: {
@@ -93,6 +99,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/importStandings',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/importStandings');
             return h.file('html/backend/standingsImport.html');
         },
         options: {
@@ -103,7 +110,8 @@ const _addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/databaseChecks',
-        handler: (reqeust, h) => {
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/databaseChecks');
             return h.file('html/backend/databaseChecks.html');
         },
         options: {
@@ -118,6 +126,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/api/maintenance',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/api/maintenance');
             if(request.query.mode === "on") {
                 setMaintenanceMode(true);
                 return {"maintenance": true}
@@ -136,6 +145,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/api/competition',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/api/competition');
             return getStoredCompetition(request.query.competition);
         },
         options: {
@@ -151,8 +161,10 @@ const _addBackendRoutes = (server) => {
             let { comp, changes } = request.payload;
             changes = JSON.parse(changes);
             if(await patchStoredComptition(comp, changes)) {
+                request.log(['patch', 'info'], '/backend/api/competition');
                 return {status: "ok"}
             } else {
+                request.log(['patch', 'error'], '/backend/api/competition');
                 return {status: "error"}
             }
         },
@@ -166,6 +178,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/api/players',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/api/players');
             return getAllPlayersDetailed();
         },
         options: {
@@ -181,8 +194,10 @@ const _addBackendRoutes = (server) => {
             let { changes } = request.payload;
             changes = JSON.parse(changes);
             if(await patchUsers(changes)) {
+                request.log(['patch', 'info'], '/backend/api/players');
                 return {status: 'ok'}
             } else {
+                request.log(['patch', 'error'], '/backend/api/players');
                 return {status: 'error'}
             }
         },
@@ -197,6 +212,7 @@ const _addBackendRoutes = (server) => {
         path: '/backend/api/reloadConfigs',
         handler: async (request, h) => {
             await loadConfigs();
+            request.log(['get', 'info'], '/backend/api/reloadConfigs');
             return {status: 'ok'}
         },
         options: {
@@ -209,6 +225,7 @@ const _addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/api/shutdown',
         handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/api/shutdown');
             server.stop();
             return "";
         },
@@ -231,6 +248,7 @@ const _addBackendRoutes = (server) => {
                 fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(28, req.data.length-2)), comp, true, JSON.parse(cA));
             }
             await addCompetition(comp, fancyData);
+            request.log(['post', 'info'], '/backend/api/importSpreadsheet');
             return fancyData;
         },
         options: {
@@ -244,6 +262,7 @@ const _addBackendRoutes = (server) => {
         path: '/backend/api/recalculateLeaderboards',
         handler: async (request, h) => {
             await recalculateRankings();
+            request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
             return {status: 'ok'}
         },
         options: {
@@ -257,6 +276,7 @@ const _addBackendRoutes = (server) => {
         path: '/backend/api/runDatabaseChecks',
         handler: (request, h) => {
             const { checks } = request.payload;
+            request.log(['post', 'info'], '/backend/api/runDatabaseChecks');
             return runChecks(JSON.parse(checks));
         },
         options: {

@@ -16,32 +16,25 @@ const cache = {
 const discordID = process.env.DISCORD_TOKEN;
 
 const _getDiscordProfilePictureURL = async (uID) => {
-    console.log("Starting DC");
-
     if (uID === "") {
         return "/defaultPB.png"
     }
 
-    console.log("We dont have an empty ting)")
-
     // Caching check, bcs we dont want to ddos discord
     if (cache.discordPB[uID] !== undefined) {
-        console.log("We have something in the cache")
         // Cache stays for 15 minutes.
         if (Date.now() - cache.discordPB[uID].requestTime < 900000) {
-            console.log("Returning cached response")
+            console.log(`\x1b[34m${new Date()}      Return cached discord response\x1b[0m`)
             return "https://cdn.discordapp.com/avatars/" + uID + "/" + cache.discordPB[uID].avatarID + ".png"
         }
         if (Date.now() - cache.discordPB[uID].retryIn > 0) {
-            console.log("Hit a 429 previously")
+            console.log(`\x1b[33m${new Date()} WARN Hit a 429 in discord previously\x1b[0m`)
             return "/defaultPB.png"
         }
     }
-    console.log("We dont have something in the cache");
     const req = await axios.get("https://discord.com/api/v9/users/" + uID, { headers: { "Authorization": "Bot " + discordID } }).catch((e) => { console.log(e) });
-    console.log("Discord return code: " + req.status);
     if(req.status === 429) {
-        console.log("Got a 429");
+        console.log(`\x1b[33m${new Date()} WARN Hit a 429 in discord\x1b[0m`)
         cache.discordPB[uID] = {
             retryIn: Date.now() + (req.data.retry_after * 1000)
         }
@@ -50,10 +43,9 @@ const _getDiscordProfilePictureURL = async (uID) => {
             requestTime: Date.now(),
             avatarID: req.data.avatar
         }
-        console.log("Returning valid DC PB")
+        console.log(`\x1b[34m${new Date()}      Return discord response\x1b[0m`)
         return "https://cdn.discordapp.com/avatars/" + uID + "/" + cache.discordPB[uID].avatarID + ".png"
     }
-    console.log("Something happened, fallback to default");
     return "/defaultPB.png"
 }
 
@@ -62,7 +54,7 @@ const _getGDriveData = async (link) => {
     if(cache.gDrive !== undefined) {
         // Cache stays for 15 minutes.
         if(cache.gDrive.link === link && Date.now() - cache.gDrive.requestTime < 900000) {
-            console.log("Returning cached GDrive");
+            console.log(`\x1b[34m${new Date()}      Return cached gdrive response\x1b[0m`)
             return cache.gDrive.data;
         }
     }
@@ -70,7 +62,7 @@ const _getGDriveData = async (link) => {
     cache.gDrive.link = link;
     cache.gDrive.requestTime = Date.now();
     cache.gDrive.data = req.data;
-    console.log("Returning new GDrive");
+    console.log(`\x1b[34m${new Date()}      Return gdrive response\x1b[0m`)
 
     // Also, we want to recalculate the leaderboard everytime we get new google data (i think)
     await recalculateRankings();
