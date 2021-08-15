@@ -19,6 +19,7 @@
                 <option value="RRWCParticipations">Participations in Roulette Rivals World Championships</option>
                 <option value="Matches">Amount of matches</option>
                 <option value="PercentageDecider">Percentage of matches with decider</option>
+                <option value="DeciderWinrate">Winrate of decider maps</option>
                 <option value="LongestWinSpree">Longest winning-spree</option>
                 <option value="MapPlayed">Amount of matches on one map</option>
                 <option value="MapWR">Winrate on one map</option>
@@ -144,7 +145,11 @@
                                 case 'MapWR':
                                     row.append($("<td></td>").text(Math.floor((data.rankings[e].mapsWon[mapAbreviationToArrayIndex($('#map').val())]/data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex($('#map').val())])*1000)/10 + "%"));
                                     if(data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex($('#map').val())] == 0) shouldAdd = false;
-                                    break;   
+                                    break;
+                                case "DeciderWinrate":
+                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].deciderWin/data.rankings[e].matchesWithDecider)*1000)/10 + "%"))
+                                    if(data.rankings[e].matchesWithDecider == 0) shouldAdd = false;
+                                    break;
                             }
                             if(shouldAdd) $('#ranking').append(row);
                         })

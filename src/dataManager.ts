@@ -181,7 +181,15 @@ const _getRanking = (stat, map="") => {
             obj.order.sort((a, b) => {
                 return (obj.rankings[b].mapsWon[mapAbreviationToArrayIndex(map)]/obj.rankings[b].mapsPlayed[mapAbreviationToArrayIndex(map)]) - (obj.rankings[a].mapsWon[mapAbreviationToArrayIndex(map)]/obj.rankings[a].mapsPlayed[mapAbreviationToArrayIndex(map)])
             });
-            break;   
+            break;
+        case 'DeciderWinrate':
+            obj.order = obj.order.filter(function(e) {
+                return obj.rankings[e].matchesWithDecider > 0;
+            })
+            obj.order.sort((a, b) => {
+                return (obj.rankings[b].deciderWin/obj.rankings[b].matchesWithDecider) - (obj.rankings[a].deciderWin/obj.rankings[a].matchesWithDecider)
+            });
+            break;
     }
     return obj;
 }
@@ -270,6 +278,12 @@ const _recalculateRankings = async () => {
                 if(match.maps.length > 2 && match.round !== "Grand Final") {
                     rankings[player1].matchesWithDecider += 1
                     rankings[player2].matchesWithDecider += 1
+                    // Decider winrate
+                    if(match.winner == 1) {
+                        rankings[player1].deciderWin += 1;
+                    } else {
+                        rankings[player2].deciderWin += 1;
+                    }
                 }
             }
 
