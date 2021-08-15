@@ -27,7 +27,7 @@ import { getPlayerAbreviationOverride } from "./dataManager";
     [0, 3, 4, 6, 5, [7, 9, 11]]
 */
 
-const _gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12]]) => {
+const gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12]]) => {
     let matches = [];
 
     // Convert the bullshit gDrive Object into an 2d-Array first
@@ -119,4 +119,4 @@ const _gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, co
     return matches;
 }
 
-export default _gDriveObjectToMatchlist;
+export default gDriveObjectToMatchlist;

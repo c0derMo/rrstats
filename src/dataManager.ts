@@ -3,7 +3,7 @@ import { setJSONPath, mapAbreviationToArrayIndex } from "./utils";
 
 let configs = {}
 
-const _loadConfigs = async () => {
+const loadConfigs = async () => {
     const generalConfig = await fs.readFile(__dirname + "/data/config.json", "utf8");
     const generalConfigJSON = JSON.parse(generalConfig);
     configs["general"] = generalConfigJSON;
@@ -23,7 +23,7 @@ const _loadConfigs = async () => {
         const rankingsJSON = JSON.parse(rankings);
         configs["rankings"] = rankingsJSON
     } catch(e) {
-        await _recalculateRankings();
+        await recalculateRankings();
     }
 
     const records = await fs.readFile(__dirname + "/data/records.json", "utf8");
@@ -31,7 +31,7 @@ const _loadConfigs = async () => {
     configs["records"] = recordsJSON;
 }
 
-const _getStoredMatches = (playername) => {
+const getStoredMatches = (playername) => {
     let matches = []
 
     configs["general"].competitions.forEach(element => {
@@ -43,21 +43,21 @@ const _getStoredMatches = (playername) => {
     return matches;
 }
 
-const _getNewestCompetitionData = () => {
+const getNewestCompetitionData = () => {
     return {
         name: configs["general"].currentCompetition.name,
         link: 'https://spreadsheets.google.com/feeds/cells/' + configs["general"].currentCompetition.sheetID + '/' + configs["general"].currentCompetition.tabID + '/public/values?alt=json-in-script'
     }
 }
 
-const _getPlayerAbreviationOverride = (abreviation) => {
+const getPlayerAbreviationOverride = (abreviation) => {
     if(configs["general"].playerAbreviationsOverrides[abreviation] !== undefined) {
         return configs["general"].playerAbreviationsOverrides[abreviation]
     }
     return ""
 }
 
-const _getPlayerInfo = (player) => {
+const getPlayerInfo = (player) => {
     if(configs["playerDB"][player] !== undefined) {
         return configs["playerDB"][player]
     }
@@ -69,7 +69,7 @@ const _getPlayerInfo = (player) => {
     }
 }
 
-const _getAllPlayers = () => {
+const getAllPlayers = () => {
     let a = [];
     Object.keys(configs["playerDB"]).forEach(e => {
         a.push({title: e});
@@ -77,14 +77,14 @@ const _getAllPlayers = () => {
     return a;
 }
 
-const _getStoredCompetition = (comp) => {
+const getStoredCompetition = (comp) => {
     if(configs["general"].competitions.includes(comp)) {
         return configs[comp];
     }
     return [];
 }
 
-const _patchStoredComptition = async (comp, changes) => {
+const patchStoredComptition = async (comp, changes) => {
     if(configs["general"].competitions.includes(comp)) {
         Object.keys(changes).forEach(c => {
             setJSONPath(configs[comp], c, changes[c]);
@@ -96,11 +96,11 @@ const _patchStoredComptition = async (comp, changes) => {
     return false
 }
 
-const _getAllPlayersDetailed = () => {
+const getAllPlayersDetailed = () => {
     return configs["playerDB"];
 }
 
-const _patchUsers = async (changes) => {
+const patchUsers = async (changes) => {
     Object.keys(changes).forEach(c => {
         setJSONPath(configs["playerDB"], c, changes[c]);
     });
@@ -109,18 +109,18 @@ const _patchUsers = async (changes) => {
     return true;
 }
 
-const _addCompetition = async (compName, compData) => {
+const addCompetition = async (compName, compData) => {
     configs["general"].competitions.push(compName);
     configs[compName] = compData;
     await fs.writeFile(__dirname + "/data/" + compName + ".json", JSON.stringify(compData), 'utf8');
     await fs.writeFile(__dirname + "/data/config.json", JSON.stringify(configs["general"]), 'utf8')
 }
 
-const _getAllCompetitions = () => {
+const getAllCompetitions = () => {
     return configs["general"].competitions
 }
 
-const _getRanking = (stat, map="") => {
+const getRanking = (stat, map="") => {
     const obj = {
         order: Object.keys(configs["rankings"]),
         rankings: configs["rankings"]
@@ -194,7 +194,7 @@ const _getRanking = (stat, map="") => {
     return obj;
 }
 
-const _recalculateRankings = async (newestCompName = "", newestCompData = []) => {
+const recalculateRankings = async (newestCompName = "", newestCompData = []) => {
     // RR Competitions played                                   D
     // RRWC Competitions played                                 D
     // Matches played                                           D
@@ -205,7 +205,7 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
     // Percentage of maps that went to a decider                D
     // Decider Winrate
     
-    const competitions = _getAllCompetitions();
+    const competitions = getAllCompetitions();
     let rankings = {}
     let currentWinningSprees = {}
 
@@ -218,7 +218,7 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
         if(element === newestCompName) {
             comp = newestCompData
         } else {
-            comp = _getStoredCompetition(element);
+            comp = getStoredCompetition(element);
         }
         comp.reverse().forEach(match => {
             let player1 = match.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
@@ -341,11 +341,11 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
     await fs.writeFile(__dirname + "/data/leaderboards.json", JSON.stringify(rankings), 'utf8');
 }
 
-const _getRecords = () => {
+const getRecords = () => {
     return configs["records"];
 }
 
-const _patchRecords = async (changes) => {
+const patchRecords = async (changes) => {
     Object.keys(changes).forEach(e => {
         setJSONPath(configs["records"], e, changes[e]);
     });
@@ -354,19 +354,19 @@ const _patchRecords = async (changes) => {
     return true;
 }
 
-export { _getNewestCompetitionData as getNewestCompetitionData }
-export { _getStoredMatches as getStoredMatches }
-export { _loadConfigs as loadConfigs }
-export { _getPlayerAbreviationOverride as getPlayerAbreviationOverride }
-export { _getPlayerInfo as getPlayerInfo }
-export { _getAllPlayers as getAllPlayers }
-export { _getStoredCompetition as getStoredCompetition }
-export { _patchStoredComptition as patchStoredComptition }
-export { _getAllPlayersDetailed as getAllPlayersDetailed }
-export { _patchUsers as patchUsers }
-export { _addCompetition as addCompetition }
-export { _getAllCompetitions as getAllCompetitions }
-export { _getRanking as getRanking }
-export { _recalculateRankings as recalculateRankings }
-export { _getRecords as getRecords }
-export { _patchRecords as patchRecords }
+export { getNewestCompetitionData as getNewestCompetitionData }
+export { getStoredMatches as getStoredMatches }
+export { loadConfigs as loadConfigs }
+export { getPlayerAbreviationOverride as getPlayerAbreviationOverride }
+export { getPlayerInfo as getPlayerInfo }
+export { getAllPlayers as getAllPlayers }
+export { getStoredCompetition as getStoredCompetition }
+export { patchStoredComptition as patchStoredComptition }
+export { getAllPlayersDetailed as getAllPlayersDetailed }
+export { patchUsers as patchUsers }
+export { addCompetition as addCompetition }
+export { getAllCompetitions as getAllCompetitions }
+export { getRanking as getRanking }
+export { recalculateRankings as recalculateRankings }
+export { getRecords as getRecords }
+export { patchRecords as patchRecords }
