@@ -290,7 +290,7 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
                     // Decider winrate
                     if(match.winner == 1) {
                         rankings[player1].deciderWin += 1;
-                    } else {
+                    } else if(match.winner == 2) {
                         rankings[player2].deciderWin += 1;
                     }
                 }
@@ -306,7 +306,7 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
                     rankings[player2].longestWinningSpree = currentWinningSprees[player2]
                 }
                 currentWinningSprees[player2] = 0
-            } else {
+            } else if(match.winner == 2) {
                 rankings[player2].won += 1
                 currentWinningSprees[player2] += 1
 

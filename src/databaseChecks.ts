@@ -53,9 +53,11 @@ const _scoreCheck = () => {
             let p2Score = parseInt(splitScore[1]);
             
             // Check for correct winner
-            if(p1Score > p2Score && match.winner === 2) {
+            if(p1Score > p2Score && match.winner !== 1) {
                 result.errors.push("Competition " + element + " Match " + idx + " (" + match.player1 + " vs " + match.player2 + "): Score indicates wrong winner: Score: " + match.score + " Winner: " + match.winner);
-            } else if(p2Score > p1Score && match.winner === 1) {
+            } else if (p2Score > p1Score && match.winner !== 2) {
+                result.errors.push("Compettion " + element + " Match " + idx + " (" + match.player1 + " vs " + match.player2 + "): Score indicates wrong winner: Score: " + match.score + " Winner: " + match.winner);
+            } else if (p2Score == p1Score && match.winner !== 0) {
                 result.errors.push("Compettion " + element + " Match " + idx + " (" + match.player1 + " vs " + match.player2 + "): Score indicates wrong winner: Score: " + match.score + " Winner: " + match.winner);
             }
 

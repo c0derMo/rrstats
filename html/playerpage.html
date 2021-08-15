@@ -260,6 +260,8 @@
 
                     if(data.winner == localPlayer) {
                         row.addClass("positive");
+                    } else if(data.winner == 0) {
+                        row.addClass("warning");
                     } else {
                         row.addClass("negative");
                     }
@@ -286,6 +288,8 @@
                     });
                     if(data.winner == localPlayer) {
                         row.addClass("positive");
+                    } else if(data.winner == 0) {
+                        row.addClass("warning");
                     } else {
                         row.addClass("negative");
                     }

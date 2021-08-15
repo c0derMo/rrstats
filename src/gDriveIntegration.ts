@@ -89,6 +89,15 @@ const _gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, co
                 });
                 const scoreArr = element[columnDefinitions[4] as number].split("-");
 
+                let winner;
+                if (scoreArr[0] > scoreArr[1]) {
+                    winner = 1;
+                } else if (scoreArr[1] > scoreArr[0]) {
+                    winner = 2;
+                } else {
+                    winner = 0;
+                }
+
                 const tmp: Match = {
                     platform: element[columnDefinitions[0] as number],
                     round: element[columnDefinitions[1] as number],
