@@ -1,7 +1,5 @@
 const fs = require('fs/promises');
 const { setJSONPath, mapAbreviationToArrayIndex } = require("./utils");
-// @ts-expect-error
-const { getGDriveData } = require('./gDriveIntegration');
 
 let configs = {}
 
@@ -129,6 +127,9 @@ const _getRanking = (stat, map="") => {
     }
     switch(stat) {
         case 'WR':
+            obj.order = obj.order.filter(function(e) {
+                return obj.rankings[e].matches > 0;
+            })
             obj.order.sort((a, b) => {
                 return (obj.rankings[b].won/obj.rankings[b].matches) - (obj.rankings[a].won/obj.rankings[a].matches)
             });
@@ -149,8 +150,13 @@ const _getRanking = (stat, map="") => {
             });
             break;
         case 'PercentageDecider':
-            obj.order.sort((a, b) => {
-                return (obj.rankings[b].matchesWithDecider/obj.rankings[b].matches) - (obj.rankings[a].matchesWithDecider/obj.rankings[a].matches)
+            obj.order = obj.order.filter(function(e) {
+                return obj.rankings[e].matchesWithoutGroups > 0;
+            })
+            obj.order.sort(function(a, b) {
+                let scoreA = obj.rankings[a].matchesWithDecider / obj.rankings[a].matchesWithoutGroups;
+                let scoreB = obj.rankings[b].matchesWithDecider / obj.rankings[b].matchesWithoutGroups;
+                return scoreB - scoreA;
             });
             break;
         case 'FinalAppearances':
@@ -169,12 +175,10 @@ const _getRanking = (stat, map="") => {
             });
             break;
         case 'MapWR':
+            obj.order = obj.order.filter(function(e) {
+                return obj.rankings[e].mapsPlayed[mapAbreviationToArrayIndex(map)] > 0;
+            })
             obj.order.sort((a, b) => {
-                if(obj.rankings[b].mapsPlayed[mapAbreviationToArrayIndex(map)] === 0) {
-                    return -1;
-                } else if(obj.rankings[a].mapsPlayed[mapAbreviationToArrayIndex(map)] === 0) {
-                    return 1;
-                }
                 return (obj.rankings[b].mapsWon[mapAbreviationToArrayIndex(map)]/obj.rankings[b].mapsPlayed[mapAbreviationToArrayIndex(map)]) - (obj.rankings[a].mapsWon[mapAbreviationToArrayIndex(map)]/obj.rankings[a].mapsPlayed[mapAbreviationToArrayIndex(map)])
             });
             break;   
@@ -191,6 +195,7 @@ const _recalculateRankings = async () => {
     // Winrate on a per map basis (am I really crazy??)         D
     // Longest Winning-Spree                                    D
     // Percentage of maps that went to a decider                D
+    // Decider Winrate
     
     const competitions = _getAllCompetitions();
     let rankings = {}
@@ -213,7 +218,9 @@ const _recalculateRankings = async () => {
                     mapsWon: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     longestWinningSpree: 0,
                     matchesWithDecider: 0,
-                    grandFinalAppearances: 0
+                    grandFinalAppearances: 0,
+                    matchesWithoutGroups: 0,
+                    deciderWin: 0
                 }
 
                 currentWinningSprees[player1] = 0;
@@ -229,7 +236,9 @@ const _recalculateRankings = async () => {
                     mapsWon: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     longestWinningSpree: 0,
                     matchesWithDecider: 0,
-                    grandFinalAppearances: 0
+                    grandFinalAppearances: 0,
+                    matchesWithoutGroups: 0,
+                    deciderWin: 0
                 }
 
                 currentWinningSprees[player2] = 0;
@@ -255,9 +264,13 @@ const _recalculateRankings = async () => {
             // Matches played & Percentage that gone to decider
             rankings[player1].matches += 1
             rankings[player2].matches += 1
-            if(match.maps.length > 2 && match.round !== "Grand Final") {
-                rankings[player1].matchesWithDecider += 1
-                rankings[player2].matchesWithDecider += 1
+            if(match.round.search("Group") == -1) {
+                rankings[player1].matchesWithoutGroups += 1
+                rankings[player2].matchesWithoutGroups += 1
+                if(match.maps.length > 2 && match.round !== "Grand Final") {
+                    rankings[player1].matchesWithDecider += 1
+                    rankings[player2].matchesWithDecider += 1
+                }
             }
 
             

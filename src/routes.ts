@@ -1,7 +1,6 @@
 const gDriveToMatchlist = require('./gDriveIntegration');
 // @ts-expect-error
 const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } = require("./dataManager");
-// @ts-expect-error
 const { getDiscordProfilePictureURL, getGDriveData } = require("./httpClient");
 
 

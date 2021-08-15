@@ -97,6 +97,8 @@
                 updateTable();
             });
 
+            let d;
+
             function updateTable() {
                 $('#ranking').html("");
                 let query = "/api/leaderboards?stat=" + $('#stat').val();
@@ -105,6 +107,8 @@
                 }
                 $.getJSON(query, (data, success, x) => {
                     if(success === "success") {
+                        d = data;
+                        console.log(data);
                         data.order.forEach((e, idx) => {
                             let row = $('<tr></tr>').attr("player", e);
                             row.append($('<td></td>').text(idx+1 + "."));
@@ -125,8 +129,8 @@
                                     row.append($("<td></td>").text(data.rankings[e].matches));
                                     break;
                                 case 'PercentageDecider':
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].matchesWithDecider/data.rankings[e].matches)*1000)/10 + "%"));
-                                    if(data.rankings[e].matches == 0) shouldAdd = false;
+                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].matchesWithDecider/data.rankings[e].matchesWithoutGroups)*1000)/10 + "%"));
+                                    if(data.rankings[e].matchesWithoutGroups == 0) shouldAdd = false;
                                     break;
                                 case 'FinalAppearances':
                                     row.append($("<td></td>").text(data.rankings[e].grandFinalAppearances));
