@@ -194,7 +194,7 @@ const _getRanking = (stat, map="") => {
     return obj;
 }
 
-const _recalculateRankings = async () => {
+const _recalculateRankings = async (newestCompName = "", newestCompData = []) => {
     // RR Competitions played                                   D
     // RRWC Competitions played                                 D
     // Matches played                                           D
@@ -209,8 +209,17 @@ const _recalculateRankings = async () => {
     let rankings = {}
     let currentWinningSprees = {}
 
+    if(newestCompName !== "") {
+        competitions.push(newestCompName);
+    }
+
     competitions.forEach(element => {
-        const comp = _getStoredCompetition(element);
+        let comp;
+        if(element === newestCompName) {
+            comp = newestCompData
+        } else {
+            comp = _getStoredCompetition(element);
+        }
         comp.reverse().forEach(match => {
             let player1 = match.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
             let player2 = match.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");

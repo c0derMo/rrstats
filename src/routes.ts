@@ -1,3 +1,4 @@
+// @ts-expect-error
 const gDriveToMatchlist = require('./gDriveIntegration');
 // @ts-expect-error
 const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } = require("./dataManager");
@@ -124,7 +125,7 @@ const _addRoutes = (server) => {
             // Query for matches in newest competition
             const newestCompData = getNewestCompetitionData();
             if(newestCompData.name !== "") {
-                const newestDoc = await getGDriveData(newestCompData.link);
+                const newestDoc = await getGDriveData(newestCompData.link, newestCompData.name);
                 const newestData = gDriveToMatchlist(JSON.parse(newestDoc.substring(28, newestDoc.length-2)), newestCompData.name);
     
                 matches = matches.concat(newestData.filter(e => {

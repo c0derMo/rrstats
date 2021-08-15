@@ -3,6 +3,8 @@ const axios = require('axios');
 require('dotenv').config();
 // @ts-expect-error
 const { recalculateRankings } = require('./dataManager');
+// @ts-expect-error
+const gDriveToMatchlist = require('./gDriveIntegration');
 
 const cache = {
     discordPB: {},
@@ -49,7 +51,7 @@ const _getDiscordProfilePictureURL = async (uID) => {
     return "/defaultPB.png"
 }
 
-const _getGDriveData = async (link) => {
+const _getGDriveData = async (link, name) => {
     //Check for cache, if the link in the cache isn't the same, we need to get something new anyways
     if(cache.gDrive !== undefined) {
         // Cache stays for 15 minutes.
@@ -65,7 +67,7 @@ const _getGDriveData = async (link) => {
     console.log(`\x1b[34m${new Date()}      Return gdrive response\x1b[0m`)
 
     // Also, we want to recalculate the leaderboard everytime we get new google data (i think)
-    await recalculateRankings();
+    await recalculateRankings(name, gDriveToMatchlist(JSON.parse(req.data.substring(28, req.data.length-2)), name));
     return req.data;
 }
 
