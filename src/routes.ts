@@ -1,17 +1,15 @@
-// @ts-expect-error
-const gDriveToMatchlist = require('./gDriveIntegration');
-// @ts-expect-error
-const { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } = require("./dataManager");
-const { getDiscordProfilePictureURL, getGDriveData } = require("./httpClient");
+import gDriveToMatchlist from './gDriveIntegration';
+import { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } from "./dataManager";
+import { getDiscordProfilePictureURL, getGDriveData } from "./httpClient";
 
 
 let maintenanceMode = false;
 
-const _setMaintenanceMode = (mode) => {
+const setMaintenanceMode = (mode) => {
     maintenanceMode = mode;
 }
 
-const _addRoutes = (server) => {
+const addRoutes = (server) => {
 
     server.route({
         method: 'GET',
@@ -223,7 +221,5 @@ const _addRoutes = (server) => {
 
 }
 
-module.exports = {
-    addRoutes: _addRoutes,
-    setMaintenanceMode: _setMaintenanceMode
-};
+export { addRoutes };
+export { setMaintenanceMode };

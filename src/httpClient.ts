@@ -1,10 +1,7 @@
-// @ts-expect-error
 const axios = require('axios');
 require('dotenv').config();
-// @ts-expect-error
-const { recalculateRankings } = require('./dataManager');
-// @ts-expect-error
-const gDriveToMatchlist = require('./gDriveIntegration');
+import { recalculateRankings } from './dataManager';
+import gDriveToMatchlist from './gDriveIntegration';
 
 const cache = {
     discordPB: {},
@@ -17,7 +14,7 @@ const cache = {
 
 const discordID = process.env.DISCORD_TOKEN;
 
-const _getDiscordProfilePictureURL = async (uID) => {
+const getDiscordProfilePictureURL = async (uID) => {
     if (uID === "") {
         return "/defaultPB.png"
     }
@@ -51,7 +48,7 @@ const _getDiscordProfilePictureURL = async (uID) => {
     return "/defaultPB.png"
 }
 
-const _getGDriveData = async (link, name) => {
+const getGDriveData = async (link, name) => {
     //Check for cache, if the link in the cache isn't the same, we need to get something new anyways
     if(cache.gDrive !== undefined) {
         // Cache stays for 15 minutes.
@@ -71,7 +68,5 @@ const _getGDriveData = async (link, name) => {
     return req.data;
 }
 
-module.exports = {
-    getDiscordProfilePictureURL: _getDiscordProfilePictureURL,
-    getGDriveData: _getGDriveData
-}
+export { getGDriveData };
+export { getDiscordProfilePictureURL };

@@ -1,5 +1,5 @@
 const fs = require('fs/promises');
-const { setJSONPath, mapAbreviationToArrayIndex } = require("./utils");
+import { setJSONPath, mapAbreviationToArrayIndex } from "./utils";
 
 let configs = {}
 
@@ -354,21 +354,19 @@ const _patchRecords = async (changes) => {
     return true;
 }
 
-module.exports = {
-    getNewestCompetitionData: _getNewestCompetitionData,
-    getStoredMatches: _getStoredMatches,
-    loadConfigs: _loadConfigs,
-    getPlayerAbreviationOverride: _getPlayerAbreviationOverride,
-    getPlayerInfo: _getPlayerInfo,
-    getAllPlayers: _getAllPlayers,
-    getStoredCompetition: _getStoredCompetition,
-    patchStoredComptition: _patchStoredComptition,
-    getAllPlayersDetailed: _getAllPlayersDetailed,
-    patchUsers: _patchUsers,
-    addCompetition: _addCompetition,
-    getAllCompetitions: _getAllCompetitions,
-    getRanking: _getRanking,
-    recalculateRankings: _recalculateRankings,
-    getRecords: _getRecords,
-    patchRecords: _patchRecords
-}
+export { _getNewestCompetitionData as getNewestCompetitionData }
+export { _getStoredMatches as getStoredMatches }
+export { _loadConfigs as loadConfigs }
+export { _getPlayerAbreviationOverride as getPlayerAbreviationOverride }
+export { _getPlayerInfo as getPlayerInfo }
+export { _getAllPlayers as getAllPlayers }
+export { _getStoredCompetition as getStoredCompetition }
+export { _patchStoredComptition as patchStoredComptition }
+export { _getAllPlayersDetailed as getAllPlayersDetailed }
+export { _patchUsers as patchUsers }
+export { _addCompetition as addCompetition }
+export { _getAllCompetitions as getAllCompetitions }
+export { _getRanking as getRanking }
+export { _recalculateRankings as recalculateRankings }
+export { _getRecords as getRecords }
+export { _patchRecords as patchRecords }

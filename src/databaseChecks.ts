@@ -1,5 +1,4 @@
-// @ts-expect-error
-const { getAllCompetitions, getStoredCompetition, getPlayerInfo, getAllPlayersDetailed } = require("./dataManager");
+import { getAllCompetitions, getStoredCompetition, getPlayerInfo, getAllPlayersDetailed } from "./dataManager";
 
 //
 // each db check is a function that returns an object
@@ -18,7 +17,7 @@ const _normalizePlayerName = (pname) => {
     return pname.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
 }
 
-const _runChecks = (checks) => {
+const runChecks = (checks) => {
     let result = {
         warnings: [],
         errors: []
@@ -136,6 +135,4 @@ const _playerWithoutMatches = () => {
     return result;
 }
 
-module.exports = {
-    runChecks: _runChecks
-}
+export { runChecks };

@@ -1,4 +1,4 @@
-function _getJSONPath(obj, path) {
+function getJSONPath(obj, path) {
     let split = path.split(".").reverse();
     let response = obj;
     while(split.length > 0) {
@@ -7,7 +7,7 @@ function _getJSONPath(obj, path) {
     return response;
 }
 
-function _setJSONPath(obj, path, value) {
+function setJSONPath(obj, path, value) {
     let split = path.split(".").reverse();
     let response = obj;
     while(split.length > 1) {
@@ -16,7 +16,7 @@ function _setJSONPath(obj, path, value) {
     response[split.pop()] = value;
 }
 
-const _mapAbreviationToArrayIndex = (abv) => {
+const mapAbreviationToArrayIndex = (abv) => {
     switch(abv) {
         // Season 1
         case "PAR":
@@ -65,8 +65,11 @@ const _mapAbreviationToArrayIndex = (abv) => {
     }
 }
 
-module.exports = {
-    getJSONPath: _getJSONPath,
-    setJSONPath: _setJSONPath,
-    mapAbreviationToArrayIndex: _mapAbreviationToArrayIndex
-}
+// module.exports = {
+//     getJSONPath: _getJSONPath,
+//     setJSONPath: _setJSONPath,
+//     mapAbreviationToArrayIndex: _mapAbreviationToArrayIndex
+// }
+export { getJSONPath };
+export { setJSONPath };
+export { mapAbreviationToArrayIndex };

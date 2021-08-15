@@ -1,14 +1,12 @@
-const { setMaintenanceMode } = require("./routes");
-// @ts-expect-error
-const { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition, recalculateRankings } = require("./dataManager");
-// @ts-expect-error
+import { setMaintenanceMode } from './routes';
+import { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition, recalculateRankings } from "./dataManager";
 const axios = require("axios");
-const gDriveObjectToMatchlist = require('./gDriveIntegration');
-const { runChecks } = require('./databaseChecks');
+import gDriveObjectToMatchlist from './gDriveIntegration';
+import { runChecks } from './databaseChecks';
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
-const _addBackendRoutes = (server) => {
+const addBackendRoutes = (server) => {
 
     server.route({
         method: 'GET',
@@ -287,4 +285,4 @@ const _addBackendRoutes = (server) => {
 
 }
 
-module.exports = _addBackendRoutes;
+export { addBackendRoutes };

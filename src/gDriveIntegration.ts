@@ -1,4 +1,4 @@
-const { getPlayerAbreviationOverride } = require("./dataManager");
+import { getPlayerAbreviationOverride } from "./dataManager";
 
 /* column definitions:
     0-platform
@@ -110,4 +110,4 @@ const _gDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, co
     return matches;
 }
 
-module.exports = _gDriveObjectToMatchlist;
+export default _gDriveObjectToMatchlist;

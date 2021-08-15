@@ -2,10 +2,9 @@
 
 const Hapi = require("@hapi/hapi");
 const Inert = require("@hapi/inert");
-const { addRoutes } = require("./routes");
-// @ts-expect-error 
-const { loadConfigs } = require("./dataManager");
-const addBackendRoutes = require("./backendRoutes");
+import { addRoutes } from "./routes";
+import { loadConfigs } from "./dataManager";
+import { addBackendRoutes } from "./backendRoutes";
 const crypt = require("crypto");
 
 const init = async() => {
