@@ -108,16 +108,17 @@ const addRoutes = (server) => {
 
             // Query for player info
             const playerInfo = getPlayerInfo(request.params.player);
+            let title = playerInfo.title;
 
             // Query for stored matches
             let matches = [];
             
             matches = matches.concat(getStoredMatches(request.params.player));
 
-            if(playerInfo.title === "" && matches.length > 0) {
-                playerInfo.title = "Returning Rival"
-            } else if(playerInfo.title === "") {
-                playerInfo.title = "Roulette Rookie"
+            if(title === "" && matches.length > 0) {
+                title = "Returning Rival"
+            } else if(title === "") {
+                title = "Roulette Rookie"
             }
 
             // Query for matches in newest competition
@@ -182,9 +183,10 @@ const addRoutes = (server) => {
             const obj = {
                 avatar: await getDiscordProfilePictureURL(playerInfo.discordId),
                 name: request.params.player,
-                title: playerInfo.title,
+                title: title,
                 competitions: playerInfo.competitions,
-                matches: matches
+                matches: matches,
+                customTitle: playerInfo.customTitle
             }
 
             request.log(['get', 'info'], '/api/' + request.params.player);

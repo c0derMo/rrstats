@@ -46,6 +46,7 @@
                 <thead>
                     <th>Name</th>
                     <th>Title</th>
+                    <th>Custom title</th>
                     <th>Discord ID</th>
                     <th>Competitions</th>
                 </thead>
@@ -119,6 +120,7 @@
                 let row = $('<tr></tr>');
                 row.append($('<td>' + pName + '</td>'));
                 row.append($('<td></td>').append($('<input type="text" value="' + pData.title + '">').attr('id', pName + ".title")));
+                row.append($('<td></td>').append($('<input type="checkbox">').attr('id', pName + ".customTitle").attr("checked", pData.customTitle)));
                 row.append($('<td></td>').append($('<input type="text" value="' + pData.discordId + '">').attr('id', pName + ".discordId")));
                 let accordion = $('<div></div>').addClass("ui accordion");
                 accordion.append($('<div></div>').addClass("title").append($("<i></i>").addClass("dropdown icon")));
@@ -142,10 +144,18 @@
             }
 
             function changeInput(e) {
-                if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
-                    delete changes[$(e.target).attr("id")]
+                if($(e.target).attr("type") == "checkbox") {
+                    if($(e.target).is(":checked") == getJSONPath(pageData, $(e.target).attr("id"))) {
+                        delete changes[$(e.target).attr("id")]
+                    } else {
+                        changes[$(e.target).attr("id")] = $(e.target).is(":checked");
+                    }
                 } else {
-                    changes[$(e.target).attr("id")] = $(e.target).val();
+                    if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
+                        delete changes[$(e.target).attr("id")]
+                    } else {
+                        changes[$(e.target).attr("id")] = $(e.target).val();
+                    }
                 }
             }
 

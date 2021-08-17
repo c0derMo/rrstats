@@ -404,6 +404,9 @@
 
                 $('#avatar').attr("src", data.avatar);
                 $('#name').text(data.name);
+                if(data.customTitle) {
+                    $('#title').css('font-style', 'italic');
+                }
                 $('#title').text(data.title);
 
                 // Calculate matches played & winrate

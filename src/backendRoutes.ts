@@ -1,5 +1,5 @@
 import { setMaintenanceMode } from './routes';
-import { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition, recalculateRankings } from "./dataManager";
+import { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition, recalculateRankings, renamePlayer } from "./dataManager";
 const axios = require("axios");
 import gDriveObjectToMatchlist from './gDriveIntegration';
 import { runChecks } from './databaseChecks';
@@ -111,6 +111,18 @@ const addBackendRoutes = (server) => {
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/databaseChecks');
             return h.file('html/backend/databaseChecks.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/renamePlayer',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/renamePlayer');
+            return h.file('html/backend/renamePlayer.html');
         },
         options: {
             auth: 'session'
@@ -276,6 +288,20 @@ const addBackendRoutes = (server) => {
             const { checks } = request.payload;
             request.log(['post', 'info'], '/backend/api/runDatabaseChecks');
             return runChecks(JSON.parse(checks));
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+    
+    server.route({
+        method: 'POST',
+        path: '/backend/api/renamePlayer',
+        handler: (request, h) => {
+            const { oldName, newName } = request.payload;
+            request.log(['post', 'info'], '/backend/api/renamePlayer');
+            return renamePlayer(oldName, newName);
         },
         options: {
             auth: 'session',

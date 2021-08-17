@@ -354,19 +354,65 @@ const patchRecords = async (changes) => {
     return true;
 }
 
-export { getNewestCompetitionData as getNewestCompetitionData }
-export { getStoredMatches as getStoredMatches }
-export { loadConfigs as loadConfigs }
-export { getPlayerAbreviationOverride as getPlayerAbreviationOverride }
-export { getPlayerInfo as getPlayerInfo }
-export { getAllPlayers as getAllPlayers }
-export { getStoredCompetition as getStoredCompetition }
-export { patchStoredComptition as patchStoredComptition }
-export { getAllPlayersDetailed as getAllPlayersDetailed }
-export { patchUsers as patchUsers }
-export { addCompetition as addCompetition }
-export { getAllCompetitions as getAllCompetitions }
-export { getRanking as getRanking }
-export { recalculateRankings as recalculateRankings }
-export { getRecords as getRecords }
-export { patchRecords as patchRecords }
+const renamePlayer = async (oldName, newName) => {
+    let changes = [];
+    // Check in all competitions
+    await getAllCompetitions().forEach(async (element) => {
+        let compChanges = {};
+        getStoredCompetition(element).forEach((match, idx) => {
+            if(match.player1 === oldName) {
+                compChanges[idx + ".player1"] = newName;
+                changes.push(element + " " + idx + " (vs " + match.player2 + ") - Player 1 renamed to " + newName);
+            } else if(match.player2 === oldName) {
+                compChanges[idx + ".player2"] = newName;
+                changes.push(element + " " + idx + " (vs " + match.player1 + ") - Player 2 renamed to " + newName);
+            }
+        });
+        if(compChanges !== {}) {
+            await patchStoredComptition(element, compChanges);
+        }
+    });
+    // Check in player-db
+    if(configs["playerDB"][oldName] !== undefined) {
+        configs["playerDB"][newName] = configs["playerDB"][oldName];
+        delete configs["playerDB"][oldName];
+        changes.push("Renamed player-database entry")
+        await fs.writeFile(__dirname + "/data/playerDatabase.json", JSON.stringify(configs["playerDB"]), 'utf8');
+    }
+    // Check in records
+    configs["records"].other.forEach((element, idx) => {
+        if(element.players.includes(oldName)) {
+            configs["records"].other[idx].players = configs["records"].other[idx].players.filter(e => {return e !== oldName}).push(newName);
+            changes.push("Record " + element.record + " player renamed");
+        }
+    });
+    configs["records"].maps.forEach((element, idx) => {
+        if(element.player === oldName) {
+            configs["records"].maps[idx].player = newName;
+            changes.push("Map-record " + element.map + " player renamed");
+        } if(element.round.search(oldName) != -1) {
+            changes.push("!! Round in map record " + element.map + " needs manual change!");
+        }
+    });
+    await fs.writeFile(__dirname + "/data/records.json", JSON.stringify(configs["records"]), 'utf8');
+    
+    return changes;
+}
+
+export { getNewestCompetitionData }
+export { getStoredMatches }
+export { loadConfigs }
+export { getPlayerAbreviationOverride }
+export { getPlayerInfo }
+export { getAllPlayers }
+export { getStoredCompetition }
+export { patchStoredComptition }
+export { getAllPlayersDetailed }
+export { patchUsers }
+export { addCompetition }
+export { getAllCompetitions }
+export { getRanking }
+export { recalculateRankings }
+export { getRecords }
+export { patchRecords }
+export { renamePlayer }
