@@ -64,7 +64,7 @@ const getGDriveData = async (link, name) => {
     console.log(`\x1b[34m${new Date()}      Return gdrive response\x1b[0m`)
 
     // Also, we want to recalculate the leaderboard everytime we get new google data (i think)
-    await recalculateRankings(name, gDriveToMatchlist(JSON.parse(req.data.substring(28, req.data.length-2)), name));
+    await recalculateRankings(name, gDriveToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), name));
     return req.data;
 }
 

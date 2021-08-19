@@ -124,7 +124,7 @@ const addRoutes = (server) => {
             const newestCompData = getNewestCompetitionData();
             if(newestCompData.name !== "") {
                 const newestDoc = await getGDriveData(newestCompData.link, newestCompData.name);
-                const newestData = gDriveToMatchlist(JSON.parse(newestDoc.substring(28, newestDoc.length-2)), newestCompData.name);
+                const newestData = gDriveToMatchlist(JSON.parse(newestDoc.substring(47, newestDoc.length-2)), newestCompData.name);
     
                 matches = matches.concat(newestData.filter(e => {
                     return (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player || e.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player);
