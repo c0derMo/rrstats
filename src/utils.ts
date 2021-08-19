@@ -65,11 +65,6 @@ const mapAbreviationToArrayIndex = (abv) => {
     }
 }
 
-// module.exports = {
-//     getJSONPath: _getJSONPath,
-//     setJSONPath: _setJSONPath,
-//     mapAbreviationToArrayIndex: _mapAbreviationToArrayIndex
-// }
 export { getJSONPath };
 export { setJSONPath };
 export { mapAbreviationToArrayIndex };

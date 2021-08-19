@@ -3,7 +3,7 @@ import { setJSONPath, mapAbreviationToArrayIndex } from "./utils";
 
 let configs = {}
 
-const _loadConfigs = async () => {
+const loadConfigs = async () => {
     const generalConfig = await fs.readFile(__dirname + "/data/config.json", "utf8");
     const generalConfigJSON = JSON.parse(generalConfig);
     configs["general"] = generalConfigJSON;
@@ -23,7 +23,7 @@ const _loadConfigs = async () => {
         const rankingsJSON = JSON.parse(rankings);
         configs["rankings"] = rankingsJSON
     } catch(e) {
-        await _recalculateRankings();
+        await recalculateRankings();
     }
 
     const records = await fs.readFile(__dirname + "/data/records.json", "utf8");
@@ -31,7 +31,7 @@ const _loadConfigs = async () => {
     configs["records"] = recordsJSON;
 }
 
-const _getStoredMatches = (playername) => {
+const getStoredMatches = (playername) => {
     let matches = []
 
     configs["general"].competitions.forEach(element => {
@@ -43,7 +43,7 @@ const _getStoredMatches = (playername) => {
     return matches;
 }
 
-const _getNewestCompetitionData = () => {
+const getNewestCompetitionData = () => {
     return {
         name: configs["general"].currentCompetition.name,
         //https://docs.google.com/spreadsheets/d/spreadsheet_id/gviz/tq?tqx=out:json
@@ -53,14 +53,14 @@ const _getNewestCompetitionData = () => {
     }
 }
 
-const _getPlayerAbreviationOverride = (abreviation) => {
+const getPlayerAbreviationOverride = (abreviation) => {
     if(configs["general"].playerAbreviationsOverrides[abreviation] !== undefined) {
         return configs["general"].playerAbreviationsOverrides[abreviation]
     }
     return ""
 }
 
-const _getPlayerInfo = (player) => {
+const getPlayerInfo = (player) => {
     if(configs["playerDB"][player] !== undefined) {
         return configs["playerDB"][player]
     }
@@ -72,7 +72,7 @@ const _getPlayerInfo = (player) => {
     }
 }
 
-const _getAllPlayers = () => {
+const getAllPlayers = () => {
     let a = [];
     Object.keys(configs["playerDB"]).forEach(e => {
         a.push({title: e});
@@ -80,14 +80,14 @@ const _getAllPlayers = () => {
     return a;
 }
 
-const _getStoredCompetition = (comp) => {
+const getStoredCompetition = (comp) => {
     if(configs["general"].competitions.includes(comp)) {
         return configs[comp];
     }
     return [];
 }
 
-const _patchStoredComptition = async (comp, changes) => {
+const patchStoredComptition = async (comp, changes) => {
     if(configs["general"].competitions.includes(comp)) {
         Object.keys(changes).forEach(c => {
             setJSONPath(configs[comp], c, changes[c]);
@@ -99,11 +99,11 @@ const _patchStoredComptition = async (comp, changes) => {
     return false
 }
 
-const _getAllPlayersDetailed = () => {
+const getAllPlayersDetailed = () => {
     return configs["playerDB"];
 }
 
-const _patchUsers = async (changes) => {
+const patchUsers = async (changes) => {
     Object.keys(changes).forEach(c => {
         setJSONPath(configs["playerDB"], c, changes[c]);
     });
@@ -112,18 +112,18 @@ const _patchUsers = async (changes) => {
     return true;
 }
 
-const _addCompetition = async (compName, compData) => {
+const addCompetition = async (compName, compData) => {
     configs["general"].competitions.push(compName);
     configs[compName] = compData;
     await fs.writeFile(__dirname + "/data/" + compName + ".json", JSON.stringify(compData), 'utf8');
     await fs.writeFile(__dirname + "/data/config.json", JSON.stringify(configs["general"]), 'utf8')
 }
 
-const _getAllCompetitions = () => {
+const getAllCompetitions = () => {
     return configs["general"].competitions
 }
 
-const _getRanking = (stat, map="") => {
+const getRanking = (stat, map="") => {
     const obj = {
         order: Object.keys(configs["rankings"]),
         rankings: configs["rankings"]
@@ -197,7 +197,7 @@ const _getRanking = (stat, map="") => {
     return obj;
 }
 
-const _recalculateRankings = async (newestCompName = "", newestCompData = []) => {
+const recalculateRankings = async (newestCompName = "", newestCompData = []) => {
     // RR Competitions played                                   D
     // RRWC Competitions played                                 D
     // Matches played                                           D
@@ -208,7 +208,7 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
     // Percentage of maps that went to a decider                D
     // Decider Winrate
     
-    const competitions = _getAllCompetitions();
+    const competitions = getAllCompetitions();
     let rankings = {}
     let currentWinningSprees = {}
 
@@ -221,7 +221,7 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
         if(element === newestCompName) {
             comp = newestCompData
         } else {
-            comp = _getStoredCompetition(element);
+            comp = getStoredCompetition(element);
         }
         comp.reverse().forEach(match => {
             let player1 = match.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
@@ -344,11 +344,11 @@ const _recalculateRankings = async (newestCompName = "", newestCompData = []) =>
     await fs.writeFile(__dirname + "/data/leaderboards.json", JSON.stringify(rankings), 'utf8');
 }
 
-const _getRecords = () => {
+const getRecords = () => {
     return configs["records"];
 }
 
-const _patchRecords = async (changes) => {
+const patchRecords = async (changes) => {
     Object.keys(changes).forEach(e => {
         setJSONPath(configs["records"], e, changes[e]);
     });
@@ -357,19 +357,65 @@ const _patchRecords = async (changes) => {
     return true;
 }
 
-export { _getNewestCompetitionData as getNewestCompetitionData }
-export { _getStoredMatches as getStoredMatches }
-export { _loadConfigs as loadConfigs }
-export { _getPlayerAbreviationOverride as getPlayerAbreviationOverride }
-export { _getPlayerInfo as getPlayerInfo }
-export { _getAllPlayers as getAllPlayers }
-export { _getStoredCompetition as getStoredCompetition }
-export { _patchStoredComptition as patchStoredComptition }
-export { _getAllPlayersDetailed as getAllPlayersDetailed }
-export { _patchUsers as patchUsers }
-export { _addCompetition as addCompetition }
-export { _getAllCompetitions as getAllCompetitions }
-export { _getRanking as getRanking }
-export { _recalculateRankings as recalculateRankings }
-export { _getRecords as getRecords }
-export { _patchRecords as patchRecords }
+const renamePlayer = async (oldName, newName) => {
+    let changes = [];
+    // Check in all competitions
+    await getAllCompetitions().forEach(async (element) => {
+        let compChanges = {};
+        getStoredCompetition(element).forEach((match, idx) => {
+            if(match.player1 === oldName) {
+                compChanges[idx + ".player1"] = newName;
+                changes.push(element + " " + idx + " (vs " + match.player2 + ") - Player 1 renamed to " + newName);
+            } else if(match.player2 === oldName) {
+                compChanges[idx + ".player2"] = newName;
+                changes.push(element + " " + idx + " (vs " + match.player1 + ") - Player 2 renamed to " + newName);
+            }
+        });
+        if(compChanges !== {}) {
+            await patchStoredComptition(element, compChanges);
+        }
+    });
+    // Check in player-db
+    if(configs["playerDB"][oldName] !== undefined) {
+        configs["playerDB"][newName] = configs["playerDB"][oldName];
+        delete configs["playerDB"][oldName];
+        changes.push("Renamed player-database entry")
+        await fs.writeFile(__dirname + "/data/playerDatabase.json", JSON.stringify(configs["playerDB"]), 'utf8');
+    }
+    // Check in records
+    configs["records"].other.forEach((element, idx) => {
+        if(element.players.includes(oldName)) {
+            configs["records"].other[idx].players = configs["records"].other[idx].players.filter(e => {return e !== oldName}).push(newName);
+            changes.push("Record " + element.record + " player renamed");
+        }
+    });
+    configs["records"].maps.forEach((element, idx) => {
+        if(element.player === oldName) {
+            configs["records"].maps[idx].player = newName;
+            changes.push("Map-record " + element.map + " player renamed");
+        } if(element.round.search(oldName) != -1) {
+            changes.push("!! Round in map record " + element.map + " needs manual change!");
+        }
+    });
+    await fs.writeFile(__dirname + "/data/records.json", JSON.stringify(configs["records"]), 'utf8');
+    
+    return changes;
+}
+
+export { getNewestCompetitionData }
+export { getStoredMatches }
+export { loadConfigs }
+export { getPlayerAbreviationOverride }
+export { getPlayerInfo }
+export { getAllPlayers }
+export { getStoredCompetition }
+export { patchStoredComptition }
+export { getAllPlayersDetailed }
+export { patchUsers }
+export { addCompetition }
+export { getAllCompetitions }
+export { getRanking }
+export { recalculateRankings }
+export { getRecords }
+export { patchRecords }
+export { renamePlayer }
