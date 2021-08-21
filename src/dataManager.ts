@@ -46,10 +46,7 @@ const getStoredMatches = (playername) => {
 const getNewestCompetitionData = () => {
     return {
         name: configs["general"].currentCompetition.name,
-        //https://docs.google.com/spreadsheets/d/spreadsheet_id/gviz/tq?tqx=out:json
-        //link: "https://docs.google.com/spreadsheets/d/1PEs0BOeTydcnfGBbcGC7RkcXuRlFJaGeBi-Bo_cbafI/gviz/tq?tqx=out:json&sheet=Day%20by%20Day"
         link: "https://docs.google.com/spreadsheets/d/" + configs["general"].currentCompetition.sheetID + "/gviz/tq?tqx=out:json&sheet=" + configs["general"].currentCompetition.tabName
-        //link: 'https://spreadsheets.google.com/feeds/cells/' + configs["general"].currentCompetition.sheetID + '/' + configs["general"].currentCompetition.tabID + '/public/values?alt=json-in-script'
     }
 }
 
