@@ -31,192 +31,127 @@
             <br>
             <br>
             <br>
-            <div class="ui middle aligned divided list">
-                <div class="item">
-                    <div class="right floated content">
-                        <div class="ui toggle checkbox">
-                            <input type="checkbox" name="maintenance-mode" id="maintenance-mode">
-                            <label></label>
-                        </div>
-                    </div>
-                    <i class="large eye slash middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Maintenance mode</a>
-                        <div class="description">Activates maintenance mode for the entire site. The frontend + API will become unavailable.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <a class="ui button" href="/backend/competitions"><i class="share icon"></i></a>
-                    </div>
-                    <i class="large edit middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Competitions</a>
-                        <div class="description">Lists all the matches of a competition.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <a class="ui button" href="/backend/players"><i class="share icon"></i></a>
-                    </div>
-                    <i class="large edit middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Players</a>
-                        <div class="description">Lists all the players.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <a class="ui button" href="/backend/importSpreadsheet"><i class="share icon"></i></a>
-                    </div>
-                    <i class="large file import middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Import spreadsheet</a>
-                        <div class="description">Imports a spreadsheet as a permament part of the system.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <a class="ui button" href="/backend/importStandings"><i class="share icon"></i></a>
-                    </div>
-                    <i class="large file import middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Bulk import standings</a>
-                        <div class="description">Imports standings and adds them to the corresponding players.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <a class="ui button" href="/backend/databaseChecks"><i class="share icon"></i></a>
-                    </div>
-                    <i class="large stethoscope middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Database checks</a>
-                        <div class="description">Runs various checks on the database.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <a class="ui button" href="/backend/renamePlayer"><i class="share icon"></i></a>
-                    </div>
-                    <i class="large edit middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Rename player</a>
-                        <div class="description">Rename a player across all databases.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <button class="ui button" id="reload"><i class="upload icon"></i></button>
-                    </div>
-                    <i class="large upload middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Reload configs</a>
-                        <div class="description">Reloads all the config files from disk.</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <button class="ui button" id="recalcLeaderboard"><i class="calculator icon"></i></button>
-                    </div>
-                    <i class="large calculator middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Recalculate leaderboards</a>
-                        <div class="description">Recalculate all leaderboard data. (Does not include data from active competition - load a player page instead)</div>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="right floated content">
-                        <button class="ui negative button" id="shutdown"><i class="exclamation icon"></i></button>
-                    </div>
-                    <i class="large power off middle aligned icon"></i>
-                    <div class="content">
-                        <a class="header" style="font-weight: bold;">Shutdown server</a>
-                        <div class="description">Shuts down the entire server.</div>
-                    </div>
-                </div>
+            <div class="ui middle aligned divided list" id="menu">
+                
             </div>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
         <script>
-            $('#maintenance-mode').on("click", (e) => {
-                if($('#maintenance-mode').prop("checked")) {
-                    $.get("/backend/api/maintenance", {mode: "on"}, (data, status, x) => {
-                        console.log(data);
-                        console.log(status);
-                        $('body').toast({
-                            message: "Maintenance mode: enabled.",
-                            showProgress: 'top',
-                            class: 'success',
-                            displayTime: 15000
-                        })
+            $.getJSON("/backend/api/menu", (data, status, x) => {
+                if(status == "success") {
+                    data.forEach(element => {
+                        const icon = $('<i></i>').addClass("large").addClass(element.icon).addClass("middle aligned icon");
+
+                        const title = $('<a></a>').addClass("header").css("font-weight", "bold").text(element.title);
+                        const description = $('<div></div>').addClass("description").text(element.description);
+                        const content = $("<div></div>").addClass("content").append(title).append(description);
+
+                        const rightFloatedContent = $('<div></div>').addClass("right floated content");
+
+                        switch(element.type) {
+                            case "link":
+                                const link = $('<a></a>').addClass("ui button").attr("href", element.href).append($("<i></i>").addClass("share icon"));
+                                rightFloatedContent.append(link);
+                                break;
+                            case "button":
+                                const button = $("<button>").addClass("ui button").attr("id", element.id).append($('<i></i>').addClass(element.icon).addClass("icon"));
+                                rightFloatedContent.append(button);
+                                break;
+                            case "checkbox":
+                                const checkbox = $('<input></input>').attr("type", "checkbox").attr("id", element.id);
+                                const box = $('<div></div>').addClass("ui toggle checkbox").append(checkbox).append($('<label></label>'));
+                                rightFloatedContent.append(box);
+                                break;
+                        }
+
+                        const item = $('<div></div>').addClass("item").append(rightFloatedContent).append(icon).append(content);
+                        $('#menu').append(item);
                     });
-                } else {
-                    $.get("/backend/api/maintenance", {mode: "off"}, (data, status, x) => {
-                        console.log(data);
-                        console.log(status);
-                        $('body').toast({
-                            message: "Maintenance mode: disabled.",
-                            showProgress: 'top',
-                            class: 'success',
-                            displayTime: 15000
-                        })
-                    });
+
+                    addHandlers();
                 }
             });
 
-            $('#reload').on("click", (e) => {
-                $.get("/backend/api/reloadConfigs", (data, status, x) => {
-                    if(status === "success" && data.status === "ok") {
+            function addHandlers() {
+                $('#maintenance-mode').on("click", (e) => {
+                    if($('#maintenance-mode').prop("checked")) {
+                        $.get("/backend/api/maintenance", {mode: "on"}, (data, status, x) => {
+                            console.log(data);
+                            console.log(status);
+                            $('body').toast({
+                                message: "Maintenance mode: enabled.",
+                                showProgress: 'top',
+                                class: 'success',
+                                displayTime: 15000
+                            })
+                        });
+                    } else {
+                        $.get("/backend/api/maintenance", {mode: "off"}, (data, status, x) => {
+                            console.log(data);
+                            console.log(status);
+                            $('body').toast({
+                                message: "Maintenance mode: disabled.",
+                                showProgress: 'top',
+                                class: 'success',
+                                displayTime: 15000
+                            })
+                        });
+                    }
+                });
+
+                $('#reload').on("click", (e) => {
+                    $.get("/backend/api/reloadConfigs", (data, status, x) => {
+                        if(status === "success" && data.status === "ok") {
+                            $('body').toast({
+                                message: 'Successfully reloaded the config files.',
+                                showProgress: 'top',
+                                class: 'success'
+                            });
+                        } else {
+                            $('body').toast({
+                                message: "Failed to reload the files.",
+                                showProgress: 'top',
+                                class: 'failure'
+                            })
+                        }
+                    })
+                });
+
+
+                $('#recalcLeaderboard').on("click", (e) => {
+                    $.get("/backend/api/recalculateLeaderboards", (data, status, x) => {
+                        if(status === "success" && data.status === "ok") {
+                            $('body').toast({
+                                message: 'Successfully recalculated leaderboard info.',
+                                showProgress: 'top',
+                                class: 'success'
+                            });
+                        } else {
+                            $('body').toast({
+                                message: "Failed to recalculate leaderboard info.",
+                                showProgress: 'top',
+                                class: 'failure'
+                            })
+                        }
+                    })
+                });
+
+                $('#shutdown').on("click", (e) => {
+                    $('#shutdownConfirmModal').modal("show");
+                })
+
+                $('#shutdownConfirm').on("click", (e) => {
+                    $.get("/backend/api/shutdown", (data, status, x) => {
                         $('body').toast({
-                            message: 'Successfully reloaded the config files.',
+                            message: 'Sent shutdown command.',
                             showProgress: 'top',
                             class: 'success'
                         });
-                    } else {
-                        $('body').toast({
-                            message: "Failed to reload the files.",
-                            showProgress: 'top',
-                            class: 'failure'
-                        })
-                    }
+                    })
                 })
-            });
-
-
-            $('#recalcLeaderboard').on("click", (e) => {
-                $.get("/backend/api/recalculateLeaderboards", (data, status, x) => {
-                    if(status === "success" && data.status === "ok") {
-                        $('body').toast({
-                            message: 'Successfully recalculated leaderboard info.',
-                            showProgress: 'top',
-                            class: 'success'
-                        });
-                    } else {
-                        $('body').toast({
-                            message: "Failed to recalculate leaderboard info.",
-                            showProgress: 'top',
-                            class: 'failure'
-                        })
-                    }
-                })
-            });
-
-            $('#shutdown').on("click", (e) => {
-                $('#shutdownConfirmModal').modal("show");
-            })
-
-            $('#shutdownConfirm').on("click", (e) => {
-                $.get("/backend/api/shutdown", (data, status, x) => {
-                    $('body').toast({
-                        message: 'Sent shutdown command.',
-                        showProgress: 'top',
-                        class: 'success'
-                    });
-                })
-            })
+            }
         </script>
     </body>
 </html>
