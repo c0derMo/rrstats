@@ -1,0 +1,76 @@
+<div class="ui steps">
+    <div class="active step" id="step1">
+        <i class="pen icon"></i>
+        <div class="content">
+            <div class="title">Select checks</div>
+        </div>
+    </div>
+    <div class="step" id="step2">
+        <i class="cogs icon"></i>
+        <div class="content">
+            <div class="title">Working magic</div>
+        </div>
+    </div>
+    <div class="step" id="step3">
+        <i class="file alternate icon"></i>
+        <div class="content">
+            <div class="title">Check result</div>
+        </div>
+    </div>
+</div>
+<div class="ui basic segment" id="step1_content">
+    <h3>Please select the checks to run.</h3>
+    <div class="ui relaxed divided list">
+        <div class="item">
+            <div class="right floated content">
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" id="score">
+                    <label></label>
+                </div>
+            </div>
+            <div class="content">
+                <a class="header" style="font-weight: bold;">Score</a>
+                <div class="description">Checks for invalid scores, map- & match-winners</div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="right floated content">
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" id="matchesWithoutPlayers">
+                    <label></label>
+                </div>
+            </div>
+            <div class="content">
+                <a class="header" style="font-weight: bold;">Matches without player-objects</a>
+                <div class="description">Checks for matches with players that don't have an external player-object.</div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="right floated content">
+                <div class="ui toggle checkbox">
+                    <input type="checkbox" id="playersWithoutMatches">
+                    <label></label>
+                </div>
+            </div>
+            <div class="content">
+                <a class="header" style="font-weight: bold;">Players without matches</a>
+                <div class="description">Checks for players that don't have any matches assigned.</div>
+            </div>
+        </div>
+    </div>
+    <button id="step1_finish" class="ui button">Run checks</button>
+</div>
+<div class="ui basic segment" id="step2_content" hidden>
+    Please wait while the server does it's magic...
+</div>
+<div class="ui basic segment" id="step3_content" hidden>
+    <h3>Results:</h3>
+    <table class="ui table">
+        <thead>
+            <tr><th></th><th></th></tr>
+        </thead>
+        <tbody id="results">
+
+        </tbody>
+    </table>
+</div>

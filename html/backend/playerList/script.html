@@ -1,0 +1,124 @@
+<script>
+    let pageData = {};
+    let changes = {};
+
+    $('#save').on("click", () => {
+        $('#amountChanges').text(Object.keys(changes).length);
+        $('#listedChanges').html("")
+        Object.keys(changes).forEach(k => {
+            if(changes[k] instanceof Array) {
+                $('#listedChanges').append("<div class='item'>" + k + ": " + JSON.stringify(changes[k]) + "</div>");
+            } else {
+                $('#listedChanges').append("<div class='item'>" + k + ": " + changes[k] + "</div>");
+            }
+        });
+        $('#saveConfirmModal').modal('show');
+    });
+
+    $('#saveConfirm').on("click", () => {
+        $.ajax("/backend/api/players", {
+            data: {
+                changes: JSON.stringify(changes)
+            },
+            method: 'PATCH',
+            success: (data, status, x) => {
+                if(data.status === "ok") {
+                    $('body').toast({
+                        message: 'Changes sent to the database.'
+                    })
+                    changes = {};
+                } else {
+                    $('body').toast({
+                        message: 'An error occured when sending changes to the database!',
+                        class: 'failure'
+                    })
+                }
+            },
+            error: (data, status, x) => {
+                $('body').toast({
+                    message: 'An error occured when sending changes to the database: ' + status,
+                    class: 'failure'
+                });
+            }
+        });
+    });
+
+    $(document).ready(() => {
+        $('.ui.accordion').accordion();
+        $.get("/backend/api/players", "", (data, status, x) => {
+            if(status === "success") {
+                pageData = data;
+                Object.keys(data).forEach(e => {
+                    addPlayer(e, data[e])
+                });
+
+                $('input').on("change", changeInput);
+                $('textarea').on("change", changeArea);
+            }
+        });
+    });
+
+    function addPlayer(pName, pData) {
+        let row = $('<tr></tr>');
+        row.append($('<td>' + pName + '</td>'));
+        row.append($('<td></td>').append($('<input type="text" value="' + pData.title + '">').attr('id', pName + ".title")));
+        row.append($('<td></td>').append($('<input type="checkbox">').attr('id', pName + ".customTitle").attr("checked", pData.customTitle)));
+        row.append($('<td></td>').append($('<input type="text" value="' + pData.discordId + '">').attr('id', pName + ".discordId")));
+        let accordion = $('<div></div>').addClass("ui accordion");
+        accordion.append($('<div></div>').addClass("title").append($("<i></i>").addClass("dropdown icon")));
+        let competitionsString = ""
+        pData.competitions.forEach(c => {
+            competitionsString += c.competition + ": " + c.placement + "\n";
+        })
+        accordion.append($('<div></div>').addClass("content").append($("<textarea></textarea>").val(competitionsString).attr('player', pName).css("width", "100%").css("height", "50px")));
+        row.append($('<td></td>').append(accordion.accordion()));
+
+        $('#players').append(row);
+    }
+
+    function getJSONPath(obj, path) {
+        let split = path.split(".").reverse();
+        let response = obj;
+        while(split.length > 0) {
+            response = response[split.pop()];
+        }
+        return response;
+    }
+
+    function changeInput(e) {
+        if($(e.target).attr("type") == "checkbox") {
+            if($(e.target).is(":checked") == getJSONPath(pageData, $(e.target).attr("id"))) {
+                delete changes[$(e.target).attr("id")]
+            } else {
+                changes[$(e.target).attr("id")] = $(e.target).is(":checked");
+            }
+        } else {
+            if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
+                delete changes[$(e.target).attr("id")]
+            } else {
+                changes[$(e.target).attr("id")] = $(e.target).val();
+            }
+        }
+    }
+
+    function changeArea(e) {
+        let competitionsString = ""
+        pageData[$(e.target).attr("player")].competitions.forEach(c => {
+            competitionsString += c.competition + ": " + c.placement + "\n";
+        });
+
+        if($(e.target).val() === competitionsString) {
+            delete changes[$(e.target).attr("player") + ".competitions"]
+        } else {
+            let comps = []
+            $(e.target).val().split("\n").forEach(c => {
+                let comp = c.split(": ");
+                if(comp.length > 1) {
+                    comps.push({competition: comp[0], placement: comp[1]})
+                }
+            });
+            changes[$(e.target).attr("player") + ".competitions"] = comps;
+        }
+    }
+
+</script>

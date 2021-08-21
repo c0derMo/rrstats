@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RR Player Statistics</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+        {{customHead}}
+    </head>
+    <body>
+        {{contentPreHeader}}
+        <div class="ui sidebar inverted vertical menu">
+            <a class="item" href="/backend">Menu</a>
+            <a class="item" href="/backend/competitions">Competitions</a>
+            <a class="item" href="/backend/players">Players</a>
+            <a class="item" href="/backend/importSpreadsheet">Import spreadsheet</a>
+            <a class="item" href="/backend/importStandings">Bulk import standings</a>
+            <a class="item" href="/backend/databaseChecks">Database checks</a>
+            <a class="item" href="/backend/renamePlayer">Rename player</a>
+        </div>
+        <div class="pusher">
+            <button class="ui secondary basic button" id="menuButton"><i class="bars icon"></i></button>
+            <div class="ui container">
+                <br>
+                <h1 class="ui header"><a href="/backend"><i class="small reply icon"></i></a>{{title}}</h1>
+                <br><br>
+                {{content}}
+            </div>
+            {{contentPostContainer}}
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script>
+            $('#menuButton').on('click', () => {$('.ui.sidebar').sidebar('toggle')});
+        </script>
+        {{script}}
+    </body>
+</html>

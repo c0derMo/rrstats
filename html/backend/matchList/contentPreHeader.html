@@ -1,0 +1,30 @@
+<div class="ui basic modal" id="saveConfirmModal">
+    <div class="ui icon header">
+        <i class="save icon"></i>
+        Save changes
+    </div>
+    <div class="content">
+        <p>Are you sure that you want to push <span id="amountChanges"></span> changes to the database?</p>
+        <div class="ui inverted accordion">
+            <div class="title">
+                <i class="dropdown icon"></i>
+                List all changes
+            </div>
+            <div class="content">
+                <div class="ui bulleted list" id="listedChanges">
+                    
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                No
+            </div>
+            <div class="ui green ok inverted button" id="saveConfirm">
+                <i class="checkmark icon"></i>
+                Yes
+            </div>
+        </div>
+    </div>
+</div>

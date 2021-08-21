@@ -3,6 +3,7 @@ import { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, pat
 const axios = require("axios");
 import gDriveObjectToMatchlist from './gDriveIntegration';
 import { runChecks } from './databaseChecks';
+import { renderBackendPage } from './backendTemplating';
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
@@ -60,9 +61,10 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/competitions',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/competitions');
-            return h.file("html/backend/matchList.html");
+            // return h.file("html/backend/matchList.html");
+            return await renderBackendPage("matchList", "RR Matches");
         },
         options: {
             auth: 'session'
@@ -72,9 +74,10 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/players',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/players');
-            return h.file("html/backend/playerList.html");
+            // return h.file("html/backend/playerList.html");
+            return await renderBackendPage("playerList", "RR Players");
         },
         options: {
             auth: 'session'
@@ -84,9 +87,10 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/importSpreadsheet',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/importSpreadsheet');
-            return h.file("html/backend/competitionImport.html");
+            // return h.file("html/backend/competitionImport.html");
+            return await renderBackendPage("competitionImport", "Import table");
         },
         options: {
             auth: 'session'
@@ -96,9 +100,10 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/importStandings',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/importStandings');
-            return h.file('html/backend/standingsImport.html');
+            // return h.file('html/backend/standingsImport.html');
+            return await renderBackendPage("standingsImport", "Import standings");
         },
         options: {
             auth: 'session'
@@ -108,9 +113,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/databaseChecks',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/databaseChecks');
-            return h.file('html/backend/databaseChecks.html');
+            return await renderBackendPage("databaseChecks", "Database Checks");
         },
         options: {
             auth: 'session'
@@ -120,9 +125,10 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/renamePlayer',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/renamePlayer');
-            return h.file('html/backend/renamePlayer.html');
+            return await renderBackendPage("renamePlayer", "Rename Player");
+            // return h.file('html/backend/renamePlayer.html');
         },
         options: {
             auth: 'session'

@@ -1,0 +1,28 @@
+<script>
+    $('#rename').on("click", () => {
+        $('#step1_content').slideUp();
+        $('#step2_content').slideDown();
+        $('#step1').removeClass("active").addClass("completed");
+        $('#step2').addClass("active");
+
+        $.ajax("/backend/api/renamePlayer", {
+            data: {
+                oldName: $('#oldName').val(),
+                newName: $('#newName').val()
+            },
+            method: 'POST',
+            success: (data, status, x) => {
+                data.forEach(element => {
+                    $('#results').append($('<div></div>').addClass("item").text(element));
+                });
+                $('#step2').removeClass("active").addClass("completed");
+                $('#step3').addClass("active");
+                $('#step2_content').slideUp();
+                $('#step3_content').slideDown();
+            },
+            error: (data, status, x) => {
+                console.log(data);
+            }
+        })
+    })
+</script>
