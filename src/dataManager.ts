@@ -205,7 +205,7 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
     // Percentage of maps that went to a decider                D
     // Decider Winrate
     
-    const competitions = getAllCompetitions();
+    const competitions = JSON.parse(JSON.stringify(getAllCompetitions()));
     let rankings = {}
     let currentWinningSprees = {}
 
