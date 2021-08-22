@@ -27,7 +27,7 @@
                 if(status == "success") {
                     data.forEach(element => {
                         if(element.type == "link") {
-                            let item = $('<a></a>').addClass("item").text(element.title).attr("href", element.link);
+                            let item = $('<a></a>').addClass("item").text(element.title).attr("href", element.href);
                             $('#menu').append(item);
                         }
                     });
