@@ -309,11 +309,14 @@
 
                     data.maps.slice(5).forEach(element => {
                         if(element.winner == localPlayer) {
-                            row2.append($("<td></td>").text(element.map).addClass("positive"))
+                            row2.append($("<td></td>").text(element.map).addClass("positive")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else if(element.winner == -1) {
-                            row2.append($("<td></td>").text(element.map).addClass("warning"))
+                            row2.append($("<td></td>").text(element.map).addClass("warning")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else {
-                            row2.append($("<td></td>").text(element.map).addClass("negative"))
+                            row2.append($("<td></td>").text(element.map).addClass("negative")
+                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         }
                     });
                     $('#matches').append(row2);
