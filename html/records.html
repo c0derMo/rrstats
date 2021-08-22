@@ -51,7 +51,7 @@
                 row.append($("<td></td>").text(record.spin));
                 row.append($("<td></td>").text(record.time));
                 row.append($("<td></td>").append($("<a></a>").attr("href", "/" + record.player).text(record.player)));
-                row.append($("<td></td>").text(record.round));
+                row.append($("<td></td>").append($('<a></a>').text(record.round).attr("href", record.link).attr("target", "_blank")));
                 $('#recordList').append(row);
             }
 
@@ -65,7 +65,7 @@
                 players.append(" & ");
                 players.append($('<a></a>').attr("href", "/" + record.players[1]).text(record.players[1]));
                 row.append(players);
-                row.append($("<td></td>").text(record.match));
+                row.append($("<td></td>").append($('<a></a>').text(record.match).attr("href", record.link).attr("target", "_blank")));
                 $('#otherList').append(row);
             }
 
