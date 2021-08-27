@@ -72,7 +72,7 @@ const getPlayerInfo = (player) => {
 const getAllPlayers = () => {
     let a = [];
     Object.keys(configs["playerDB"]).forEach(e => {
-        a.push({title: e});
+        if(!configs["general"].excludedFromSearch.includes(e)) a.push({title: e});
     });
     return a;
 }

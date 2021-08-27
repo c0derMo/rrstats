@@ -45,11 +45,20 @@
         <script src="/allPlayers.js"></script>
         <script>
             $('.ui.search').search({
-                source: players
+                source: players,
+                showNoResults: false,
+                onSelect: function(result, response) {
+                    window.location.href = "/" + result.title;
+                }
             });
 
             $('#search').on("click", () => {
                 window.location.href = "/" + $('#playername').val();
+            })
+            $('#playername').on('keyup', (evt) => {
+                if(evt.keyCode === 13) {
+                    window.location.href = "/" + $('#playername').val();
+                }
             });
         </script>
     </body>
