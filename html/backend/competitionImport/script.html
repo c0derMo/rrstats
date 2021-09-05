@@ -8,9 +8,10 @@
         $.ajax("/backend/api/importSpreadsheet", {
             data: {
                 sID: $('#inputID').val(),
-                tabID: $('#inputTab').val(),
+                tabName: $('#inputTab').val(),
                 comp: $('#inputComp').val(),
-                cA: $('#inputColAs').val()
+                cA: $('#inputColAs').val(),
+                yearInput: $('#yearInput').val()
             },
             method: 'POST',
             success: (data, status, x) => {

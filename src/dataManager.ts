@@ -220,7 +220,9 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
         } else {
             comp = getStoredCompetition(element);
         }
-        comp.reverse().forEach(match => {
+        comp.sort((a, b) => {
+            return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        }).reverse().forEach(match => {
             let player1 = match.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
             let player2 = match.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
 

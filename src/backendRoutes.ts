@@ -250,13 +250,13 @@ const addBackendRoutes = (server) => {
         method: 'POST',
         path: '/backend/api/importSpreadsheet',
         handler: async (request, h) => {
-            const { sID, tabID, comp, cA } = request.payload;
-            let req = await axios.get("https://spreadsheets.google.com/feeds/cells/" + sID + "/" + tabID + "/public/values?alt=json-in-script");
+            const { sID, tabName, comp, cA, yearInput } = request.payload;
+            let req = await axios.get("https://docs.google.com/spreadsheets/d/" + sID + "/gviz/tq?tqx=out:json&sheet=" + tabName);
             let fancyData;
             if(cA === "") {
-                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(28, req.data.length-2)), comp, true);
+                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), comp, true, yearInput);
             } else {
-                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(28, req.data.length-2)), comp, true, JSON.parse(cA));
+                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), comp, true, yearInput, JSON.parse(cA));
             }
             await addCompetition(comp, fancyData);
             request.log(['post', 'info'], '/backend/api/importSpreadsheet');

@@ -1,5 +1,36 @@
 import { getPlayerAbreviationOverride } from "./dataManager";
 
+function monthToIndex(month) {
+    switch(month) {
+        case 'January':
+            return 0
+        case 'Feburary':
+            return 1
+        case 'March':
+            return 2
+        case 'April':
+            return 3
+        case 'May':
+            return 4
+        case 'June':
+            return 5
+        case 'July':
+            return 6
+        case 'August':
+            return 7
+        case 'September':
+            return 8
+        case 'October':
+            return 9
+        case 'November':
+            return 10
+        case 'December':
+            return 11
+        default:
+            return 0
+    }
+}
+
 /* column definitions:
     0-platform
     1-round
@@ -7,6 +38,7 @@ import { getPlayerAbreviationOverride } from "./dataManager";
     3-player2
     4-score
     5-maps
+    6-CEST time
 
     default definition:
     3 D
@@ -15,6 +47,7 @@ import { getPlayerAbreviationOverride } from "./dataManager";
     7 H
     6 G
     [8, 10, 12] I K M
+    1 B
 
     rrwc definition:
     0 A
@@ -23,11 +56,12 @@ import { getPlayerAbreviationOverride } from "./dataManager";
     6 G
     5 F
     [7, 9, 11] H J L
+    1 B
 
-    [0, 3, 4, 6, 5, [7, 9, 11]]
+    [0, 3, 4, 6, 5, [7, 9, 11], 1]
 */
 
-const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12]]) => {
+const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12], 1]) => {
     let matches = [];
 
     if(debugLog) console.log("[DBG] We use new function");
@@ -54,10 +88,24 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, col
         });
     });
 
+    let rx = obj.table.cols[1].label.match(/.*Day \d+ - .+, (\d+)(st|nd|rd|th) (.+) CE.*/);
+    let newestDayNumber = rx[1];
+    let newestMonth = rx[3];
+
+    if(debugLog) console.log(newestDayNumber);
+    if(debugLog) console.log(newestMonth);
+
+    let currentDate = new Date(year, monthToIndex(newestMonth), parseInt(newestDayNumber));
+    if(debugLog) console.log(currentDate);
+
     if(debugLog) console.log("[DBG] Amount of rows: " + betterData.length);
 
     // Filtering matches by looking at the score-column[6] (let's hope In4 never changes the layout of the spreadsheet LUL)
     betterData.forEach(element => {
+        //If player1 = "Result" decrement date
+        if(element[columnDefinitions[2] as number] == "Result") {
+            currentDate.setDate(currentDate.getDate() - 1);
+        }
         if(debugLog) console.log(element[columnDefinitions[4] as number]);
         if(element[columnDefinitions[4] as number].match(/[0-9]+-[0-9]+/)) {
             if(debugLog) console.log("[DBG] First check passed")
@@ -106,6 +154,12 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, col
                     winner = 0;
                 }
 
+                let timeSplit = element[columnDefinitions[6] as number].split(":");
+                let day = currentDate.getDate();
+                if(timeSplit[0] < 6 || (timeSplit[0] == 6 && timeSplit[1] == 0)) {
+                    day += 1;
+                }
+
                 const tmp: Match = {
                     platform: element[columnDefinitions[0] as number],
                     round: element[columnDefinitions[1] as number],
@@ -114,7 +168,8 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, col
                     score: element[columnDefinitions[4] as number],
                     winner: (scoreArr[0] > scoreArr[1]) ? 1 : 2,
                     competition: competition,
-                    maps: maps
+                    maps: maps,
+                    timestamp: new Date(currentDate.getFullYear(), currentDate.getMonth(), day, timeSplit[0], timeSplit[1])
                 }
 
                 matches.push(tmp);

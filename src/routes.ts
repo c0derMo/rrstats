@@ -132,53 +132,57 @@ const addRoutes = (server) => {
                 }));
             }
 
-            matches = matches.sort((a, b) => {
-                // Sorting by different competition
-                if(a.competition !== b.competition) {
-                    let tmpA, tmpB;
-                    if(a.competition == "RRWC") {
-                        tmpA = 3.5;
-                    } else {
-                        tmpA = parseInt(a.competition.substring(2));
-                    }
-                    if(b.competition == "RRWC") { 
-                        tmpB = 3.5;
-                    } else {
-                        tmpB = parseInt(b.competition.substring(2));
-                    }
+            // matches = matches.sort((a, b) => {
+            //     // Sorting by different competition
+            //     if(a.competition !== b.competition) {
+            //         let tmpA, tmpB;
+            //         if(a.competition == "RRWC") {
+            //             tmpA = 3.5;
+            //         } else {
+            //             tmpA = parseInt(a.competition.substring(2));
+            //         }
+            //         if(b.competition == "RRWC") { 
+            //             tmpB = 3.5;
+            //         } else {
+            //             tmpB = parseInt(b.competition.substring(2));
+            //         }
 
-                    return tmpB-tmpA;
-                }
+            //         return tmpB-tmpA;
+            //     }
 
-                let scoreA = 0, scoreB = 0;
+            //     let scoreA = 0, scoreB = 0;
 
-                // Assign score
-                if(a.round.search("Grand Final") !== -1) {
-                    scoreA = 10000;
-                } else if(a.round.search("Semi") !== -1) {
-                    scoreA = 500;
-                } else if(a.round.search("Quarter") !== -1) {
-                    scoreA = 100;
-                } else if(a.round.search("Group") === -1) {
-                    let tmp = a.round.split(" ");
-                    scoreA = parseInt(tmp[tmp.length-1]);
-                }
-                if(a.round.search("LB") !== -1) scoreA *= 10;
+            //     // Assign score
+            //     if(a.round.search("Grand Final") !== -1) {
+            //         scoreA = 10000;
+            //     } else if(a.round.search("Semi") !== -1) {
+            //         scoreA = 500;
+            //     } else if(a.round.search("Quarter") !== -1) {
+            //         scoreA = 100;
+            //     } else if(a.round.search("Group") === -1) {
+            //         let tmp = a.round.split(" ");
+            //         scoreA = parseInt(tmp[tmp.length-1]);
+            //     }
+            //     if(a.round.search("LB") !== -1) scoreA *= 10;
 
-                if(b.round.search("Grand Final") !== -1) {
-                    scoreB = 10000;
-                } else if(b.round.search("Semi") !== -1) {
-                    scoreB = 500;
-                } else if(b.round.search("Quarter") !== -1) {
-                    scoreB = 100;
-                } else if(b.round.search("Group") === -1) {
-                    let tmp = b.round.split(" ");
-                    scoreB = parseInt(tmp[tmp.length-1]);
-                }
-                if(b.round.search("LB") !== -1) scoreB *= 10;
+            //     if(b.round.search("Grand Final") !== -1) {
+            //         scoreB = 10000;
+            //     } else if(b.round.search("Semi") !== -1) {
+            //         scoreB = 500;
+            //     } else if(b.round.search("Quarter") !== -1) {
+            //         scoreB = 100;
+            //     } else if(b.round.search("Group") === -1) {
+            //         let tmp = b.round.split(" ");
+            //         scoreB = parseInt(tmp[tmp.length-1]);
+            //     }
+            //     if(b.round.search("LB") !== -1) scoreB *= 10;
                 
-                return scoreB-scoreA;
-            });
+            //     return scoreB-scoreA;
+            // });
+
+            matches = matches.sort((a, b) => {
+                return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+            })
 
             const obj = {
                 avatar: await getDiscordProfilePictureURL(playerInfo.discordId),
