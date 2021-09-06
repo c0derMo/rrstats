@@ -1,33 +1,34 @@
 import { getPlayerAbreviationOverride } from "./dataManager";
+const { DateTime } = require("luxon");
 
 function monthToIndex(month) {
     switch(month) {
         case 'January':
-            return 0
-        case 'Feburary':
             return 1
-        case 'March':
+        case 'Feburary':
             return 2
-        case 'April':
+        case 'March':
             return 3
-        case 'May':
+        case 'April':
             return 4
-        case 'June':
+        case 'May':
             return 5
-        case 'July':
+        case 'June':
             return 6
-        case 'August':
+        case 'July':
             return 7
-        case 'September':
+        case 'August':
             return 8
-        case 'October':
+        case 'September':
             return 9
-        case 'November':
+        case 'October':
             return 10
-        case 'December':
+        case 'November':
             return 11
+        case 'December':
+            return 12
         default:
-            return 0
+            return 1
     }
 }
 
@@ -95,7 +96,8 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
     if(debugLog) console.log(newestDayNumber);
     if(debugLog) console.log(newestMonth);
 
-    let currentDate = new Date(year, monthToIndex(newestMonth), parseInt(newestDayNumber));
+    // let currentDate = new Date(year, monthToIndex(newestMonth), parseInt(newestDayNumber));
+    let currentDate = DateTime.fromObject({year: year, month: monthToIndex(newestMonth), day: parseInt(newestDayNumber)+1}, {zone:'Europe/Berlin'});
     if(debugLog) console.log(currentDate);
 
     if(debugLog) console.log("[DBG] Amount of rows: " + betterData.length);
@@ -104,7 +106,8 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
     betterData.forEach(element => {
         //If player1 = "Result" decrement date
         if(element[columnDefinitions[2] as number] == "Result") {
-            currentDate.setDate(currentDate.getDate() - 1);
+            // currentDate.setDate(currentDate.getDate() - 1);
+            currentDate = currentDate.minus({ days: 1 });
         }
         if(debugLog) console.log(element[columnDefinitions[4] as number]);
         if(element[columnDefinitions[4] as number].match(/[0-9]+-[0-9]+/)) {
@@ -155,7 +158,7 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
                 }
 
                 let timeSplit = element[columnDefinitions[6] as number].split(":");
-                let day = currentDate.getDate();
+                let day = currentDate.day;
                 if(timeSplit[0] < 6 || (timeSplit[0] == 6 && timeSplit[1] == 0)) {
                     day += 1;
                 }
@@ -169,7 +172,7 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
                     winner: (scoreArr[0] > scoreArr[1]) ? 1 : 2,
                     competition: competition,
                     maps: maps,
-                    timestamp: new Date(currentDate.getFullYear(), currentDate.getMonth(), day, timeSplit[0], timeSplit[1])
+                    timestamp: DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: currentDate.zoneName}).toString()
                 }
 
                 matches.push(tmp);

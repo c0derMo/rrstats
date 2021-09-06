@@ -7,7 +7,7 @@ interface Match {
     winner: number,
     score: string,
     maps: RRMap[],
-    timestamp: Date
+    timestamp: string
 }
 
 interface RRMap {

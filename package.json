@@ -9,7 +9,8 @@
     "@hapi/inert": "^6.0.3",
     "@types/node": "^15.6.0",
     "axios": "^0.21.1",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "luxon": "^2.0.2"
   },
   "scripts": {
     "build": "tsc && cp -R -f data out && cp -R -f html out",
