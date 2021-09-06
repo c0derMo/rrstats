@@ -62,7 +62,7 @@ function monthToIndex(month) {
     [0, 3, 4, 6, 5, [7, 9, 11], 1]
 */
 
-const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12], 1]) => {
+const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=true, year=new Date().getFullYear(), columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12], 1]) => {
     let matches = [];
 
     if(debugLog) console.log("[DBG] We use new function");
@@ -158,9 +158,14 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
                 }
 
                 let timeSplit = element[columnDefinitions[6] as number].split(":");
-                let day = currentDate.day;
-                if(timeSplit[0] < 6 || (timeSplit[0] == 6 && timeSplit[1] == 0)) {
-                    day += 1;
+                let dt = DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: currentDate.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: currentDate.zoneName});
+                if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
+                    dt = dt.plus({ days: 1 })
+                }
+
+                if(!dt.isValid && debugLog) {
+                    console.log(dt.invalidReason);
+                    console.log(dt.invalidExplanation);
                 }
 
                 const tmp: Match = {
@@ -172,7 +177,7 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
                     winner: (scoreArr[0] > scoreArr[1]) ? 1 : 2,
                     competition: competition,
                     maps: maps,
-                    timestamp: DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: currentDate.zoneName}).toString()
+                    timestamp: dt.toString()
                 }
 
                 matches.push(tmp);
