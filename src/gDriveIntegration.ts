@@ -62,7 +62,7 @@ function monthToIndex(month) {
     [0, 3, 4, 6, 5, [7, 9, 11], 1]
 */
 
-const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=true, year=new Date().getFullYear(), columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12], 1]) => {
+const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12], 1]) => {
     let matches = [];
 
     if(debugLog) console.log("[DBG] We use new function");

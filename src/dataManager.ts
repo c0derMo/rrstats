@@ -190,6 +190,22 @@ const getRanking = (stat, map="") => {
                 return (obj.rankings[b].deciderWin/obj.rankings[b].matchesWithDecider) - (obj.rankings[a].deciderWin/obj.rankings[a].matchesWithDecider)
             });
             break;
+        case 'OwnMapWinrate':
+            obj.order = obj.order.filter(function(e) {
+                return obj.rankings[e].ownMaps > 0;
+            })
+            obj.order.sort((a, b) => {
+                return (obj.rankings[b].ownMapsWon/obj.rankings[b].ownMaps) - (obj.rankings[a].ownMapsWon/obj.rankings[a].ownMaps)
+            })
+            break;
+        case 'OpponentMapWinrate':
+            obj.order = obj.order.filter(function(e) {
+                return obj.rankings[e].opponentMaps > 0;
+            })
+            obj.order.sort((a, b) => {
+                return (obj.rankings[b].opponentMapsWon/obj.rankings[b].opponentMaps) - (obj.rankings[a].opponentMapsWon/obj.rankings[a].opponentMaps)
+            })
+            break;
     }
     return obj;
 }
@@ -203,7 +219,9 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
     // Winrate on a per map basis (am I really crazy??)         D
     // Longest Winning-Spree                                    D
     // Percentage of maps that went to a decider                D
-    // Decider Winrate
+    // Decider Winrate                                          D
+    // Percentage of own-map-wins                               D
+    // Percentage of opponent-map-wins                          D
     
     const competitions = JSON.parse(JSON.stringify(getAllCompetitions()));
     let rankings = {}
@@ -239,7 +257,11 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
                     matchesWithDecider: 0,
                     grandFinalAppearances: 0,
                     matchesWithoutGroups: 0,
-                    deciderWin: 0
+                    deciderWin: 0,
+                    ownMapsWon: 0,
+                    ownMaps: 0,
+                    opponentMaps: 0,
+                    opponentMapsWon: 0
                 }
 
                 currentWinningSprees[player1] = 0;
@@ -257,7 +279,11 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
                     matchesWithDecider: 0,
                     grandFinalAppearances: 0,
                     matchesWithoutGroups: 0,
-                    deciderWin: 0
+                    deciderWin: 0,
+                    ownMapsWon: 0,
+                    ownMaps: 0,
+                    opponentMaps: 0,
+                    opponentMapsWon: 0
                 }
 
                 currentWinningSprees[player2] = 0;
@@ -328,6 +354,24 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
                     rankings[player1].mapsWon[mapAbreviationToArrayIndex(map.map)] += 1
                 } else if(map.winner === 2) {
                     rankings[player2].mapsWon[mapAbreviationToArrayIndex(map.map)] += 1
+                }
+
+                if(map.picked === 1) {
+                    rankings[player1].ownMaps += 1
+                    rankings[player2].opponentMaps += 1
+                    if(map.winner === 1) {
+                        rankings[player1].ownMapsWon += 1;
+                    } else if(map.winner === 2) {
+                        rankings[player2].opponentMapsWon += 1;
+                    }
+                } else if(map.picked === 2) {
+                    rankings[player2].ownMaps += 1
+                    rankings[player1].opponentMaps += 1
+                    if(map.winner === 2) {
+                        rankings[player2].ownMapsWon += 1;
+                    } else if(map.winner === 1) {
+                        rankings[player1].opponentMapsWon += 1;
+                    }
                 }
             });
         });
