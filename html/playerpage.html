@@ -23,7 +23,10 @@
             </div>
             <div class="row">
                 <div class="four wide column"><h3 class="ui center aligned header" style="font-style: italic;">Matches played: <span id="matchesPlayed" style="font-style: initial;"></span></h3></div>
-                <div class="four wide column"><h3 class="ui center aligned header" style="font-style: italic;">Winrate: <span id="winrate" style="font-style: initial;"></span></h3></div>
+                <div class="four wide column">
+                    <h3 class="ui center aligned header" style="font-style: italic;">Winrate: <span id="winrate" style="font-style: initial;"></span></h3>
+                    <h5 class="ui center aligned header" style="font-style: italic;">Map-Winrate: <span id="mapWinrate" style="font-style: initial;"></span></h3>
+                </div>
             </div>
             <div class="row">
                 <div class="seven wide column">
@@ -416,11 +419,18 @@
                 // Calculate matches played & winrate
                 $('#matchesPlayed').text(data.matches.length);
                 let wonMatches = 0;
+                let wonMaps = 0;
+                let amountMaps = 0;
                 data.matches.forEach(e => {
                     const localPlayer = (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == data.name) ? 1 : 2;
                     if(e.winner == localPlayer) wonMatches++;
+                    e.maps.forEach(m => {
+                        amountMaps++;
+                        if(m.winner == localPlayer) wonMaps++;
+                    })
                 });
                 $('#winrate').text(Math.round((wonMatches / data.matches.length)*1000)/10 + "%");
+                $('#mapWinrate').text(Math.round((wonMaps / amountMaps)*1000)/10 + "%");
                 
 
                 calculateMapPicksWins(data,["RR6", "RR5", "RR4", "RRWC", "RR3"],["RR6", "RR5", "RR4", "RRWC", "RR3"]);
