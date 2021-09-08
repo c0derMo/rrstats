@@ -15,6 +15,7 @@
             <select class="ui selection dropdown" id="stat">
                 <option value="" selected disabled>-- Select a statistic --</option>
                 <option value="WR">Winrate</option>
+                <option value="MapWinrate">Map Winrate</option>
                 <option value="RRParticipations">Participations in Roulette Rivals Tournaments</option>
                 <option value="RRWCParticipations">Participations in Roulette Rivals World Championships</option>
                 <option value="Matches">Amount of matches</option>
@@ -159,6 +160,10 @@
                                 case "OpponentMapWinrate":
                                     row.append($("<td></td>").text(Math.floor((data.rankings[e].opponentMapsWon/data.rankings[e].opponentMaps)*1000)/10 + "%"));
                                     if(data.rankings[e].opponentMaps == 0) shouldAdd = false;
+                                    break;
+                                case "MapWinrate":
+                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].mapsWonAmount/data.rankings[e].mapsPlayedAmount)*1000)/10 + "%"));
+                                    if(data.rankings[e].mapsPlayedAmount == 0) shouldAdd = false;
                                     break;
                             }
                             if(shouldAdd) $('#ranking').append(row);

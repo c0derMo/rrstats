@@ -206,6 +206,14 @@ const getRanking = (stat, map="") => {
                 return (obj.rankings[b].opponentMapsWon/obj.rankings[b].opponentMaps) - (obj.rankings[a].opponentMapsWon/obj.rankings[a].opponentMaps)
             })
             break;
+        case 'MapWinrate':
+            obj.order = obj.order.filter(function(e) {
+                return obj.rankings[e].mapsPlayedAmount > 0;
+            })
+            obj.order.sort((a, b) => {
+                return (obj.rankings[b].mapsWonAmount/obj.rankings[b].mapsPlayedAmount) - (obj.rankings[a].mapsWonAmount/obj.rankings[a].mapsPlayedAmount)
+            });
+            break;
     }
     return obj;
 }
@@ -222,6 +230,7 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
     // Decider Winrate                                          D
     // Percentage of own-map-wins                               D
     // Percentage of opponent-map-wins                          D
+    // Mapwin%
     
     const competitions = JSON.parse(JSON.stringify(getAllCompetitions()));
     let rankings = {}
@@ -261,7 +270,9 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
                     ownMapsWon: 0,
                     ownMaps: 0,
                     opponentMaps: 0,
-                    opponentMapsWon: 0
+                    opponentMapsWon: 0,
+                    mapsPlayedAmount: 0,
+                    mapsWonAmount: 0
                 }
 
                 currentWinningSprees[player1] = 0;
@@ -283,7 +294,9 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
                     ownMapsWon: 0,
                     ownMaps: 0,
                     opponentMaps: 0,
-                    opponentMapsWon: 0
+                    opponentMapsWon: 0,
+                    mapsPlayedAmount: 0,
+                    mapsWonAmount: 0
                 }
 
                 currentWinningSprees[player2] = 0;
@@ -347,13 +360,17 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
 
             // Per Map Stuff
             match.maps.forEach(map => {
+                rankings[player1].mapsPlayedAmount += 1
+                rankings[player2].mapsPlayedAmount += 1
                 rankings[player1].mapsPlayed[mapAbreviationToArrayIndex(map.map)] += 1
                 rankings[player2].mapsPlayed[mapAbreviationToArrayIndex(map.map)] += 1
 
                 if(map.winner === 1) {
                     rankings[player1].mapsWon[mapAbreviationToArrayIndex(map.map)] += 1
+                    rankings[player1].mapsWonAmount += 1
                 } else if(map.winner === 2) {
                     rankings[player2].mapsWon[mapAbreviationToArrayIndex(map.map)] += 1
+                    rankings[player2].mapsWonAmount += 1
                 }
 
                 if(map.picked === 1) {
