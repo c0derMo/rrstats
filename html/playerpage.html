@@ -200,7 +200,7 @@
                 all.each((idx, e) => {
                     if($(e).attr("rival").toLowerCase().search($('#rivalSearch').val().toLowerCase()) === -1) {
                         notAccepted.push(e);
-                    } else {
+                    } else {
                         accepted.push(e);
                     }
                 });
@@ -253,7 +253,7 @@
                         if(element.winner == localPlayer) {
                             row.append($("<td></td>").text(element.map).addClass("positive")
                                 .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else if(element.winner == 0) {
+                        } else if(element.winner == -1 || element.winner == 0) {
                             row.append($("<td></td>").text(element.map).addClass("warning")
                                 .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else {
@@ -282,7 +282,7 @@
                         if(element.winner == localPlayer) {
                             row.append($("<td></td>").text(element.map).addClass("positive")
                                 .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else if(element.winner == -1) {
+                        } else if(element.winner == -1  || element.winner == 0) {
                             row.append($("<td></td>").text(element.map).addClass("warning")
                                 .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else {
@@ -315,7 +315,7 @@
                         if(element.winner == localPlayer) {
                             row2.append($("<td></td>").text(element.map).addClass("positive")
                                 .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else if(element.winner == -1) {
+                        } else if(element.winner == -1 || element.winner == 0) {
                             row2.append($("<td></td>").text(element.map).addClass("warning")
                                 .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
                         } else {
