@@ -28,6 +28,11 @@
             <br>
             <h1 class="ui header" style="font-weight: bold; font-size: 3.5rem;">Roulette Rivals Player Statistics</h1>
             <br><br><br><br><br><br>
+            <div class="ui nag" style="background-color: green;">
+                rrstats is looking for your feedback! If you got a couple minutes to spare, filling out <a href="https://forms.gle/nUJrttogS6LVxE2W6" target="_blank">this survey</a> would greatly help me. Thanks!
+                <i class="close icon"></i>
+            </div>
+            <br>
             <div class="ui fluid search">
                 <input style="width: 100%" class="prompt" type="text" placeholder="Player" id="playername">
                 <div class="results"></div>
@@ -60,6 +65,8 @@
                     window.location.href = "/" + $('#playername').val();
                 }
             });
+
+            $('.nag').nag({});
         </script>
     </body>
 </html>
