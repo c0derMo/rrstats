@@ -1,26 +1,3 @@
-// Temporary: Annoy the user with requests to do the survey :P
-$(document).ready(() => {
-    setTimeout(() => {
-        $('body').toast({
-            message: "Hey! I'm currently looking for feedback on rrstats. If you've got a few minutes to spare, filling out this survey would greatly help me. Thanks!",
-            showProgress: 'bottom',
-            class: 'success',
-            displayTime: 20000,
-            actions: [{
-                text: 'Take me there',
-                icon: 'check',
-                class: 'green',
-                click: function() {
-                    window.open("https://forms.gle/nUJrttogS6LVxE2W6");
-                }
-            },{
-                icon: 'ban',
-                class: 'icon red'
-            }]
-        })
-    }, 15000);
-});
-
 const mapAbreviationToFullName = (abv) => {
     switch(abv) {
         // Season 1
