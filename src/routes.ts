@@ -102,6 +102,24 @@ const addRoutes = (server) => {
 
     server.route({
         method: 'GET',
+        path: '/robots.txt',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/robots.txt');
+            return h.response("User-agent: *\nDisallow: /").type('text/plain');;
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/favicon.ico',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/favicon.ico');
+            return h.file("html/icon.ico");
+        }
+    });
+
+    server.route({
+        method: 'GET',
         path: '/api/{player}',
         handler: async(request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
