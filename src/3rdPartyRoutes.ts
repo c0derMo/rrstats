@@ -31,6 +31,14 @@ const addAPIRoutes = (server) => {
                 }));
             }
 
+            matches.forEach(e => {
+                if(e.player1 == name) {
+                    e.requestedPlayer = 1;
+                } else {
+                    e.requestedPlayer = 2;
+                }
+            });
+
             return matches;
         }
     });
@@ -48,6 +56,9 @@ const addAPIRoutes = (server) => {
                 return e.map === request.params.map;
             })
 
+            if(record == undefined) {
+                return h.response().code(404);
+            }
             return record;
 
         }
