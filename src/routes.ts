@@ -2,7 +2,6 @@ import gDriveToMatchlist from './gDriveIntegration';
 import { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } from "./dataManager";
 import { getDiscordProfilePictureURL, getGDriveData } from "./httpClient";
 
-
 let maintenanceMode = false;
 
 const setMaintenanceMode = (mode) => {

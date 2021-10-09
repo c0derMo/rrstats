@@ -462,6 +462,10 @@ const renamePlayer = async (oldName, newName) => {
     return changes;
 }
 
+const validateAPIKey = (apiKey) => {
+    return configs["general"].apiKeys.includes(apiKey);
+}
+
 export { getNewestCompetitionData }
 export { getStoredMatches }
 export { loadConfigs }
@@ -479,3 +483,4 @@ export { recalculateRankings }
 export { getRecords }
 export { patchRecords }
 export { renamePlayer }
+export { validateAPIKey }

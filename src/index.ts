@@ -5,6 +5,7 @@ const Inert = require("@hapi/inert");
 import { addRoutes } from "./routes";
 import { loadConfigs } from "./dataManager";
 import { addBackendRoutes } from "./backendRoutes";
+import { addAPIRoutes } from "./3rdPartyRoutes";
 const crypt = require("crypto");
 
 const init = async() => {
@@ -58,6 +59,7 @@ const init = async() => {
 
     addRoutes(server);
     addBackendRoutes(server);
+    addAPIRoutes(server);
 
     await loadConfigs();
 
