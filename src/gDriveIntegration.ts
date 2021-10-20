@@ -60,9 +60,11 @@ function monthToIndex(month) {
     1 B
 
     [0, 3, 4, 6, 5, [7, 9, 11], 1]
+
+    [3, 4, 5, 7, 6, [8, 10, 12], 1]
 */
 
-const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[3, 4, 5, 7, 6, [8, 10, 12], 1]) => {
+const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[0, 3, 4, 6, 5, [7, 9, 11], 1]) => {
     let matches = [];
 
     if(debugLog) console.log("[DBG] We use new function");
@@ -97,7 +99,7 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
     if(debugLog) console.log(newestMonth);
 
     // let currentDate = new Date(year, monthToIndex(newestMonth), parseInt(newestDayNumber));
-    let currentDate = DateTime.fromObject({year: year, month: monthToIndex(newestMonth), day: parseInt(newestDayNumber)+1}, {zone:'Europe/Berlin'});
+    let currentDate = DateTime.fromObject({year: year, month: monthToIndex(newestMonth), day: parseInt(newestDayNumber)}, {zone:'Europe/Berlin'});
     if(debugLog) console.log(currentDate);
 
     if(debugLog) console.log("[DBG] Amount of rows: " + betterData.length);

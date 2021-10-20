@@ -445,7 +445,8 @@ const renamePlayer = async (oldName, newName) => {
     // Check in records
     configs["records"].other.forEach((element, idx) => {
         if(element.players.includes(oldName)) {
-            configs["records"].other[idx].players = configs["records"].other[idx].players.filter(e => {return e !== oldName}).push(newName);
+            configs["records"].other[idx].players = configs["records"].other[idx].players.filter(e => {return e !== oldName});
+            configs["records"].other[idx].players.push(newName);
             changes.push("Record " + element.record + " player renamed");
         }
     });
