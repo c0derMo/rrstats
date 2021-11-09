@@ -11,6 +11,9 @@
         <div class="ui dimmer page active" id="dimmer">
             <div class="ui loader"></div>
         </div>
+        <a class="tertiary huge ui icon button" href="/">
+            <i class="inverted icon angle left"></i>
+        </a>
         <div class="ui relaxed centered grid">
             <div class="row">
                 <div class="two wide column"><img class="ui large centered circular image" id="avatar"></div>
@@ -411,6 +414,7 @@
 
                 $('#avatar').attr("src", data.avatar);
                 $('#name').text(data.name);
+                $('title').text(data.name + " - RR Player Statistics");
                 if(data.customTitle) {
                     $('#title').css('font-style', 'italic');
                 }
