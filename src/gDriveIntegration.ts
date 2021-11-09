@@ -176,7 +176,7 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
                     player1: element[columnDefinitions[2] as number],
                     player2: element[columnDefinitions[3] as number],
                     score: element[columnDefinitions[4] as number],
-                    winner: (scoreArr[0] > scoreArr[1]) ? 1 : 2,
+                    winner: winner,
                     competition: competition,
                     maps: maps,
                     timestamp: dt.toString()
