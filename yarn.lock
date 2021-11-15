@@ -274,6 +274,11 @@
     "@hapi/bourne" "2.x.x"
     "@hapi/hoek" "9.x.x"
 
+"@types/luxon@^2.0.7":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-2.0.7.tgz#6189930542400e2c48b4d5ed06c4f136ee38bb1a"
+  integrity sha512-AxiYycfO+/M4VIH0ribSr2iPFC+APewpJIaQSydwVnzorK3mjSFXkA3HmhQidGx44MpwaatFyEkbW/WD4zdDaQ==
+
 "@types/node@^15.6.0":
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.6.0.tgz#f0ddca5a61e52627c9dcb771a6039d44694597bc"

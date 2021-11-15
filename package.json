@@ -20,5 +20,8 @@
     "build-win": "tsc && xcopy data out\\data /s /i /y && xcopy html out\\html /s /i /y",
     "clean-win": "rmdir /S /Q out deploy",
     "deploy-win": "yarn build-win && xcopy out deploy /s /i /y && xcopy run.sh deploy /y && xcopy yarn.lock deploy /y && xcopy package.json deploy /y"
+  },
+  "devDependencies": {
+    "@types/luxon": "^2.0.7"
   }
 }

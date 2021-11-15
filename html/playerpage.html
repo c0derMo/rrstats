@@ -85,7 +85,7 @@
                     <table class="ui striped inverted sortable structured table">
                         <thead>
                             <tr>
-                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapPicksTournaments">(RR3, RRWC, RR4, RR5, RR6)</span> <i id="mapPicksTournamentEdit" class="pen icon"></i></td>
+                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapPicksTournaments">(RR3, RRWC, RR4, RR5, RR6, RRWC2021)</span> <i id="mapPicksTournamentEdit" class="pen icon"></i></td>
                             </tr>
                             <tr>
                                 <td class="twelve wide" style="font-weight: bold;">Map</td>
@@ -96,6 +96,10 @@
                         </tbody>
                     </table>
                     <div class="ui popup" id="mapPicksTournamentPopup">
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mp_RRWC2021" class="tourneySelect" checked>
+                            <label>RRWC2021</label>
+                        </div>
                         <div class="ui checked toggle checkbox">
                             <input type="checkbox" id="mp_RR6" class="tourneySelect" checked>
                             <label>RR6</label>
@@ -122,7 +126,7 @@
                     <table class="ui striped inverted sortable structured table">
                         <thead>
                             <tr>
-                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapWinsTournaments">(RR3, RRWC, RR4, RR5, RR6)</span> <i id="mapWinsTournamentEdit" class="pen icon"></i></td>
+                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapWinsTournaments">(RR3, RRWC, RR4, RR5, RRWC2021)</span> <i id="mapWinsTournamentEdit" class="pen icon"></i></td>
                             </tr>
                             <tr>
                                 <td class="eleven wide" style="font-weight: bold;">Map</td>
@@ -134,6 +138,10 @@
                         </tbody>
                     </table>
                     <div class="ui popup" id="mapWinsTournamentPopup">
+                        <div class="ui checked toggle checkbox">
+                            <input type="checkbox" id="mw_RRWC2021" class="tourneySelect" checked>
+                            <label>RRWC2021</label>
+                        </div>
                         <div class="ui checked toggle checkbox">
                             <input type="checkbox" id="mw_RR6" class="tourneySelect" checked>
                             <label>RR6</label>
@@ -185,6 +193,7 @@
                 if($('#mp_RR4').is(':checked')) pickComps.push("RR4");
                 if($('#mp_RR5').is(':checked')) pickComps.push("RR5");
                 if($('#mp_RR6').is(':checked')) pickComps.push("RR6");
+                if($('#mp_RRWC2021').is(':checked')) pickComps.push("RRWC2021");
                 $('#mapPicksTournaments').text("(" + pickComps.join(",") + ")");
                 let winComps = [];
                 if($('#mw_RR3').is(":checked")) winComps.push("RR3");
@@ -192,6 +201,7 @@
                 if($('#mw_RR4').is(":checked")) winComps.push("RR4");
                 if($('#mw_RR5').is(":checked")) winComps.push("RR5");
                 if($('#mw_RR6').is(":checked")) winComps.push("RR6");
+                if($('#mw_RRWC2021').is(":checked")) winComps.push("RRWC2021");
                 $('#mapWinsTournaments').text("(" + winComps.join(",") + ")");
                 calculateMapPicksWins(pageData, pickComps, winComps);
             });
@@ -437,7 +447,7 @@
                 $('#mapWinrate').text(Math.round((wonMaps / amountMaps)*1000)/10 + "%");
                 
 
-                calculateMapPicksWins(data,["RR6", "RR5", "RR4", "RRWC", "RR3"],["RR6", "RR5", "RR4", "RRWC", "RR3"]);
+                calculateMapPicksWins(data,["RRWC2021","RR6", "RR5", "RR4", "RRWC", "RR3"],["RRWC2021","RR6", "RR5", "RR4", "RRWC", "RR3"]);
 
                 addMoreCompetitions();
                 addMoreMatches();

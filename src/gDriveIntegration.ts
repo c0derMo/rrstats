@@ -60,11 +60,12 @@ function monthToIndex(month) {
     1 B
 
     [0, 3, 4, 6, 5, [7, 9, 11], 1]
+    [0, 3, 4, 6, 5, [9, 11, 13, 15], 1]
 
     [3, 4, 5, 7, 6, [8, 10, 12], 1]
 */
 
-const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[0, 3, 4, 6, 5, [7, 9, 11], 1]) => {
+const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[0, 3, 4, 6, 5, [9, 11, 13, 15], 1]) => {
     let matches = [];
 
     if(debugLog) console.log("[DBG] We use new function");
@@ -110,6 +111,9 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
         if(element[columnDefinitions[2] as number] == "Result") {
             // currentDate.setDate(currentDate.getDate() - 1);
             currentDate = currentDate.minus({ days: 1 });
+            if(currentDate.day == 14 && currentDate.month == 11) {
+                columnDefinitions = [0, 3, 4, 6, 5, [7, 9, 11], 1];
+            }
         }
         if(debugLog) console.log(element[columnDefinitions[4] as number]);
         if(element[columnDefinitions[4] as number].match(/[0-9]+-[0-9]+/)) {
