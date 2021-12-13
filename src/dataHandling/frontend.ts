@@ -5,7 +5,7 @@ import { RRPlayerModel } from '../models/Player';
 import { getNewestCompetitionMetadata } from './config';
 
 export async function getAllPlayers(): Promise<object[]> {
-    let players = await RRPlayerModel.find({ excludedFromSearch: false }).exec();
+    let players = await RRPlayerModel.find({ excludedFromSearch: { $ne: false } }).exec();
     return players.map(el => { return {title: el.primaryName} });
 }
 
