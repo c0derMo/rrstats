@@ -17,7 +17,7 @@ interface IRRMap {
     pickedBy: number;       // Picked by player number
 }
 
-interface IRRMatch {
+export interface IRRMatch {
     player1: string;        // player id's in the future
     player2: string;        // player id's in the future
     score: IRRMatchScore;

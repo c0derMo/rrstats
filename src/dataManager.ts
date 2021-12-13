@@ -12,35 +12,14 @@ const loadConfigs = async () => {
     const generalConfigJSON = JSON.parse(generalConfig);
     configs["general"] = generalConfigJSON;
 
-    await configs["general"].competitions.forEach(async(element) => {
-        const competition = await fs.readFile(__dirname + "/data/" + element + ".json", "utf8");
-        const competitionJSON = JSON.parse(competition);
-        configs[element] = competitionJSON;
-    });
-
-    const playerDatabase = await fs.readFile(__dirname + "/data/playerDatabase.json", "utf8");
-    const playerDatabaseJSON = JSON.parse(playerDatabase);
-    configs["playerDB"] = playerDatabaseJSON;
-
-    try {
-        const rankings = await fs.readFile(__dirname + "/data/leaderboards.json", "utf8");
-        const rankingsJSON = JSON.parse(rankings);
-        configs["rankings"] = rankingsJSON
-    } catch(e) {
-        await recalculateRankings();
-    }
-
-    const records = await fs.readFile(__dirname + "/data/records.json", "utf8");
-    const recordsJSON = JSON.parse(records);
-    configs["records"] = recordsJSON;
-
     await connect();
 }
 
 const getStoredMatches = async(playername) => {
-    return await RRMatchModel.find({ primaryName: playername }).exec();
+    return await RRMatchModel.findOne({ primaryName: playername }).exec();
 }
 
+//TODO: ?
 const getNewestCompetitionData = () => {
     return {
         name: configs["general"].currentCompetition.name,
@@ -49,73 +28,56 @@ const getNewestCompetitionData = () => {
 }
 
 const getPlayerAbreviationOverride = (abreviation) => {
-    if(configs["general"].playerAbreviationsOverrides[abreviation] !== undefined) {
-        return configs["general"].playerAbreviationsOverrides[abreviation]
-    }
-    return ""
+    
 }
 
-const getPlayerInfo = (player) => {
-    if(configs["playerDB"][player] !== undefined) {
-        return configs["playerDB"][player]
-    }
-    return {
-        discordId: "",
-        title: "",
-        competitions: [],
-        notSet: true
+const getPlayerInfo = async(player) => {
+    let playerInfo = await RRPlayerModel.findOne({ primaryName: player }).exec();
+
+    if (playerInfo == undefined) {
+        return {
+            discordId: "",
+            title: "",
+            competitions: [],
+            customTitle: false
+        }
+    } else {
+        return {
+            discordId: playerInfo.discordId,
+            title: playerInfo.title,
+            competitions: playerInfo.competitions,
+            customTitle: playerInfo.customTitle
+        };
     }
 }
 
-const getAllPlayers = () => {
-    let a = [];
-    Object.keys(configs["playerDB"]).forEach(e => {
-        if(!configs["general"].excludedFromSearch.includes(e)) a.push({title: e});
-    });
-    return a;
+const getAllPlayers = async () => {
+    let players = await RRPlayerModel.find({ name: { $nin: configs["general"].excludedFromSearch }}).exec();
+    return players.map(el => { return {title: el.primaryName} });
 }
 
-const getStoredCompetition = (comp) => {
-    if(configs["general"].competitions.includes(comp)) {
-        return configs[comp];
-    }
-    return [];
+const getStoredCompetitionMatches = async (comp) => {
+    return await RRMatchModel.find({ competition: comp }).exec();
 }
 
 const patchStoredComptition = async (comp, changes) => {
-    if(configs["general"].competitions.includes(comp)) {
-        Object.keys(changes).forEach(c => {
-            setJSONPath(configs[comp], c, changes[c]);
-        })
 
-        await fs.writeFile(__dirname + "/data/" + comp + ".json", JSON.stringify(configs[comp]), 'utf8');
-        return true
-    }
-    return false
 }
 
-const getAllPlayersDetailed = () => {
-    return configs["playerDB"];
+const getAllPlayersDetailed = async () => {
+    return RRPlayerModel.find({ }).exec();
 }
 
 const patchUsers = async (changes) => {
-    Object.keys(changes).forEach(c => {
-        setJSONPath(configs["playerDB"], c, changes[c]);
-    });
 
-    await fs.writeFile(__dirname + "/data/playerDatabase.json", JSON.stringify(configs["playerDB"]), 'utf8');
-    return true;
 }
 
 const addCompetition = async (compName, compData) => {
-    configs["general"].competitions.push(compName);
-    configs[compName] = compData;
-    await fs.writeFile(__dirname + "/data/" + compName + ".json", JSON.stringify(compData), 'utf8');
-    await fs.writeFile(__dirname + "/data/config.json", JSON.stringify(configs["general"]), 'utf8')
+
 }
 
 const getAllCompetitions = () => {
-    return configs["general"].competitions
+
 }
 
 const getRanking = (stat, map="") => {
@@ -238,19 +200,18 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
         competitions.push(newestCompName);
     }
 
-    competitions.forEach(element => {
+    for(let element of competitions) {
         let comp;
         if(element === newestCompName) {
             comp = newestCompData
         } else {
-            comp = getStoredCompetition(element);
+            comp = await getStoredCompetitionMatches(element);
         }
         comp.sort((a, b) => {
             return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         }).reverse().forEach(match => {
-            let player1 = match.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
-            let player2 = match.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
-
+            let player1 = match.player1;
+            let player2 = match.player2;
             // Create player objects if not yet done
             if(rankings[player1] === undefined) {
                 rankings[player1] = {
@@ -390,7 +351,7 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
                 }
             });
         });
-    });
+    }
 
     Object.keys(currentWinningSprees).forEach(e => {
         if(currentWinningSprees[e] > rankings[e].longestWinningSpree) {
@@ -403,62 +364,15 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
 }
 
 const getRecords = () => {
-    return configs["records"];
+    
 }
 
 const patchRecords = async (changes) => {
-    Object.keys(changes).forEach(e => {
-        setJSONPath(configs["records"], e, changes[e]);
-    });
-
-    await fs.writeFile(__dirname + "/data/records.json", JSON.stringify(configs["records"]), 'utf8');
-    return true;
+    
 }
 
 const renamePlayer = async (oldName, newName) => {
-    let changes = [];
-    // Check in all competitions
-    await getAllCompetitions().forEach(async (element) => {
-        let compChanges = {};
-        getStoredCompetition(element).forEach((match, idx) => {
-            if(match.player1 === oldName) {
-                compChanges[idx + ".player1"] = newName;
-                changes.push(element + " " + idx + " (vs " + match.player2 + ") - Player 1 renamed to " + newName);
-            } else if(match.player2 === oldName) {
-                compChanges[idx + ".player2"] = newName;
-                changes.push(element + " " + idx + " (vs " + match.player1 + ") - Player 2 renamed to " + newName);
-            }
-        });
-        if(compChanges !== {}) {
-            await patchStoredComptition(element, compChanges);
-        }
-    });
-    // Check in player-db
-    if(configs["playerDB"][oldName] !== undefined) {
-        configs["playerDB"][newName] = configs["playerDB"][oldName];
-        delete configs["playerDB"][oldName];
-        changes.push("Renamed player-database entry")
-        await fs.writeFile(__dirname + "/data/playerDatabase.json", JSON.stringify(configs["playerDB"]), 'utf8');
-    }
-    // Check in records
-    configs["records"].other.forEach((element, idx) => {
-        if(element.players.includes(oldName)) {
-            configs["records"].other[idx].players = configs["records"].other[idx].players.filter(e => {return e !== oldName});
-            configs["records"].other[idx].players.push(newName);
-            changes.push("Record " + element.record + " player renamed");
-        }
-    });
-    configs["records"].maps.forEach((element, idx) => {
-        if(element.player === oldName) {
-            configs["records"].maps[idx].player = newName;
-            changes.push("Map-record " + element.map + " player renamed");
-        } if(element.round.search(oldName) != -1) {
-            changes.push("!! Round in map record " + element.map + " needs manual change!");
-        }
-    });
-    await fs.writeFile(__dirname + "/data/records.json", JSON.stringify(configs["records"]), 'utf8');
     
-    return changes;
 }
 
 const validateAPIKey = (apiKey) => {
@@ -471,7 +385,7 @@ export { loadConfigs }
 export { getPlayerAbreviationOverride }
 export { getPlayerInfo }
 export { getAllPlayers }
-export { getStoredCompetition }
+export { getStoredCompetitionMatches as getStoredCompetition }
 export { patchStoredComptition }
 export { getAllPlayersDetailed }
 export { patchUsers }

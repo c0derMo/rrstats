@@ -7,6 +7,8 @@ interface IRRCompetiton {
     finished: Date;
     challongeURL: string;
     hitmapsStatsURL: string;
+    sheetID: string;
+    tabName: string;
 }
 
 interface ICompetitionDocument extends IRRCompetiton, Document {
@@ -23,7 +25,9 @@ const RRCompetitionSchema = new Schema({
     started: Date,
     finished: Date,
     challongeURL: String,
-    hitmapsStatsURL: String
+    hitmapsStatsURL: String,
+    sheetID: String,
+    tabName: String
 });
 
 export const RRCompetitionModel = model<ICompetitionDocument>("competition", RRCompetitionSchema) as ICompetitionModel;

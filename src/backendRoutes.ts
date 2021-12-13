@@ -155,9 +155,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/api/competition',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/api/competition');
-            return getStoredCompetition(request.query.competition);
+            return await getStoredCompetition(request.query.competition);
         },
         options: {
             auth: 'session',

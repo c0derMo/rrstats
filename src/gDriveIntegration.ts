@@ -1,5 +1,7 @@
 import { getPlayerAbreviationOverride } from "./dataManager";
 const { DateTime } = require("luxon");
+import { IRRMatch } from "./models/Match";
+import { RRPlayerModel } from "./models/Player";
 
 function monthToIndex(month) {
     switch(month) {
@@ -65,7 +67,7 @@ function monthToIndex(month) {
     [3, 4, 5, 7, 6, [8, 10, 12], 1]
 */
 
-const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[0, 3, 4, 6, 5, [9, 11, 13, 15], 1]) => {
+const GDriveObjectToMatchlist = async (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[0, 3, 4, 6, 5, [9, 11, 13, 15, 17, 19], 1]) => {
     let matches = [];
 
     if(debugLog) console.log("[DBG] We use new function");
@@ -106,19 +108,23 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
     if(debugLog) console.log("[DBG] Amount of rows: " + betterData.length);
 
     // Filtering matches by looking at the score-column[6] (let's hope In4 never changes the layout of the spreadsheet LUL)
-    betterData.forEach(element => {
+    for(let element of betterData) {
         //If player1 = "Result" decrement date
         if(element[columnDefinitions[2] as number] == "Result") {
             // currentDate.setDate(currentDate.getDate() - 1);
             currentDate = currentDate.minus({ days: 1 });
-            if(currentDate.day == 14 && currentDate.month == 11) {
+            // RRWC2021 Fix
+            if (currentDate.day == 14 && currentDate.month == 11) {
                 columnDefinitions = [0, 3, 4, 6, 5, [7, 9, 11], 1];
+            }
+            if (currentDate.day == 23 && currentDate.month == 11) {
+                columnDefinitions = [0, 3, 4, 6, 5, [9, 11, 13, 15], 1];
             }
         }
         if(debugLog) console.log(element[columnDefinitions[4] as number]);
         if(element[columnDefinitions[4] as number].match(/[0-9]+-[0-9]+/)) {
             if(debugLog) console.log("[DBG] First check passed")
-            if(element[columnDefinitions[1] as number] == "Grand Final" || element[columnDefinitions[1] as number] == "RRWC \nGrand Final") {
+            if(element[columnDefinitions[1] as number] == "Grand Final" || element[columnDefinitions[1] as number] == "RRWC \nGrand Final" || element[columnDefinitions[1] as number] == "LB Final") {
                 if(debugLog) {
                     console.log("[DBG] Grand final detected! Avoiding.");
                 }
@@ -174,22 +180,26 @@ const GDriveObjectToMatchlist = (obj, competition="Unknown", debugLog=false, yea
                     console.log(dt.invalidExplanation);
                 }
 
-                const tmp: Match = {
+                const tmp: IRRMatch = {
+                    player1: element[columnDefinitions[2] as number].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", ""),
+                    player2: element[columnDefinitions[3] as number].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", ""),
+                    score: {
+                        player1Points: parseInt(scoreArr[0]),
+                        player2Points: parseInt(scoreArr[1]),
+                        winner: winner
+                    },
+                    competition: competition,
                     platform: element[columnDefinitions[0] as number],
                     round: element[columnDefinitions[1] as number],
-                    player1: element[columnDefinitions[2] as number],
-                    player2: element[columnDefinitions[3] as number],
-                    score: element[columnDefinitions[4] as number],
-                    winner: winner,
-                    competition: competition,
                     maps: maps,
+                    bans: [],
                     timestamp: dt.toString()
                 }
 
                 matches.push(tmp);
             }
         }
-    });
+    }
 
     if(debugLog) console.log("[DBG] Amount of parsed matches: " + matches.length);
 

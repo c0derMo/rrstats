@@ -16,7 +16,7 @@ interface IRRPlayer {
 }
 
 interface IPlayerDocument extends IRRPlayer, Document {
-
+    fillDefault(this: IPlayerDocument): Promise<void>;
 }
 
 interface IPlayerModel extends Model<IPlayerDocument> {
@@ -25,11 +25,22 @@ interface IPlayerModel extends Model<IPlayerDocument> {
 
 const RRPlayerSchema = new Schema({
     primaryName: String,
-    secondaryName: String,
+    secondaryNames: [String],
     discordId: String,
     competitions: [{ competiton: String, placement: Number, bracket: String }],
     title: String,
     customTitle: Boolean
 });
+
+RRPlayerSchema.methods.fillDefault = fillDefault;
+
+async function fillDefault(this: IPlayerDocument): Promise<void> {
+    this.primaryName = "";
+    this.secondaryNames = [];
+    this.discordId = "";
+    this.competitions = [];
+    this.title = "";
+    this.customTitle = false;
+}
 
 export const RRPlayerModel = model<IPlayerDocument>("player", RRPlayerSchema) as IPlayerModel;

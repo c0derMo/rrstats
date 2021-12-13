@@ -1,6 +1,7 @@
 import gDriveToMatchlist from './gDriveIntegration';
 import { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } from "./dataManager";
 import { getDiscordProfilePictureURL, getGDriveData } from "./httpClient";
+import { RRPlayerModel } from './models/Player';
 
 let maintenanceMode = false;
 
@@ -92,10 +93,10 @@ const addRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/allPlayers.js',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/allPlayers.js');
-            return "const players = " + JSON.stringify(getAllPlayers()) + ";";
+            return "const players = " + JSON.stringify(await getAllPlayers()) + ";";
         }
     })
 
@@ -124,7 +125,7 @@ const addRoutes = (server) => {
             if(maintenanceMode) return "This? This is maintenance.";
 
             // Query for player info
-            const playerInfo = getPlayerInfo(request.params.player);
+            const playerInfo = await getPlayerInfo(request.params.player);
             let title = playerInfo.title;
 
             // Query for stored matches
@@ -142,10 +143,10 @@ const addRoutes = (server) => {
             const newestCompData = getNewestCompetitionData();
             if(newestCompData.name !== "") {
                 const newestDoc = await getGDriveData(newestCompData.link, newestCompData.name);
-                const newestData = gDriveToMatchlist(JSON.parse(newestDoc.substring(47, newestDoc.length-2)), newestCompData.name);
-    
+                const newestData = await gDriveToMatchlist(JSON.parse(newestDoc.substring(47, newestDoc.length-2)), newestCompData.name);
+
                 matches = matches.concat(newestData.filter(e => {
-                    return (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player || e.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player);
+                    return (e.player1 == request.params.player || e.player2 == request.params.player);
                 }));
             }
 

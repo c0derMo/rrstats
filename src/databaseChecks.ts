@@ -9,6 +9,7 @@ import { getAllCompetitions, getStoredCompetition, getPlayerInfo, getAllPlayersD
 // }
 //
 
+
 const _formatMessage = (competition, match, p1, p2, message) => {
     return "Competition " + competition + " Match " + match + " (" + p1 + " vs " + p2 + "): " + message;
 }
@@ -17,8 +18,9 @@ const _normalizePlayerName = (pname) => {
     return pname.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "");
 }
 
+//TODO: Fix all this
 const runChecks = (checks) => {
-    let result = {
+    /*let result = {
         warnings: [],
         errors: []
     };
@@ -33,13 +35,13 @@ const runChecks = (checks) => {
         result.errors = result.errors.concat(tmp.errors);
     }
     if(checks.includes("matchesWithoutPlayers")) {
-        let tmp = _matchWithoutPlayer();
-        result.warnings = result.warnings.concat(tmp.warnings);
-        result.errors = result.errors.concat(tmp.errors);
+        //let tmp = _matchWithoutPlayer();      TODO: See _matchWithoutPlayer();
+        //result.warnings = result.warnings.concat(tmp.warnings);
+        //result.errors = result.errors.concat(tmp.errors);
     }
-    return result;
+    return result;*/
 }
-
+/*
 const _scoreCheck = () => {
     let result = {
         warnings: [],
@@ -81,6 +83,7 @@ const _scoreCheck = () => {
     return result;
 }
 
+
 const _matchWithoutPlayer = () => {
     let result = {
         warnings: [],
@@ -100,6 +103,7 @@ const _matchWithoutPlayer = () => {
 
     return result;
 }
+
 
 const _playerWithoutMatches = () => {
     let result = {
@@ -135,6 +139,6 @@ const _playerWithoutMatches = () => {
     }
 
     return result;
-}
+}*/
 
 export { runChecks };
