@@ -1,9 +1,5 @@
 const fs = require('fs/promises');
 import { setJSONPath, mapAbreviationToArrayIndex } from "./utils";
-import { connect, disconnect } from './databaseManager';
-import { RRMatchModel } from './models/Match';
-import { RRPlayerModel } from './models/Player';
-import { RRCompetitionModel } from './models/Competitions';
 
 let configs = {}
 
@@ -33,12 +29,18 @@ const loadConfigs = async () => {
     const records = await fs.readFile(__dirname + "/data/records.json", "utf8");
     const recordsJSON = JSON.parse(records);
     configs["records"] = recordsJSON;
-
-    await connect();
 }
 
-const getStoredMatches = async(playername) => {
-    return await RRMatchModel.find({ primaryName: playername }).exec();
+const getStoredMatches = (playername) => {
+    let matches = []
+
+    configs["general"].competitions.forEach(element => {
+        matches = matches.concat(configs[element].filter(e => {
+            return (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == playername || e.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == playername);
+        }));
+    });
+
+    return matches;
 }
 
 const getNewestCompetitionData = () => {

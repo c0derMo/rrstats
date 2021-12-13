@@ -10,7 +10,8 @@
     "@types/node": "^15.6.0",
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
-    "luxon": "^2.0.2"
+    "luxon": "^2.0.2",
+    "mongoose": "^6.0.13"
   },
   "scripts": {
     "build": "tsc && cp -R -f data out && cp -R -f html out",
@@ -22,6 +23,7 @@
     "deploy-win": "yarn build-win && xcopy out deploy /s /i /y && xcopy run.sh deploy /y && xcopy yarn.lock deploy /y && xcopy package.json deploy /y"
   },
   "devDependencies": {
-    "@types/luxon": "^2.0.7"
+    "@types/luxon": "^2.0.7",
+    "@types/mongoose": "^5.11.97"
   }
 }

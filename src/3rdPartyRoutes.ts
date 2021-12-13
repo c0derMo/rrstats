@@ -20,7 +20,7 @@ const addAPIRoutes = (server) => {
                 }
             }
 
-            let matches = getStoredMatches(name);
+            let matches = await getStoredMatches(name);
             const newestCompData = getNewestCompetitionData();
             if(newestCompData.name !== "") {
                 const newestDoc = await getGDriveData(newestCompData.link, newestCompData.name);
@@ -31,13 +31,13 @@ const addAPIRoutes = (server) => {
                 }));
             }
 
-            matches.forEach(e => {
-                if(e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == name) {
-                    e.requestedPlayer = 1;
-                } else {
-                    e.requestedPlayer = 2;
-                }
-            });
+            // matches.forEach(e => {
+            //     if(e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == name) {
+            //         e.requestedPlayer = 1;
+            //     } else {
+            //         e.requestedPlayer = 2;
+            //     }
+            // });
 
             return matches;
         }

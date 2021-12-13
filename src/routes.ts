@@ -130,7 +130,7 @@ const addRoutes = (server) => {
             // Query for stored matches
             let matches = [];
             
-            matches = matches.concat(getStoredMatches(request.params.player));
+            matches = matches.concat(await getStoredMatches(request.params.player));
 
             if(title === "" && matches.length > 0) {
                 title = "Returning Rival"
