@@ -1,6 +1,6 @@
 import { Schema, Document, Model, model } from "mongoose";
 
-interface IRRRecord {
+export interface IRRRecord {
     category: string;
     isMapRecord: boolean;
     player: string;

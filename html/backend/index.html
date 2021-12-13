@@ -103,7 +103,7 @@
 
                 $('#reload').on("click", (e) => {
                     $.get("/backend/api/reloadConfigs", (data, status, x) => {
-                        if(status === "success" && data.status === "ok") {
+                        if(status === "success" && data.success) {
                             $('body').toast({
                                 message: 'Successfully reloaded the config files.',
                                 showProgress: 'top',
@@ -122,7 +122,7 @@
 
                 $('#recalcLeaderboard').on("click", (e) => {
                     $.get("/backend/api/recalculateLeaderboards", (data, status, x) => {
-                        if(status === "success" && data.status === "ok") {
+                        if(status === "success" && data.success) {
                             $('body').toast({
                                 message: 'Successfully recalculated leaderboard info.',
                                 showProgress: 'top',

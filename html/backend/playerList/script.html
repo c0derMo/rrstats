@@ -17,12 +17,10 @@
 
     $('#saveConfirm').on("click", () => {
         $.ajax("/backend/api/players", {
-            data: {
-                changes: JSON.stringify(changes)
-            },
+            data: changes,
             method: 'PATCH',
             success: (data, status, x) => {
-                if(data.status === "ok") {
+                if(data.success === true) {
                     $('body').toast({
                         message: 'Changes sent to the database.'
                     })
@@ -47,10 +45,11 @@
         $('.ui.accordion').accordion();
         $.get("/backend/api/players", "", (data, status, x) => {
             if(status === "success") {
-                pageData = data;
-                Object.keys(data).forEach(e => {
-                    addPlayer(e, data[e])
-                });
+                pageData = {};
+                data.forEach(player => {
+                    pageData[player._id] = player;
+                    addPlayer(player);
+                })
 
                 $('input').on("change", changeInput);
                 $('textarea').on("change", changeArea);
@@ -58,19 +57,19 @@
         });
     });
 
-    function addPlayer(pName, pData) {
+    function addPlayer(player) {
         let row = $('<tr></tr>');
-        row.append($('<td>' + pName + '</td>'));
-        row.append($('<td></td>').append($('<input type="text" value="' + pData.title + '">').attr('id', pName + ".title")));
-        row.append($('<td></td>').append($('<input type="checkbox">').attr('id', pName + ".customTitle").attr("checked", pData.customTitle)));
-        row.append($('<td></td>').append($('<input type="text" value="' + pData.discordId + '">').attr('id', pName + ".discordId")));
+        row.append($('<td>' + player.primaryName + '</td>'));
+        row.append($('<td></td>').append($('<input type="text" value="' + player.title + '">').attr('id', player._id).attr("attr", "title")));
+        row.append($('<td></td>').append($('<input type="checkbox">').attr('id', player._id).attr("attr", "customTitle").attr("checked", player.customTitle)));
+        row.append($('<td></td>').append($('<input type="text" value="' + player.discordId + '">').attr('id', player._id).attr("attr", "discordId")));
         let accordion = $('<div></div>').addClass("ui accordion");
         accordion.append($('<div></div>').addClass("title").append($("<i></i>").addClass("dropdown icon")));
         let competitionsString = ""
-        pData.competitions.forEach(c => {
+        player.competitions.forEach(c => {
             competitionsString += c.competition + ": " + c.placement + "\n";
         })
-        accordion.append($('<div></div>').addClass("content").append($("<textarea></textarea>").val(competitionsString).attr('player', pName).css("width", "100%").css("height", "50px")));
+        accordion.append($('<div></div>').addClass("content").append($("<textarea></textarea>").val(competitionsString).attr('player', player._id).css("width", "100%").css("height", "50px")));
         row.append($('<td></td>').append(accordion.accordion()));
 
         $('#players').append(row);
@@ -86,29 +85,34 @@
     }
 
     function changeInput(e) {
+        let playerId = $(e.target).attr("id");
+        let path = $(e.target).attr("attr");
+
         if($(e.target).attr("type") == "checkbox") {
-            if($(e.target).is(":checked") == getJSONPath(pageData, $(e.target).attr("id"))) {
-                delete changes[$(e.target).attr("id")]
+            if($(e.target).is(":checked") == getJSONPath(pageData[playerId], path)) {
+                delete changes[playerId + ";" + path];
             } else {
-                changes[$(e.target).attr("id")] = $(e.target).is(":checked");
+                changes[playerId + ";" + path] = $(e.target).is(":checked");
             }
         } else {
-            if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
-                delete changes[$(e.target).attr("id")]
+            if($(e.target).val() === getJSONPath(pageData[playerId], path)) {
+                delete changes[playerId + ";" + path];
             } else {
-                changes[$(e.target).attr("id")] = $(e.target).val();
+                changes[playerId + ";" + path] = $(e.target).val();
             }
         }
     }
 
     function changeArea(e) {
+        let playerId = $(e.target).attr("player");
+
         let competitionsString = ""
-        pageData[$(e.target).attr("player")].competitions.forEach(c => {
+        pageData[playerId].competitions.forEach(c => {
             competitionsString += c.competition + ": " + c.placement + "\n";
         });
 
         if($(e.target).val() === competitionsString) {
-            delete changes[$(e.target).attr("player") + ".competitions"]
+            delete changes[playerId + ";competitions"]
         } else {
             let comps = []
             $(e.target).val().split("\n").forEach(c => {
@@ -117,7 +121,7 @@
                     comps.push({competition: comp[0], placement: comp[1]})
                 }
             });
-            changes[$(e.target).attr("player") + ".competitions"] = comps;
+            changes[playerId + ";competitions"] = comps;
         }
     }
 

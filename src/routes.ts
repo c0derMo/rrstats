@@ -1,7 +1,6 @@
-import gDriveToMatchlist from './gDriveIntegration';
-import { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } from "./dataManager";
-import { getDiscordProfilePictureURL, getGDriveData } from "./httpClient";
-import { RRPlayerModel } from './models/Player';
+import { getAllPlayers, getPlayer } from './dataHandling/frontend';
+import { getLeaderboardStat } from './dataHandling/leaderboards';
+import { getRecords } from './dataHandling/records';
 
 let maintenanceMode = false;
 
@@ -123,48 +122,8 @@ const addRoutes = (server) => {
         path: '/api/{player}',
         handler: async(request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-
-            // Query for player info
-            const playerInfo = await getPlayerInfo(request.params.player);
-            let title = playerInfo.title;
-
-            // Query for stored matches
-            let matches = [];
-            
-            matches = matches.concat(await getStoredMatches(request.params.player));
-
-            if(title === "" && matches.length > 0) {
-                title = "Returning Rival"
-            } else if(title === "") {
-                title = "Roulette Rookie"
-            }
-
-            // Query for matches in newest competition
-            const newestCompData = getNewestCompetitionData();
-            if(newestCompData.name !== "") {
-                const newestDoc = await getGDriveData(newestCompData.link, newestCompData.name);
-                const newestData = await gDriveToMatchlist(JSON.parse(newestDoc.substring(47, newestDoc.length-2)), newestCompData.name);
-
-                matches = matches.concat(newestData.filter(e => {
-                    return (e.player1 == request.params.player || e.player2 == request.params.player);
-                }));
-            }
-
-            matches = matches.sort((a, b) => {
-                return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-            })
-
-            const obj = {
-                avatar: await getDiscordProfilePictureURL(playerInfo.discordId),
-                name: request.params.player,
-                title: title,
-                competitions: playerInfo.competitions,
-                matches: matches,
-                customTitle: playerInfo.customTitle
-            }
-
             request.log(['get', 'info'], '/api/' + request.params.player);
-            return "setPageContent(" + JSON.stringify(obj) + ");"
+            return "setPageContent(" + JSON.stringify(await getPlayer(request.params.player)) + ");"
         }
     });
 
@@ -178,9 +137,9 @@ const addRoutes = (server) => {
 
             request.log(['get', 'info'], '/api/leaderboards');
             if(map === undefined || map === "") {
-                return getRanking(stat);
+                return JSON.stringify(getLeaderboardStat(stat));
             } else {
-                return getRanking(stat, map);
+                return JSON.stringify(getLeaderboardStat(stat, map));
             }
         }
     });
@@ -191,7 +150,7 @@ const addRoutes = (server) => {
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/records');
-            return getRecords();
+            return JSON.stringify(getRecords());
         }
     })
 

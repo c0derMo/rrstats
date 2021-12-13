@@ -1,5 +1,3 @@
-import { getAllCompetitions, getStoredCompetition, getPlayerInfo, getAllPlayersDetailed } from "./dataManager";
-
 //
 // each db check is a function that returns an object
 // object is built up like this:

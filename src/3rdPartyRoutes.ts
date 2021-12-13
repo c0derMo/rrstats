@@ -1,4 +1,3 @@
-import { getStoredMatches, getRecords, validateAPIKey, getAllPlayersDetailed, getNewestCompetitionData } from "./dataManager";
 import { getGDriveData } from "./httpClient";
 import gDriveToMatchlist from './gDriveIntegration';
 

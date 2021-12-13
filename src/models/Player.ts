@@ -6,13 +6,14 @@ interface IRRCompetitionPlacement {
     bracket: string;
 }
 
-interface IRRPlayer {
+export interface IRRPlayer {
     primaryName: string;        // Name the player is currently accessible by URL and is displayed on the page
     secondaryNames: string[];   // Other names the player has played as in the past
     discordId: string;
     competitions: IRRCompetitionPlacement[];
     title: string;
     customTitle: boolean;
+    excludedFromSearch: boolean;
 }
 
 interface IPlayerDocument extends IRRPlayer, Document {
@@ -29,7 +30,8 @@ const RRPlayerSchema = new Schema({
     discordId: String,
     competitions: [{ competiton: String, placement: Number, bracket: String }],
     title: String,
-    customTitle: Boolean
+    customTitle: Boolean,
+    excludedFromSearch: Boolean
 });
 
 RRPlayerSchema.methods.fillDefault = fillDefault;
@@ -41,6 +43,7 @@ async function fillDefault(this: IPlayerDocument): Promise<void> {
     this.competitions = [];
     this.title = "";
     this.customTitle = false;
+    this.excludedFromSearch = false;
 }
 
 export const RRPlayerModel = model<IPlayerDocument>("player", RRPlayerSchema) as IPlayerModel;

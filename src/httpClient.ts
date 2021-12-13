@@ -1,6 +1,6 @@
 const axios = require('axios');
 require('dotenv').config();
-import { recalculateRankings } from './dataManager';
+import { recalculate } from './dataHandling/leaderboards';
 import gDriveToMatchlist from './gDriveIntegration';
 
 const cache = {
@@ -64,7 +64,7 @@ const getGDriveData = async (link, name) => {
     console.log(`\x1b[34m${new Date()}      Return gdrive response\x1b[0m`)
 
     // Also, we want to recalculate the leaderboard everytime we get new google data (i think)
-    await recalculateRankings(name, await gDriveToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), name));
+    await recalculate(await gDriveToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), name));
     return req.data;
 }
 

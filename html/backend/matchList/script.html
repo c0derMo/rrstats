@@ -1,5 +1,5 @@
 <script>
-    let pageData = [];
+    let pageData = {};
     let changes = {};
 
     $('#save').on("click", () => {
@@ -13,13 +13,10 @@
 
     $('#saveConfirm').on("click", () => {
         $.ajax("/backend/api/competition", {
-            data: {
-                comp: $('#competition').val(),
-                changes: JSON.stringify(changes)
-            },
+            data: changes,
             method: 'PATCH',
             success: (data, status, x) => {
-                if(data.status === "ok") {
+                if(data.success === true) {
                     $('body').toast({
                         message: 'Changes sent to the database.'
                     })
@@ -45,12 +42,13 @@
     $('#competition').on("change", (e) => {
         $.get("/backend/api/competition", {competition: $('#competition').val()}, (data, status, x) => {
             if(status === "success") {
-                pageData = data
+                pageData = {};
                 changes = {};
 
                 $("#table").html("")
-                data.forEach((element, idx) => {
-                    addMatch(element, idx);
+                data.forEach((element) => {
+                    pageData[element._id] = element;
+                    addMatch(element);
                 });
 
                 // Add listeners
@@ -72,38 +70,43 @@
     }
 
     function inputChanged(e) {
-        if($(e.target).val() === getJSONPath(pageData, $(e.target).attr("id"))) {
-            delete changes[$(e.target).attr("id")]
+        let matchId = $(e.target).attr("id");
+        let path = $(e.target).attr("attr");
+
+        if($(e.target).val() === getJSONPath(pageData[matchId], path)) {
+            delete changes[matchId + ";" + path];
         } else {
-            changes[$(e.target).attr("id")] = $(e.target).val();
+            changes[matchId + ";" + path] = $(e.target).val();
         }
     }
 
     function selectChanged(e) {
-        if(parseInt($(e.target).val()) === getJSONPath(pageData, $(e.target).attr("id"))) {
-            delete changes[$(e.target).attr("id")];
+        let matchId = $(e.target).attr("id");
+        let path = $(e.target).attr("attr");
+
+        if(parseInt($(e.target).val()) === getJSONPath(pageData[matchId], path)) {
+            delete changes[matchId + ";" + path];
         } else {
-            changes[$(e.target).attr("id")] = parseInt($(e.target).val());
+            changes[matchId + ";" + path] = parseInt($(e.target).val());
         }
     }
 
-    function addMatch(match, idx) {
+    function addMatch(match) {
         let amountRows = Math.max(Math.ceil(match.maps.length / 3), 1);
 
         let rows = [];
         for (let index = 0; index < amountRows; index++) {
             rows.push($('<tr></tr>'));
         }
-        rows[0].append($("<td></td>").attr("rowspan", amountRows).text(idx));
-        rows[0].append($("<td></td>").attr("rowspan", amountRows).append($("<input type='text' value='" + match.platform + "'>").attr("id", idx + ".platform")));
-        rows[0].append($("<td></td>").attr("rowspan", amountRows).append($("<input type='text' value='" + match.round + "'>").attr("id", idx + ".round")));
+        rows[0].append($("<td></td>").attr("rowspan", amountRows).append($("<input type='text' value='" + match.platform + "'>").attr("id", match._id).attr("attr", "platform")));
+        rows[0].append($("<td></td>").attr("rowspan", amountRows).append($("<input type='text' value='" + match.round + "'>").attr("id", match._id).attr("attr", "platform")));
 
-        let winnerSelectRow = $('<select class="selectWinPick" id="' + idx + '.winner"></select>');
-        if(match.winner === 1) {
+        let winnerSelectRow = $('<select class="selectWinPick" id="' + match._id + '" attr="score.winner"></select>');
+        if(match.score.winner === 1) {
             winnerSelectRow.append("<option value='1' selected>1 (" + match.player1 + ")</option>");
             winnerSelectRow.append("<option value='2'>2 (" + match.player2 + ")</option>");
             winnerSelectRow.append("<option value='0'>0 (Draw)</option>");
-        } else if(match.winner === 2) {
+        } else if(match.score.winner === 2) {
             winnerSelectRow.append("<option value='1'>1 (" + match.player1 + ")</option>");
             winnerSelectRow.append("<option value='2' selected>2 (" + match.player2 + ")</option>");
             winnerSelectRow.append("<option value='0'>0 (Draw)</option>");
@@ -114,15 +117,17 @@
         }
         rows[0].append($("<td></td>").attr("rowspan", amountRows).append(winnerSelectRow));
 
-        rows[0].append($("<td><input type='text' value='" + match.player1 + "' id='" + idx + ".player1'></td>").attr("rowspan", amountRows));
-        rows[0].append($("<td><input class='score' type='text' value='" + match.score + "' id='" + idx + ".score'></td>").attr("rowspan", amountRows));
-        rows[0].append($("<td><input type='text' value='" + match.player2 + "' id='" + idx + ".player2'></td>").attr("rowspan", amountRows));
+        rows[0].append($("<td><input type='text' value='" + match.player1 + "' id='" + match._id + "' attr='player1'></td>").attr("rowspan", amountRows));
+        rows[0].append($("<td><input class='score' type='text' value='" + match.score.player1Points + "' id='" + match._id + "' attr='score.player1Points'></td>").attr("rowspan", amountRows));
+        rows[0].append($('<td>-</td>').attr('rowspan', amountRows));
+        rows[0].append($("<td><input class='score' type='text' value='" + match.score.player2Points + "' id='" + match._id + "' attr='score.player2Points'></td>").attr("rowspan", amountRows));
+        rows[0].append($("<td><input type='text' value='" + match.player2 + "' id='" + match._id + "' attr='player2'></td>").attr("rowspan", amountRows));
 
         match.maps.forEach((m, midx) => {
             let row = Math.floor(midx / 3);
-            rows[row].append("<td><input class='map' type='text' value='" + m.map + "' id='" + idx + ".maps." + midx + ".map'></td>");
+            rows[row].append("<td><input class='map' type='text' value='" + m.map + "' id='" + match._id + "' attr='maps." + midx + ".map'></td>");
 
-            let winnerSelectMap = $("<select class='selectWinPick'></select>").attr("id", idx + ".maps." + midx + ".winner");
+            let winnerSelectMap = $("<select class='selectWinPick'></select>").attr("id", match._id + "' attr='maps." + midx + ".winner");
             switch(m.winner) {
                 case 0:
                     winnerSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");
@@ -147,7 +152,7 @@
             }
             rows[row].append($("<td></td>").append(winnerSelectMap));
             
-            let pickedSelectMap = $('<select class="selectWinPick"></select>').attr("id", idx + ".maps." + midx + ".picked");
+            let pickedSelectMap = $('<select class="selectWinPick"></select>').attr("id", match._id + "' attr='maps." + midx + ".picked");
             switch(m.picked) {
                 case 0:
                     pickedSelectMap.append("<option value='1'>1 (" + match.player1 + ")</option>");

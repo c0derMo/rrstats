@@ -3,9 +3,10 @@
 const Hapi = require("@hapi/hapi");
 const Inert = require("@hapi/inert");
 import { addRoutes } from "./routes";
-import { loadConfigs } from "./dataManager";
+import { loadConfig } from "./dataHandling/config";
 import { addBackendRoutes } from "./backendRoutes";
 import { addAPIRoutes } from "./3rdPartyRoutes";
+import { connect } from "./databaseManager";
 const crypt = require("crypto");
 
 const init = async() => {
@@ -61,7 +62,8 @@ const init = async() => {
     addBackendRoutes(server);
     addAPIRoutes(server);
 
-    await loadConfigs();
+    await loadConfig();
+    await connect();
 
     await server.start();
     console.log("F7SC Player Statistics running @ " + server.info.uri);

@@ -1,9 +1,9 @@
 import { setMaintenanceMode } from './routes';
-import { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition, recalculateRankings, renamePlayer } from "./dataManager";
-const axios = require("axios");
-import gDriveObjectToMatchlist from './gDriveIntegration';
-import { runChecks } from './databaseChecks';
+import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
+import { getAllPlayers, getStoredCompetitionMatches, importSpreadsheet, patchPlayers, patchStoredCompetitionMatches, renamePlayer } from './dataHandling/backend';
+import { loadConfig } from './dataHandling/config';
+import { recalculate } from './dataHandling/leaderboards';
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
@@ -157,7 +157,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/competition',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/api/competition');
-            return await getStoredCompetition(request.query.competition);
+            return await getStoredCompetitionMatches(request.query.competition);
         },
         options: {
             auth: 'session',
@@ -169,15 +169,8 @@ const addBackendRoutes = (server) => {
         method: 'PATCH',
         path: '/backend/api/competition',
         handler: async(request, h) => {
-            let { comp, changes } = request.payload;
-            changes = JSON.parse(changes);
-            if(await patchStoredComptition(comp, changes)) {
-                request.log(['patch', 'info'], '/backend/api/competition');
-                return {status: "ok"}
-            } else {
-                request.log(['patch', 'error'], '/backend/api/competition');
-                return {status: "error"}
-            }
+            request.log(['patch', 'info'], '/backend/api/competition');
+            return {success: await patchStoredCompetitionMatches(request.payload)};
         },
         options: {
             auth: 'session',
@@ -188,9 +181,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/api/players',
-        handler: (request, h) => {
+        handler: async(request, h) => {
             request.log(['get', 'info'], '/backend/api/players');
-            return getAllPlayersDetailed();
+            return await getAllPlayers();
         },
         options: {
             auth: 'session',
@@ -202,15 +195,8 @@ const addBackendRoutes = (server) => {
         method: 'PATCH',
         path: '/backend/api/players',
         handler: async (request, h) => {
-            let { changes } = request.payload;
-            changes = JSON.parse(changes);
-            if(await patchUsers(changes)) {
-                request.log(['patch', 'info'], '/backend/api/players');
-                return {status: 'ok'}
-            } else {
-                request.log(['patch', 'error'], '/backend/api/players');
-                return {status: 'error'}
-            }
+            request.log(['patch', 'info'], '/backend/api/players');
+            return {success: await patchPlayers(request.payload)}
         },
         options: {
             auth: 'session',
@@ -222,9 +208,9 @@ const addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/api/reloadConfigs',
         handler: async (request, h) => {
-            await loadConfigs();
+            await loadConfig();
             request.log(['get', 'info'], '/backend/api/reloadConfigs');
-            return {status: 'ok'}
+            return {success: true}
         },
         options: {
             auth: 'session',
@@ -251,16 +237,8 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/importSpreadsheet',
         handler: async (request, h) => {
             const { sID, tabName, comp, cA, yearInput } = request.payload;
-            let req = await axios.get("https://docs.google.com/spreadsheets/d/" + sID + "/gviz/tq?tqx=out:json&sheet=" + tabName);
-            let fancyData;
-            if(cA === "") {
-                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), comp, true, yearInput);
-            } else {
-                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), comp, true, yearInput, JSON.parse(cA));
-            }
-            await addCompetition(comp, fancyData);
             request.log(['post', 'info'], '/backend/api/importSpreadsheet');
-            return fancyData;
+            return await importSpreadsheet(sID, tabName, comp, cA, parseInt(yearInput));
         },
         options: {
             auth: 'session',
@@ -272,9 +250,9 @@ const addBackendRoutes = (server) => {
         method: 'GET',
         path: '/backend/api/recalculateLeaderboards',
         handler: async (request, h) => {
-            await recalculateRankings();
+            await recalculate();
             request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
-            return {status: 'ok'}
+            return {success: true}
         },
         options: {
             auth: 'session',
