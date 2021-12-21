@@ -1,5 +1,6 @@
 import GDriveObjectToMatchlist from '../gDriveIntegration';
 import { getGDriveData, getDiscordProfilePictureURL } from '../httpClient';
+import { RRCompetitionModel } from '../models/Competitions';
 import { RRMatchModel } from '../models/Match';
 import { RRPlayerModel } from '../models/Player';
 import { getNewestCompetitionMetadata } from './config';
@@ -34,12 +35,14 @@ export async function getPlayer(name: string): Promise<object> {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     })
 
+    const competitions = await RRCompetitionModel.find({"placements.playerId": playerInfo._id}, { name: true, placements: { $elemMatch: { playerId: playerInfo._id } } }).exec();
+
     return {
         avatar: await getDiscordProfilePictureURL(playerInfo?.discordId || ""),
         name: name,
         title: title,
-        competitions: playerInfo?.competitions || [],
+        competitions: competitions,
         matches: matches,
-        customTitle: playerInfo?.customTitle || []
+        customTitle: playerInfo?.customTitle || false
     }
 }

@@ -1,5 +1,11 @@
 import { Schema, Document, Model, model } from 'mongoose';
 
+interface IRRCompetitionPlacement {
+    playerId: string;
+    bracket: string;
+    placement: number;
+}
+
 interface IRRCompetiton {
     name: string;           // Full name, eg. Roulette Rivals World Championship 2021
     tag: string;            // Tag, eg. RRWC2021    tag is also id at the same time
@@ -7,6 +13,7 @@ interface IRRCompetiton {
     finished: Date;
     challongeURL: string;
     hitmapsStatsURL: string;
+    placements: IRRCompetitionPlacement[];
 }
 
 interface ICompetitionDocument extends IRRCompetiton, Document {
@@ -23,7 +30,8 @@ const RRCompetitionSchema = new Schema({
     started: Date,
     finished: Date,
     challongeURL: String,
-    hitmapsStatsURL: String
+    hitmapsStatsURL: String,
+    placements: [{playerId: String, bracket: String, placement: Number}]
 });
 
 export const RRCompetitionModel = model<ICompetitionDocument>("competition", RRCompetitionSchema) as ICompetitionModel;
