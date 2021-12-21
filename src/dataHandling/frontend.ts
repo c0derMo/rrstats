@@ -22,12 +22,11 @@ export async function getPlayer(name: string): Promise<object> {
         title = "Roulette Rookie";
     }
 
-    const currentCompMetadata = getNewestCompetitionMetadata();
-    if(currentCompMetadata.name !== "") {
-        const currentData = await getGDriveData("https://docs.google.com/spreadsheets/d/" + currentCompMetadata.sheetID + "/gviz/tq?tqx=out:json&sheet=" + currentCompMetadata.tabName, currentCompMetadata.name);
-
-        matches = matches.concat(currentData.filter(e => {
-            return (e.player1 == name || e.player2 == name);
+    const newestCompData = await RRCompetitionModel.find({ updateWithSheet: true }).exec();
+    for(let e of newestCompData) {
+        const newestData = await getGDriveData("https://docs.google.com/spreadsheets/d/" + e.sheetId + "/gviz/tq?tqx=out:json&sheet=" + e.tabName, e.tag);
+        matches = matches.concat(newestData.filter(e => {
+            return (playerNames.includes(e.player1) || playerNames.includes(e.player2));
         }));
     }
 
