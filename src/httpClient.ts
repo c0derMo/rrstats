@@ -8,7 +8,8 @@ const cache = {
     gDrive: {
         link: "",
         requestTime: 0,
-        data: ""
+        data: [],
+        rawData: ""
     }
 }
 
@@ -60,12 +61,13 @@ const getGDriveData = async (link, name) => {
     const req = await axios.get(link);
     cache.gDrive.link = link;
     cache.gDrive.requestTime = Date.now();
-    cache.gDrive.data = req.data;
+    cache.gDrive.rawData = req.data;
+    cache.gDrive.data = await gDriveToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), name);
     console.log(`\x1b[34m${new Date()}      Return gdrive response\x1b[0m`)
 
     // Also, we want to recalculate the leaderboard everytime we get new google data (i think)
     await recalculate(await gDriveToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), name));
-    return req.data;
+    return cache.gDrive.data;
 }
 
 export { getGDriveData };

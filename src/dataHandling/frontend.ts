@@ -23,8 +23,7 @@ export async function getPlayer(name: string): Promise<object> {
 
     const currentCompMetadata = getNewestCompetitionMetadata();
     if(currentCompMetadata.name !== "") {
-        const currentDoc = await getGDriveData("https://docs.google.com/spreadsheets/d/" + currentCompMetadata.sheetID + "/gviz/tq?tqx=out:json&sheet=" + currentCompMetadata.tabName, currentCompMetadata.name);
-        const currentData = await GDriveObjectToMatchlist(JSON.parse(currentDoc.substring(47, currentDoc.length-2)), currentCompMetadata.name);
+        const currentData = await getGDriveData("https://docs.google.com/spreadsheets/d/" + currentCompMetadata.sheetID + "/gviz/tq?tqx=out:json&sheet=" + currentCompMetadata.tabName, currentCompMetadata.name);
 
         matches = matches.concat(currentData.filter(e => {
             return (e.player1 == name || e.player2 == name);

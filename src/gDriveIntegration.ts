@@ -1,7 +1,6 @@
 import { getPlayerAbreviationOverride } from "./dataHandling/config";
 const { DateTime } = require("luxon");
 import { IRRMatch } from "./models/Match";
-import { RRPlayerModel } from "./models/Player";
 
 function monthToIndex(month) {
     switch(month) {
