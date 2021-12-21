@@ -1,9 +1,7 @@
-import GDriveObjectToMatchlist from '../gDriveIntegration';
 import { getGDriveData, getDiscordProfilePictureURL } from '../httpClient';
 import { RRCompetitionModel } from '../models/Competitions';
 import { RRMatchModel } from '../models/Match';
 import { RRPlayerModel } from '../models/Player';
-import { getNewestCompetitionMetadata } from './config';
 
 export async function getAllPlayers(): Promise<object[]> {
     let players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }).exec();

@@ -7,10 +7,6 @@ export async function loadConfig(): Promise<void> {
     generalConfig = JSON.parse(generalConfigRaw);
 }
 
-export function getNewestCompetitionMetadata(): any {
-    return generalConfig.currentCompetition;
-}
-
 export function getPlayerAbreviationOverride(abreviation: string): string {
     return generalConfig.playerAbreviationsOverrides[abreviation] || "";
 }
