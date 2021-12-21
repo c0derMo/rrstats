@@ -1,6 +1,6 @@
-import { getPlayerAbreviationOverride } from "./dataHandling/config";
 const { DateTime } = require("luxon");
 import { IRRMatch } from "./models/Match";
+import { RRPlayerModel } from "./models/Player";
 
 function monthToIndex(month) {
     switch(month) {
@@ -106,6 +106,18 @@ const GDriveObjectToMatchlist = async (obj, competition="Unknown", debugLog=fals
 
     if(debugLog) console.log("[DBG] Amount of rows: " + betterData.length);
 
+    
+    // Grabbing all the abbreviation overrides once to avoid long database queries
+    let abbreviationOverrides = {};
+    const abbreviationOverridesQuery = await RRPlayerModel.find({ abbreviationOverride: {$ne: null} }).exec();
+    abbreviationOverridesQuery.forEach(e => {
+        if(e.abbreviationOverride !== "") {
+            abbreviationOverrides[e.abbreviationOverride] = e.primaryName;   
+        }
+    });
+    if(debugLog) console.log(abbreviationOverrides);
+
+
     // Filtering matches by looking at the score-column[6] (let's hope In4 never changes the layout of the spreadsheet LUL)
     for(let element of betterData) {
         //If player1 = "Result" decrement date
@@ -133,8 +145,8 @@ const GDriveObjectToMatchlist = async (obj, competition="Unknown", debugLog=fals
                 (columnDefinitions[5] as number[]).forEach(e => {
                     if(element[e] !== "" && element[e] !== "N/A" && element[e] !== "-") {
                         let wonBy = 0;
-                        if(getPlayerAbreviationOverride(element[e+1]) !== "") {
-                            wonBy = (getPlayerAbreviationOverride(element[e+1]) === element[columnDefinitions[2] as number]) ? 1 : 2
+                        if(abbreviationOverrides[element[e+1]] !== undefined) {
+                            wonBy = (abbreviationOverrides[element[e+1]] === element[columnDefinitions[2] as number]) ? 1 : 2
                         } else {
                             if(element[columnDefinitions[2] as number].toLowerCase().indexOf(element[e+1].toLowerCase()) !== -1) {
                                 wonBy = 1;

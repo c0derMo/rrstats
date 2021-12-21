@@ -3,7 +3,6 @@
 const Hapi = require("@hapi/hapi");
 const Inert = require("@hapi/inert");
 import { addRoutes } from "./routes";
-import { loadConfig } from "./dataHandling/config";
 import { addBackendRoutes } from "./backendRoutes";
 import { addAPIRoutes } from "./3rdPartyRoutes";
 import { connect } from "./databaseManager";
@@ -62,7 +61,6 @@ const init = async() => {
     addBackendRoutes(server);
     addAPIRoutes(server);
 
-    await loadConfig();
     await connect();
 
     await server.start();

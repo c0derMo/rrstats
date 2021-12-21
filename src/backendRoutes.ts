@@ -2,7 +2,6 @@ import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
 import { getAllPlayers, getStoredCompetitionMatches, importSpreadsheet, patchPlayers, patchStoredCompetitionMatches, renamePlayer } from './dataHandling/backend';
-import { loadConfig } from './dataHandling/config';
 import { recalculate } from './dataHandling/leaderboards';
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
@@ -197,20 +196,6 @@ const addBackendRoutes = (server) => {
         handler: async (request, h) => {
             request.log(['patch', 'info'], '/backend/api/players');
             return {success: await patchPlayers(request.payload)}
-        },
-        options: {
-            auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
-        }
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/backend/api/reloadConfigs',
-        handler: async (request, h) => {
-            await loadConfig();
-            request.log(['get', 'info'], '/backend/api/reloadConfigs');
-            return {success: true}
         },
         options: {
             auth: 'session',
