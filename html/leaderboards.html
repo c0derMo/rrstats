@@ -21,6 +21,7 @@
                 <option value="MapWinrate">Map Winrate</option>
                 <option value="RRParticipations">Participations in Roulette Rivals Tournaments</option>
                 <option value="RRWCParticipations">Participations in Roulette Rivals World Championships</option>
+                <option value="FinalAppearances">Appearances in the Grand Finals</option>
                 <option value="Matches">Amount of matches</option>
                 <option value="PercentageDecider">Percentage of matches with decider</option>
                 <option value="DeciderWinrate">Winrate of decider maps</option>
@@ -141,6 +142,7 @@
                                     break;
                                 case 'FinalAppearances':
                                     row.append($("<td></td>").text(data.rankings[e].grandFinalAppearances));
+                                    if(data.rankings[e].grandFinalAppearances == 0) shouldAdd = false;
                                     break;
                                 case 'LongestWinSpree':
                                     row.append($("<td></td>").text(data.rankings[e].longestWinningSpree));

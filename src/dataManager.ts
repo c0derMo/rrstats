@@ -230,7 +230,7 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
     // Decider Winrate                                          D
     // Percentage of own-map-wins                               D
     // Percentage of opponent-map-wins                          D
-    // Mapwin%
+    // Mapwin%                                                  D
     
     const competitions = JSON.parse(JSON.stringify(getAllCompetitions()));
     let rankings = {}
@@ -313,7 +313,7 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
 
 
             // Grand final appearances
-            if(match.round == "Grand Final") {
+            if(match.round == "Grand Final" || match.round == "RRWC Grand Final") {
                 rankings[player1].grandFinalAppearances += 1
                 rankings[player2].grandFinalAppearances += 1
             }
@@ -325,7 +325,7 @@ const recalculateRankings = async (newestCompName = "", newestCompData = []) => 
             if(match.round.search("Group") == -1) {
                 rankings[player1].matchesWithoutGroups += 1
                 rankings[player2].matchesWithoutGroups += 1
-                if(match.maps.length > 2 && match.round !== "Grand Final") {
+                if(match.maps.length > 2 && match.round !== "Grand Final" && match.round !== "RRWC Grand Final") {
                     rankings[player1].matchesWithDecider += 1
                     rankings[player2].matchesWithDecider += 1
                     // Decider winrate
