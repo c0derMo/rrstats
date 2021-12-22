@@ -3,9 +3,14 @@ import { RRCompetitionModel } from '../models/Competitions';
 import { RRMatchModel } from '../models/Match';
 import { RRPlayerModel } from '../models/Player';
 
-export async function getAllPlayers(): Promise<object[]> {
-    let players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }).exec();
-    return players.map(el => { return {title: el.primaryName} });
+export async function getAllPlayers(): Promise<string[]> {
+    let players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, {primaryName: true}).exec();
+    return players.map((e) => {return e.primaryName});
+}
+
+export async function getAllCompetitions(): Promise<object[]> {
+    let competitions = await RRCompetitionModel.find({}, {tag: true, hitmapsStatsURL: true}).exec();
+    return competitions;
 }
 
 export async function getPlayer(name: string): Promise<object> {
@@ -32,7 +37,10 @@ export async function getPlayer(name: string): Promise<object> {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     })
 
-    const competitions = await RRCompetitionModel.find({"placements.playerId": playerInfo._id}, { name: true, placements: { $elemMatch: { playerId: playerInfo._id } } }).exec();
+    let competitions = [];
+    if (playerInfo !== null) {
+        competitions = await RRCompetitionModel.find({"placements.playerId": playerInfo._id}, { name: true, placements: { $elemMatch: { playerId: playerInfo._id } } }).exec();
+    }
 
     return {
         avatar: await getDiscordProfilePictureURL(playerInfo?.discordId || ""),

@@ -1,4 +1,4 @@
-import { getAllPlayers, getPlayer } from './dataHandling/frontend';
+import { getAllCompetitions, getAllPlayers, getPlayer } from './dataHandling/frontend';
 import { getLeaderboardStat } from './dataHandling/leaderboards';
 import { getRecords } from './dataHandling/records';
 
@@ -91,11 +91,14 @@ const addRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/allPlayers.js',
+        path: '/frontpageInfo',
         handler: async (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-            request.log(['get', 'info'], '/allPlayers.js');
-            return "const players = " + JSON.stringify(await getAllPlayers()) + ";";
+            request.log(['get', 'info'], '/frontpageInfo');
+            return {
+                players: await getAllPlayers(),
+                competitions: await getAllCompetitions()
+            }
         }
     })
 
