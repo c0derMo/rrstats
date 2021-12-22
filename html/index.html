@@ -38,7 +38,8 @@
                             </v-tabs>
                         </v-card-title>
                         <v-card-text>
-                            <v-text-field label="Player"></v-text-field><br>
+                            <!-- <v-text-field label="Player"></v-text-field><br> -->
+                            <v-combobox :menu-props="menuProps" v-model="playerNameInput" :items="players" :search-input.sync="playerSearch"></v-combobox>
                             <v-btn
                             color="primary"
                             elevation="2"
@@ -67,7 +68,8 @@
           return {
             players: ["In4Fun", "CurryMaker"],
             playerNameInput: "",
-            tabSelected: ""
+            tabSelected: "",
+            playerSearch: null
           }
       },
       methods: {
@@ -83,6 +85,11 @@
               console.log(val);
               vue.tabSelected = 0;
           }
+      },
+      computed: {
+        menuProps() {
+          return !this.playerSearch ? {value: false} : {}
+        }
       }
     })
   </script>
