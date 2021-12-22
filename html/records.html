@@ -2,91 +2,145 @@
 <html>
     <head>
         <title>Records - RR Player Statistics</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
-        <link rel="stylesheet" href="darkly.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <style>
+            .playerLink + .playerLink::before {
+                content: ", ";
+                color: unset;
+                text-decoration: none;
+            }
+        </style>
     </head>
     <body>
-        <a class="tertiary huge ui icon button" href="/">
-            <i class="inverted icon angle left"></i>
-        </a>
-        <div class="ui container">
-            <br>
-            <h1 class="ui header" style="font-weight: bold; font-size: 3.2rem;">Roulette Rivals Records</h1>
-            <br><br>
-            <span style="font-style: italic;">
-                Records are timed using the spin-timer, starting at the arrival of the spin, ending at pressing "Done" on the Roulette page, or exiting the level.<br>
-                Multi-map records are calculated by adding up the spin-timers of all maps.
-            </span>
-            <table class="ui structured celled inverted table">
-                <thead>
-                    <tr>
-                        <th class="three wide">Record</th>
-                        <th class="six wide">Maps</th>
-                        <th class="one wide">Time</th>
-                        <th class="two wide">Players</th>
-                        <th class="two wide">Match</th>
-                    </tr>
-                </thead>
-                <tbody id="otherList"></tbody>
-            </table>
-            <hr>
-            <h3>Per-Map-Records</h3>
-            <table class="ui structured celled inverted table">
-                <thead>
-                    <tr>
-                        <th class="one wide">Map</th>
-                        <th class="eight wide">Spin</th>
-                        <th class="one wide">Time</th>
-                        <th class="two wide">Player</th>
-                        <th class="two wide">Match</th>
-                    </tr>
-                </thead>
-                <tbody id="recordList">
-                </tbody>
-            </table>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container fluid>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="8" align="center">
+                                <h1 stype="font-size: 3.2rem;">Roulette Rivals Records</h1>
+                                <br>
+                                <span style="font-style: italic;">
+                                    Records are timed using the spin-timer, starting at the arrival of the spin, ending at pressing "Done" on the Roulette page, or exiting the level.<br>
+                                    Multi-map records are calculated by adding up the spin-timers of all maps.
+                                </span>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col justify="center" md="8">
+                                <v-simple-table>
+                                    <template v-slot:default>
+                                        <thead>
+                                            <tr>
+                                                <th>Record</th>
+                                                <th>Maps</th>
+                                                <th>Time</th>
+                                                <th>Players</th>
+                                                <th>Match</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="record in records" v-if="!record.isMapRecord" :key="record.category">
+                                                <td>{{ record.category }}</td>
+                                                <td>{{ record.details }}</td>
+                                                <td>{{ secondsToTimeString(record.time) }}</td>
+                                                <td>
+                                                    <a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}</a>
+                                                </td>
+                                                <td><a :href="record.videoLink">{{ record.match }}</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                </v-simple-table>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="8" justify="center">
+                                <v-divider></v-divider>
+                                <br><h3>Per-Map-Records</h3><br><br>
+                                <v-simple-table>
+                                    <template v-slot:default>
+                                        <thead>
+                                            <tr>
+                                                <th>Map</th>
+                                                <th>Spin</th>
+                                                <th>Time</th>
+                                                <th>Player</th>
+                                                <th>Match</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="record in records" v-if="record.isMapRecord" :key="record.category">
+                                                <td>{{ record.category }}</td>
+                                                <td>{{ record.details }}</td>
+                                                <td>{{ secondsToTimeString(record.time) }}</td>
+                                                <td><a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}</a></td>
+                                                <td><a :href="record.videoLink">{{ record.match }}</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                </v-simple-table>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-footer absolute padless>
+                            <span style="font-style: italic; text-align: center; width: 100%">Made with precision german engineering, calculated hungarian stats & accurate german timings.</span>
+                        </v-footer>
+                    </v-container>
+                </v-main>
+            </v-app>
         </div>
-        <div style="bottom: 5px; width: 100%; text-align: center; font-style: italic; position: relative; color: lightgray; margin-top: 10px;">Made with precision german engineering & calculated hungarian stats.</div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script src="utils.js"></script>
         <script>
-            function addMapRecord(record) {
-                let row = $('<tr></tr>');
-                row.append($("<td></td>").text(record.map));
-                row.append($("<td></td>").text(record.spin));
-                row.append($("<td></td>").text(record.time));
-                row.append($("<td></td>").append($("<a></a>").attr("href", "/" + record.player).text(record.player)));
-                row.append($("<td></td>").append($('<a></a>').text(record.round).attr("href", record.link).attr("target", "_blank")));
-                $('#recordList').append(row);
-            }
-
-            function addOtherRecord(record) {
-                let row = $('<tr></tr>');
-                row.append($("<td></td>").text(record.record));
-                row.append($("<td></td>").text(record.maps));
-                row.append($("<td></td>").text(record.time));
-                let players = $('<td></td>');
-                players.append($('<a></a>').attr("href", "/" + record.players[0]).text(record.players[0]));
-                players.append(" & ");
-                players.append($('<a></a>').attr("href", "/" + record.players[1]).text(record.players[1]));
-                row.append(players);
-                row.append($("<td></td>").append($('<a></a>').text(record.match).attr("href", record.link).attr("target", "_blank")));
-                $('#otherList').append(row);
-            }
-
-            $.getJSON("/api/records", (data, success, x) => {
-                if(success === "success") {
-                    console.log(data);
-                    data.maps.forEach(element => {
-                        addMapRecord(element);
-                    });
-                    data.other.forEach(element => {
-                        addOtherRecord(element);
-                    });
+            let vue = new Vue({
+                el: '#app',
+                vuetify: new Vuetify({theme: { dark: true }}),
+                data () {
+                    return {
+                        records: []
+                    }
+                },
+                async created() {
+                    let recordData = await axios.get('/api/records');
+                    this.records = recordData.data;
+                },
+                methods: {
+                    secondsToTimeString(timeInSeconds) {
+                        let minutes = Math.floor(timeInSeconds / 60);
+                        timeInSeconds %= 60;
+                        let hours = Math.floor(minutes / 60);
+                        minutes %= 60;
+                        let s = "";
+                        if(hours > 0) {
+                            s += hours + ":"
+                            if(minutes > 10) {
+                                s += minutes + ":"
+                            } else {
+                                s += "0" + minutes + ":"
+                            }
+                        } else {
+                            s += minutes + ":";
+                        }
+                        if(timeInSeconds > 10) {
+                            s += timeInSeconds
+                        } else {
+                            s += "0" + timeInSeconds
+                        }
+                        return s
+                    }
                 }
-            })
+            });
         </script>
     </body>
 </html>

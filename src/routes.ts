@@ -150,10 +150,10 @@ const addRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/api/records',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/records');
-            return JSON.stringify(getRecords());
+            return JSON.stringify(await getRecords());
         }
     })
 

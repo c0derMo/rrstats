@@ -3,10 +3,11 @@ import { Schema, Document, Model, model } from "mongoose";
 export interface IRRRecord {
     category: string;
     isMapRecord: boolean;
-    player: string;
+    players: string[];
     match: string;
-    spin: string;
+    details: string;
     time: number;
+    videoLink: string;
 }
 
 interface IRecordDocument extends IRRRecord, Document {
@@ -20,10 +21,11 @@ interface IRecordModel extends Model<IRecordDocument> {
 const RRRecordSchema = new Schema({
     category: String,
     isMapRecord: Boolean,
-    player: String,
+    players: [String],
     match: String,
-    spin: String,
-    time: Number
+    details: String,
+    time: Number,
+    videoLink: String
 });
 
-export const RRRecordModel = model<IRecordDocument>("record", RRRecordSchema);
+export const RRRecordModel = model<IRecordDocument>("record", RRRecordSchema) as IRecordModel;
