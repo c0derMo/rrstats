@@ -2,178 +2,287 @@
 <html>
     <head>
         <title>Leaderboards - RR Player Statistics</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
-        <link rel="stylesheet" href="darkly.css">
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
     </head>
     <body>
-        <a class="tertiary huge ui icon button" href="/">
-            <i class="inverted icon angle left"></i>
-        </a>
-        <div class="ui container">
-            <br>
-            <h1 class="ui header" style="font-weight: bold; font-size: 3.2rem;">Leaderboards</h1>
-            <br><br>
-            <select class="ui selection dropdown" id="stat">
-                <option value="" selected disabled>-- Select a statistic --</option>
-                <option value="WR">Winrate</option>
-                <option value="MapWinrate">Map Winrate</option>
-                <option value="RRParticipations">Participations in Roulette Rivals Tournaments</option>
-                <option value="RRWCParticipations">Participations in Roulette Rivals World Championships</option>
-                <option value="Matches">Amount of matches</option>
-                <option value="PercentageDecider">Percentage of matches with decider</option>
-                <option value="DeciderWinrate">Winrate of decider maps</option>
-                <option value="OwnMapWinrate">Winrate of own map-picks</option>
-                <option value="OpponentMapWinrate">Winrate of opponent map-picks</option>
-                <option value="LongestWinSpree">Longest winning-spree</option>
-                <option value="MapPlayed">Amount of matches on one map</option>
-                <option value="MapWR">Winrate on one map</option>
-            </select>
-            <select class="ui selection dropdown" id="map" style="display: none;">
-                <option disabled>-- Season 1</option>
-                <option value="PAR" selected>Paris</option>
-                <option value="SAP">Sapienza</option>
-                <option value="MAR">Marrakesh</option>
-                <option value="BKK">Bangkok</option>
-                <option value="COL">Colorado</option>
-                <option value="HOK">Hokkaido</option>
-                <option disabled>-- Season 2</option>
-                <option value="MIA">Miami</option>
-                <option value="SF">Santa Fortuna</option>
-                <option value="MUM">Mumbai</option>
-                <option value="WC">Whittleton Creek</option>
-                <option value="SGA">Isle of Sgàil</option>
-                <option value="NY">New York</option>
-                <option value="HAV">Haven Island</option>
-                <option disabled>-- Season 3</option>
-                <option value="DUB">Dubai</option>
-                <option value="DAR">Dartmoor</option>
-                <option value="BER">Berlin</option>
-                <option value="CHO">Chongqing</option>
-                <option value="MEN">Mendoza</option>
-            </select>
-            <br><br>
-            <table class="ui structured celled inverted table">
-                <thead>
-                    <tr>
-                        <th>Placement</th>
-                        <th>Player</th>
-                        <th>Score</th>
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <th><input type="text" class="ui input" placeholder="Search for player" id="player"></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="ranking">
-                </tbody>
-            </table>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container fluid>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="8" align="center">
+                                <h1 style="font-size: 3.2rem;">Leaderboards</h1>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="4">
+                                <v-select dense v-model="stat" @change="getStat" :items="statsList" label="Statistic" item-text="name" item-value="tag"></v-select>
+                            </v-col>
+                            <v-col md="4">
+                                <v-select dense v-model="map" @change="getStat" :items="maps" label="Map" item-text="name" item-value="tag" v-if="stat == 'MapPlayed' || stat == 'MapWinrate'"></v-select>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col justify="center" md="8">
+                                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"></v-text-field>
+                                <v-data-table
+                                :headers="headers"
+                                :items="stats"
+                                :search="search"
+                                >
+                                </v-data-table>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-footer absolute padless>
+                            <span style="font-style: italic; text-align: center; width: 100%">Made with precision german engineering, calculated hungarian stats & accurate german timings.</span>
+                        </v-footer>
+                    </v-container>
+                </v-main>
+            </v-app>
         </div>
-        <div style="bottom: 5px; width: 100%; text-align: center; font-style: italic; position: relative; color: lightgray; margin-top: 10px;">Made with precision german engineering & calculated hungarian stats.</div>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script src="utils.js"></script>
         <script>
-            $('#player').on("input", () => {
-                let all = $('tr', '#ranking');
-                let accepted = [];
-                let notAccepted = [];
-                all.each((idx, e) => {
-                    if($(e).attr("player").toLowerCase().search($('#player').val().toLowerCase()) === -1) {
-                        notAccepted.push(e);
-                    } else {
-                        accepted.push(e);
+            let vue = new Vue({
+                el: '#app',
+                vuetify: new Vuetify({theme: {dark: true}}),
+                data () {
+                    return {
+                        headers: [{
+                            text: '#',
+                            align: 'start',
+                            value: 'placement'
+                        }, {
+                            text: 'Player',
+                            sortable: false,
+                            value: 'player'
+                        }, {
+                            text: 'Score',
+                            value: 'score'
+                        }],
+                        rawStats: {order: [], rankings: {}},
+                        stat: "",
+                        search: "",
+                        statsList: [{
+                            name: "Winrate",
+                            tag: "WR"
+                        },{
+                            name: "Map Winrate",
+                            tag: "MapWinrate"
+                        },{
+                            name: "Participating in Roulette Rivals Tournaments",
+                            tag: "RRParticipations"
+                        },{
+                            name: "Participations in Roulette Rivals World Championships",
+                            tag: "RRWCParticicpations"
+                        },{
+                            name: "Appearances in the Grand Finals",
+                            tag: "FinalAppearances"
+                        },{
+                            name: "Amount of matches",
+                            tag: "Matches"
+                        },{
+                            name: "Winrate of own-map-picks",
+                            tag: "OwnMapWinrate"
+                        },{
+                            name: "Winrate of opponent-map-picks",
+                            tag: "OpponentMapWinrate"
+                        },{
+                            name: "Longest winning-streak",
+                            tag: "LongestWinSpree"
+                        },{
+                            name: "Amount of matches on map",
+                            tag: "MapPlayed"
+                        },{
+                            name: "Winrate on map",
+                            tag: "MapWinrate"
+                        }],
+                        maps: [{
+                            name: "-- Season 1 --",
+                            tag: "S1",
+                            disabled: true
+                        },{
+                            name: "Paris",
+                            tag: "PAR"
+                        },{
+                            name: "Sapienza",
+                            tag: "SAP"
+                        },{
+                            name: "Marrakesh",
+                            tag: "MAR"
+                        },{
+                            name: "Bangkok",
+                            tag: "COL"
+                        },{
+                            name: "Colorado",
+                            tag: "COL"
+                        },{
+                            name: "Hokkaido",
+                            tag: "HOK"
+                        },{
+                            name: "-- Season 2 --",
+                            tag: "S2",
+                            disabled: true
+                        },{
+                            name: "Miami",
+                            tag: "MIA"
+                        },{
+                            name: "Santa Fortuna",
+                            tag: "SF"
+                        },{
+                            name: "Mumbai",
+                            tag: "MUM"
+                        },{
+                            name: "Whittleton Creek",
+                            tag: "WC"
+                        },{
+                            name: "Isle of Sgàil",
+                            tag: "SGA"
+                        },{
+                            name: "New York",
+                            tag: "NY"
+                        },{
+                            name: "-- Season 3 --",
+                            tag: "S3",
+                            disabled: true
+                        },{
+                            name: "Dubai",
+                            tag: "DUB"
+                        },{
+                            name: "Dartmoor",
+                            tag: "DAR"
+                        },{
+                            name: "Berlin",
+                            tag: "BER"
+                        },{
+                            name: "Chongqing",
+                            tag: "CHO"
+                        },{
+                            name: "Mendoza",
+                            tag: "MEN"
+                        }]
                     }
-                });
-                accepted.forEach(e => {$(e).fadeIn()});
-                notAccepted.forEach(e => {$(e).fadeOut()});
-            });
-
-            $('#stat').on("change", () => {
-                if($('#stat').val() === "MapPlayed" || $('#stat').val() === "MapWR") {
-                    $('#map').show();
-                } else {
-                    $('#map').hide();
-                }
-                updateTable();
-            });
-
-            $('#map').on("change", () => {
-                updateTable();
-            });
-
-            let d;
-
-            function updateTable() {
-                $('#ranking').html("");
-                let query = "/api/leaderboards?stat=" + $('#stat').val();
-                if($('#stat').val() === "MapPlayed" || $('#stat').val() === "MapWR") {
-                    query += "&map=" + $('#map').val();
-                }
-                $.getJSON(query, (data, success, x) => {
-                    if(success === "success") {
-                        d = data;
-                        console.log(data);
-                        data.order.forEach((e, idx) => {
-                            let row = $('<tr></tr>').attr("player", e);
-                            row.append($('<td></td>').text(idx+1 + "."));
-                            row.append($('<td></td>').text(e));
-                            let shouldAdd = true;
-                            switch($('#stat').val()) {
-                                case 'WR':
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].won/data.rankings[e].matches)*1000)/10 + "%"));
-                                    if(data.rankings[e].matches == 0) shouldAdd = false;
+                },
+                computed: {
+                    stats() {
+                        let result = [];
+                        this.rawStats.order.forEach((e, idx) => {
+                            let obj = {
+                                placement: idx+1,
+                                player: e,
+                                score: "",
+                                map: "PAR"
+                            };
+                            switch(vue.stat) {
+                                case "WR":
+                                    obj.score = Math.floor((vue.rawStats.rankings[e].won/vue.rawStats.rankings[e].matches)*1000) / 10 + "%";
                                     break;
-                                case 'RRParticipations':
-                                    row.append($("<td></td>").text(data.rankings[e].rrCompetitions.length));
+                                case "RRParticipations":
+                                    obj.score = vue.rawStats.rankings[e].rrCompetitions.length;
                                     break;
-                                case 'RRWCParticipations':
-                                    row.append($("<td></td>").text(data.rankings[e].rrwcCompetitions.length));
+                                case "RRWCParticipations":
+                                    obj.score = vue.rawStats.rankings[e].rrwcCompetitions.length;
                                     break;
-                                case 'Matches':
-                                    row.append($("<td></td>").text(data.rankings[e].matches));
+                                case "Matches":
+                                    obj.score = vue.rawStats.rankings[e].matches;
                                     break;
-                                case 'PercentageDecider':
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].matchesWithDecider/data.rankings[e].matchesWithoutGroups)*1000)/10 + "%"));
-                                    if(data.rankings[e].matchesWithoutGroups == 0) shouldAdd = false;
+                                case "FinalAppearances":
+                                    obj.score = vue.rawStats.rankings[e].grandFinalAppearances;
                                     break;
-                                case 'FinalAppearances':
-                                    row.append($("<td></td>").text(data.rankings[e].grandFinalAppearances));
+                                case "LongestWinSpree":
+                                    obj.score = vue.rawStats.rankings[e].longestWinningSpree;
                                     break;
-                                case 'LongestWinSpree':
-                                    row.append($("<td></td>").text(data.rankings[e].longestWinningSpree));
+                                case "MapPlayed":
+                                    obj.score = vue.rawStats.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)];
                                     break;
-                                case 'MapPlayed':
-                                    row.append($("<td></td>").text(data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex($('#map').val())]));
-                                    break;
-                                case 'MapWR':
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].mapsWon[mapAbreviationToArrayIndex($('#map').val())]/data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex($('#map').val())])*1000)/10 + "%"));
-                                    if(data.rankings[e].mapsPlayed[mapAbreviationToArrayIndex($('#map').val())] == 0) shouldAdd = false;
-                                    break;
-                                case "DeciderWinrate":
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].deciderWin/data.rankings[e].matchesWithDecider)*1000)/10 + "%"))
-                                    if(data.rankings[e].matchesWithDecider == 0) shouldAdd = false;
+                                case "MapWR":
+                                    obj.score = Math.floor((vue.rawStats.rankings[e].mapsWon[vue.mapAbbreviationToArrayIndex(vue.map)] / vue.rawStats.rankings[e].mapsPlayed[mapAbbreviationToArrayIndex(vue.map)])*1000)/10 + "%";
                                     break;
                                 case "OwnMapWinrate":
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].ownMapsWon/data.rankings[e].ownMaps)*1000)/10 + "%"));
-                                    if(data.rankings[e].ownMaps == 0) shouldAdd = false;
+                                    obj.score = Math.floor((vue.rawStats.rankings[e].ownMapsWon / vue.rawStats.rankings[e].ownMaps) * 1000) / 10 + "%";
                                     break;
                                 case "OpponentMapWinrate":
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].opponentMapsWon/data.rankings[e].opponentMaps)*1000)/10 + "%"));
-                                    if(data.rankings[e].opponentMaps == 0) shouldAdd = false;
+                                    obj.score = Math.floor((vue.rawStats.rankings[e].opponentMapsWon / vue.rawStats.rankings[e].opponentMaps) * 1000) / 10 + "%";
                                     break;
                                 case "MapWinrate":
-                                    row.append($("<td></td>").text(Math.floor((data.rankings[e].mapsWonAmount/data.rankings[e].mapsPlayedAmount)*1000)/10 + "%"));
-                                    if(data.rankings[e].mapsPlayedAmount == 0) shouldAdd = false;
+                                    obj.score = Math.floor((vue.rawStats.rankings[e].mapsWonAmount / vue.rawStats.rankings[e].mapsPlayedAmount) * 1000) / 10 + "%";
                                     break;
                             }
-                            if(shouldAdd) $('#ranking').append(row);
-                        })
+                            result.push(obj);
+                        });
+                        return result;
                     }
-                })
-            }
+                },
+                methods: {
+                    async getStat() {
+                        let query = '/api/leaderboards?stat=' + this.stat;
+                        if(this.map !== undefined && this.map !== "") {
+                            query += "&map=" + this.map;
+                        }
+                        let leaderboardData = await axios.get(query);
+                        this.rawStats = leaderboardData.data;
+                    },
+                    mapAbbreviationToArrayIndex(abv) {
+                        switch(abv) {
+                            // Season 1
+                            case "PAR":
+                                return 0
+                            case "SAP":
+                                return 1
+                            case "MAR":
+                                return 2
+                            case "BKK":
+                                return 3
+                            case "COL":
+                                return 4
+                            case "HOK":
+                                return 5
+                            
+                            // Season 2
+                            case "MIA":
+                                return 6
+                            case "SF":
+                                return 7
+                            case "MUM":
+                                return 8
+                            case "WC":
+                                return 9
+                            case "SGA":
+                                return 10
+                            case "NY":
+                                return 11
+                            case "HAV":
+                                return 12
+
+                            // Season 3
+                            case "DUB":
+                                return 13
+                            case "DAR":
+                                return 14
+                            case "BER":
+                                return 15
+                            case "CHO":
+                                return 16
+                            case "MEN":
+                                return 17
+                            
+                            default:
+                                return "Unknown"
+                        }
+                    }
+                }
+            })
         </script>
     </body>
 </html>
