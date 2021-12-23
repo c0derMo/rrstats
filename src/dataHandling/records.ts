@@ -7,7 +7,7 @@ export async function getRecords(): Promise<IRRRecord[]> {
         for(let player in record.players) {
             try {
                 let playerObject = await RRPlayerModel.findById(record.players[player]).exec();
-                record.players[player] = playerObject.primaryName;
+                record.players[player] = playerObject.name;
             } catch(e) {}
         }
     }

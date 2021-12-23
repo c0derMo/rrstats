@@ -59,7 +59,7 @@
 
     function addPlayer(player) {
         let row = $('<tr></tr>');
-        row.append($('<td>' + player.primaryName + '</td>'));
+        row.append($('<td>' + player.name + '</td>'));
         row.append($('<td></td>').append($('<input type="text" value="' + player.title + '">').attr('id', player._id).attr("attr", "title")));
         row.append($('<td></td>').append($('<input type="checkbox">').attr('id', player._id).attr("attr", "customTitle").attr("checked", player.customTitle)));
         row.append($('<td></td>').append($('<input type="text" value="' + player.discordId + '">').attr('id', player._id).attr("attr", "discordId")));

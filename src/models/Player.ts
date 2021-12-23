@@ -1,8 +1,7 @@
 import { Schema, Document, Model, model } from 'mongoose'
 
 export interface IRRPlayer {
-    primaryName: string;        // Name the player is currently accessible by URL and is displayed on the page
-    secondaryNames: string[];   // Other names the player has played as in the past
+    name: string;
     discordId: string;
     title: string;
     customTitle: boolean;
@@ -19,8 +18,7 @@ interface IPlayerModel extends Model<IPlayerDocument> {
 }
 
 const RRPlayerSchema = new Schema({
-    primaryName: String,
-    secondaryNames: [String],
+    name: String,
     discordId: String,
     title: String,
     customTitle: Boolean,
@@ -31,8 +29,7 @@ const RRPlayerSchema = new Schema({
 RRPlayerSchema.methods.fillDefault = fillDefault;
 
 async function fillDefault(this: IPlayerDocument): Promise<void> {
-    this.primaryName = "";
-    this.secondaryNames = [];
+    this.name = "";
     this.discordId = "";
     this.title = "";
     this.customTitle = false;

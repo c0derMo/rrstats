@@ -112,7 +112,7 @@ const GDriveObjectToMatchlist = async (obj, competition="Unknown", debugLog=fals
     const abbreviationOverridesQuery = await RRPlayerModel.find({ abbreviationOverride: {$ne: null} }).exec();
     abbreviationOverridesQuery.forEach(e => {
         if(e.abbreviationOverride !== "") {
-            abbreviationOverrides[e.abbreviationOverride] = e.primaryName;   
+            abbreviationOverrides[e.abbreviationOverride] = e.name;   
         }
     });
     if(debugLog) console.log(abbreviationOverrides);

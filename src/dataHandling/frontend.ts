@@ -4,8 +4,8 @@ import { RRMatchModel } from '../models/Match';
 import { RRPlayerModel } from '../models/Player';
 
 export async function getAllPlayers(): Promise<string[]> {
-    let players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, {primaryName: true}).exec();
-    return players.map((e) => {return e.primaryName});
+    let players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, {name: true}).exec();
+    return players.map((e) => {return e.name});
 }
 
 export async function getAllCompetitions(): Promise<object[]> {
@@ -14,11 +14,10 @@ export async function getAllCompetitions(): Promise<object[]> {
 }
 
 export async function getPlayer(name: string): Promise<object> {
-    let playerInfo = await RRPlayerModel.findOne({ primaryName: name }).exec();
+    let playerInfo = await RRPlayerModel.findOne({ name: name }).exec();
     let title = playerInfo?.title || "";
-    let playerNames = playerInfo?.secondaryNames?.concat(name) || [name];
     
-    let matches = await RRMatchModel.find({ $or: [ {player1: { $in: playerNames }}, {player2: { $in: playerNames}} ] }).exec();
+    let matches = await RRMatchModel.find({ $or: [ {player1: name}, {player2: name} ] }).exec();
     if(title === "" && matches.length > 0) {
         title = "Returning Rival";
     } else if(title === "") {
@@ -29,7 +28,7 @@ export async function getPlayer(name: string): Promise<object> {
     for(let e of newestCompData) {
         const newestData = await getGDriveData("https://docs.google.com/spreadsheets/d/" + e.sheetId + "/gviz/tq?tqx=out:json&sheet=" + e.tabName, e.tag);
         matches = matches.concat(newestData.filter(e => {
-            return (playerNames.includes(e.player1) || playerNames.includes(e.player2));
+            return e.player1 == name || e.player2 == name;
         }));
     }
 
