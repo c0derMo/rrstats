@@ -126,7 +126,7 @@ const addRoutes = (server) => {
         handler: async(request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/' + request.params.player);
-            return "setPageContent(" + JSON.stringify(await getPlayer(request.params.player)) + ");"
+            return JSON.stringify(await getPlayer(request.params.player));
         }
     });
 

@@ -1,467 +1,410 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>RR Player Statistics</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
-        <link rel="stylesheet" href="darkly.css">
+        <title id="title">RR Player Statistics</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <style>
+            .italic {
+                font-style: italic;
+            }
+            .v-application .yellow {
+                background-color: #d0c033 !important;
+                border-color: #d0c033 !important;
+            }
+        </style>
     </head>
     <body>
-        <div class="ui dimmer page active" id="dimmer">
-            <div class="ui loader"></div>
-        </div>
-        <a class="tertiary huge ui icon button" href="/">
-            <i class="inverted icon angle left"></i>
-        </a>
-        <div class="ui relaxed centered grid">
-            <div class="row">
-                <div class="two wide column"><img class="ui large centered circular image" id="avatar"></div>
-            </div>
-            <div class="row">
-                <div class="six wide column"><h1 class="ui center aligned header" id="name" style="font-weight: bold; font-size: 3rem;"></h1></div>
-            </div>
-            <div class="row">
-                <div class="six wide column"><h2 class="ui center aligned header" id="title"></h2></div>
-            </div>
-            <div class="row">
-                <div class="four wide column"><h3 class="ui center aligned header" style="font-style: italic;">Matches played: <span id="matchesPlayed" style="font-style: initial;"></span></h3></div>
-                <div class="four wide column">
-                    <h3 class="ui center aligned header" style="font-style: italic;">Winrate: <span id="winrate" style="font-style: initial;"></span></h3>
-                    <h5 class="ui center aligned header" style="font-style: italic;">Map-Winrate: <span id="mapWinrate" style="font-style: initial;"></span></h3>
-                </div>
-            </div>
-            <div class="row">
-                <div class="seven wide column">
-                    <table class="ui striped inverted structured table">
-                        <thead><tr>
-                            <td class="twelve wide" style="font-weight: bold;">Competition</td>
-                            <td class="four wide" style="font-weight: bold;">Placement</td>
-                        </tr>
-                        <tr><td></td><td></td></tr></thead>
-                        <tbody id="competitions">
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="2"><a id="competitionsLoadMore" startIndex=0 style="text-decoration: underline;"></a></th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div class="seven wide column">
-                    <table class="ui striped inverted structured table">
-                        <thead><tr>
-                            <td rowspan="2"></td>
-                            <td rowspan="2"></td>
-                            <td rowspan="2"></td>
-                            <td style="font-weight: bold;">Player 1</td>
-                            <td></td>
-                            <td style="font-weight: bold;">Player 2</td>
-                            <td colspan="5" style="font-weight: bold;">Maps</td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <input type="text" placeholder="Search for opponent" id="rivalSearch">
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr></thead>
-                        <tbody id="matches">
-                            
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="11"><a id="matchesLoadMore" startIndex=0 style="text-decoration: underline;"></a></th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="seven wide column">
-                    <table class="ui striped inverted sortable structured table">
-                        <thead>
-                            <tr>
-                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapPicksTournaments">(RR3, RRWC, RR4, RR5, RR6, RRWC2021)</span> <i id="mapPicksTournamentEdit" class="pen icon"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="twelve wide" style="font-weight: bold;">Map</td>
-                                <td class="four wide" style="font-weight: bold;">Picked</td>
-                            </tr>
-                        </thead>
-                        <tbody id="pickrate">
-                        </tbody>
-                    </table>
-                    <div class="ui popup" id="mapPicksTournamentPopup">
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mp_RRWC2021" class="tourneySelect" checked>
-                            <label>RRWC2021</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mp_RR6" class="tourneySelect" checked>
-                            <label>RR6</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mp_RR5" class="tourneySelect" checked>
-                            <label>RR5</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mp_RR4" class="tourneySelect" checked>
-                            <label>RR4</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mp_RRWC" class="tourneySelect" checked>
-                            <label>RRWC</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mp_RR3" class="tourneySelect" checked>
-                            <label>RR3</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="seven wide column">
-                    <table class="ui striped inverted sortable structured table">
-                        <thead>
-                            <tr>
-                                <td colspan="16" class="right aligned" style="font-style: italic;"><span id="mapWinsTournaments">(RR3, RRWC, RR4, RR5, RRWC2021)</span> <i id="mapWinsTournamentEdit" class="pen icon"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="eleven wide" style="font-weight: bold;">Map</td>
-                                <td class="three wide" style="font-weight: bold;">Winrate</td>
-                                <td class="three wide" style="font-weight: bold;">Won/Played</td>
-                            </tr>
-                        </thead>
-                        <tbody id="winrateTable">
-                        </tbody>
-                    </table>
-                    <div class="ui popup" id="mapWinsTournamentPopup">
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mw_RRWC2021" class="tourneySelect" checked>
-                            <label>RRWC2021</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mw_RR6" class="tourneySelect" checked>
-                            <label>RR6</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mw_RR5" class="tourneySelect" checked>
-                            <label>RR5</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mw_RR4" class="tourneySelect" checked>
-                            <label>RR4</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mw_RRWC" class="tourneySelect" checked>
-                            <label>RRWC</label>
-                        </div>
-                        <div class="ui checked toggle checkbox">
-                            <input type="checkbox" id="mw_RR3" class="tourneySelect" checked>
-                            <label>RR3</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="bottom: 5px; width: 100%; text-align: center; font-style: italic; position: relative; color: lightgray; margin-top: 10px;">Made with precision german engineering & calculated hungarian stats.</div>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container fluid>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="6" align="center">
+                                <v-avatar
+                                color="primary"
+                                size="128"
+                                >
+                                <img :src="player.avatar" alt="">
+                                </v-avatar><br>
+                                <h1 style="font-size: 2.5rem">{{ name }}</h1>
+                                <h2 :class="{ italic: player.customTitle }">{{ player.title }}</h2>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="4" align="center">
+                                <span class="italic">Matches played: </span>
+                                <span>{{ player.matches.length }}</span>
+                            </v-col>
+                            <v-col md="4" align="center">
+                                <span class="italic">Winrate: </span>
+                                <span>{{ winrate }}</span><br>
+                                <span class="italic">Map-Winrate: </span>
+                                <span>{{ mapWinrate }}</span>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="3">
+                                <br><br><br>
+                                <v-simple-table>
+                                    <template v-slot:default>
+                                        <thead>
+                                            <tr>
+                                                <th>Competition</th>
+                                                <th>Placement</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="comp in player.competitions" :key="comp.name + comp.placements[0].bracket">
+                                                <td>
+                                                    {{ comp.name }}
+                                                    <span v-if="comp.placements[0].bracket !== ''"> - {{ comp.placements[0].bracket }}</span>
+                                                </td>
+                                                <td>
+                                                    <v-chip :color="getPlacementColor(comp.placements[0].placement)">{{ comp.placements[0].placement }}{{ placementEnding(comp.placements[0].placement) }}</v-chip>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                </v-simple-table>
+                            </v-col>
+                            <v-col md="6">
+                                <v-text-field v-model="matchSearch" append-icon="mdi-magnify" label="Search"></v-text-field>
+                                <v-data-table
+                                    :headers="matchTableHeaders"
+                                    :items="player.matches"
+                                    :search="matchSearch"
+                                    items-per-page=5
+                                    disable-sort>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+                                    <template v-slot:item.round="{ item }">
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <span v-bind="attrs" v-on="on">{{ item.round }}</span>
+                                            </template>
+                                            <span>{{ timestampToString(item.timestamp) }}</span>
+                                        </v-tooltip>
+                                    </template>
+                                    <template v-slot:item.score="{ item }">
+                                        <v-chip :color="getMatchColor(item)">
+                                            {{ item.score.player1Points }}-{{ item.score.player2Points }}
+                                        </v-chip>
+                                    </template>
+                                    <template v-slot:item.maps="{ item }">
+                                        <v-tooltip bottom v-for="(map, index) in item.maps" :key="index">
+                                            <template v-slot:activator="{ on, attrs }">
+                                              <v-chip :key="index" v-bind="attrs" v-on="on" :color="getMapColor(item, map)">
+                                                    {{ map.map }}
+                                                </v-chip>
+                                            </template>
+                                            <span>Map: {{ mapAbbreviationToFullName(map.map) }}</span><br>
+                                            <span>Picked by: {{ playerNumberToName(item, map.picked, "RNG") }}</span><br>
+                                            <span>Won by: {{ playerNumberToName(item, map.picked, "Tie") }}</span>
+                                        </v-tooltip>
+                                    </template>
+                                </v-data-table>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="4">
+                                <v-select v-model="mapPicksComps"
+                                    label="Competitions"
+                                    multiple
+                                    small-chips
+                                    chips
+                                    deletable-chips
+                                    dense
+                                    :items="competitions"
+                                    @change="recalculateMapPicksWinrates"></v-select>
+                                <v-data-table
+                                    :headers="mapPicksHeaders"
+                                    :items="mapPicks"
+                                    must-sort="true"
+                                    sort-desc="true"
+                                    sort-by="picked">
+                                </v-data-table>
+                            </v-col>
+                            <v-col md="4">
+                                <v-select v-model="mapWinratesComps"
+                                    label="Competitions"
+                                    multiple
+                                    dense
+                                    small-chips
+                                    chips
+                                    deletable-chips
+                                    :items="competitions"
+                                    @change="recalculateMapPicksWinrates"></v-select>
+                                <v-data-table
+                                    :headers="mapWinratesHeaders"
+                                    :items="mapWinrates"
+                                    must-sort="true"
+                                    sort-desc="true"
+                                    sort-by="wr">
+                                </v-data-table>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                    </v-container>
+
+                    <v-footer absolute padless>
+                        <span style="font-style: italic; text-align: center; width: 100%">Made with precision german engineering, calculated hungarian stats & accurate german timings.</span>
+                    </v-footer>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
-        <script src="utils.js"></script>
-
         <script>
-            let pageData = {};
-
-            $('#mapPicksTournamentEdit').popup({
-                popup: '#mapPicksTournamentPopup',
-                hoverable: true
-            });
-
-            $('#mapWinsTournamentEdit').popup({
-                popup: '#mapWinsTournamentPopup',
-                hoverable: true
-            })
-
-            $('.tourneySelect').on('change', () => {
-                let pickComps = []
-                if($('#mp_RR3').is(':checked')) pickComps.push("RR3");
-                if($('#mp_RRWC').is(':checked')) pickComps.push("RRWC");
-                if($('#mp_RR4').is(':checked')) pickComps.push("RR4");
-                if($('#mp_RR5').is(':checked')) pickComps.push("RR5");
-                if($('#mp_RR6').is(':checked')) pickComps.push("RR6");
-                if($('#mp_RRWC2021').is(':checked')) pickComps.push("RRWC2021");
-                $('#mapPicksTournaments').text("(" + pickComps.join(",") + ")");
-                let winComps = [];
-                if($('#mw_RR3').is(":checked")) winComps.push("RR3");
-                if($('#mw_RRWC').is(":checked")) winComps.push("RRWC");
-                if($('#mw_RR4').is(":checked")) winComps.push("RR4");
-                if($('#mw_RR5').is(":checked")) winComps.push("RR5");
-                if($('#mw_RR6').is(":checked")) winComps.push("RR6");
-                if($('#mw_RRWC2021').is(":checked")) winComps.push("RRWC2021");
-                $('#mapWinsTournaments').text("(" + winComps.join(",") + ")");
-                calculateMapPicksWins(pageData, pickComps, winComps);
-            });
-
-            $('#rivalSearch').on("input", () => {
-                let all = $('tr', '#matches');
-                let accepted = [];
-                let notAccepted = [];
-                all.each((idx, e) => {
-                    if($(e).attr("rival").toLowerCase().search($('#rivalSearch').val().toLowerCase()) === -1) {
-                        notAccepted.push(e);
-                    } else {
-                        accepted.push(e);
+            let vue = new Vue({
+                el: '#app',
+                vuetify: new Vuetify({theme: {dark: true}}),
+                data () {
+                    return {
+                        name: "",
+                        player: {
+                            avatar: "",
+                            title: "",
+                            customTitle: true,
+                            competitions: [],
+                            matches: []
+                        },
+                        matchSearch: "",
+                        matchTableHeaders: [{
+                            text: '',
+                            value: 'competition'
+                        },{
+                            text: '',
+                            value: 'platform'
+                        },{
+                            text: '',
+                            value: 'round'
+                        },{
+                            text: 'Player 1',
+                            value: 'player1'
+                        },{
+                            text: '',
+                            value: 'score'
+                        },{
+                            text: 'Player 2',
+                            value: 'player2'
+                        },{
+                            text: 'Maps',
+                            value: 'maps'
+                        }],
+                        competitions: [{
+                            text: "RR3",
+                            value: 'RR3'
+                        },{
+                            text: "RRWC",
+                            value: 'RRWC'
+                        },{
+                            text: "RR4",
+                            value: 'RR4'
+                        },{
+                            text: "RR5",
+                            value: 'RR5'
+                        },{
+                            text: "RR6",
+                            value: 'RR6'
+                        },{
+                            text: "RRWC2021",
+                            value: 'RRWC2021'
+                        }],
+                        mapPicksHeaders: [{
+                            text: 'Map',
+                            value: 'map',
+                            sortable: false
+                        },{
+                            text: 'Picked',
+                            value: 'picked'
+                        }],
+                        mapWinratesHeaders: [{
+                            text: "Map",
+                            value: "map",
+                            sortable: false
+                        },{
+                            text: "Winrate",
+                            value: "wr",
+                            sort: (a,b) => { return parseInt(a.substring(0, a.length-1)) - parseInt(b.substring(0, b.length-1)) }
+                        },{
+                            text: "Won",
+                            value: "won"
+                        },{
+                            text: "Played",
+                            value: "played"
+                        }],
+                        mapWinratesComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
+                        mapPicksComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
+                        mapWinrates: [],
+                        mapPicks: []
                     }
-                });
-                accepted.forEach(e => {$(e).fadeIn()});
-                notAccepted.forEach(e => {$(e).fadeOut()});
-            });
-
-            function addMoreMatches() {
-                const startIndex = parseInt($('#matchesLoadMore').attr("startIndex"));
-
-                if(pageData.matches.length > startIndex + 5) {
-                    pageData.matches.slice(startIndex, startIndex+5).forEach(e => {
-                        addMatch(e);
-                    });
-
-                    if(pageData.matches.length - (startIndex + 5) > 5) {
-                        $('#matchesLoadMore').text("Load 5 more matches...").attr("startIndex", startIndex+5);
-                    } else {
-                        $('#matchesLoadMore').text("Load " + (pageData.matches.length - (startIndex + 5)) + " more matches...").attr("startIndex", startIndex+5);
+                },
+                computed: {
+                    winrate() {
+                        let wonMatches = 0;
+                        this.player.matches.forEach(e => {
+                            const localPlayer = e.player1 == this.name ? 1 : 2;
+                            if(e.score.winner == localPlayer) wonMatches += 1;
+                        })
+                        return Math.round((wonMatches / this.player.matches.length) * 1000) / 10 + "%";
+                    },
+                    mapWinrate() {
+                        let wonMaps = 0;
+                        let playedMaps = 0;
+                        this.player.matches.forEach(e => {
+                            const localPlayer = e.player1 == this.name ? 1 : 2;
+                            e.maps.forEach(m => {
+                                playedMaps += 1;
+                                if(m.winner == localPlayer) wonMaps += 1;
+                            });
+                        })
+                        return Math.round((wonMaps / playedMaps) * 1000) / 10 + "%";
                     }
-                } else {
-                    pageData.matches.slice(startIndex).forEach(e => {
-                        addMatch(e);
-                    });
-                    $('#matchesLoadMore').text("").attr("disabled", true);
-                }
-            }
-
-            function addMatch(data) {
-                const row = $("<tr></tr>");
-                const localPlayer = (data.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == pageData.name) ? 1 : 2;
-                if(localPlayer == 1) {
-                    row.attr("rival", data.player2);
-                } else {
-                    row.attr("rival", data.player1);
-                }
-
-                if($(row).attr("rival").toLowerCase().search($('#rivalSearch').val().toLowerCase()) === -1) {
-                    row.hide(0);
-                }
-
-                if(data.maps.length <= 5) {
-                    row.append($("<td></td>").text(data.competition));
-                    row.append($("<td></td>").text(data.platform));
-                    row.append($("<td></td>").text(data.round).attr("data-html", luxon.DateTime.fromISO(data.timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)).popup());
-                    row.append($("<td></td>").text(data.player1));
-                    row.append($("<td></td>").text(data.score));
-                    row.append($("<td></td>").text(data.player2));
-                    data.maps.forEach(element => {
-                        if(element.winner == localPlayer) {
-                            row.append($("<td></td>").text(element.map).addClass("positive")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else if(element.winner == -1 || element.winner == 0) {
-                            row.append($("<td></td>").text(element.map).addClass("warning")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else {
-                            row.append($("<td></td>").text(element.map).addClass("negative")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
+                },
+                methods: {
+                    recalculateMapPicksWinrates() {
+                        let picked = {};
+                        let won = {};
+                        let played = {};
+                        for(let m of this.player.matches) {
+                            if(!this.mapWinratesComps.includes(m.competition) && !this.mapPicksComps.includes(m.competition)) continue;
+                            const localPlayer = m.player1 == this.name ? 1 : 2;
+                            m.maps.forEach(map => {
+                                if(played[map.map] == undefined) {
+                                    played[map.map] = 0;
+                                    picked[map.map] = 0;
+                                    won[map.map] = 0;
+                                }
+                                if(this.mapWinratesComps.includes(m.competition)) {
+                                    played[map.map] += 1;
+                                    if(map.winner == localPlayer) won[map.map] += 1;
+                                    if(map.winner == 0) won[map.map] += 0.5;
+                                }
+                                if(this.mapPicksComps.includes(m.competition)) {
+                                    if(map.picked == localPlayer) picked[map.map] += 1;
+                                }
+                            });
                         }
-                    });
-
-                    if(data.winner == localPlayer) {
-                        row.addClass("positive");
-                    } else if(data.winner == 0) {
-                        row.addClass("warning");
-                    } else {
-                        row.addClass("negative");
-                    }
-
-                    $('#matches').append(row);
-                } else {
-                    row.append($("<td></td>").text(data.competition).attr("rowspan", "2"));
-                    row.append($("<td></td>").text(data.platform).attr("rowspan", "2"));
-                    row.append($("<td></td>").text(data.round).attr("rowspan", "2").attr("data-html", luxon.DateTime.fromISO(data.timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)).popup());
-                    row.append($("<td></td>").text(data.player1).attr("rowspan", "2"));
-                    row.append($("<td></td>").text(data.score).attr("rowspan", "2"));
-                    row.append($("<td></td>").text(data.player2).attr("rowspan", "2"));
-                    data.maps.slice(0, 5).forEach(element => {
-                        if(element.winner == localPlayer) {
-                            row.append($("<td></td>").text(element.map).addClass("positive")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else if(element.winner == -1  || element.winner == 0) {
-                            row.append($("<td></td>").text(element.map).addClass("warning")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else {
-                            row.append($("<td></td>").text(element.map).addClass("negative")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        }
-                    });
-                    if(data.winner == localPlayer) {
-                        row.addClass("positive");
-                    } else if(data.winner == 0) {
-                        row.addClass("warning");
-                    } else {
-                        row.addClass("negative");
-                    }
-                    $('#matches').append(row);
-
-
-                    const row2 = $('<tr></tr>');
-                    if(localPlayer == 1) {
-                        row2.attr("rival", data.player2);
-                    } else {
-                        row2.attr("rival", data.player1);
-                    }
-
-                    if($(row2).attr("rival").toLowerCase().search($('#rivalSearch').val().toLowerCase()) === -1) {
-                        row2.hide(0);
-                    }
-
-                    data.maps.slice(5).forEach(element => {
-                        if(element.winner == localPlayer) {
-                            row2.append($("<td></td>").text(element.map).addClass("positive")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else if(element.winner == -1 || element.winner == 0) {
-                            row2.append($("<td></td>").text(element.map).addClass("warning")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        } else {
-                            row2.append($("<td></td>").text(element.map).addClass("negative")
-                                .attr("data-html", "Map: <b>" + mapAbreviationToFullName(element.map) + "</b><br>Picked by: <b>" + getMapPicker(element.picked, data.player1, data.player2) + "</b><br>Won by: <b>" + getMapWinner(element.winner, data.player1, data.player2) + "</b>").popup())
-                        }
-                    });
-                    $('#matches').append(row2);
-                }
-            }
-
-            function addMoreCompetitions() {
-                const startIndex = parseInt($('#competitionsLoadMore').attr("startIndex"));
-
-                if(pageData.competitions.length > startIndex + 5) {
-                    pageData.competitions.slice(startIndex, startIndex+5).forEach(e => {
-                        addCompetition(e);
-                    });
-
-                    if(pageData.competitions.length - (startIndex + 5) > 5) {
-                        $('#competitionsLoadMore').text("Load 5 more competitions...").attr("startIndex", startIndex+5);
-                    } else {
-                        $('#competitionsLoadMore').text("Load " + (pageData.competitions.length - (startIndex + 5)) + " more competitions...").attr("startIndex", startIndex+5);
-                    }
-                } else {
-                    pageData.competitions.slice(startIndex).forEach(e => {
-                        addCompetition(e);
-                    });
-                    $('#competitionsLoadMore').text("").attr("disabled", true);
-                }
-            }
-
-            function addCompetition(data) {
-                const row = $('<tr></tr>').html("<td>" + data.competition + "</td><td>" + data.placement + "</td>");
-                if(data.placement == "1st") {
-                    row.addClass("positive");
-                } else if(data.placement == "2nd") {
-                    row.addClass("warning");
-                } else if(data.placement == "3rd") {
-                    row.addClass("negative");
-                }
-                $('#competitions').append(row);
-            }
-
-            function calculateMapPicksWins(data, pickComps, winComps) {
-                // Clear tables
-                $('#pickrate').html("");
-                $('#winrateTable').html("");
-
-                // Calculate map picks & wins
-                let mapPicks = getDefaultMapPickObj();
-                let mapWins = getDefaultMapWinObj();
-                data.matches.forEach(e => {
-                    const localPlayer = (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == data.name) ? 1 : 2;
-                    e.maps.forEach((map, idx) => {
-                        let tmpPicks = mapPicks[mapAbreviationToArrayIndex(map.map)];
-                        let tmpWins = mapWins[mapAbreviationToArrayIndex(map.map)];
-                        // Only selected comps
-                        if(idx+1 == localPlayer && pickComps.includes(e.competition)) {
-                            tmpPicks.picked += 1;
-                        }
-                        if(winComps.includes(e.competition)) {
-                            tmpWins.played += 1;
-                            if(map.winner == localPlayer) {
-                                tmpWins.won += 1;
+                        let pickRate = [];
+                        let winRate = [];
+                        for(let map in played) {
+                            if(played[map] > 0) {
+                                winRate.push({
+                                    'map': this.mapAbbreviationToFullName(map),
+                                    'wr': Math.round((won[map] / played[map]) * 1000) / 10 + "%",
+                                    'played': played[map],
+                                    'won': won[map]
+                                });
+                            }
+                            if(picked[map] > 0) {
+                                pickRate.push({'map': this.mapAbbreviationToFullName(map), 'picked': picked[map]});
                             }
                         }
-                        mapWins[mapAbreviationToArrayIndex(map.map)] = tmpWins;
-                        mapPicks[mapAbreviationToArrayIndex(map.map)] = tmpPicks;
-                    });
-                });
+                        this.mapWinrates = winRate;
+                        this.mapPicks = pickRate;
+                    },
+                    placementEnding(placement) {
+                       if(placement >= 11 && placement <= 13) return "th";
+                       if(placement % 10 == 3) return "rd";
+                       if(placement % 10 == 2) return "nd";
+                       if(placement % 10 == 1) return "st";
+                       return "th";
+                    },
+                    playerNumberToName(match, number, defaultName) {
+                        if(number == 1) return match.player1;
+                        if(number == 2) return match.player2;
+                        return defaultName;
+                    },
+                    getMapColor(match, map) {
+                        if(map.winner == 1 && match.player1 == vue.name) return "green";
+                        if(map.winner == 2 && match.player2 == vue.name) return "green";
+                        if(map.winner !== 1 && map.winner !== 2) return "yellow";
+                        return "red";
+                    },
+                    getMatchColor(match) {
+                        if(match.score.winner == 1 && match.player1 == vue.name) return "green";
+                        if(match.score.winner == 2 && match.player2 == vue.name) return "green";
+                        if(match.score.winner !== 1 && match.score.winner !== 2) return "yellow";
+                        return "red";
+                    },
+                    getPlacementColor(placement) {
+                        if(placement == 1) return "#d6af36";
+                        if(placement == 2) return "#a7a7ad";
+                        if(placement == 3) return "#a77044";
+                        return "#555";
+                    },
+                    timestampToString(timestamp) {
+                        return luxon.DateTime.fromISO(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)
+                    },
+                    mapAbbreviationToFullName(abv)  {
+                        switch(abv) {
+                            // Season 1
+                            case "PAR":
+                                return "Paris"
+                            case "SAP":
+                                return "Sapienza"
+                            case "MAR":
+                                return "Marrakesh"
+                            case "BKK":
+                                return "Bangkok"
+                            case "COL":
+                                return "Colorado"
+                            case "HOK":
+                                return "Hokkaido"
+                            
+                            // Season 2
+                            case "MIA":
+                                return "Miami"
+                            case "SF":
+                                return "Santa Fortuna"
+                            case "MUM":
+                                return "Mumbai"
+                            case "WC":
+                                return "Whittleton Creek"
+                            case "SGA":
+                                return "Isle of Sgàil"
+                            case "NY":
+                                return "New York"
+                            case "HAV":
+                                return "Haven Island"
 
-                //Display map picks & win
-                mapPicks.filter(a => {
-                    return a.picked > 0;
-                }).sort((a, b) => {
-                    return b.picked - a.picked;
-                }).forEach(e => {
-                    $('#pickrate').append($('<tr><td>' + mapAbreviationToFullName(e.map) + '</td><td>' + e.picked + '</td></tr>'));
-                });
-
-                mapWins.filter(a => {
-                    return a.played > 0;
-                }).sort((a, b) => {
-                    return (b.won / b.played) - (a.won / a.played);
-                }).forEach(e => {
-                    $('#winrateTable').append($('<tr><td>' + mapAbreviationToFullName(e.map) + '</td><td>' + Math.round((e.won / e.played)*1000)/10 + '%</td><td>' + e.won + '/' + e.played + '</td></tr>'));
-                });
-            }
-
-            function setPageContent(data) {
-                pageData = data;
-
-                $('#avatar').attr("src", data.avatar);
-                $('#name').text(data.name);
-                $('title').text(data.name + " - RR Player Statistics");
-                if(data.customTitle) {
-                    $('#title').css('font-style', 'italic');
+                            // Season 3
+                            case "DUB":
+                                return "Dubai"
+                            case "DAR":
+                                return "Dartmoor"
+                            case "BER":
+                                return "Berlin"
+                            case "CHO":
+                                return "Chongqing"
+                            case "MEN":
+                                return "Mendoza"
+                            
+                            default:
+                                return "Unknown"
+                        }
+                    }
+                },
+                async created() {
+                    this.name = window.location.pathname.substring(1);
+                    let playerData = await axios.get("/api/" + this.name);
+                    this.player = playerData.data;
+                    document.getElementById("title").innerText = this.name + " - RR Player Statistics";
+                    this.recalculateMapPicksWinrates();
                 }
-                $('#title').text(data.title);
-
-                // Calculate matches played & winrate
-                $('#matchesPlayed').text(data.matches.length);
-                let wonMatches = 0;
-                let wonMaps = 0;
-                let amountMaps = 0;
-                data.matches.forEach(e => {
-                    const localPlayer = (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == data.name) ? 1 : 2;
-                    if(e.winner == localPlayer) wonMatches++;
-                    e.maps.forEach(m => {
-                        amountMaps++;
-                        if(m.winner == localPlayer) wonMaps++;
-                    })
-                });
-                $('#winrate').text(Math.round((wonMatches / data.matches.length)*1000)/10 + "%");
-                $('#mapWinrate').text(Math.round((wonMaps / amountMaps)*1000)/10 + "%");
-                
-
-                calculateMapPicksWins(data,["RRWC2021","RR6", "RR5", "RR4", "RRWC", "RR3"],["RRWC2021","RR6", "RR5", "RR4", "RRWC", "RR3"]);
-
-                addMoreCompetitions();
-                addMoreMatches();
-
-                $('#dimmer').dimmer('hide');
-            }
-
-            $(document).ready(() => {
-                $('#competitionsLoadMore').on("click", addMoreCompetitions);
-                $('#matchesLoadMore').on("click", addMoreMatches);
-
-                $('#dimmer').dimmer("set dimmed");
-                $.getScript("api" + window.location.pathname, () => {});
-             });
+            })
         </script>
     </body>
 </html>
