@@ -14,13 +14,13 @@
     "mongoose": "^6.0.13"
   },
   "scripts": {
-    "build": "tsc && cp -R -f ./config.json out && cp -R -f html out",
+    "build": "tsc",
     "start": "node out/index.js",
-    "deploy": "yarn build && cp -R -f out deploy && cp run.sh deploy && cp yarn.lock deploy && cp package.json deploy",
+    "deploy": "yarn build && cp -R -f out deploy && cp run.sh deploy && cp yarn.lock deploy && cp package.json deploy && cp -R -f html deploy/html",
     "clean": "rm -r out deploy",
-    "build-win": "tsc && xcopy data out\\data /s /i /y && xcopy html out\\html /s /i /y",
+    "build-win": "tsc",
     "clean-win": "rmdir /S /Q out deploy",
-    "deploy-win": "yarn build-win && xcopy out deploy /s /i /y && xcopy run.sh deploy /y && xcopy yarn.lock deploy /y && xcopy package.json deploy /y"
+    "deploy-win": "yarn build-win && xcopy out deploy /s /i /y && xcopy run.sh deploy /y && xcopy yarn.lock deploy /y && xcopy package.json deploy /y && xcopy html deploy/html /s /i /y"
   },
   "devDependencies": {
     "@types/luxon": "^2.0.7",
