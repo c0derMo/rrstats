@@ -16,7 +16,7 @@ function setJSONPath(obj, path, value) {
     response[split.pop()] = value;
 }
 
-const mapAbreviationToArrayIndex = (abv) => {
+const mapAbbreviationToArrayIndex = (abv) => {
     switch(abv) {
         // Season 1
         case "PAR":
@@ -67,4 +67,4 @@ const mapAbreviationToArrayIndex = (abv) => {
 
 export { getJSONPath };
 export { setJSONPath };
-export { mapAbreviationToArrayIndex };
+export { mapAbbreviationToArrayIndex };
