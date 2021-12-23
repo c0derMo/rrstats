@@ -54,6 +54,8 @@ export async function recalculate(additionalMatches: IRRMatch[]=[]): Promise<voi
             rankings[match.player1].longestWinningSpree = Math.max(rankings[match.player1].longestWinningSpree, winningSprees[match.player1])
             winningSprees[match.player1] = 0;
         } else {
+            rankings[match.player1].won += 0.5;
+            rankings[match.player2].won += 0.5;
             rankings[match.player2].longestWinningSpree = Math.max(rankings[match.player2].longestWinningSpree, winningSprees[match.player2])
             winningSprees[match.player2] = 0;
             rankings[match.player1].longestWinningSpree = Math.max(rankings[match.player1].longestWinningSpree, winningSprees[match.player1])
@@ -78,6 +80,13 @@ export async function recalculate(additionalMatches: IRRMatch[]=[]): Promise<voi
                     rankings[match.player2].mapsWon[mapAbbreviationToArrayIndex(map.map)] += 1
                     rankings[match.player2].mapsWonAmount += 1
                     rankings[match.player2].opponentMapsWon += 1
+                } else {
+                    rankings[match.player2].mapsWon[mapAbbreviationToArrayIndex(map.map)] += 0.5
+                    rankings[match.player2].mapsWonAmount += 0.5
+                    rankings[match.player2].opponentMapsWon += 0.5
+                    rankings[match.player1].mapsWon[mapAbbreviationToArrayIndex(map.map)] += 0.5
+                    rankings[match.player1].mapsWonAmount += 0.5
+                    rankings[match.player1].ownMapsWon += 0.5
                 }
             } else if(map.picked === 2) {
                 rankings[match.player2].ownMaps += 1
@@ -90,6 +99,13 @@ export async function recalculate(additionalMatches: IRRMatch[]=[]): Promise<voi
                     rankings[match.player2].mapsWon[mapAbbreviationToArrayIndex(map.map)] += 1
                     rankings[match.player2].mapsWonAmount += 1
                     rankings[match.player2].ownMapsWon += 1
+                } else {
+                    rankings[match.player1].mapsWon[mapAbbreviationToArrayIndex(map.map)] += 0.5
+                    rankings[match.player1].mapsWonAmount += 0.5
+                    rankings[match.player1].opponentMapsWon += 0.5
+                    rankings[match.player2].mapsWon[mapAbbreviationToArrayIndex(map.map)] += 0.5
+                    rankings[match.player2].mapsWonAmount += 0.5
+                    rankings[match.player2].ownMapsWon += 0.5
                 }
             }
         }
