@@ -38,7 +38,7 @@ export async function getPlayer(name: string): Promise<object> {
 
     let competitions = [];
     if (playerInfo !== null) {
-        competitions = await RRCompetitionModel.find({"placements.playerId": playerInfo._id}, { name: true, placements: { $elemMatch: { playerId: playerInfo._id } } }).exec();
+        competitions = await RRCompetitionModel.find({"placements.playerId": playerInfo._id}, { officialCompetition: true, name: true, placements: { $elemMatch: { playerId: playerInfo._id } } }).exec();
     }
 
     return {

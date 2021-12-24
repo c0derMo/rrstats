@@ -17,6 +17,7 @@ interface IRRCompetiton {
     updateWithSheet: boolean;
     sheetId: string;
     tabName: string;
+    officialCompetition: boolean;
 }
 
 interface ICompetitionDocument extends IRRCompetiton, Document {
@@ -37,7 +38,8 @@ const RRCompetitionSchema = new Schema({
     placements: [{playerId: String, bracket: String, placement: Number}],
     updateWithSheet: Boolean,
     sheetId: String,
-    tabName: String
+    tabName: String,
+    officialCompetition: Boolean
 });
 
 export const RRCompetitionModel = model<ICompetitionDocument>("competition", RRCompetitionSchema) as ICompetitionModel;

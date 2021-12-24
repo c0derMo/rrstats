@@ -52,7 +52,7 @@
                         <v-row>
                             <v-spacer></v-spacer>
                             <v-col md="3">
-                                <br><br><br>
+                                <v-switch v-model="includeUnofficial" label="Include unofficial competitions"></v-switch>
                                 <v-simple-table>
                                     <template v-slot:default>
                                         <thead>
@@ -62,7 +62,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="comp in player.competitions" :key="comp.name + comp.placements[0].bracket">
+                                            <tr v-for="comp in player.competitions" v-if="comp.officialCompetition || includeUnofficial" :key="comp.name + comp.placements[0].bracket">
                                                 <td>
                                                     {{ comp.name }}
                                                     <span v-if="comp.placements[0].bracket !== ''"> - {{ comp.placements[0].bracket }}</span>
@@ -248,7 +248,8 @@
                         mapWinratesComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
                         mapPicksComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
                         mapWinrates: [],
-                        mapPicks: []
+                        mapPicks: [],
+                        includeUnofficial: true
                     }
                 },
                 computed: {
