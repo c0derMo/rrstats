@@ -20,6 +20,10 @@
         <div id="app">
             <v-app>
                 <v-main>
+                    <v-overlay opacity="0.8" :value="loader">
+                        <v-progress-circular indeterminate color="red"></v-progress-circular>
+                        <span> Loading player data...</span>
+                    </v-overlay>
                     <v-container fluid>
                         <v-row>
                             <v-spacer></v-spacer>
@@ -81,7 +85,7 @@
                                     :headers="matchTableHeaders"
                                     :items="player.matches"
                                     :search="matchSearch"
-                                    items-per-page=5
+                                    :items-per-page="5"
                                     disable-sort>
 
                                     <template v-slot:item.round="{ item }">
@@ -128,8 +132,8 @@
                                 <v-data-table
                                     :headers="mapPicksHeaders"
                                     :items="mapPicks"
-                                    must-sort="true"
-                                    sort-desc="true"
+                                    :must-sort="true"
+                                    :sort-desc="true"
                                     sort-by="picked">
                                 </v-data-table>
                             </v-col>
@@ -147,7 +151,7 @@
                                 <v-data-table
                                     :headers="mapWinratesHeaders"
                                     :items="mapWinrates"
-                                    sort-desc="true"
+                                    :sort-desc="true"
                                     sort-by="wr">
                                 </v-data-table>
                             </v-col>
@@ -249,7 +253,8 @@
                         mapPicksComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
                         mapWinrates: [],
                         mapPicks: [],
-                        includeUnofficial: true
+                        includeUnofficial: true,
+                        loader: true
                     }
                 },
                 computed: {
@@ -404,6 +409,7 @@
                     this.player = playerData.data;
                     document.getElementById("title").innerText = this.name + " - RR Player Statistics";
                     this.recalculateMapPicksWinrates();
+                    this.loader = false;
                 }
             })
         </script>
