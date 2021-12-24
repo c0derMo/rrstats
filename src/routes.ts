@@ -52,30 +52,11 @@ const addRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/darkly.css',
-        handler: (request, h) => {
-            if(maintenanceMode) return "This? This is maintenance.";
-            request.log(['get', 'info'], '/darkly.css');
-            return h.file("html/darkly.css");
-        }
-    })
-
-    server.route({
-        method: 'GET',
         path: '/defaultPB.png',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/defaultPB.png');
             return h.file("html/profile.png")
-        }
-    })
-
-    server.route({
-        method: 'GET',
-        path: '/utils.js',
-        handler: (request, h) => {
-            if(maintenanceMode) return "This? This is maintenance.";
-            return h.file("html/utils.js");
         }
     })
 
