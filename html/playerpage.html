@@ -113,8 +113,8 @@
                                                 </v-chip>
                                             </template>
                                             <span>Map: {{ mapAbbreviationToFullName(map.map) }}</span><br>
-                                            <span>Picked by: {{ playerNumberToName(item, map.picked, "RNG") }}</span><br>
-                                            <span>Won by: {{ playerNumberToName(item, map.picked, "Tie") }}</span>
+                                            <span>Picked by: {{ playerNumberToName(item, map.pickedBy, "RNG") }}</span><br>
+                                            <span>Won by: {{ playerNumberToName(item, map.winner, "Tie") }}</span>
                                         </v-tooltip>
                                     </template>
                                 </v-data-table>

@@ -163,7 +163,7 @@ const GDriveObjectToMatchlist = async (obj, competition="Unknown", debugLog=fals
                         maps.push({
                             map: element[e],
                             winner: wonBy,
-                            picked: picked
+                            pickedBy: picked
                         })
 
                         index++;
