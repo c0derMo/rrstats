@@ -45,7 +45,9 @@
                             <v-spacer></v-spacer>
                             <v-col md="4" align="center">
                                 <span class="italic">Matches played: </span>
-                                <span>{{ player.matches.length }}</span>
+                                <span>{{ player.matches.length }}</span><br>
+                                <span class="italic">W-T-L:</span>
+                                <span>{{ wtl }}</span>
                             </v-col>
                             <v-col md="4" align="center">
                                 <span class="italic">Winrate: </span>
@@ -253,33 +255,36 @@
                         mapPicksComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
                         mapWinrates: [],
                         mapPicks: [],
+                        winrate: "",
+                        mapWinrate: "",
+                        wtl: "",
                         includeUnofficial: true,
                         loader: true
                     }
                 },
-                computed: {
-                    winrate() {
+                methods: {
+                    recalculateWinrates() {
                         let wonMatches = 0;
+                        let wonMaps = 0;
+                        let playedMaps = 0;
+                        let tiedMatches = 0;
+                        let lossMatches = 0;
                         this.player.matches.forEach(e => {
                             const localPlayer = e.player1 == this.name ? 1 : 2;
                             if(e.score.winner == localPlayer) wonMatches += 1;
-                        })
-                        return Math.round((wonMatches / this.player.matches.length) * 1000) / 10 + "%";
-                    },
-                    mapWinrate() {
-                        let wonMaps = 0;
-                        let playedMaps = 0;
-                        this.player.matches.forEach(e => {
-                            const localPlayer = e.player1 == this.name ? 1 : 2;
+                            else if(e.score.winner == 0) tiedMatches += 1;
+                            else lossMatches += 1;
+
                             e.maps.forEach(m => {
                                 playedMaps += 1;
                                 if(m.winner == localPlayer) wonMaps += 1;
-                            });
-                        })
-                        return Math.round((wonMaps / playedMaps) * 1000) / 10 + "%";
-                    }
-                },
-                methods: {
+                            })
+                        });
+
+                        this.winrate = Math.round((wonMatches / this.player.matches.length) * 1000) / 10 + "%";
+                        this.mapWinrate = Math.round((wonMaps / playedMaps) * 1000) / 10 + "%";
+                        this.wtl = wonMatches + "-" + tiedMatches + "-" + lossMatches;
+                    },
                     recalculateMapPicksWinrates() {
                         let picked = {};
                         let won = {};
@@ -408,6 +413,7 @@
                     let playerData = await axios.get("/api/" + this.name);
                     this.player = playerData.data;
                     document.getElementById("title").innerText = this.name + " - RR Player Statistics";
+                    this.recalculateWinrates();
                     this.recalculateMapPicksWinrates();
                     this.loader = false;
                 }
