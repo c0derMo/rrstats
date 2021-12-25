@@ -3,11 +3,12 @@ import { RRCompetitionModel } from './models/Competitions';
 import { RRPlayerModel } from './models/Player';
 import { RRMatchModel } from './models/Match';
 import { RRRecordModel } from './models/Record';
+require('dotenv').config();
 
 let database: Mongoose.Connection;
 
 export const connect = async() => {
-    const URI = "***REMOVED***";
+    const URI = process.env.MONGODB_URI;
     if (database) return;
     await Mongoose.connect(URI, {
         autoIndex: true,
