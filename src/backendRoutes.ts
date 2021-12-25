@@ -10,6 +10,14 @@ const addBackendRoutes = (server) => {
 
     server.route({
         method: 'GET',
+        path: '/backend/components.js',
+        handler: (request, h) => {
+            return h.file("html/backend/components.js");
+        }
+    })
+
+    server.route({
+        method: 'GET',
         path: '/backend',
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend');
@@ -137,7 +145,8 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/maintenance',
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/api/maintenance');
-            if(request.query.mode === "on") {
+            console.log(request.query.mode);
+            if(request.query.mode == "true") {
                 setMaintenanceMode(true);
                 return {"maintenance": true}
             } else {
