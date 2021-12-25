@@ -1,7 +1,7 @@
 import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
-import { getAllPlayers, getStoredCompetitionMatches, importSpreadsheet, patchPlayers, patchStoredCompetitionMatches, renamePlayer } from './dataHandling/backend';
+import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch } from './dataHandling/backend';
 import { recalculate } from './dataHandling/leaderboards';
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
@@ -67,10 +67,10 @@ const addBackendRoutes = (server) => {
     
     server.route({
         method: 'GET',
-        path: '/backend/competitions',
+        path: '/backend/matches',
         handler: async (request, h) => {
-            request.log(['get', 'info'], '/backend/competitions');
-            return await renderBackendPage("matchList", "RR Matches");
+            request.log(['get', 'info'], '/backend/matches');
+            return h.file("html/backend/matches.html")
         },
         options: {
             auth: 'session'
@@ -162,10 +162,10 @@ const addBackendRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/backend/api/competition',
+        path: '/backend/api/matches',
         handler: async (request, h) => {
-            request.log(['get', 'info'], '/backend/api/competition');
-            return await getStoredCompetitionMatches(request.query.competition);
+            request.log(['get', 'info'], '/backend/api/matches');
+            return await getStoredMatches();
         },
         options: {
             auth: 'session',
@@ -175,16 +175,34 @@ const addBackendRoutes = (server) => {
 
     server.route({
         method: 'PATCH',
-        path: '/backend/api/competition',
+        path: '/backend/api/matches',
         handler: async(request, h) => {
-            request.log(['patch', 'info'], '/backend/api/competition');
-            return {success: await patchStoredCompetitionMatches(request.payload)};
+            request.log(['patch', 'info'], '/backend/api/matches');
+            return {success: await editMatch(request.payload)};
         },
         options: {
             auth: 'session',
             plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
         }
     });
+
+    server.route({
+        method: 'PUT',
+        path: '/backend/api/matches',
+        handler: async(request, h) => {
+            request.log(['put', 'info'], '/backend/api/matches');
+            return {success: await addMatch(request.payload)};
+        }
+    });
+
+    server.route({
+        method: 'DELETE',
+        path: '/backend/api/matches',
+        handler: async(request, h) => {
+            request.log(['delete', 'info'], '/backend/api/matches');
+            return {success: await deleteMatch(request.payload)};
+        }
+    })
 
     server.route({
         method: 'GET',

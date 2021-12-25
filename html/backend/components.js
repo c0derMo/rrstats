@@ -30,11 +30,11 @@ Vue.component('rrstats-backend-menulist', {
     data() {
         return {
             menuItems: [{
-                id: "comps",
-                name: "Competitions",
-                description: "Lists all the matches of a competition.",
+                id: "matches",
+                name: "Matches",
+                description: "Lists all the matches.",
                 icon: "mdi-book-edit-outline",
-                href: "/backend/competitions"
+                href: "/backend/matches"
             },{
                 id: "players",
                 name: "Players",

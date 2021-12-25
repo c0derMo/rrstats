@@ -3,12 +3,31 @@ import { IRRMatch, RRMatchModel } from "../models/Match";
 import { IRRPlayer, RRPlayerModel } from "../models/Player";
 import { setJSONPath } from "../utils";
 
-export async function getStoredCompetitionMatches(abreviation: string): Promise<IRRMatch[]> {
-    return await RRMatchModel.find({ competition: abreviation }).exec();
+export async function getStoredMatches(): Promise<IRRMatch[]> {
+    return await RRMatchModel.find().exec();
 }
 
-export async function patchStoredCompetitionMatches(changes: Object): Promise<boolean> {
-    await patchAnything(RRMatchModel, changes);
+export async function editMatch(match: any): Promise<boolean> {
+    try {
+        let dbMatch = await RRMatchModel.findOne({_id: match._id}).exec();
+        if(dbMatch == null) return false;
+        Object.assign(dbMatch, match);
+        await dbMatch.save();
+        return true;
+    } catch(e) {
+        console.log(e);
+        return false;
+    }
+}
+
+export async function addMatch(match: any): Promise<boolean> {
+    delete match._id;
+    await RRMatchModel.create(match);
+    return true;
+}
+
+export async function deleteMatch(match: any): Promise<boolean> {
+    await RRMatchModel.findByIdAndDelete(match._id).exec();
     return true;
 }
 

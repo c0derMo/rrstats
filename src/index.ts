@@ -44,11 +44,15 @@ const init = async() => {
         }
 
         if(tags.get) {
-            logMessage += "GET   "
+            logMessage += "GET    "
         } else if(tags.post) {
-            logMessage += "POST  "
+            logMessage += "POST   "
         } else if(tags.patch) {
-            logMessage += "PATCH "
+            logMessage += "PATCH  "
+        } else if(tags.delete) {
+            logMessage += "DELETE "
+        } else if(tags.put) {
+            logMessage += "PUT    "
         }
 
         logMessage += event.data;
