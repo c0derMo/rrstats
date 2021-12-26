@@ -1,10 +1,11 @@
 import { IRRMatch, RRMatchModel } from "../models/Match";
 import { IRRPlayer, RRPlayerModel } from "../models/Player";
-import { UserModel } from "../models/User";
+import { RRUserAuthType, UserModel } from "../models/User";
 
 export async function verifyLogin(username: string, password: string): Promise<boolean> {
     let user = await UserModel.findOne({name: username}).exec();
     if(user == null) return false;
+    if(user.type !== RRUserAuthType.USER) return false;
     return await user.verifyPassword(password);
 }
 

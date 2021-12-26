@@ -3,7 +3,7 @@ import { hash, compare } from 'bcrypt';
 
 const saltRounds = 10;
 
-enum RRUserAuthType {
+export enum RRUserAuthType {
     USER,
     API_KEY
 }
