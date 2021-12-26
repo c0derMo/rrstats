@@ -1,7 +1,7 @@
 import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
-import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch } from './dataHandling/backend';
+import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword } from './dataHandling/backend';
 import { recalculate } from './dataHandling/leaderboards';
 
 const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
@@ -40,13 +40,14 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'POST',
         path: '/backend/login',
-        handler: (request, h) => {
-            request.log(['info', 'post'], '/login');
-            if(request.payload.token !== accessToken) {
+        handler: async (request, h) => {
+            request.log(['info', 'post'], '/backend/login');
+            let loginSuccess = await verifyLogin(request.payload.username, request.payload.password);
+            if(!loginSuccess) {
                 return h.redirect('/backend/login')
             }
 
-            request.cookieAuth.set({ loggedIn: true })
+            request.cookieAuth.set({ loggedInAs: request.payload.username });
 
             return h.redirect('/backend')
         }
@@ -131,6 +132,18 @@ const addBackendRoutes = (server) => {
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/renamePlayer');
             return await renderBackendPage("renamePlayer", "Rename Player");
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/user',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/user');
+            return h.file('html/backend/user.html');
         },
         options: {
             auth: 'session'
@@ -302,81 +315,25 @@ const addBackendRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/backend/api/menu',
+        path: '/backend/api/user',
         handler: (request, h) => {
-            request.log(['post', 'info'], '/backend/api/menu');
-            return JSON.stringify([
-                {
-                    "title": "Maintenance mode",
-                    "icon": "eye lash",
-                    "type": "checkbox",
-                    "id": "maintenance-mode",
-                    "description": "Activates maintenance mode for the entire site. The frontend + API will become unavailable."
-                },
-                {
-                    "title": "Competitions",
-                    "icon": "edit",
-                    "type": "link",
-                    "href": "/backend/competitions",
-                    "description": "Lists all the matches of a competition."
-                },
-                {
-                    "title": "Players",
-                    "icon": "edit",
-                    "type": "link",
-                    "href": "/backend/players",
-                    "description": "Lists all the players."
-                },
-                {
-                    "title": "Import spreadsheet",
-                    "icon": "file import",
-                    "type": "link",
-                    "href": "/backend/importSpreadsheet",
-                    "description": "Imports a spreadsheet as a permanent part of the system."
-                },
-                {
-                    "title": "Bulk import standings",
-                    "icon": "file import",
-                    "type": "link",
-                    "href": "/backend/importStandings",
-                    "description": "Import standings and adds them to the corresponding players."
-                },
-                {
-                    "title": "Database checks",
-                    "icon": "stethoscope",
-                    "type": "link",
-                    "href": "/backend/databaseChecks",
-                    "description": "Runs various checks on the database."
-                },
-                {
-                    "title": "Rename player",
-                    "icon": "edit",
-                    "type": "link",
-                    "href": "/backend/renamePlayer",
-                    "description": "Renames a player across all databases."
-                },
-                {
-                    "title": "Reload configs",
-                    "icon": "upload",
-                    "type": "button",
-                    "id": "reload",
-                    "description": "Reloads all the config files from disk."
-                },
-                {
-                    "title": "Recalculate leaderboards",
-                    "icon": "calculator",
-                    "type": "button",
-                    "id": "recalcLeaderboard",
-                    "description": "Recalculate all leaderboard data. (Does not include data from active competition - load a player page instead)"
-                },
-                {
-                    "title": "Shutdown server",
-                    "icon": "power off",
-                    "type": "button",
-                    "id": "shutdown",
-                    "description": "Shuts down the entire server."
-                }
-            ])
+            request.log(['get', 'info'], '/backend/api/user');
+            return {
+                username: request.auth.credentials.loggedInAs
+            }
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/user',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/user');
+            return {success: await updateUserPassword(request.auth.credentials.loggedInAs, request.payload.password)};
         },
         options: {
             auth: 'session',

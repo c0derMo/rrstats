@@ -22,7 +22,7 @@
                                     <v-card-text>
                                         <v-form action="/backend/login" method="POST">
                                             <v-text-field v-model="username" name="username" clearable label="Username" prepend-inner-icon="mdi-account"></v-text-field>
-                                            <v-text-field v-model="password" name="token" clearable label="Password" prepend-inner-icon="mdi-key-variant" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                            <v-text-field v-model="password" name="password" clearable label="Password" prepend-inner-icon="mdi-key-variant" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                                                 :type="showPassword? 'text' : 'password'"
                                                 @click:append="showPassword = !showPassword"></v-text-field>
                                             <v-btn text type="submit">Login</v-btn>

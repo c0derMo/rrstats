@@ -1,7 +1,20 @@
-import { Model } from "mongoose";
 import { IRRMatch, RRMatchModel } from "../models/Match";
 import { IRRPlayer, RRPlayerModel } from "../models/Player";
-import { setJSONPath } from "../utils";
+import { UserModel } from "../models/User";
+
+export async function verifyLogin(username: string, password: string): Promise<boolean> {
+    let user = await UserModel.findOne({name: username}).exec();
+    if(user == null) return false;
+    return await user.verifyPassword(password);
+}
+
+export async function updateUserPassword(username: string, password: string): Promise<boolean> {
+    let user = await UserModel.findOne({name: username}).exec();
+    if(user == null) return false;
+    await user.setPassword(password);
+    await user.save();
+    return true;
+}
 
 export async function getStoredMatches(): Promise<IRRMatch[]> {
     return await RRMatchModel.find().exec();
@@ -36,7 +49,7 @@ export async function getAllPlayers(): Promise<IRRPlayer[]> {
 }
 
 export async function patchPlayers(changes: Object): Promise<boolean> {
-    await patchAnything(RRPlayerModel, changes);
+    // await patchAnything(RRPlayerModel, changes);
     return true;
 }
 
@@ -48,15 +61,4 @@ export async function importSpreadsheet(sheetId: string, tabName: string, compet
 export async function renamePlayer(oldName: string, newName: string): Promise<object> {
     //TODO: Renaming algorithm
     return null;
-}
-
-async function patchAnything(model: Model<any>, changes: Object): Promise<void> {
-    for(let key in changes) {
-        let matchId = key.split(";")[0];
-        let path = key.split(";")[1];
-
-        let match = await model.findById(matchId).exec();
-        setJSONPath(match, path, changes[key]);
-        await match.save();
-    }
 }

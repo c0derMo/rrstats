@@ -16,6 +16,7 @@ Vue.component('rrstats-backend-sidebar', {
         <v-app-bar-nav-icon @click="sidebar = true"></v-app-bar-nav-icon>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>
+        <v-btn href="/backend/user" text><v-icon left>mdi-account</v-icon>Profile</v-btn>
         <v-btn icon href="/backend/logout"><v-icon>mdi-logout-variant</v-icon></v-btn>
     </v-app-bar>
     <slot></slot>

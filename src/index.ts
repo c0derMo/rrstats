@@ -7,6 +7,7 @@ import { addBackendRoutes } from "./backendRoutes";
 import { addAPIRoutes } from "./3rdPartyRoutes";
 import { connect } from "./databaseManager";
 const crypt = require("crypto");
+require('dotenv').config();
 
 const init = async() => {
 
@@ -27,7 +28,7 @@ const init = async() => {
         },
         redirectTo: "/backend/login",
         validateFunc: async(request, session) => {
-            return { valid: session.loggedIn }
+            return { valid: session.loggedInAs !== "" }
         }
     });
 

@@ -3,6 +3,7 @@ import { RRCompetitionModel } from './models/Competitions';
 import { RRPlayerModel } from './models/Player';
 import { RRMatchModel } from './models/Match';
 import { RRRecordModel } from './models/Record';
+import { UserModel } from './models/User';
 require('dotenv').config();
 
 let database: Mongoose.Connection;
@@ -19,7 +20,8 @@ export const connect = async() => {
         RRCompetitionModel,
         RRPlayerModel,
         RRMatchModel,
-        RRRecordModel
+        RRRecordModel,
+        UserModel
     }
 }
 
