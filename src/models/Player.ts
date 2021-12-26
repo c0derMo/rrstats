@@ -10,7 +10,7 @@ export interface IRRPlayer {
 }
 
 interface IPlayerDocument extends IRRPlayer, Document {
-    fillDefault(this: IPlayerDocument): Promise<void>;
+    
 }
 
 interface IPlayerModel extends Model<IPlayerDocument> {
@@ -25,16 +25,5 @@ const RRPlayerSchema = new Schema({
     excludedFromSearch: Boolean,
     abbreviationOverride: String
 });
-
-RRPlayerSchema.methods.fillDefault = fillDefault;
-
-async function fillDefault(this: IPlayerDocument): Promise<void> {
-    this.name = "";
-    this.discordId = "";
-    this.title = "";
-    this.customTitle = false;
-    this.excludedFromSearch = false;
-    this.abbreviationOverride = "";
-}
 
 export const RRPlayerModel = model<IPlayerDocument>("player", RRPlayerSchema) as IPlayerModel;
