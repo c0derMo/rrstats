@@ -57,14 +57,14 @@
                                         <v-text-field @change="e => changeInput(e, item._id + ';title')" :value="item.title"></v-text-field>
                                     </template>
                                     <template v-slot:item.customtitle="{ item }">
-                                        <v-switch @change="e => changeInput(e, item._id + ';customTitle')" :value="booleanToString(item.customTitle)"></v-switch>
+                                        <v-switch @change="e => changeInput(e, item._id + ';customTitle')" :input-value="item.customTitle"></v-switch>
                                     </template>
                                     <template v-slot:item.discordid="{ item }">
                                         <v-text-field @change="e => changeInput(e, item._id + ';discordId')" :value="item.discordId"></v-text-field>
                                     </template>
                                     <template v-slot:expanded-item="{ headers, item }">
                                         <td :colspan="headers.length">
-                                            <v-switch @change="e => changeInput(e, item._id + ';excludedFromSearch')" :value="item.excludedFromSearch" label="Excluded from Search"></v-switch>
+                                            <v-switch @change="e => changeInput(e, item._id + ';excludedFromSearch')" :input-value="item.excludedFromSearch" label="Excluded from Search"></v-switch>
                                             <v-text-field @change="e => changeInput(e, item._id + ';abbreviationOverride')" :value="item.abbreviationOverride" label="Abbreviation override"></v-text-field>
                                         </td>
                                     </template>
@@ -124,6 +124,8 @@
                 },
                 methods: {
                     changeInput(val, key) {
+                        console.log(val);
+                        console.log(typeof val);
                         let split = key.split(";");
                         if(this.originalData[split[0]][split[1]] != val) {
                             this.changes[key] = val;
@@ -146,6 +148,7 @@
                         } else {
                             this.snackbarText = "Failed to save players.";
                         }
+                        this.sendConfirmDialog = false;
                         this.snackbar = true;
                     },
                     closeConfirm() {
