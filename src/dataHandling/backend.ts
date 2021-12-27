@@ -3,6 +3,7 @@ import { IRRPlayer, RRPlayerModel } from "../models/Player";
 import { UserModel } from "../models/User";
 import { AuditLogModel } from '../models/AuditLogEntry';
 import { jsonDiff } from "../utils";
+import { RRCompetitionModel, IRRCompetition } from "../models/Competitions";
 
 export async function verifyLogin(username: string, password: string): Promise<boolean> {
     let user = await UserModel.findOne({name: username}).exec();
@@ -86,5 +87,41 @@ export async function getAuditLogs(search: string, itemsPerPage: number, page: n
     return {
         itemCount: count,
         items: items
+    }
+}
+
+export async function getStoredCompetitions(): Promise<IRRCompetition[]> {
+    return await RRCompetitionModel.find().exec();
+}
+
+export async function editCompetition(comp: any, username: string): Promise<boolean> {
+    let dbComp = await RRCompetitionModel.findOne({_id: comp._id}).exec();
+    if(dbComp == null) return false;
+    await AuditLogModel.newEntry(username, "Edited competition " + dbComp._id, jsonDiff(dbComp, comp));
+    Object.assign(dbComp, comp);
+    await dbComp.save();
+    return true;
+}
+
+export async function addCompetition(comp: any, username: string): Promise<boolean> {
+    delete comp._id;
+    await RRCompetitionModel.create(comp);
+    await AuditLogModel.newEntry(username, "Added competition", {compData: comp});
+    return true;
+}
+
+export async function deleteCompetition(comp: any, username: string): Promise<boolean> {
+    await RRCompetitionModel.findByIdAndDelete(comp._id).exec();
+    await AuditLogModel.newEntry(username, "Deleted competition " + comp._id, {compData: comp});
+    return true;
+}
+
+export async function lookupPlayer(info: string, type: string): Promise<object> {
+    if(type == "id") {
+        return await RRPlayerModel.findOne({_id: info}).exec();
+    } else if(type == "name") {
+        return await RRPlayerModel.findOne({name: info}).exec();
+    } else {
+        return {name: '', _id: ''}
     }
 }

@@ -6,7 +6,7 @@ interface IRRCompetitionPlacement {
     placement: number;
 }
 
-interface IRRCompetiton {
+export interface IRRCompetition {
     name: string;           // Full name, eg. Roulette Rivals World Championship 2021
     tag: string;            // Tag, eg. RRWC2021    tag is also id at the same time
     challongeURL: string;
@@ -18,7 +18,7 @@ interface IRRCompetiton {
     officialCompetition: boolean;
 }
 
-interface ICompetitionDocument extends IRRCompetiton, Document {
+interface ICompetitionDocument extends IRRCompetition, Document {
 
 }
 

@@ -1,7 +1,7 @@
 import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
-import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs } from './dataHandling/backend';
+import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs, deleteCompetition, addCompetition, lookupPlayer, editCompetition, getStoredCompetitions } from './dataHandling/backend';
 import { recalculate } from './dataHandling/leaderboards';
 
 const addBackendRoutes = (server) => {
@@ -154,6 +154,18 @@ const addBackendRoutes = (server) => {
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/logs');
             return h.file('html/backend/auditLog.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/competitions',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/competitions');
+            return h.file('html/backend/comps.html');
         },
         options: {
             auth: 'session'
@@ -365,6 +377,73 @@ const addBackendRoutes = (server) => {
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/logs');
             return await getAuditLogs(request.payload.search, request.payload.itemsPerPage, request.payload.page);
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/competitions',
+        handler: async (request, h) => {
+            request.log(['get', 'info'], '/backend/api/competitions');
+            return await getStoredCompetitions();
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'PATCH',
+        path: '/backend/api/competitions',
+        handler: async(request, h) => {
+            request.log(['patch', 'info'], '/backend/api/competitions');
+            return {success: await editCompetition(request.payload, request.auth.credentials.loggedInAs)};
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/backend/api/competitions',
+        handler: async(request, h) => {
+            request.log(['put', 'info'], '/backend/api/competitions');
+            return {success: await addCompetition(request.payload, request.auth.credentials.loggedInAs)};
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+
+    server.route({
+        method: 'DELETE',
+        path: '/backend/api/competitions',
+        handler: async(request, h) => {
+            request.log(['delete', 'info'], '/backend/api/competitions');
+            return {success: await deleteCompetition(request.payload, request.auth.credentials.loggedInAs)};
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/playerLookup',
+        handler: async(request, h) => {
+            request.log(['get', 'info'], '/backend/api/playerLookup');
+            if(request.query.id !== undefined) {
+                return await lookupPlayer(request.query.id, "id");
+            } else if(request.query.name !== undefined) {
+                return await lookupPlayer(request.query.name, "name");
+            } else {
+                return {name: "", _id: ""}
+            }
         }
     })
 
