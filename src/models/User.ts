@@ -3,15 +3,11 @@ import { hash, compare } from 'bcrypt';
 
 const saltRounds = 10;
 
-export enum RRUserAuthType {
-    USER,
-    API_KEY
-}
 
 export interface IRRUser {
     name: string;
     passwordHash: string;
-    type: RRUserAuthType;
+    type: string;
 }
 
 interface IUserDocument extends IRRUser, Document {
@@ -26,10 +22,7 @@ interface IUserModel extends Model<IUserDocument> {
 const UserSchema = new Schema({
     name: String,
     passwordHash: String,
-    type: {
-        type: String,
-        enum: Object.keys(RRUserAuthType).filter(e => isNaN(Number(e)) === true)
-    }
+    type: String
 });
 
 UserSchema.methods.setPassword = setPassword;

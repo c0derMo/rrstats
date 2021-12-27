@@ -65,6 +65,26 @@ const mapAbbreviationToArrayIndex = (abv) => {
     }
 }
 
+export function jsonDiff(beforeObj: object, afterObj: object): object {
+    let result = {}
+    for(let key of Object.keys(beforeObj).concat(Object.keys(afterObj))) {
+        if(key.startsWith("$") || key.startsWith("_")) continue;
+        if(typeof beforeObj[key] === 'object' && typeof afterObj[key] === 'object') {
+            let tmp = jsonDiff(beforeObj[key], afterObj[key]);
+            if(tmp !== {}) result[key] = tmp;
+        } else {
+            let compareBefore = beforeObj[key].toString();
+            let compareAfter = afterObj[key].toString();
+            if(typeof beforeObj[key].toISOString === 'function') compareBefore = beforeObj[key].toISOString();
+            if(typeof afterObj[key].toISOString === 'function') compareAfter = afterObj[key].toISOString();
+            if(compareBefore !== compareAfter) {
+                result[key] = {before: beforeObj[key], after: afterObj[key]}
+            }
+        }
+    }
+    return result
+}
+
 export { getJSONPath };
 export { setJSONPath };
 export { mapAbbreviationToArrayIndex };

@@ -1,10 +1,8 @@
 import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
-import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword } from './dataHandling/backend';
+import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs } from './dataHandling/backend';
 import { recalculate } from './dataHandling/leaderboards';
-
-const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
 
 const addBackendRoutes = (server) => {
 
@@ -150,6 +148,18 @@ const addBackendRoutes = (server) => {
         }
     })
 
+    server.route({
+        method: 'GET',
+        path: '/backend/logs',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/logs');
+            return h.file('html/backend/auditLog.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
 
     // API Calls below
 
@@ -191,7 +201,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['patch', 'info'], '/backend/api/matches');
-            return {success: await editMatch(request.payload)};
+            return {success: await editMatch(request.payload, request.auth.credentials.loggedInAs)};
         },
         options: {
             auth: 'session',
@@ -204,7 +214,11 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['put', 'info'], '/backend/api/matches');
-            return {success: await addMatch(request.payload)};
+            return {success: await addMatch(request.payload, request.auth.credentials.loggedInAs)};
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
         }
     });
 
@@ -213,7 +227,11 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['delete', 'info'], '/backend/api/matches');
-            return {success: await deleteMatch(request.payload)};
+            return {success: await deleteMatch(request.payload, request.auth.credentials.loggedInAs)};
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
         }
     })
 
@@ -338,6 +356,15 @@ const addBackendRoutes = (server) => {
         options: {
             auth: 'session',
             plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+        }
+    });
+    
+    server.route({
+        method: 'POST',
+        path: '/backend/api/logs',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/logs');
+            return await getAuditLogs(request.payload.search, request.payload.itemsPerPage, request.payload.page);
         }
     })
 
