@@ -284,7 +284,6 @@
                             return luxon.DateTime.fromISO(this.itemEdit.timestamp).toFormat("HH':'mm':'ss");
                         },
                         set: function(newValue) {
-                            console.log("Setting time to " + newValue);
                             let oldDT = luxon.DateTime.fromISO(this.itemEdit.timestamp);
                             let parsedValue = newValue.split(":");
                             this.itemEdit.timestamp = oldDT.set({hour: parseInt(parsedValue[0]), minute: parseInt(parsedValue[1]), second: parseInt(parsedValue[2])}).toISO();
@@ -295,7 +294,6 @@
                             return luxon.DateTime.fromISO(this.itemEdit.timestamp).toFormat("yyyy'-'MM'-'dd");
                         },
                         set: function(newValue) {
-                            console.log("Setting date to " + newValue);
                             let oldDT = luxon.DateTime.fromISO(this.itemEdit.timestamp);
                             let parsedValue = newValue.split("-");
                             this.itemEdit.timestamp = oldDT.set({year: parseInt(parsedValue[0]), month: parseInt(parsedValue[1]), day: parseInt(parsedValue[2])}).toISO();

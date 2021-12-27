@@ -124,8 +124,6 @@
                 },
                 methods: {
                     changeInput(val, key) {
-                        console.log(val);
-                        console.log(typeof val);
                         let split = key.split(";");
                         if(this.originalData[split[0]][split[1]] != val) {
                             this.changes[key] = val;

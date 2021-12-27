@@ -75,7 +75,6 @@
                         } else if(this.password === "") {
                             this.snackbarText = "You can't set an empty password!";
                         } else {
-                            console.log(this.password);
                             let response = await axios.post("/backend/api/user", {password: this.password});
                             if(!response.data.success) {
                                 this.snackbarText = "Failed to set password.";
@@ -88,7 +87,6 @@
                 },
                 async created() {
                     let response = await axios.get("/backend/api/user");
-                    console.log(response);
                     this.username = response.data.username;
                 }
             })
