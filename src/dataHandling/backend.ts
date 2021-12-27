@@ -50,8 +50,14 @@ export async function getAllPlayers(): Promise<IRRPlayer[]> {
     return await RRPlayerModel.find({}).exec();
 }
 
-export async function patchPlayers(changes: Object): Promise<boolean> {
-    // await patchAnything(RRPlayerModel, changes);
+export async function patchPlayers(changes: Object, username: string): Promise<boolean> {
+    for(let change in changes) {
+        let split = change.split(";");
+        let element = await RRPlayerModel.findOne({_id: split[0]}).exec();
+        element[split[1]] = changes[change];
+        await element.save();
+    }
+    await AuditLogModel.newEntry(username, "Edited players", {changes});
     return true;
 }
 

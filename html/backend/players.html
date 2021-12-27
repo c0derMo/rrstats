@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RRStats - Backend</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <rrstats-backend-sidebar title="RRStats backend">
+                    <v-main>
+                        <v-container fluid>
+                            <v-row>
+                                <v-spacer></v-spacer>
+                                <v-col md="8">
+                                    <v-data-table
+                                    :headers="headers"
+                                    :items="players"
+                                    :search="search"
+                                    disable-sort
+                                    show-expand
+                                    item-key="_id">
+                                    <template v-slot:top>
+                                        <v-toolbar>
+                                            <v-toolbar-title>Players</v-toolbar-title>
+                                            <v-spacer></v-spacer>
+                                            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" class="mt-5" single-line></v-text-field>
+                                            <v-spacer></v-spacer>
+                                            <v-btn
+                                                color="success"
+                                                @click="sendConfirmDialog = true"
+                                            >Save</v-btn>
+                                            <v-dialog v-model="sendConfirmDialog" max-width="500px">
+                                                <v-card>
+                                                    <v-card-title>Confirm changes</v-card-title>
+                                                    <ul>
+                                                        <li v-for="change in Object.keys(changes)" :key="change">{{change}}: {{changes[change]}}</li>
+                                                    </ul>
+                                                    <v-card-actions>
+                                                        <v-btn text @click="closeConfirm">Cancel</v-btn>
+                                                        <v-btn text @click="sendConfirm">Confirm</v-btn>
+                                                    </v-card-actions>
+                                                </v-card>
+                                            </v-dialog>
+                                        </v-toolbar>
+                                    </template>
+
+                                    <template v-slot:item.name="{ item }">
+                                        <v-text-field @change="e => changeInput(e, item._id + ';name')" :value="item.name"></v-text-field>
+                                    </template>
+                                    <template v-slot:item.title="{ item }">
+                                        <v-text-field @change="e => changeInput(e, item._id + ';title')" :value="item.title"></v-text-field>
+                                    </template>
+                                    <template v-slot:item.customtitle="{ item }">
+                                        <v-switch @change="e => changeInput(e, item._id + ';customTitle')" :value="booleanToString(item.customTitle)"></v-switch>
+                                    </template>
+                                    <template v-slot:item.discordid="{ item }">
+                                        <v-text-field @change="e => changeInput(e, item._id + ';discordId')" :value="item.discordId"></v-text-field>
+                                    </template>
+                                    <template v-slot:expanded-item="{ headers, item }">
+                                        <td :colspan="headers.length">
+                                            <v-switch @change="e => changeInput(e, item._id + ';excludedFromSearch')" :value="item.excludedFromSearch" label="Excluded from Search"></v-switch>
+                                            <v-text-field @change="e => changeInput(e, item._id + ';abbreviationOverride')" :value="item.abbreviationOverride" label="Abbreviation override"></v-text-field>
+                                        </td>
+                                    </template>
+                                </v-data-table>
+                                </v-col>
+                                <v-spacer></v-spacer>
+                            </v-row>
+                        </v-container>
+                    </v-main>
+                    <v-snackbar
+                        v-model="snackbar">
+                        {{ snackbarText }}
+                    <template v-slot:action="{ attrs }">
+                        <v-btn
+                        color="pink"
+                        text
+                        v-bind="attrs"
+                        @click="snackbar = false"
+                        >
+                        Close
+                        </v-btn>
+                    </template>
+                    </v-snackbar>
+                </rrstats-backend-sidebar>
+            </v-app>
+        </div>
+
+        <script src="/backend/components.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            let vue = new Vue({
+                el: '#app',
+                vuetify: new Vuetify({theme: { dark: true }}),
+                data() {
+                    return {
+                        snackbar: false,
+                        snackbarText: "",
+                        headers: [{
+                            name: "Player Name",
+                            value: "name"
+                        },{
+                            name: "Title",
+                            value: "title"
+                        },{
+                            name: "Custom title?",
+                            value: "customtitle"
+                        },{
+                            name: "Discord ID",
+                            value: "discordid"
+                        }],
+                        players: [],
+                        search: "",
+                        originalData: {},
+                        changes: {},
+                        sendConfirmDialog: false
+                    }
+                },
+                methods: {
+                    changeInput(val, key) {
+                        let split = key.split(";");
+                        if(this.originalData[split[0]][split[1]] != val) {
+                            this.changes[key] = val;
+                        } else {
+                            delete this.changes[key];
+                        }
+                    },
+                    async getPlayers() {
+                        let response = await axios.get("/backend/api/players");
+                        this.players = response.data;
+                        this.players.forEach(element => {
+                            this.originalData[element._id] = element;
+                        });
+                    },
+                    async sendConfirm() {
+                        let response = await axios.patch("/backend/api/players", this.changes);
+                        if(response.data.success) {
+                            this.snackbarText = "Successfully saved players.";
+                            await this.getPlayers();
+                        } else {
+                            this.snackbarText = "Failed to save players.";
+                        }
+                        this.snackbar = true;
+                    },
+                    closeConfirm() {
+                        this.sendConfirmDialog = false;
+                    },
+                    booleanToString(b) {
+                        // TODO: Fix switches!
+                        if(b) return "true";
+                        return "false";
+                    }
+                },
+                async created() {
+                    await this.getPlayers();
+                }
+            })
+        </script>
+    </body>
+</html>

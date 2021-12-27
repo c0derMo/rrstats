@@ -43,6 +43,12 @@ Vue.component('rrstats-backend-menulist', {
                 icon: "mdi-account-edit-outline",
                 href: "/backend/players"
             },{
+                id: "comps",
+                name: "Competitions",
+                description: "Lists all the competitions.",
+                icon: "mdi-format-list-bulleted",
+                href: "/backend/competitions"
+            },{
                 id: "importSpreadsheet",
                 name: "Import spreadsheet",
                 description: "Imports a spreadsheet as a permanent part of the system.",

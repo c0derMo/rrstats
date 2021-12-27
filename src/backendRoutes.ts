@@ -81,7 +81,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/players',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/players');
-            return await renderBackendPage("playerList", "RR Players");
+            return h.file("html/backend/players.html");
         },
         options: {
             auth: 'session'
@@ -253,7 +253,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/players',
         handler: async (request, h) => {
             request.log(['patch', 'info'], '/backend/api/players');
-            return {success: await patchPlayers(request.payload)}
+            return {success: await patchPlayers(request.payload, request.auth.credentials.loggedInAs)}
         },
         options: {
             auth: 'session',
