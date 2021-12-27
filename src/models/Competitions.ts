@@ -9,8 +9,6 @@ interface IRRCompetitionPlacement {
 interface IRRCompetiton {
     name: string;           // Full name, eg. Roulette Rivals World Championship 2021
     tag: string;            // Tag, eg. RRWC2021    tag is also id at the same time
-    started: Date;
-    finished: Date;
     challongeURL: string;
     hitmapsStatsURL: string;
     placements: IRRCompetitionPlacement[];
@@ -31,8 +29,6 @@ interface ICompetitionModel extends Model<ICompetitionDocument> {
 const RRCompetitionSchema = new Schema({
     name: String,
     tag: String,
-    started: Date,
-    finished: Date,
     challongeURL: String,
     hitmapsStatsURL: String,
     placements: [{playerId: String, bracket: String, placement: Number}],
