@@ -43,19 +43,19 @@
                                                             <v-container>
                                                                 <v-row>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-text-field v-model="itemEdit.competition" label="Competition"></v-text-field>
+                                                                        <v-text-field v-model="itemEdit.competition" label="Competition" prepend-icon="mdi-format-list-bulleted"></v-text-field>
                                                                     </v-col>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-text-field v-model="itemEdit.platform" label="Platform/Bracket"></v-text-field>
+                                                                        <v-text-field v-model="itemEdit.platform" label="Platform/Bracket" prepend-icon="mdi-family-tree"></v-text-field>
                                                                     </v-col>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-text-field v-model="itemEdit.round" label="Round"></v-text-field>
+                                                                        <v-text-field v-model="itemEdit.round" label="Round" prepend-icon="mdi-book-clock"></v-text-field>
                                                                     </v-col>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-text-field v-model="itemEdit.player1" label="Player 1"></v-text-field>
+                                                                        <v-text-field v-model="itemEdit.player1" label="Player 1" prepend-icon="mdi-account-arrow-left"></v-text-field>
                                                                     </v-col>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-text-field v-model="itemEdit.player2" label="Player 2"></v-text-field>
+                                                                        <v-text-field v-model="itemEdit.player2" label="Player 2" prepend-icon="mdi-account-arrow-right"></v-text-field>
                                                                     </v-col>
                                                                 </v-row>
                                                                 <v-row>
@@ -90,13 +90,13 @@
                                                                 </v-row>
                                                                 <v-row>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-text-field v-model="itemEdit.score.player1Points" :label="'Score ' + itemEdit.player1"></v-text-field>
+                                                                        <v-text-field v-model="itemEdit.score.player1Points" :label="'Score ' + itemEdit.player1" prepend-icon="mdi-counter"></v-text-field>
                                                                     </v-col>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-text-field v-model="itemEdit.score.player2Points" :label="'Score ' + itemEdit.player2"></v-text-field>
+                                                                        <v-text-field v-model="itemEdit.score.player2Points" :label="'Score ' + itemEdit.player2" prepend-icon="mdi-counter"></v-text-field>
                                                                     </v-col>
                                                                     <v-col cols="12" md="4">
-                                                                        <v-select v-model="itemEdit.score.winner" label="Winner" :items="playerSelectWinner"></v-select>
+                                                                        <v-select v-model="itemEdit.score.winner" label="Winner" :items="playerSelectWinner" prepend-icon="mdi-trophy"></v-select>
                                                                     </v-col>
                                                                 </v-row>
                                                                 <v-row>
