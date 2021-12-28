@@ -4,6 +4,8 @@ import { UserModel } from "../models/User";
 import { AuditLogModel } from '../models/AuditLogEntry';
 import { jsonDiff } from "../utils";
 import { RRCompetitionModel, IRRCompetition } from "../models/Competitions";
+import axios from "axios";
+import gdriveObjectToMatchArray from "../gDriveIntegration";
 
 export async function verifyLogin(username: string, password: string): Promise<boolean> {
     let user = await UserModel.findOne({name: username}).exec();
@@ -62,9 +64,25 @@ export async function patchPlayers(changes: Object, username: string): Promise<b
     return true;
 }
 
-export async function importSpreadsheet(sheetId: string, tabName: string, competition: string, columnAssignments: object, year: number): Promise<number> {
-    //TODO: Import
-    return 0
+export async function importSpreadsheet(options: any, username: string): Promise<number> {
+    if(options.id == "" || options.tabName == "" || options.comp == "") return -1;
+    let req = await axios.get("https://docs.google.com/spreadsheets/d/" + options.id + "/gviz/tq?tqx=out:json&sheet=" + options.tabName);
+    if(options.year == "") {
+        options.year = new Date().getFullYear();
+    } else {
+        options.year = parseInt(options.year);
+    }
+    let matches;
+    if(options.columnOverride !== "") {
+        matches = await gdriveObjectToMatchArray(JSON.parse(req.data.substring(47, req.data.length-2)), options.comp, false, options.year, JSON.parse(options.columnOverride));
+    } else {
+        matches = await gdriveObjectToMatchArray(JSON.parse(req.data.substring(47, req.data.length-2)), options.comp, false, options.year);
+    }
+    for(let match of matches) {
+       await RRMatchModel.create(match);
+    }
+    await AuditLogModel.newEntry(username, "Imported competition " + options.comp, {options: options, amountMatches: matches.length});
+    return matches.length;
 }
 
 export async function renamePlayer(oldName: string, newName: string): Promise<object> {

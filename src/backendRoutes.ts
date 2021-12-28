@@ -93,7 +93,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/importSpreadsheet',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/importSpreadsheet');
-            return await renderBackendPage("competitionImport", "Import table");
+            return h.file("html/backend/importSpreadsheet.html");
         },
         options: {
             auth: 'session'
@@ -291,23 +291,9 @@ const addBackendRoutes = (server) => {
         method: 'POST',
         path: '/backend/api/importSpreadsheet',
         handler: async (request, h) => {
-            const { sID, tabName, comp, cA, yearInput } = request.payload;
             request.log(['post', 'info'], '/backend/api/importSpreadsheet');
-            return await importSpreadsheet(sID, tabName, comp, cA, parseInt(yearInput));
-        },
-        options: {
-            auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
-        }
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/backend/api/recalculateLeaderboards',
-        handler: async (request, h) => {
-            await recalculate();
-            request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
-            return {success: true}
+            let amountOfMatches = await importSpreadsheet(request.payload, request.auth.credentials.loggedInAs)
+            return { success: true, amountOfMatches: amountOfMatches }
         },
         options: {
             auth: 'session',
