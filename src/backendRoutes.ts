@@ -116,7 +116,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/databaseChecks',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/databaseChecks');
-            return await renderBackendPage("databaseChecks", "Database Checks");
+            return h.file("html/backend/databaseChecks.html");
         },
         options: {
             auth: 'session'
@@ -315,11 +315,10 @@ const addBackendRoutes = (server) => {
 
     server.route({
         method: 'POST',
-        path: '/backend/api/runDatabaseChecks',
-        handler: (request, h) => {
-            const { checks } = request.payload;
-            request.log(['post', 'info'], '/backend/api/runDatabaseChecks');
-            return runChecks(JSON.parse(checks));
+        path: '/backend/api/databaseChecks',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/databaseChecks');
+            return await runChecks(request.payload);
         },
         options: {
             auth: 'session',
