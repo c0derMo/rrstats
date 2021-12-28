@@ -138,7 +138,7 @@ export async function getAuditLogs(search: string, itemsPerPage: number, page: n
 }
 
 export async function getStoredCompetitions(): Promise<IRRCompetition[]> {
-    return await RRCompetitionModel.find().exec();
+    return await RRCompetitionModel.find().sort("-sortingIndex").exec();
 }
 
 export async function editCompetition(comp: any, username: string): Promise<boolean> {

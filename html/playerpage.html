@@ -70,15 +70,17 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="comp in player.competitions" v-if="comp.officialCompetition || includeUnofficial" :key="comp.name + comp.placements[0].bracket">
-                                                <td>
-                                                    {{ comp.name }}
-                                                    <span v-if="comp.placements[0].bracket !== ''"> - {{ comp.placements[0].bracket }}</span>
-                                                </td>
-                                                <td>
-                                                    <v-chip :color="getPlacementColor(comp.placements[0].placement)">{{ comp.placements[0].placement }}{{ placementEnding(comp.placements[0].placement) }}</v-chip>
-                                                </td>
-                                            </tr>
+                                            <template v-for="comp in player.competitions" v-for="comp in player.competitions" v-if="comp.offocialCompetition || includeUnofficial">
+                                                <tr v-for="placement in comp.placements">
+                                                    <td>
+                                                        {{ comp.name }}
+                                                        <span v-if="placement.bracket !== ''"> - {{ placement.bracket }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <v-chip :color="getPlacementColor(placement.placement)">{{ placement.placement }}{{ placementEnding(placement.placement) }}</v-chip>
+                                                    </td>
+                                                </tr>
+                                            </template>
                                         </tbody>
                                     </template>
                                 </v-simple-table>
@@ -326,13 +328,6 @@
                         this.mapWinrates = winRate;
                         this.mapPicks = pickRate;
                     },
-                    placementEnding(placement) {
-                       if(placement >= 11 && placement <= 13) return "th";
-                       if(placement % 10 == 3) return "rd";
-                       if(placement % 10 == 2) return "nd";
-                       if(placement % 10 == 1) return "st";
-                       return "th";
-                    },
                     playerNumberToName(match, number, defaultName) {
                         if(number == 1) return match.player1;
                         if(number == 2) return match.player2;
@@ -349,12 +344,6 @@
                         if(match.score.winner == 2 && match.player2 == vue.name) return "green";
                         if(match.score.winner !== 1 && match.score.winner !== 2) return "yellow";
                         return "red";
-                    },
-                    getPlacementColor(placement) {
-                        if(placement == 1) return "#d6af36";
-                        if(placement == 2) return "#a7a7ad";
-                        if(placement == 3) return "#a77044";
-                        return "#555";
                     },
                     timestampToString(timestamp) {
                         return luxon.DateTime.fromISO(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)
@@ -406,7 +395,20 @@
                             default:
                                 return "Unknown"
                         }
-                    }
+                    },
+                    getPlacementColor(placement) {
+                        if(placement == 1) return "#d6af36";
+                        if(placement == 2) return "#a7a7ad";
+                        if(placement == 3) return "#a77044";
+                        return "#555";
+                    },
+                    placementEnding(placement) {
+                        if(placement >= 11 && placement <= 13) return "th";
+                        if(placement % 10 == 3) return "rd";
+                        if(placement % 10 == 2) return "nd";
+                        if(placement % 10 == 1) return "st";
+                        return "th";
+                    },
                 },
                 async created() {
                     this.name = window.location.pathname.substring(1);

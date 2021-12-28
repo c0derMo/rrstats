@@ -9,7 +9,7 @@ export async function getAllPlayers(): Promise<string[]> {
 }
 
 export async function getAllCompetitions(): Promise<object[]> {
-    let competitions = await RRCompetitionModel.find({}, {tag: true, hitmapsStatsURL: true}).exec();
+    let competitions = await RRCompetitionModel.find({}, {tag: true, hitmapsStatsURL: true}).sort("-sortingIndex").exec();
     return competitions;
 }
 
@@ -24,7 +24,7 @@ export async function getPlayer(name: string): Promise<object> {
         title = "Roulette Rookie";
     }
 
-    const newestCompData = await RRCompetitionModel.find({ updateWithSheet: true }).exec();
+    const newestCompData = await RRCompetitionModel.find({ updateWithSheet: true }).sort("-sortingIndex").exec();
     for(let e of newestCompData) {
         const newestData = await getGDriveData("https://docs.google.com/spreadsheets/d/" + e.sheetId + "/gviz/tq?tqx=out:json&sheet=" + e.tabName, e.tag);
         matches = matches.concat(newestData.filter(e => {
@@ -38,7 +38,26 @@ export async function getPlayer(name: string): Promise<object> {
 
     let competitions = [];
     if (playerInfo !== null) {
-        competitions = await RRCompetitionModel.find({"placements.playerId": playerInfo._id}, { officialCompetition: true, name: true, placements: { $elemMatch: { playerId: playerInfo._id } } }).exec();
+        competitions = await RRCompetitionModel.aggregate([{$match: {
+                'placements.playerId': playerInfo._id.toString()
+            }}, {$sort: {
+                sortingIndex: -1
+            }}, {$project: {
+                placements: {
+                    $filter: {
+                        input: '$placements',
+                        as: 'placement',
+                        cond: {
+                            $eq: [
+                                '$$placement.playerId',
+                                playerInfo._id.toString()
+                            ]
+                        }
+                    }
+                },
+                officialCompetition: true,
+                name: true
+            }}]).exec();
     }
 
     return {

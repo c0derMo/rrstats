@@ -56,6 +56,9 @@
                                                                     <v-col cols="12" md="4">
                                                                         <v-text-field v-model="itemEdit.hitmapsStatsURL" label="Hitmaps Stats URL" prepend-icon="mdi-account"></v-text-field>
                                                                     </v-col>
+                                                                    <v-col cols="12" md="4">
+                                                                        <v-text-field type="number" v-model="itemEdit.sortingIndex" label="Sorting index" prepend-icon="mdi-account"></v-text-field>
+                                                                    </v-col>
                                                                 </v-row>
                                                                 <v-row>
                                                                     <v-col cols="12" md="4">
@@ -188,7 +191,8 @@
                             sheetId: "",
                             tabName: "",
                             updateWithSheet: false,
-                            placements: []
+                            placements: [],
+                            sortingIndex: 0
                         },
                         defaultItem: {
                             name: "",
@@ -199,7 +203,8 @@
                             sheetId: "",
                             tabName: "",
                             updateWithSheet: false,
-                            placements: []
+                            placements: [],
+                            sortingIndex: 0
                         },
                         editIndex: -1,
                         deleteConfirmDialog: false
