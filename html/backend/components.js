@@ -21,7 +21,16 @@ Vue.component('rrstats-backend-sidebar', {
     </v-app-bar>
     <slot></slot>
     <v-navigation-drawer absolute temporary v-model="sidebar">
-        <rrstats-backend-menulist :include-subtitle="false"></rrstats-backend-menulist>
+        <rrstats-backend-menulist :include-subtitle="false">
+            <template v-slot:pre-list>
+                <v-list-item two-line href="/backend">
+                    <v-list-item-icon><v-icon>mdi-backburger</v-icon></v-list-item-icon>
+                    <v-list-item-content>
+                        <v-list-item-title>RRStats backend</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </template>
+        </rrstats-backend-menulist>
     </v-navigation-drawer>
     </div>
     `
