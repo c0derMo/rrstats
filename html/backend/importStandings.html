@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RRStats - Backend</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+</head>
+<body>
+<div id="app">
+    <v-app>
+        <rrstats-backend-sidebar title="RRStats backend">
+            <v-main>
+                <v-container fluid>
+                    <v-row>
+                        <v-spacer></v-spacer>
+                        <v-col md="8">
+                            <v-stepper v-model="step" vertical>
+                                <v-stepper-step :complete="step > 1" step="1">
+                                    Standings
+                                </v-stepper-step>
+                                <v-stepper-content step="1">
+                                    Select competition to add standings to:
+                                    <v-select :items="comps" label="Competition" return-object item-text="name" v-model="compToAdd"></v-select>
+                                    <v-divider></v-divider>
+                                    <v-text-field v-model="bracket" label="Bracket"></v-text-field>
+                                    <span style="font-style: italic">Place each placement in one line, with the format '[PLAYERNAME]: [PLACEMENT]'</span>
+                                    <v-textarea label="Placements" outlined v-model="placements" rows="10" auto-grow></v-textarea>
+                                    <v-divider></v-divider>
+                                    <v-btn @click="saveStandings">Save</v-btn>
+                                </v-stepper-content>
+
+                                <v-stepper-step :complete="step > 2" step="2">
+                                    Working magic
+                                </v-stepper-step>
+                                <v-stepper-content step="2">
+                                    Please wait while the server works it's magic...
+                                </v-stepper-content>
+
+                                <v-stepper-step step="3">
+                                    Checking result
+                                </v-stepper-step>
+                                <v-stepper-content step="3">
+                                    {{ amountPlacements }} Placements were added.
+                                    <div v-if="notFoundPlayers.length > 0">The following players could not be found:
+                                        <ul>
+                                            <li v-for="player in notFoundPlayers" :key="player">{{player}}</li>
+                                        </ul>
+                                    </div>
+                                </v-stepper-content>
+                            </v-stepper>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                    </v-row>
+                </v-container>
+            </v-main>
+            <v-snackbar
+                    v-model="snackbar">
+                {{ snackbarText }}
+                <template v-slot:action="{ attrs }">
+                    <v-btn
+                            color="pink"
+                            text
+                            v-bind="attrs"
+                            @click="snackbar = false"
+                    >
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
+        </rrstats-backend-sidebar>
+    </v-app>
+</div>
+
+<script src="/backend/components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    let vue = new Vue({
+        el: '#app',
+        vuetify: new Vuetify({theme: { dark: true }}),
+        data() {
+            return {
+                snackbar: false,
+                snackbarText: "",
+                comps: [],
+                step: 1,
+                compToAdd: {},
+                bracket: "",
+                placements: "",
+                amountPlacements: 0,
+                notFoundPlayers: []
+            }
+        },
+        methods: {
+            async saveStandings() {
+                if(this.compToAdd == {}) {
+                    this.snackbarText = "Please select a competition.";
+                    this.snackbar = true;
+                    return;
+                }
+
+                this.step = 2;
+                let standings = [];
+                for(let standing of this.placements.split("\n")) {
+                    let splitStanding = standing.split(": ");
+                    standings.push({player: splitStanding[0], placement: parseInt(splitStanding[1])});
+                }
+                let response = await axios.post("/backend/api/importStandings", {compId: this.compToAdd._id, bracket: this.bracket, placements: standings});
+                if(response.data.success) {
+                    this.amountPlacements = response.data.amountPlacements;
+                    this.notFoundPlayers = response.data.notFoundPlayers;
+                    this.step = 3;
+                } else {
+                    this.snackbarText = "Error while importing standings."
+                    this.snackbar = true;
+                }
+            }
+        },
+        async created() {
+            let response = await axios.get("/backend/api/competitions");
+            this.comps = response.data;
+        }
+    })
+</script>
+</body>
+</html>

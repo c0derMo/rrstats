@@ -1,8 +1,7 @@
 import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
-import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs, deleteCompetition, addCompetition, lookupPlayer, editCompetition, getStoredCompetitions } from './dataHandling/backend';
-import { recalculate } from './dataHandling/leaderboards';
+import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs, deleteCompetition, addCompetition, lookupPlayer, editCompetition, getStoredCompetitions, importStandings } from './dataHandling/backend';
 
 const addBackendRoutes = (server) => {
 
@@ -105,7 +104,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/importStandings',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/importStandings');
-            return await renderBackendPage("standingsImport", "Import standings");
+            return h.file("html/backend/importStandings.html");
         },
         options: {
             auth: 'session'
@@ -300,6 +299,19 @@ const addBackendRoutes = (server) => {
             plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
         }
     });
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/importStandings',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/importStandings');
+            return await importStandings(request.payload, request.auth.credentials.loggedInAs);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
 
     server.route({
         method: 'POST',

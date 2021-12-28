@@ -85,6 +85,35 @@ export async function importSpreadsheet(options: any, username: string): Promise
     return matches.length;
 }
 
+export async function importStandings(options: any, username: string): Promise<object> {
+    if(options.compId == "" || options.bracket == "" || options.placements == []) return {success: false}
+
+    let placements = 0;
+    let notFoundPlayers = [];
+    let competition = await RRCompetitionModel.findOne({_id: options.compId}).exec();
+    for(let placement of options.placements) {
+        let player = await RRPlayerModel.findOne({name: placement.player}).exec();
+        if(player == null) {
+            notFoundPlayers.push(placement.player);
+        } else {
+            competition.placements.push({
+                playerId: player._id,
+                bracket: options.bracket,
+                placement: placement.placement
+            });
+            placements += 1;
+        }
+    }
+    await competition.save();
+    await AuditLogModel.newEntry(username, "Imported standings " + competition.name + " - " + options.bracket, {placements: options.placements});
+
+    return {
+        success: true,
+        amountPlacements: placements,
+        notFoundPlayers: notFoundPlayers
+    }
+}
+
 export async function renamePlayer(oldName: string, newName: string): Promise<object> {
     //TODO: Renaming algorithm
     return null;
