@@ -21,13 +21,14 @@
                                     <v-data-table
                                     :headers="headers"
                                     :items="competitions"
-                                    :search="search">
+                                    :search="search"
+                                    disable-sort>
                                 
                                         <template v-slot:top>
                                             <v-toolbar>
                                                 <v-toolbar-title>Competitions</v-toolbar-title>
                                                 <v-spacer></v-spacer>
-                                                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" class="mt-5" single-line disable-sort></v-text-field>
+                                                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" class="mt-5" single-line></v-text-field>
                                                 <v-spacer></v-spacer>
                                                 <v-dialog v-model="editDialog" max-width="1000px">
                                                     <template v-slot:activator="{ on, attrs }">

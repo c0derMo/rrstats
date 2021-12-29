@@ -1,7 +1,28 @@
 import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
-import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs, deleteCompetition, addCompetition, lookupPlayer, editCompetition, getStoredCompetitions, importStandings } from './dataHandling/backend';
+import {
+    getAllPlayers,
+    getStoredMatches,
+    importSpreadsheet,
+    patchPlayers,
+    addMatch,
+    editMatch,
+    renamePlayer,
+    deleteMatch,
+    verifyLogin,
+    updateUserPassword,
+    getAuditLogs,
+    deleteCompetition,
+    addCompetition,
+    lookupPlayer,
+    editCompetition,
+    getStoredCompetitions,
+    importStandings,
+} from './dataHandling/backend';
+import {
+    getStoredRecords, editRecord, addRecord, deleteRecord} from './dataHandling/records';
 import {tweet} from "./dataHandling/externalConnector";
+import {disconnect} from "./databaseManager";
 
 const addBackendRoutes = (server) => {
 
@@ -183,6 +204,18 @@ const addBackendRoutes = (server) => {
         }
     })
 
+    server.route({
+        method: 'GET',
+        path: '/backend/records',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/records');
+            return h.file("html/backend/records.html");
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
 
     // API Calls below
 
@@ -290,6 +323,7 @@ const addBackendRoutes = (server) => {
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/api/shutdown');
             server.stop();
+            disconnect();
             return "";
         },
         options: {
@@ -466,6 +500,58 @@ const addBackendRoutes = (server) => {
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/tweet');
             return await tweet(request.payload, request.auth.credentials.loggedInAs);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/records',
+        handler: async (request, h) => {
+            request.log(['get', 'info'], '/backend/api/records');
+            return await getStoredRecords();
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'PATCH',
+        path: '/backend/api/records',
+        handler: async(request, h) => {
+            request.log(['patch', 'info'], '/backend/api/records');
+            return {success: await editRecord(request.payload, request.auth.credentials.loggedInAs)};
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/backend/api/records',
+        handler: async(request, h) => {
+            request.log(['put', 'info'], '/backend/api/records');
+            return {success: await addRecord(request.payload, request.auth.credentials.loggedInAs)};
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'DELETE',
+        path: '/backend/api/records',
+        handler: async(request, h) => {
+            request.log(['delete', 'info'], '/backend/api/records');
+            return {success: await deleteRecord(request.payload, request.auth.credentials.loggedInAs)};
         },
         options: {
             auth: 'session',
