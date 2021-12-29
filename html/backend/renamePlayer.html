@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RRStats - Backend</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+</head>
+<body>
+<div id="app">
+    <v-app>
+        <rrstats-backend-sidebar title="RRStats backend">
+            <v-main>
+                <v-container fluid>
+                    <v-row>
+                        <v-spacer></v-spacer>
+                        <v-col md="8">
+                            <v-stepper v-model="step">
+                                <v-stepper-step :completed="step > 1" step="1">Enter player information</v-stepper-step>
+                                <v-stepper-content step="1">
+                                    <v-text-field v-model="oldName" label="Old Name"></v-text-field>
+                                    <v-text-field v-model="newName" label="New Name"></v-text-field>
+                                    <v-btn @click="rename">Rename</v-btn>
+                                </v-stepper-content>
+
+                                <v-stepper-step :completed="step > 2" step="2">Server working</v-stepper-step>
+                                <v-stepper-content step="2">
+                                    Please wait while the server works it's magic...
+                                </v-stepper-content>
+
+                                <v-stepper-step step="3">Check results</v-stepper-step>
+                                <v-stepper-content step="3">
+                                    Changes done:
+                                    <v-list>
+                                        <v-list-item v-for="(item, index) in changes" :key="index">
+                                            {{ item }}
+                                        </v-list-item>
+                                    </v-list>
+                                </v-stepper-content>
+                            </v-stepper>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                    </v-row>
+                </v-container>
+            </v-main>
+            <v-snackbar
+                    v-model="snackbar">
+                {{ snackbarText }}
+                <template v-slot:action="{ attrs }">
+                    <v-btn
+                            color="pink"
+                            text
+                            v-bind="attrs"
+                            @click="snackbar = false"
+                    >
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
+        </rrstats-backend-sidebar>
+    </v-app>
+</div>
+
+<script src="/backend/components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    let vue = new Vue({
+        el: '#app',
+        vuetify: new Vuetify({theme: { dark: true }}),
+        data() {
+            return {
+                snackbar: false,
+                snackbarText: "",
+                oldName: "",
+                newName: "",
+                changes: [],
+                step: 1
+            }
+        },
+        methods: {
+            async rename() {
+                if(this.oldName == "" || this.newName == "") {
+                    this.snackbarText = "Please enter two names.";
+                    this.snackbar = true;
+                    return;
+                }
+
+                this.step = 2;
+                let result = await axios.post("/backend/api/renamePlayer", {oldName: this.oldName, newName: this.newName});
+                if(result.data.success) {
+                    this.changes = result.data.changes;
+                    this.step = 3;
+                } else {
+                    this.snackbarText = "Error while renaming players.";
+                    this.snackbar = true;
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>

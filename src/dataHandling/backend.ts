@@ -6,6 +6,7 @@ import { jsonDiff } from "../utils";
 import { RRCompetitionModel, IRRCompetition } from "../models/Competitions";
 import axios from "axios";
 import gdriveObjectToMatchArray from "../gDriveIntegration";
+import {RRRecordModel} from "../models/Record";
 
 export async function verifyLogin(username: string, password: string): Promise<boolean> {
     let user = await UserModel.findOne({name: username}).exec();
@@ -114,9 +115,40 @@ export async function importStandings(options: any, username: string): Promise<o
     }
 }
 
-export async function renamePlayer(oldName: string, newName: string): Promise<object> {
-    //TODO: Renaming algorithm
-    return null;
+export async function renamePlayer(oldName: string, newName: string, username: string): Promise<object> {
+    let changes = [];
+    
+    let players = await RRPlayerModel.find({name: oldName}).exec();
+    for(let player of players) {
+        player.name = newName;
+        await player.save();
+        changes.push(`Changed RRPlayer ${player._id} from ${oldName} to name ${newName}`);
+    }
+    
+    let matches = await RRMatchModel.find({ $or: [{player1: oldName}, {player2: oldName}] }).exec();
+    for(let match of matches) {
+        if(match.player1 == oldName) {
+            match.player1 = newName;
+            changes.push(`Changed player 1 in match ${match._id} from ${oldName} to ${newName}`);
+        } else if(match.player2 == oldName) {
+            match.player2 = newName;
+            changes.push(`Changed player 2 in match ${match._id} from ${oldName} to ${newName}`);
+        }
+        await match.save();
+    }
+
+    let records = await RRRecordModel.find({}).exec();
+    for(let record of records) {
+        if(record.match.search(oldName) >= 0) {
+            changes.push(`Record ${record._id} changed match from ${record.match} to ${record.match.replace(oldName, newName)}`)
+            record.match = record.match.replace(oldName, newName);
+            await record.save();
+        }
+    }
+
+    await AuditLogModel.newEntry(username, "Renamed player " + oldName +  " to " + newName, {changes: changes});
+
+    return { success: true, changes: changes };
 }
 
 export async function getAuditLogs(search: string, itemsPerPage: number, page: number): Promise<object> {

@@ -1,6 +1,5 @@
 import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
-import { renderBackendPage } from './backendTemplating';
 import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs, deleteCompetition, addCompetition, lookupPlayer, editCompetition, getStoredCompetitions, importStandings } from './dataHandling/backend';
 import {tweet} from "./dataHandling/externalConnector";
 
@@ -67,7 +66,7 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/matches',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/matches');
             return h.file("html/backend/matches.html")
         },
@@ -79,7 +78,7 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/players',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/players');
             return h.file("html/backend/players.html");
         },
@@ -91,7 +90,7 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/importSpreadsheet',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/importSpreadsheet');
             return h.file("html/backend/importSpreadsheet.html");
         },
@@ -103,7 +102,7 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/importStandings',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/importStandings');
             return h.file("html/backend/importStandings.html");
         },
@@ -115,7 +114,7 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/databaseChecks',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/databaseChecks');
             return h.file("html/backend/databaseChecks.html");
         },
@@ -127,9 +126,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/renamePlayer',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/renamePlayer');
-            return await renderBackendPage("renamePlayer", "Rename Player");
+            return h.file("html/backend/renamePlayer.html");
         },
         options: {
             auth: 'session'
@@ -345,7 +344,7 @@ const addBackendRoutes = (server) => {
         handler: (request, h) => {
             const { oldName, newName } = request.payload;
             request.log(['post', 'info'], '/backend/api/renamePlayer');
-            return renamePlayer(oldName, newName);
+            return renamePlayer(oldName, newName, request.auth.credentials.loggedInAs);
         },
         options: {
             auth: 'session',
