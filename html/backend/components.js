@@ -55,7 +55,7 @@ Vue.component('rrstats-backend-menulist', {
                 id: "comps",
                 name: "Competitions",
                 description: "Lists all the competitions.",
-                icon: "mdi-format-list-bulleted",
+                icon: "mdi-tournament",
                 href: "/backend/competitions"
             },{
                 id: "importSpreadsheet",
