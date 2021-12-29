@@ -2,6 +2,7 @@ import { setMaintenanceMode } from './routes';
 import { runChecks } from './dataHandling/databaseChecks';
 import { renderBackendPage } from './backendTemplating';
 import { getAllPlayers, getStoredMatches, importSpreadsheet, patchPlayers, addMatch, editMatch, renamePlayer, deleteMatch, verifyLogin, updateUserPassword, getAuditLogs, deleteCompetition, addCompetition, lookupPlayer, editCompetition, getStoredCompetitions, importStandings } from './dataHandling/backend';
+import {tweet} from "./dataHandling/externalConnector";
 
 const addBackendRoutes = (server) => {
 
@@ -165,6 +166,18 @@ const addBackendRoutes = (server) => {
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/competitions');
             return h.file('html/backend/comps.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/tweet',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/tweet');
+            return h.file("html/backend/tweet.html");
         },
         options: {
             auth: 'session'
@@ -441,6 +454,23 @@ const addBackendRoutes = (server) => {
             } else {
                 return {name: "", _id: ""}
             }
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/tweet',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/tweet');
+            return await tweet(request.payload, request.auth.credentials.loggedInAs);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     })
 

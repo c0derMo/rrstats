@@ -93,6 +93,12 @@ Vue.component('rrstats-backend-menulist', {
                 description: "Get a comprehensive log of all actions taken in the backend.",
                 icon: "mdi-book-search-outline",
                 href: "/backend/logs"
+            },{
+                id: 'tweet',
+                name: 'Tweet',
+                description: 'Tweet from the official @rrstats-Account',
+                icon: 'mdi-twitter',
+                href: '/backend/tweet'
             }]
         } 
     },
