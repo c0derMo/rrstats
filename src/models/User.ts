@@ -20,9 +20,18 @@ interface IUserModel extends Model<IUserDocument> {
 }
 
 const UserSchema = new Schema({
-    name: String,
-    passwordHash: String,
-    type: String
+    name: {
+        type: String,
+        required: true
+    },
+    passwordHash: {
+        type: String,
+        required: true
+    },
+    type: {
+        type: String,
+        required: true
+    }
 });
 
 UserSchema.methods.setPassword = setPassword;

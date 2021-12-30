@@ -18,10 +18,10 @@ interface IRRMap {
 }
 
 export interface IRRMatch {
-    player1: string;        // player id's in the future
-    player2: string;        // player id's in the future
+    player1: string;
+    player2: string;
     score: IRRMatchScore;
-    competition: string;    // Possibly id the comps?
+    competition: string;
     platform: string;
     round: string;
     maps: IRRMap[];
@@ -38,15 +38,67 @@ interface IMatchModel extends Model<IMatchDocument> {
 }
 
 const RRMatchSchema = new Schema({
-    player1: String,
-    player2: String,
-    score: { player1Points: Number, player2Points: Number, winner: Number },
-    competition: String,
-    platform: String,
-    round: String,
-    maps: [{ map: String, winner: Number, pickedBy: Number }],
-    bans: [{ map: String, bannedBy: Number }],
-    timestamp: Date
+    player1: {
+        type: String,
+        required: true
+    },
+    player2: {
+        type: String,
+        required: true
+    },
+    score: {
+        type: {
+            player1Points: {
+                type: Number,
+                required: true
+            }, player2Points: {
+                type: Number,
+                required: true
+            }, winner: {
+                type: Number,
+                required: true
+            } },
+        required: true
+},
+    competition: {
+        type: String,
+        required: true
+    },
+    platform: {
+        type: String,
+        required: true
+    },
+    round: {
+        type: String,
+        required: true
+    },
+    maps: {
+        type: [{ map: {
+                type: String,
+                required: true
+            }, winner: {
+                type: Number,
+                required: true
+            }, pickedBy: {
+                type: Number,
+                required: true
+            } }],
+        required: true
+    },
+    bans: {
+        type: [{ map: {
+                type: String,
+                required: true
+            }, bannedBy: {
+                type: Number,
+                required: true
+            } }],
+        required: true
+    },
+    timestamp: {
+        type: Date,
+        required: true
+    }
 });
 
 export const RRMatchModel = model<IMatchDocument>("match", RRMatchSchema) as IMatchModel;

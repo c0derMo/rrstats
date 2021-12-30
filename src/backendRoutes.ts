@@ -257,7 +257,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['patch', 'info'], '/backend/api/matches');
-            return {success: await editMatch(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await editMatch(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -270,7 +276,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['put', 'info'], '/backend/api/matches');
-            return {success: await addMatch(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await addMatch(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -283,7 +295,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['delete', 'info'], '/backend/api/matches');
-            return {success: await deleteMatch(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await deleteMatch(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -309,7 +327,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/players',
         handler: async (request, h) => {
             request.log(['patch', 'info'], '/backend/api/players');
-            return {success: await patchPlayers(request.payload, request.auth.credentials.loggedInAs)}
+            let result;
+            try {
+                result = {success: await patchPlayers(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -337,8 +361,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/importSpreadsheet',
         handler: async (request, h) => {
             request.log(['post', 'info'], '/backend/api/importSpreadsheet');
-            let amountOfMatches = await importSpreadsheet(request.payload, request.auth.credentials.loggedInAs)
-            return { success: true, amountOfMatches: amountOfMatches }
+            let result;
+            try {
+                result = {success: true, amountOfMatches: await importSpreadsheet(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -375,10 +404,10 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'POST',
         path: '/backend/api/renamePlayer',
-        handler: (request, h) => {
+        handler: async(request, h) => {
             const { oldName, newName } = request.payload;
             request.log(['post', 'info'], '/backend/api/renamePlayer');
-            return renamePlayer(oldName, newName, request.auth.credentials.loggedInAs);
+            return await renamePlayer(oldName, newName, request.auth.credentials.loggedInAs);
         },
         options: {
             auth: 'session',
@@ -441,7 +470,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/competitions',
         handler: async(request, h) => {
             request.log(['patch', 'info'], '/backend/api/competitions');
-            return {success: await editCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await editCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -454,7 +489,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/competitions',
         handler: async(request, h) => {
             request.log(['put', 'info'], '/backend/api/competitions');
-            return {success: await addCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await addCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -467,7 +508,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/competitions',
         handler: async(request, h) => {
             request.log(['delete', 'info'], '/backend/api/competitions');
-            return {success: await deleteCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await deleteCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -525,7 +572,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/records',
         handler: async(request, h) => {
             request.log(['patch', 'info'], '/backend/api/records');
-            return {success: await editRecord(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await editRecord(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -538,7 +591,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/records',
         handler: async(request, h) => {
             request.log(['put', 'info'], '/backend/api/records');
-            return {success: await addRecord(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await addRecord(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -551,7 +610,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/records',
         handler: async(request, h) => {
             request.log(['delete', 'info'], '/backend/api/records');
-            return {success: await deleteRecord(request.payload, request.auth.credentials.loggedInAs)};
+            let result;
+            try {
+                result = {success: await deleteRecord(request.payload, request.auth.credentials.loggedInAs)}
+            } catch(e) {
+                result = {success: false, error: e.toString() }
+            }
+            return result;
         },
         options: {
             auth: 'session',

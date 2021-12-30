@@ -19,13 +19,34 @@ interface IRecordModel extends Model<IRecordDocument> {
 }
 
 const RRRecordSchema = new Schema({
-    category: String,
-    isMapRecord: Boolean,
-    players: [String],
-    match: String,
-    details: String,
-    time: Number,
-    videoLink: String
+    category: {
+        type: String,
+        required: true
+    },
+    isMapRecord: {
+        type: Boolean,
+        required: true
+    },
+    players: {
+        type: [String],
+        required: true
+    },
+    match: {
+        type: String,
+        required: true
+    },
+    details: {
+        type: String,
+        required: true
+    },
+    time: {
+        type: Number,
+        required: true
+    },
+    videoLink: {
+        type: String,
+        required: true
+    }
 });
 
 export const RRRecordModel = model<IRecordDocument>("record", RRRecordSchema) as IRecordModel;

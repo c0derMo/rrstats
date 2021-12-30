@@ -115,7 +115,7 @@
                     this.amountOfMatches = response.data.amountOfMatches;
                     this.step = 3;
                 } else {
-                    this.snackbarText = "There was an error while importing.";
+                    this.snackbarText = `Error: ${response.data.error}`;
                     this.snackbar = true;
                 }
             }

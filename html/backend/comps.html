@@ -242,7 +242,7 @@
                                 this.close();
                             } else {
                                 this.close();
-                                this.snackbarText = "An error occured while editing.";
+                                this.snackbarText = `Error: ${response.data.error}`;
                                 this.snackbar = true;
                             }
                         } else {
@@ -255,7 +255,7 @@
                                 this.close();
                             } else {
                                 this.close();
-                                this.snackbarText = "An error occured while creating."
+                                this.snackbarText = `Error: ${response.data.error}`;
                                 this.snackbar = true;
                             }
                         }
@@ -274,7 +274,7 @@
                             this.closeDelete()
                         } else {
                             this.closeDelete();
-                            this.snackbarText = "An error occured while deleting.";
+                            this.snackbarText = `Error: ${response.data.error}`;
                             this.snackbar = true;
                         }
                     },

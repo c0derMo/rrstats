@@ -16,10 +16,22 @@ interface IAuditLogEntryModel extends Model<IAuditLogEntryDocument> {
 }
 
 const AuditLogEntrySchema = new Schema({
-    user: String,
-    action: String,
-    timestamp: Date,
-    details: Object
+    user: {
+        type: String,
+        required: true
+    },
+    action: {
+        type: String,
+        required: true
+    },
+    timestamp: {
+        type: Date,
+        required: true
+    },
+    details: {
+        type: Object,
+        required: true
+    }
 });
 
 AuditLogEntrySchema.statics.newEntry = newEntry;
