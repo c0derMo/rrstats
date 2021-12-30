@@ -380,7 +380,13 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/importStandings',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/importStandings');
-            return await importStandings(request.payload, request.auth.credentials.loggedInAs);
+            let result;
+            try {
+                result = {success: true, ...await importStandings(request.payload, request.auth.credentials.loggedInAs)}
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',
@@ -407,7 +413,13 @@ const addBackendRoutes = (server) => {
         handler: async(request, h) => {
             const { oldName, newName } = request.payload;
             request.log(['post', 'info'], '/backend/api/renamePlayer');
-            return await renamePlayer(oldName, newName, request.auth.credentials.loggedInAs);
+            let result;
+            try {
+                result = {success: true, changes: await renamePlayer(oldName, newName, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return result;
         },
         options: {
             auth: 'session',

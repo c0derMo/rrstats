@@ -94,7 +94,7 @@
                     this.changes = result.data.changes;
                     this.step = 3;
                 } else {
-                    this.snackbarText = "Error while renaming players.";
+                    this.snackbarText = `Error: ${result.data.error}`;
                     this.snackbar = true;
                 }
             }

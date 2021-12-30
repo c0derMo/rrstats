@@ -144,18 +144,13 @@
                             this.snackbarText = "Successfully saved players.";
                             await this.getPlayers();
                         } else {
-                            this.snackbarText = "Failed to save players.";
+                            this.snackbarText = `Error: ${response.data.error}`;
                         }
                         this.sendConfirmDialog = false;
                         this.snackbar = true;
                     },
                     closeConfirm() {
                         this.sendConfirmDialog = false;
-                    },
-                    booleanToString(b) {
-                        // TODO: Fix switches!
-                        if(b) return "true";
-                        return "false";
                     }
                 },
                 async created() {

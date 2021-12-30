@@ -114,7 +114,7 @@
                     this.notFoundPlayers = response.data.notFoundPlayers;
                     this.step = 3;
                 } else {
-                    this.snackbarText = "Error while importing standings."
+                    this.snackbarText = `Error: ${response.data.error}`
                     this.snackbar = true;
                 }
             }
