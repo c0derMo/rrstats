@@ -306,7 +306,7 @@
                                     if(map.winner == 0) won[map.map] += 0.5;
                                 }
                                 if(this.mapPicksComps.includes(m.competition)) {
-                                    if(map.picked == localPlayer) picked[map.map] += 1;
+                                    if(map.pickedBy == localPlayer) picked[map.map] += 1;
                                 }
                             });
                         }

@@ -148,7 +148,7 @@ export async function renamePlayer(oldName: string, newName: string, username: s
 
     await AuditLogModel.newEntry(username, "Renamed player " + oldName +  " to " + newName, {changes: changes});
 
-    return { success: true, changes: changes };
+    return changes;
 }
 
 export async function getAuditLogs(search: string, itemsPerPage: number, page: number): Promise<object> {
