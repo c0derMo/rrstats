@@ -23,12 +23,10 @@ const RRPlayerSchema = new Schema({
         required: true
     },
     discordId: {
-        type: String,
-        required: true
+        type: String
     },
     title: {
-        type: String,
-        required: true
+        type: String
     },
     customTitle: {
         type: Boolean,
@@ -39,8 +37,7 @@ const RRPlayerSchema = new Schema({
         required: true
     },
     abbreviationOverride: {
-        type: String,
-        required: true
+        type: String
     }
 });
 

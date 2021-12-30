@@ -37,12 +37,10 @@ const RRCompetitionSchema = new Schema({
         required: true
     },
     challongeURL: {
-        type: String,
-        required: true
+        type: String
     },
     hitmapsStatsURL: {
-        type: String,
-        required: true
+        type: String
     },
     placements: {
         type: [{
@@ -55,20 +53,17 @@ const RRCompetitionSchema = new Schema({
             }, placement: {
                 type: Number,
                 required: true
-            }}],
-        required: true
+            }}]
     },
     updateWithSheet: {
         type: Boolean,
         required: true
     },
     sheetId: {
-        type: String,
-        required: true
+        type: String
     },
     tabName: {
-        type: String,
-        required: true
+        type: String
     },
     officialCompetition: {
         type: Boolean,

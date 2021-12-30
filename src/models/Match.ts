@@ -65,8 +65,7 @@ const RRMatchSchema = new Schema({
         required: true
     },
     platform: {
-        type: String,
-        required: true
+        type: String
     },
     round: {
         type: String,
@@ -82,8 +81,7 @@ const RRMatchSchema = new Schema({
             }, pickedBy: {
                 type: Number,
                 required: true
-            } }],
-        required: true
+            } }]
     },
     bans: {
         type: [{ map: {
@@ -92,8 +90,7 @@ const RRMatchSchema = new Schema({
             }, bannedBy: {
                 type: Number,
                 required: true
-            } }],
-        required: true
+            } }]
     },
     timestamp: {
         type: Date,
