@@ -73,7 +73,6 @@
                             text: 'Score',
                             value: 'score'
                         }],
-                        rawStats: {order: [], rankings: {}},
                         stat: "",
                         search: "",
                         statsList: [{
@@ -87,7 +86,7 @@
                             tag: "RRParticipations"
                         },{
                             name: "Participations in Roulette Rivals World Championships",
-                            tag: "RRWCParticicpations"
+                            tag: "RRWCParticipations"
                         },{
                             name: "Appearances in the Grand Finals",
                             tag: "FinalAppearances"
@@ -173,57 +172,9 @@
                         },{
                             name: "Mendoza",
                             tag: "MEN"
-                        }]
-                    }
-                },
-                computed: {
-                    stats() {
-                        let result = [];
-                        this.rawStats.order.forEach((e, idx) => {
-                            let obj = {
-                                placement: idx+1,
-                                player: e,
-                                score: "",
-                                map: "PAR"
-                            };
-                            switch(vue.stat) {
-                                case "WR":
-                                    obj.score = Math.floor((vue.rawStats.rankings[e].won/vue.rawStats.rankings[e].matches)*1000) / 10 + "%";
-                                    break;
-                                case "RRParticipations":
-                                    obj.score = vue.rawStats.rankings[e].rrCompetitions.length;
-                                    break;
-                                case "RRWCParticipations":
-                                    obj.score = vue.rawStats.rankings[e].rrwcCompetitions.length;
-                                    break;
-                                case "Matches":
-                                    obj.score = vue.rawStats.rankings[e].matches;
-                                    break;
-                                case "FinalAppearances":
-                                    obj.score = vue.rawStats.rankings[e].grandFinalAppearances;
-                                    break;
-                                case "LongestWinSpree":
-                                    obj.score = vue.rawStats.rankings[e].longestWinningSpree;
-                                    break;
-                                case "MapPlayed":
-                                    obj.score = vue.rawStats.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)];
-                                    break;
-                                case "MapWR":
-                                    obj.score = Math.floor((vue.rawStats.rankings[e].mapsWon[vue.mapAbbreviationToArrayIndex(vue.map)] / vue.rawStats.rankings[e].mapsPlayed[mapAbbreviationToArrayIndex(vue.map)])*1000)/10 + "%";
-                                    break;
-                                case "OwnMapWinrate":
-                                    obj.score = Math.floor((vue.rawStats.rankings[e].ownMapsWon / vue.rawStats.rankings[e].ownMaps) * 1000) / 10 + "%";
-                                    break;
-                                case "OpponentMapWinrate":
-                                    obj.score = Math.floor((vue.rawStats.rankings[e].opponentMapsWon / vue.rawStats.rankings[e].opponentMaps) * 1000) / 10 + "%";
-                                    break;
-                                case "MapWinrate":
-                                    obj.score = Math.floor((vue.rawStats.rankings[e].mapsWonAmount / vue.rawStats.rankings[e].mapsPlayedAmount) * 1000) / 10 + "%";
-                                    break;
-                            }
-                            result.push(obj);
-                        });
-                        return result;
+                        }],
+                        stats: [],
+                        map: ""
                     }
                 },
                 methods: {
@@ -233,7 +184,51 @@
                             query += "&map=" + this.map;
                         }
                         let leaderboardData = await axios.get(query);
-                        this.rawStats = leaderboardData.data;
+                        this.stats = [];
+                        leaderboardData.data.order.forEach((e, idx) => {
+                            let obj = {
+                                placement: idx+1,
+                                player: e,
+                                score: ""
+                            };
+                            switch(vue.stat) {
+                                case "WR":
+                                    obj.score = Math.floor((leaderboardData.data.rankings[e].won/leaderboardData.data.rankings[e].matches)*1000) / 10 + "%";
+                                    break;
+                                case "RRParticipations":
+                                    obj.score = leaderboardData.data.rankings[e].rrCompetitions.length;
+                                    break;
+                                case "RRWCParticipations":
+                                    obj.score = leaderboardData.data.rankings[e].rrwcCompetitions.length;
+                                    break;
+                                case "Matches":
+                                    obj.score = leaderboardData.data.rankings[e].matches;
+                                    break;
+                                case "FinalAppearances":
+                                    obj.score = leaderboardData.data.rankings[e].grandFinalAppearances;
+                                    break;
+                                case "LongestWinSpree":
+                                    obj.score = leaderboardData.data.rankings[e].longestWinningSpree;
+                                    break;
+                                case "MapPlayed":
+                                    obj.score = leaderboardData.data.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)];
+                                    break;
+                                case "MapWR":
+                                    obj.score = Math.floor((leaderboardData.data.rankings[e].mapsWon[vue.mapAbbreviationToArrayIndex(vue.map)] / leaderboardData.data.rankings[e].mapsPlayed[mapAbbreviationToArrayIndex(vue.map)])*1000)/10 + "%";
+                                    break;
+                                case "OwnMapWinrate":
+                                    obj.score = Math.floor((leaderboardData.data.rankings[e].ownMapsWon / leaderboardData.data.rankings[e].ownMaps) * 1000) / 10 + "%";
+                                    break;
+                                case "OpponentMapWinrate":
+                                    obj.score = Math.floor((leaderboardData.data.rankings[e].opponentMapsWon / leaderboardData.data.rankings[e].opponentMaps) * 1000) / 10 + "%";
+                                    break;
+                                case "MapWinrate":
+                                    obj.score = Math.floor((leaderboardData.data.rankings[e].mapsWonAmount / leaderboardData.data.rankings[e].mapsPlayedAmount) * 1000) / 10 + "%";
+                                    break;
+                            }
+                            this.stats.push(obj);
+                        });
+
                     },
                     mapAbbreviationToArrayIndex(abv) {
                         switch(abv) {

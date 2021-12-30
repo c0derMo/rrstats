@@ -22,15 +22,15 @@ export async function recalculate(additionalMatches: IRRMatch[]=[]): Promise<voi
         }
 
         // Amount of RRWC and RR competitions
-        if(!rankings[match.player1].rrCompetitions.includes(match)) rankings[match.player1].rrCompetitions.push(match);
-        if(!rankings[match.player2].rrCompetitions.includes(match)) rankings[match.player2].rrCompetitions.push(match);
-        if(match.competition.toLowerCase().search("wc") >= 0) {
-            if(!rankings[match.player1].rrwcCompetitions.includes(match)) rankings[match.player1].rrwcCompetitions.push(match);
-            if(!rankings[match.player2].rrwcCompetitions.includes(match)) rankings[match.player2].rrwcCompetitions.push(match);
+        if(!rankings[match.player1].rrCompetitions.includes(match.competition)) rankings[match.player1].rrCompetitions.push(match.competition);
+        if(!rankings[match.player2].rrCompetitions.includes(match.competition)) rankings[match.player2].rrCompetitions.push(match.competition);
+        if(match.competition.toLowerCase().indexOf("wc") >= 0) {
+            if(!rankings[match.player1].rrwcCompetitions.includes(match.competition)) rankings[match.player1].rrwcCompetitions.push(match.competition);
+            if(!rankings[match.player2].rrwcCompetitions.includes(match.competition)) rankings[match.player2].rrwcCompetitions.push(match.competition);
         }
 
         // Grand Final appearances
-        if(match.round.toLowerCase().search("grand final") >= 0) {
+        if(match.round.toLowerCase().indexOf("grand final") >= 0) {
             rankings[match.player1].grandFinalAppearances += 1;
             rankings[match.player2].grandFinalAppearances += 1;
         }

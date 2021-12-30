@@ -70,7 +70,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <template v-for="comp in player.competitions" v-for="comp in player.competitions" v-if="comp.offocialCompetition || includeUnofficial">
+                                            <template v-for="comp in player.competitions" v-for="comp in player.competitions" v-if="comp.officialCompetition || includeUnofficial">
                                                 <tr v-for="placement in comp.placements">
                                                     <td>
                                                         {{ comp.name }}
@@ -411,8 +411,8 @@
                     },
                 },
                 async created() {
-                    this.name = window.location.pathname.substring(1);
-                    let playerData = await axios.get("/api/" + this.name);
+                    this.name = unescape(window.location.pathname.substring(1));
+                    let playerData = await axios.get("/api/" + escape(this.name));
                     this.player = playerData.data;
                     document.getElementById("title").innerText = this.name + " - RR Player Statistics";
                     this.recalculateWinrates();

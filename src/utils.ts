@@ -1,21 +1,3 @@
-function getJSONPath(obj, path) {
-    let split = path.split(".").reverse();
-    let response = obj;
-    while(split.length > 0) {
-        response = response[split.pop()];
-    }
-    return response;
-}
-
-function setJSONPath(obj, path, value) {
-    let split = path.split(".").reverse();
-    let response = obj;
-    while(split.length > 1) {
-        response = response[split.pop()];
-    }
-    response[split.pop()] = value;
-}
-
 const mapAbbreviationToArrayIndex = (abv) => {
     switch(abv) {
         // Season 1
@@ -85,6 +67,4 @@ export function jsonDiff(beforeObj: object, afterObj: object): object {
     return result
 }
 
-export { getJSONPath };
-export { setJSONPath };
 export { mapAbbreviationToArrayIndex };
