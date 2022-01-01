@@ -48,8 +48,7 @@ const RRCompetitionSchema = new Schema({
                 type: String,
                 required: true
             }, bracket: {
-                type: String,
-                required: true
+                type: String
             }, placement: {
                 type: Number,
                 required: true
