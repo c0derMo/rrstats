@@ -180,10 +180,15 @@ const GDriveObjectToMatchlist = async (obj, competition="Unknown", debugLog=fals
                     winner = 0;
                 }
 
-                let timeSplit = element[columnDefinitions[6] as number].split(":");
-                let dt = DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: currentDate.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: currentDate.zoneName});
-                if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
-                    dt = dt.plus({ days: 1 })
+                let dt;
+                if(element[columnDefinitions[6] as number].toLowerCase() == "n/a") {
+                    let timeSplit = element[columnDefinitions[6] as number].split(":");
+                    dt = DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: currentDate.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: currentDate.zoneName});
+                    if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
+                        dt = dt.plus({ days: 1 })
+                    }
+                } else {
+                    dt = DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: currentDate.day}, {zone: currentDate.zoneName});
                 }
 
                 if(!dt.isValid && debugLog) {
