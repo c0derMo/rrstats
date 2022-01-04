@@ -22,7 +22,7 @@
     "clean": "rm -r out deploy",
     "build-win": "tsc",
     "clean-win": "rmdir /S /Q out deploy",
-    "deploy-win": "yarn build-win && xcopy out deploy /s /i /y && xcopy run.sh deploy /y && xcopy yarn.lock deploy /y && xcopy package.json deploy /y && xcopy html deploy/html /s /i /y"
+    "deploy-win": "yarn build-win && xcopy out deploy /s /i /y && xcopy run.sh deploy /y && xcopy yarn.lock deploy /y && xcopy package.json deploy /y && xcopy html deploy\\html /s /i /y"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
