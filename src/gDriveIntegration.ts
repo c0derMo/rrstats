@@ -2,7 +2,7 @@ const { DateTime } = require("luxon");
 import { IRRMatch } from "./models/Match";
 import { RRPlayerModel } from "./models/Player";
 
-function monthToIndex(month) {
+function monthToIndex(month: string): number {
     switch(month) {
         case 'January':
             return 1
@@ -32,194 +32,255 @@ function monthToIndex(month) {
             return 1
     }
 }
+function isMap(map: string): boolean {
+    return ["PAR","SAP","MAR","BKK","COL","HOK","MIA","SF","MUM","WC","SGA","NY","HAV","DUB","DAR","BER","CHO","MEN"].includes(map);
+}
+function defaultParserConfig(): ParserConfig {
+    return {
+        year: new Date().getFullYear(),
+        headers: {
+            timeHeader: "CEST",
+            bracketRoundHeader: "Bracket/Round",
+            resultHeader: "Result",
+            mapsHeader: "Maps",
+            bansHeader: "Bans",
+            shoutcastHeader: "Shoutcast"
+        },
+        debugLog: false,
+        dayRegex: ".*Day \\d+ - .+, (\\d+)(st|nd|rd|th) (.+)",
+        hasBracket: true
+    }
+}
 
-/* column definitions:
-    0-platform
-    1-round
-    2-player1
-    3-player2
-    4-score
-    5-maps
-    6-CEST time
+interface ParserConfig {
+    year: number;
+    headers: {
+        timeHeader: string,
+        bracketRoundHeader: string,
+        resultHeader: string,
+        mapsHeader: string,
+        bansHeader: string,
+        shoutcastHeader: string
+    },
+    debugLog: boolean,
+    dayRegex: string,
+    hasBracket: boolean
+}
+interface ParserConfigOverrides {
+    year?: number;
+    headers?: {
+        timeHeader?: string,
+        bracketRoundHeader?: string,
+        resultHeader?: string,
+        mapsHeader?: string,
+        bansHeader?: string,
+        shoutcastHeader?: string
+    },
+    debugLog?: boolean,
+    dayRegex?: string,
+    hasBracket?: boolean
+}
 
-    default definition:
-    3 D
-    4 E
-    5 F
-    7 H
-    6 G
-    [8, 10, 12] I K M
-    1 B
+export async function csvParser(obj: any, competition: string, configOverrides: ParserConfigOverrides={}): Promise<IRRMatch[]> {
+    if(configOverrides == undefined) configOverrides = {};
 
-    rrwc definition:
-    0 A
-    3 D
-    4 E
-    6 G
-    5 F
-    [7, 9, 11] H J L
-    1 B
-
-    [0, 3, 4, 6, 5, [7, 9, 11], 1]
-    [0, 3, 4, 6, 5, [9, 11, 13, 15], 1]
-
-    [3, 4, 5, 7, 6, [8, 10, 12], 1]
-*/
-
-const GDriveObjectToMatchlist = async (obj, competition="Unknown", debugLog=false, year=new Date().getFullYear(), columnDefinitions=[0, 3, 4, 6, 5, [9, 11, 13, 15, 17, 19], 1]) => {
-    let matches = [];
-
-    if(debugLog) console.log("[DBG] We use new function");
-
-    let betterData = [];
-
-    for (let index = 0; index < obj.table.rows.length; index++) {
-        let tmp = [];
-        for (let index2 = 0; index2 < obj.table.cols.length; index2++) {
-            tmp.push("");
+    let config = Object.assign({}, defaultParserConfig());
+    for(let key in config) {
+        if(configOverrides[key] !== undefined) {
+            if(typeof configOverrides[key] === "object") {
+                Object.assign(config[key], configOverrides[key]);
+            } else {
+                Object.assign(config, { [key]: configOverrides[key] });
+            }
         }
-        betterData.push(tmp);
     }
 
-    obj.table.rows.forEach((element, idx) => {
-        element.c.forEach((element2, idx2) => {
-            if(element2 !== undefined && element2 !== null) {
-                if(element2.f !== undefined && element2.f !== "") {
-                    betterData[idx][idx2] = element2.f;
-                } else if(element2.v !== "" && element2.v !== undefined) {
-                    betterData[idx][idx2] = element2.v;
-                }
-            }
-        });
-    });
+    if(config.debugLog) console.log(configOverrides);
+    if(config.debugLog) console.log(config);
 
-    let rx = obj.table.cols[1].label.match(/.*Day \d+ - .+, (\d+)(st|nd|rd|th) (.+) CE.*/);
-    let newestDayNumber = rx[1];
-    let newestMonth = rx[3];
+    let matches = [];
 
-    if(debugLog) console.log(newestDayNumber);
-    if(debugLog) console.log(newestMonth);
+    let date;
+    let timeCol = -1;
+    let bracketRoundCol = -1;
+    let resultCol = -1;
+    let mapsCol = -1;
+    let bansCol = -1;
+    let shoutcastCol = -1;
 
-    // let currentDate = new Date(year, monthToIndex(newestMonth), parseInt(newestDayNumber));
-    let currentDate = DateTime.fromObject({year: year, month: monthToIndex(newestMonth), day: parseInt(newestDayNumber)}, {zone:'Europe/Berlin'});
-    if(debugLog) console.log(currentDate);
-
-    if(debugLog) console.log("[DBG] Amount of rows: " + betterData.length);
-
-    
     // Grabbing all the abbreviation overrides once to avoid long database queries
     let abbreviationOverrides = {};
     const abbreviationOverridesQuery = await RRPlayerModel.find({ abbreviationOverride: {$ne: null} }).exec();
     abbreviationOverridesQuery.forEach(e => {
         if(e.abbreviationOverride !== "") {
-            abbreviationOverrides[e.abbreviationOverride] = e.name;   
+            abbreviationOverrides[e.abbreviationOverride] = e.name;
         }
     });
-    if(debugLog) console.log(abbreviationOverrides);
+    if(config.debugLog) console.log(abbreviationOverrides);
 
-
-    // Filtering matches by looking at the score-column[6] (let's hope In4 never changes the layout of the spreadsheet LUL)
-    for(let element of betterData) {
-        //If player1 = "Result" decrement date
-        if(element[columnDefinitions[2] as number] == "Result") {
-            // currentDate.setDate(currentDate.getDate() - 1);
-            currentDate = currentDate.minus({ days: 1 });
-            // RRWC2021 Fix
-            if (currentDate.day == 14 && currentDate.month == 11) {
-                columnDefinitions = [0, 3, 4, 6, 5, [7, 9, 11], 1];
+    for await(let line of obj) {
+        if(config.debugLog) console.log(line);
+        for(let colIndexString in line) {
+            let col = line[colIndexString]
+            let colIndex = parseInt(colIndexString);
+            // Check for date
+            let dateMatch = col.match(config.dayRegex);
+            if(dateMatch) {
+                date = DateTime.fromObject({year: config.year, month: monthToIndex(dateMatch[3]), day: dateMatch[1]}, {zone:'Europe/Berlin'});
+                if(config.debugLog) console.log(date.toString());
             }
-            if (currentDate.day == 23 && currentDate.month == 11) {
-                columnDefinitions = [0, 3, 4, 6, 5, [9, 11, 13, 15], 1];
+
+            // Check for Header
+            switch (col) {
+                case config.headers.bansHeader:
+                    if(config.debugLog) console.log(`New Bans Column: ${colIndex}`);
+                    bansCol = colIndex;
+                    break;
+                case config.headers.mapsHeader:
+                    if(config.debugLog) console.log(`New Maps Column: ${colIndex}`);
+                    mapsCol = colIndex;
+                    break;
+                case config.headers.timeHeader:
+                    if(config.debugLog) console.log(`New Time Column: ${colIndex}`);
+                    timeCol = colIndex;
+                    break;
+                case config.headers.resultHeader:
+                    if(config.debugLog) console.log(`New Result Column: ${colIndex}`);
+                    resultCol = colIndex;
+                    break;
+                case config.headers.shoutcastHeader:
+                    if(config.debugLog) console.log(`New Shoutcast Column: ${colIndex}`);
+                    shoutcastCol = colIndex;
+                    break;
+                case config.headers.bracketRoundHeader:
+                    if(config.debugLog) console.log(`New Bracket Column: ${colIndex}`);
+                    bracketRoundCol = colIndex;
+                    break;
             }
         }
-        if(debugLog) console.log(element[columnDefinitions[4] as number]);
-        if(element[columnDefinitions[4] as number].match(/[0-9]+-[0-9]+/)) {
-            if(debugLog) console.log("[DBG] First check passed")
-            if(element[columnDefinitions[1] as number] == "Grand Final" || element[columnDefinitions[1] as number] == "RRWC \nGrand Final" || element[columnDefinitions[1] as number] == "LB Final") {
-                if(debugLog) {
-                    console.log("[DBG] Grand final detected! Avoiding.");
-                }
+
+        if(line[resultCol+1].match(/[0-9]+-[0-9]+/)) {
+            // We got a match everyone
+            let datetime;
+            if(line[timeCol].toLowerCase() == "n/a") {
+                datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day}, {zone: date.zoneName});
             } else {
-                let maps = [];
-                let index = 0;
-                (columnDefinitions[5] as number[]).forEach(e => {
-                    if(element[e] !== "" && element[e] !== "N/A" && element[e] !== "-") {
-                        let wonBy = 0;
-                        if(abbreviationOverrides[element[e+1]] !== undefined) {
-                            wonBy = (abbreviationOverrides[element[e+1]] === element[columnDefinitions[2] as number]) ? 1 : 2
-                        } else {
-                            if(element[columnDefinitions[2] as number].toLowerCase().indexOf(element[e+1].toLowerCase()) !== -1) {
-                                wonBy = 1;
-                            } else if(element[columnDefinitions[3] as number].toLowerCase().indexOf(element[e+1].toLowerCase()) !== -1) {
-                                wonBy = 2;
-                            }
-                        }
-                        let picked = 0;
-                        if(index == 0) {
-                            picked = 1;
-                        } else if(index == 1) {
-                            picked = 2;
-                        }
-                        maps.push({
-                            map: element[e],
-                            winner: wonBy,
-                            pickedBy: picked
-                        })
+                let timeSplit = line[timeCol].split(":");
+                datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: date.zoneName});
+            }
+            let bracket = "", round = "";
+            if(config.hasBracket) {
+                bracket = line[bracketRoundCol];
+                round = line[bracketRoundCol+1];
+            } else {
+                round = line[bracketRoundCol];
+            }
+            let player1 = line[resultCol].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", "");
+            let player2 = line[resultCol+2].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", "");
+            let scoreSplit = line[resultCol+1].split("-");
+            let score = {
+                player1Points: parseInt(scoreSplit[0]),
+                player2Points: parseInt(scoreSplit[1]),
+                winner: 0
+            };
+            if(score.player2Points > score.player1Points) score.winner = 2;
+            if(score.player1Points > score.player2Points) score.winner = 1;
 
-                        index++;
-                    }
-                });
-                const scoreArr = element[columnDefinitions[4] as number].split("-");
+            let maps = [];
 
-                let winner;
-                if (scoreArr[0] > scoreArr[1]) {
-                    winner = 1;
-                } else if (scoreArr[1] > scoreArr[0]) {
-                    winner = 2;
+            let sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
+                .filter(e => e > mapsCol);   // Filter out everything thats smaller than maps
+            if(config.debugLog) console.log(sortedHeaders);
+            for(let mIdx=mapsCol; mIdx < sortedHeaders[0]; mIdx += 2) {
+                if(!isMap(line[mIdx])) break;       // We break upon the first non-map
+                if(line[mIdx+1] == "") continue;    // We skip over maps with "no winner"
+
+                let map = {
+                    map: line[mIdx],
+                    winner: 0,
+                    pickedBy: 0
+                }
+
+                if(maps.length == 0) map.pickedBy = 1;
+                if(maps.length == 1) map.pickedBy = 2;
+
+                if(abbreviationOverrides[line[mIdx+1]] !== undefined) {
+                    map.winner = (abbreviationOverrides[line[mIdx+1]] == player1) ? 1 : 2
                 } else {
-                    winner = 0;
-                }
-
-                let dt;
-                if(element[columnDefinitions[6] as number].toLowerCase() == "n/a") {
-                    let timeSplit = element[columnDefinitions[6] as number].split(":");
-                    dt = DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: currentDate.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: currentDate.zoneName});
-                    if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
-                        dt = dt.plus({ days: 1 })
+                    if(player1.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
+                        map.winner = 1;
+                    } else if(player2.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
+                        map.winner = 2;
                     }
+                }
+
+                maps.push(map);
+            }
+
+            let bans = [];
+
+            sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
+                .filter(e => e > bansCol);   // Filter out everything thats smaller than maps
+            for(let bIdx=bansCol; bIdx<sortedHeaders[0]; bIdx++) {
+                if(!isMap(line[bIdx])) break;
+                let ban = {
+                    map: line[bIdx],
+                    bannedBy: 0
+                }
+                if(bans.length == 0) ban.bannedBy = 1;
+                if(bans.length == 1) ban.bannedBy = 2;
+
+                bans.push(ban);
+            }
+
+            let match: IRRMatch = {
+                bans: bans,
+                competition: competition.replace("\n",""),
+                maps: maps,
+                platform: bracket.replace("\n",""),
+                player1: player1.replace("\n",""),
+                player2: player2.replace("\n",""),
+                round: round.replace("\n",""),
+                score: score,
+                timestamp: datetime
+            }
+
+            matches.push(match);
+        } else if(isMap(line[mapsCol])) {
+            // Two liner detected!
+            let mapsToAddTo = matches[matches.length-1].maps;
+            let player1 = matches[matches.length-1].player1;
+            let player2 = matches[matches.length-1].player2;
+
+            let sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
+                .filter(e => e > mapsCol);   // Filter out everything thats smaller than maps
+            if(config.debugLog) console.log(sortedHeaders);
+            for(let mIdx=mapsCol; mIdx < sortedHeaders[0]; mIdx += 2) {
+                if(!isMap(line[mIdx])) break;       // We break upon the first non-map
+                if(line[mIdx+1] == "") continue;    // We skip over maps with "no winner"
+
+                let map = {
+                    map: line[mIdx],
+                    winner: 0,
+                    pickedBy: 0
+                }
+
+                if(mapsToAddTo.length == 0) map.pickedBy = 1;
+                if(mapsToAddTo.length == 1) map.pickedBy = 2;
+
+                if(abbreviationOverrides[line[mIdx+1]] !== undefined) {
+                    map.winner = (abbreviationOverrides[line[mIdx+1]] == player1) ? 1 : 2
                 } else {
-                    dt = DateTime.fromObject({year: currentDate.year, month: currentDate.month, day: currentDate.day}, {zone: currentDate.zoneName});
+                    if(player1.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
+                        map.winner = 1;
+                    } else if(player2.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
+                        map.winner = 2;
+                    }
                 }
 
-                if(!dt.isValid && debugLog) {
-                    console.log(dt.invalidReason);
-                    console.log(dt.invalidExplanation);
-                }
-
-                const tmp: IRRMatch = {
-                    player1: element[columnDefinitions[2] as number].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", ""),
-                    player2: element[columnDefinitions[3] as number].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", ""),
-                    score: {
-                        player1Points: parseInt(scoreArr[0]),
-                        player2Points: parseInt(scoreArr[1]),
-                        winner: winner
-                    },
-                    competition: competition,
-                    platform: element[columnDefinitions[0] as number],
-                    round: element[columnDefinitions[1] as number],
-                    maps: maps,
-                    bans: [],
-                    timestamp: dt.toString()
-                }
-
-                matches.push(tmp);
+                mapsToAddTo.push(map);
             }
         }
     }
-
-    if(debugLog) console.log("[DBG] Amount of parsed matches: " + matches.length);
-
     return matches;
 }
-
-export default GDriveObjectToMatchlist;

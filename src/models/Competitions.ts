@@ -14,9 +14,10 @@ export interface IRRCompetition {
     placements: IRRCompetitionPlacement[];
     updateWithSheet: boolean;
     sheetId: string;
-    tabName: string;
+    gid: string;
     officialCompetition: boolean;
     sortingIndex: number;
+    parserOptions: any;
 }
 
 interface ICompetitionDocument extends IRRCompetition, Document {
@@ -61,7 +62,7 @@ const RRCompetitionSchema = new Schema({
     sheetId: {
         type: String
     },
-    tabName: {
+    gid: {
         type: String
     },
     officialCompetition: {
@@ -71,6 +72,9 @@ const RRCompetitionSchema = new Schema({
     sortingIndex: {
         type: Number,
         required: true
+    },
+    parserOptions: {
+        type: Object
     }
 });
 

@@ -9,6 +9,7 @@
     "@hapi/inert": "^6.0.3",
     "axios": "^0.24.0",
     "bcrypt": "^5.0.1",
+    "csv-parse": "^5.0.4",
     "dotenv": "^10.0.0",
     "luxon": "^2.0.2",
     "mongoose": "^6.0.13",

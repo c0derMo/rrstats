@@ -1,7 +1,8 @@
 const axios = require('axios');
 require('dotenv').config();
 import { recalculate } from './dataHandling/leaderboards';
-import gDriveToMatchlist from './gDriveIntegration';
+import  { parse } from "csv-parse";
+import { csvParser } from "./gDriveIntegration";
 
 const cache = {
     discordPB: {},
@@ -44,7 +45,7 @@ const getDiscordProfilePictureURL = async (uID) => {
     return "/defaultPB.png"
 }
 
-const getGDriveData = async (link, name) => {
+const getGDriveData = async (link, name, config=null) => {
     //Check for cache, if the link in the cache isn't the same, we need to get something new anyways
     if(cache.newGDrive !== undefined) {
         // Cache stays for 15 minutes.
@@ -56,7 +57,8 @@ const getGDriveData = async (link, name) => {
         cache.newGDrive = {}
     }
     const req = await axios.get(link);
-    const data = await gDriveToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), name);
+    const parsedCSV = parse(req.data);
+    const data = await csvParser(parsedCSV, name, config);
     cache.newGDrive[link] = {
         requestTime: Date.now(),
         rawData: req.data,

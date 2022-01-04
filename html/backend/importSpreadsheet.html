@@ -28,10 +28,9 @@
                                     <v-btn @click="prefillData">Pre-Fill Data</v-btn>
                                     <v-divider></v-divider>
                                     <v-text-field v-model="options.id" label="ID of the spreadsheet"></v-text-field>
-                                    <v-text-field v-model="options.tabName" label="Tab name of the spreadsheet"></v-text-field>
+                                    <v-text-field v-model="options.gid" label="GID of the spreadsheet"></v-text-field>
                                     <v-text-field v-model="options.comp" label="Abbreviation of the competition (e.g. 'RRWC')"></v-text-field>
-                                    <v-text-field v-model="options.year" label="(Optional) Year of the tournament"></v-text-field>
-                                    <v-text-field v-model="options.columnOverride" label="(Optional) Column overrides"></v-text-field>
+                                    <v-text-field v-model="options.parserOptions" label="(Optional) Parser options"></v-text-field>
                                     <v-btn color="primary"
                                            @click="confirmTableData">Confirm table data</v-btn>
                                 </v-stepper-content>
@@ -93,9 +92,8 @@
                 comps: [],
                 options: {
                     id: "",
-                    tabName: "",
-                    year: "",
-                    columnOverride: "",
+                    gid: "",
+                    parserOptions: "",
                     comp: ""
                 },
                 amountOfMatches: 0,
@@ -105,8 +103,9 @@
         methods: {
             prefillData() {
                 this.options.id = this.importComp.sheetId;
-                this.options.tabName = this.importComp.tabName;
+                this.options.gid = this.importComp.gid;
                 this.options.comp = this.importComp.tag;
+                this.options.parserOptions = JSON.stringify(this.importComp.parserOptions);
             },
             async confirmTableData() {
                 this.step = 2;
