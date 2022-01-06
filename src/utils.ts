@@ -1,4 +1,4 @@
-const mapAbbreviationToArrayIndex = (abv) => {
+export function mapAbbreviationToArrayIndex(abv) {
     switch(abv) {
         // Season 1
         case "PAR":
@@ -47,24 +47,30 @@ const mapAbbreviationToArrayIndex = (abv) => {
     }
 }
 
-export function jsonDiff(beforeObj: object, afterObj: object): object {
-    let result = {}
-    for(let key of Object.keys(beforeObj).concat(Object.keys(afterObj))) {
-        if(key.startsWith("$") || key.startsWith("_")) continue;
-        if(typeof beforeObj[key] === 'object' && typeof afterObj[key] === 'object') {
-            let tmp = jsonDiff(beforeObj[key], afterObj[key]);
-            if(tmp !== {}) result[key] = tmp;
+export function jsonDiff(oldObj, newObj, prefix="") {
+    let changes = [];
+
+    for(let key in newObj) {
+        if(key.startsWith("_") || key.startsWith("$")) continue;
+        if(typeof newObj[key] === "object") {
+            if(oldObj[key] !== undefined) {
+                changes = changes.concat(jsonDiff(oldObj[key], newObj[key], [prefix, key].join(".")));
+            } else {
+                changes.push({
+                    path: [prefix, key].join(".").substr(1),
+                    newValue: newObj[key]
+                });
+            }
         } else {
-            let compareBefore = beforeObj[key].toString();
-            let compareAfter = afterObj[key].toString();
-            if(typeof beforeObj[key].toISOString === 'function') compareBefore = beforeObj[key].toISOString();
-            if(typeof afterObj[key].toISOString === 'function') compareAfter = afterObj[key].toISOString();
-            if(compareBefore !== compareAfter) {
-                result[key] = {before: beforeObj[key], after: afterObj[key]}
+            if(oldObj[key] !== newObj[key]) {
+                changes.push({
+                    path: [prefix, key].join(".").substr(1),
+                    oldValue: oldObj[key],
+                    newValue: newObj[key]
+                });
             }
         }
     }
-    return result
-}
 
-export { mapAbbreviationToArrayIndex };
+    return changes;
+}
