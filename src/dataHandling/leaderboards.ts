@@ -1,9 +1,10 @@
 import { IRRMatch, RRMatchModel } from "../models/Match";
 import { mapAbbreviationToArrayIndex } from '../utils';
+import { AuditLogModel } from "../models/AuditLogEntry";
 
 let leaderboards = {};
 
-export async function recalculate(additionalMatches: IRRMatch[]=[]): Promise<void> {
+export async function recalculate(additionalMatches: IRRMatch[]=[], username: string=""): Promise<void> {
     let rankings = {};
     let winningSprees = {};
 
@@ -129,6 +130,9 @@ export async function recalculate(additionalMatches: IRRMatch[]=[]): Promise<voi
     }
 
     leaderboards = rankings;
+    if(username !== "") {
+        await AuditLogModel.newEntry(username, "Recalculated leaderboards", {});
+    }
 }
 
 export function getLeaderboardStat(stat: string, map:string = ""): object {

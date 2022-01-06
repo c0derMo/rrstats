@@ -32,9 +32,9 @@ export async function getStoredMatches(): Promise<IRRMatch[]> {
 export async function editMatch(match: any, username: string): Promise<boolean> {
     let dbMatch = await RRMatchModel.findOne({_id: match._id}).exec();
     if(dbMatch == null) return false;
-    await AuditLogModel.newEntry(username, "Edited match " + dbMatch._id, jsonDiff(dbMatch, match));
     Object.assign(dbMatch, match);
     await dbMatch.save();
+    await AuditLogModel.newEntry(username, "Edited match " + dbMatch._id, jsonDiff(dbMatch, match));
     return true;
 }
 
@@ -173,9 +173,9 @@ export async function getStoredCompetitions(): Promise<IRRCompetition[]> {
 export async function editCompetition(comp: any, username: string): Promise<boolean> {
     let dbComp = await RRCompetitionModel.findOne({_id: comp._id}).exec();
     if(dbComp == null) return false;
-    await AuditLogModel.newEntry(username, "Edited competition " + dbComp._id, jsonDiff(dbComp, comp));
     Object.assign(dbComp, comp);
     await dbComp.save();
+    await AuditLogModel.newEntry(username, "Edited competition " + dbComp._id, jsonDiff(dbComp, comp));
     return true;
 }
 

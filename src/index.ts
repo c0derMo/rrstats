@@ -73,7 +73,7 @@ const init = async() => {
     await server.start();
     console.log("F7SC Player Statistics running @ " + server.info.uri);
 
-    await recalculate();
+    await recalculate([], "System (reboot)");
 }
 
 process.on("unhandledRejection", err => {

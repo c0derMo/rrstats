@@ -642,7 +642,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/recalculateLeaderboards',
         handler: async(request, h) => {
             request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
-            await recalculate();
+            await recalculate([], request.auth.credentials.loggedInAs);
             return {success: true}
         },
         options: {
