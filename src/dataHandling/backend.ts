@@ -81,7 +81,7 @@ export async function importSpreadsheet(options: any, username: string): Promise
 }
 
 export async function importStandings(options: any, username: string): Promise<object> {
-    if(options.compId == "" || options.bracket == "" || options.placements == []) return {success: false}
+    if(options.compId == "" || options.placements == []) return {success: false, error: "Fill in the required fields"}
 
     let placements = 0;
     let notFoundPlayers = [];
