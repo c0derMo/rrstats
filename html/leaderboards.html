@@ -30,7 +30,7 @@
                                 <v-select dense v-model="stat" @change="getStat" :items="statsList" label="Statistic" item-text="name" item-value="tag"></v-select>
                             </v-col>
                             <v-col md="4">
-                                <v-select dense v-model="map" @change="getStat" :items="maps" label="Map" item-text="name" item-value="tag" v-if="stat == 'MapPlayed' || stat == 'MapWinrate'"></v-select>
+                                <v-select dense v-model="map" @change="getStat" :items="maps" label="Map" item-text="name" item-value="tag" v-if="stat == 'MapPlayed' || stat == 'MapWR'"></v-select>
                             </v-col>
                             <v-spacer></v-spacer>
                         </v-row>
@@ -107,7 +107,7 @@
                             tag: "MapPlayed"
                         },{
                             name: "Winrate on map",
-                            tag: "MapWinrate"
+                            tag: "MapWR"
                         }],
                         maps: [{
                             name: "-- Season 1 --",
@@ -214,7 +214,7 @@
                                     obj.score = leaderboardData.data.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)];
                                     break;
                                 case "MapWR":
-                                    obj.score = Math.floor((leaderboardData.data.rankings[e].mapsWon[vue.mapAbbreviationToArrayIndex(vue.map)] / leaderboardData.data.rankings[e].mapsPlayed[mapAbbreviationToArrayIndex(vue.map)])*1000)/10 + "%";
+                                    obj.score = Math.floor((leaderboardData.data.rankings[e].mapsWon[vue.mapAbbreviationToArrayIndex(vue.map)] / leaderboardData.data.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)])*1000)/10 + "%";
                                     break;
                                 case "OwnMapWinrate":
                                     obj.score = Math.floor((leaderboardData.data.rankings[e].ownMapsWon / leaderboardData.data.rankings[e].ownMaps) * 1000) / 10 + "%";
