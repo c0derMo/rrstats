@@ -60,29 +60,15 @@
                             <v-spacer></v-spacer>
                             <v-col md="3">
                                 <v-switch v-model="includeUnofficial" label="Include unofficial competitions"></v-switch>
-                                <v-simple-table>
-                                    <template v-slot:default>
-                                        <thead>
-                                            <tr>
-                                                <th>Competition</th>
-                                                <th>Placement</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <template v-for="comp in player.competitions" v-for="comp in player.competitions" v-if="comp.officialCompetition || includeUnofficial">
-                                                <tr v-for="placement in comp.placements">
-                                                    <td>
-                                                        {{ comp.name }}
-                                                        <span v-if="placement.bracket !== ''"> - {{ placement.bracket }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <v-chip :color="getPlacementColor(placement.placement)">{{ placement.placement }}{{ placementEnding(placement.placement) }}</v-chip>
-                                                    </td>
-                                                </tr>
-                                            </template>
-                                        </tbody>
+                                <v-data-table
+                                :headers="compTableHeaders"
+                                :items="placements"
+                                :items-per-page="5"
+                                disable-sort>
+                                    <template v-slot:item.placement="{ item }">
+                                        <v-chip :color="getPlacementColor(item.placement)">{{ item.placement }}{{ placementEnding(item.placement) }}</v-chip>
                                     </template>
-                                </v-simple-table>
+                                </v-data-table>
                             </v-col>
                             <v-col md="6">
                                 <v-text-field v-model="matchSearch" append-icon="mdi-magnify" label="Search"></v-text-field>
@@ -263,7 +249,30 @@
                         mapWinrate: "",
                         wtl: "",
                         includeUnofficial: true,
-                        loader: true
+                        loader: true,
+                        compTableHeaders: [{
+                            text: "Competition",
+                            value: "competition"
+                        },{
+                            text: "Placement",
+                            value: "placement"
+                        }]
+                    }
+                },
+                computed: {
+                    placements() {
+                        let result = [];
+                        for(let comp of this.player.competitions) {
+                            if(!comp.officialCompetition && !this.includeUnofficial) continue;
+                            for(let placement of comp.placements) {
+                                if(placement.bracket !== "") {
+                                    result.push({competition: comp.name + " - " + placement.bracket, placement: placement.placement});
+                                } else {
+                                    result.push({competition: comp.name, placement: placement.placement});
+                                }
+                            }
+                        }
+                        return result;
                     }
                 },
                 methods: {
@@ -410,7 +419,7 @@
                         if(placement % 10 == 2) return "nd";
                         if(placement % 10 == 1) return "st";
                         return "th";
-                    },
+                    }
                 },
                 async created() {
                     this.name = unescape(window.location.pathname.substring(1));
