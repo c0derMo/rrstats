@@ -33,7 +33,7 @@
                                     </template>
                                     <template v-slot:expanded-item="{ headers, item }">
                                         <td :colspan="headers.length">
-                                            {{ JSON.stringify(item.details) }}
+                                            <v-treeview dense :items="transformDetails(item.details)"></v-treeview>
                                         </td>
                                     </template>
 
@@ -99,6 +99,26 @@
                     },
                     timestampToString(timestamp) {
                         return luxon.DateTime.fromISO(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)
+                    },
+                    transformDetails(details, counterPrefix="") {
+                        let result = [];
+                        let counter = 0;
+                        for(let key in details) {
+                           if(typeof details[key] === "object") {
+                               result.push({
+                                   id: counterPrefix + counter,
+                                   name: key,
+                                   children: this.transformDetails(details[key], counter.toString())
+                               })
+                           } else {
+                               result.push({
+                                   id: counterPrefix + counter,
+                                   name: key + " : " + details[key]
+                               })
+                           }
+                           counter++;
+                        }
+                        return result;
                     }
                 }
             })
