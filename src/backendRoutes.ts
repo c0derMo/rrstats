@@ -23,6 +23,7 @@ import {
     getStoredRecords, editRecord, addRecord, deleteRecord} from './dataHandling/records';
 import {tweet} from "./dataHandling/externalConnector";
 import {disconnect} from "./databaseManager";
+import {recalculate} from "./dataHandling/leaderboards";
 
 const addBackendRoutes = (server) => {
 
@@ -629,6 +630,20 @@ const addBackendRoutes = (server) => {
                 result = {success: false, error: e.toString() }
             }
             return result;
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/recalculateLeaderboards',
+        handler: async(request, h) => {
+            request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
+            await recalculate();
+            return {success: true}
         },
         options: {
             auth: 'session',

@@ -34,6 +34,16 @@
 
                                         <template v-slot:post-list>
                                             <v-list-item two-line>
+                                                <v-list-item-icon><v-icon>mdi-calculator</v-icon></v-list-item-icon>
+                                                <v-list-item-content>
+                                                    <v-list-item-title>Recalculate leaderboards</v-list-item-title>
+                                                    <v-list-item-subtitle>Recalculate leaderboards from saved matches. (Does not include live competitions - reload a player page instead.)</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                                <v-list-item-action>
+                                                    <v-btn @click="recalculateLeaderboards" icon><v-icon>mdi-calculator</v-icon></v-btn>
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                            <v-list-item two-line>
                                                 <v-list-item-icon><v-icon>mdi-power</v-icon></v-list-item-icon>
                                                 <v-list-item-content>
                                                     <v-list-item-title>Shutdown</v-list-item-title>
@@ -103,6 +113,15 @@
                     }
                 },
                 methods: {
+                    async recalculateLeaderboards() {
+                        let response = await axios.get("/backend/api/recalculateLeaderboards");
+                        if(response.data.success) {
+                            this.snackbarText = "Successfully recalculated.";
+                        } else {
+                            this.snackbarText = "Failed to recalculate.";
+                        }
+                        this.snackbar = true;
+                    },
                     async toggleMaintenanceMode() {
                         let response = await axios.get("/backend/api/maintenance", {params: {mode: this.maintenanceMode}})
                         if(response.status == 200) {

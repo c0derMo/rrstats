@@ -1,5 +1,7 @@
 'use strict'
 
+import {recalculate} from "./dataHandling/leaderboards";
+
 const Hapi = require("@hapi/hapi");
 const Inert = require("@hapi/inert");
 import { addRoutes } from "./routes";
@@ -70,6 +72,8 @@ const init = async() => {
 
     await server.start();
     console.log("F7SC Player Statistics running @ " + server.info.uri);
+
+    await recalculate();
 }
 
 process.on("unhandledRejection", err => {
