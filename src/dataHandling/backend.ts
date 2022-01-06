@@ -155,7 +155,10 @@ export async function getAuditLogs(search: string, itemsPerPage: number, page: n
     if(page > 1) {
         itemsQuery = itemsQuery.skip((page-1) * itemsPerPage);
     }
-    let items = await itemsQuery.limit(itemsPerPage).exec();
+    if(itemsPerPage > 0) {
+        itemsQuery = itemsQuery.limit(itemsPerPage);
+    }
+    let items = await itemsQuery.exec();
     let count = await AuditLogModel.countDocuments({});
     return {
         itemCount: count,
