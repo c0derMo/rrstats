@@ -179,7 +179,8 @@
                     match: "",
                     details: "",
                     time: 0,
-                    videoLink: ""
+                    videoLink: "",
+                    sortingIndex: 0
                 },
                 defaultItem: {
                     category: "",
@@ -188,7 +189,8 @@
                     match: "",
                     details: "",
                     time: 0,
-                    videoLink: ""
+                    videoLink: "",
+                    sortingIndex: 0
                 },
                 editIndex: -1,
                 deleteConfirmDialog: false
@@ -222,7 +224,7 @@
                     // Existing comp edited
                     let response = await axios.patch("/backend/api/records", this.itemEdit);
                     if(response.data.success) {
-                        Object.assign(this.competitions[this.editIndex], this.itemEdit);
+                        Object.assign(this.records[this.editIndex], this.itemEdit);
                         this.close();
                     } else {
                         this.close();
@@ -233,7 +235,7 @@
                     // New comp created
                     let response = await axios.put("/backend/api/records", this.itemEdit);
                     if(response.data.success) {
-                        this.competitions.push(this.itemEdit);
+                        this.records.push(this.itemEdit);
                         this.snackbarText = "Item successfully created & appended."
                         this.snackbar = true;
                         this.close();

@@ -8,6 +8,7 @@ export interface IRRRecord {
     details: string;
     time: number;
     videoLink: string;
+    sortingIndex: number;
 }
 
 interface IRecordDocument extends IRRRecord, Document {
@@ -45,6 +46,10 @@ const RRRecordSchema = new Schema({
     },
     videoLink: {
         type: String,
+        required: true
+    },
+    sortingIndex: {
+        type: Number,
         required: true
     }
 });
