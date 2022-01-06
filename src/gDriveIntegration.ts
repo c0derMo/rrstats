@@ -167,6 +167,9 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
             } else {
                 let timeSplit = line[timeCol].split(":");
                 datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: date.zoneName});
+                if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
+                    datetime = datetime.plus({days: 1});
+                }
             }
             let bracket = "", round = "";
             if(config.hasBracket) {
