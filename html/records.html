@@ -7,11 +7,6 @@
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
         <style>
-            .playerLink + .playerLink::before {
-                content: ", ";
-                color: unset;
-                text-decoration: none;
-            }
             html { overflow-y: auto }
         </style>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -21,6 +16,7 @@
         <div id="app">
             <v-app>
                 <v-main>
+                    <v-btn href="/" icon><v-icon>mdi-arrow-left-circle</v-icon></v-btn>
                     <v-container fluid>
                         <v-row>
                             <v-spacer></v-spacer>
@@ -54,7 +50,7 @@
                                                 <td>{{ record.details }}</td>
                                                 <td>{{ secondsToTimeString(record.time) }}</td>
                                                 <td>
-                                                    <a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}</a>
+                                                    <a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}<br></a>
                                                 </td>
                                                 <td><a :href="record.videoLink">{{ record.match }}</a></td>
                                             </tr>
@@ -85,7 +81,7 @@
                                                 <td>{{ record.category }}</td>
                                                 <td>{{ record.details }}</td>
                                                 <td>{{ secondsToTimeString(record.time) }}</td>
-                                                <td><a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}</a></td>
+                                                <td><a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}<br></a></td>
                                                 <td><a :href="record.videoLink">{{ record.match }}</a></td>
                                             </tr>
                                         </tbody>
