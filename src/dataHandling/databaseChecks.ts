@@ -16,10 +16,10 @@ export async function runChecks(checks) {
 }
 
 async function _scoreCheck() {
-    let result = [];
-    let matches = await RRMatchModel.find({}).exec();
+    const result = [];
+    const matches = await RRMatchModel.find({}).exec();
 
-    for(let match of matches) {
+    for(const match of matches) {
         if((match.score.player1Points > match.score.player2Points && match.score.winner !== 1)
             || (match.score.player2Points > match.score.player1Points && match.score.winner !== 2)
             || (match.score.player1Points == match.score.player2Points && match.score.winner !== 0)) {
@@ -48,12 +48,12 @@ async function _scoreCheck() {
 }
 
 async function _matchWithoutPlayer() {
-    let result = [];
+    const result = [];
 
-    let playersWithObject = await RRPlayerModel.find().distinct('name').exec();
-    let matches = await RRMatchModel.find().exec();
+    const playersWithObject = await RRPlayerModel.find().distinct('name').exec();
+    const matches = await RRMatchModel.find().exec();
 
-    for(let match of matches) {
+    for(const match of matches) {
         if(!playersWithObject.includes(match.player1)) result.push({ tournament: match.competition,
             type: 'warning',
             message: _formatMessage(match.competition, match.player1, match.player2, "Player 1 has no RRPlayer-object.") });
@@ -66,12 +66,12 @@ async function _matchWithoutPlayer() {
 }
 
 async function _playersWithoutMatches() {
-    let result = [];
+    const result = [];
 
-    let players = await RRPlayerModel.find().distinct('name').exec();
-    let matches = await RRMatchModel.find().exec();
+    const players = await RRPlayerModel.find().distinct('name').exec();
+    const matches = await RRMatchModel.find().exec();
 
-    for(let match of matches) {
+    for(const match of matches) {
         if(players.indexOf(match.player1) >= 0) players.splice(players.indexOf(match.player1), 1);
         if(players.indexOf(match.player2) >= 0) players.splice(players.indexOf(match.player2), 1);
     }

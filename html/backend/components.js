@@ -1,3 +1,4 @@
+/* global Vue */
 Vue.component('rrstats-backend-sidebar', {
     data() {
         return {

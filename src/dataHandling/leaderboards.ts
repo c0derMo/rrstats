@@ -4,14 +4,14 @@ import { AuditLogModel } from "../models/AuditLogEntry";
 
 let leaderboards = {};
 
-export async function recalculate(additionalMatches: IRRMatch[]=[], username: string=""): Promise<void> {
-    let rankings = {};
-    let winningSprees = {};
+export async function recalculate(additionalMatches: IRRMatch[]=[], username=""): Promise<void> {
+    const rankings = {};
+    const winningSprees = {};
 
-    let storedMatches = await RRMatchModel.find({}).exec();
-    let matches = [].concat(additionalMatches).concat(storedMatches);
+    const storedMatches = await RRMatchModel.find({}).exec();
+    const matches = [].concat(additionalMatches).concat(storedMatches);
     matches.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-    for(let match of matches) {
+    for(const match of matches) {
         // Creating default player objects if they don't exist yet
         if(rankings[match.player1] === undefined) {
             rankings[match.player1] = getDefaultRankingObject();
@@ -64,7 +64,7 @@ export async function recalculate(additionalMatches: IRRMatch[]=[], username: st
         }
 
         // Per Map Stats
-        for(let map of match.maps) {
+        for(const map of match.maps) {
             rankings[match.player1].mapsPlayedAmount += 1;
             rankings[match.player2].mapsPlayedAmount += 1;
             rankings[match.player1].mapsPlayed[mapAbbreviationToArrayIndex(map.map)] += 1
@@ -125,7 +125,7 @@ export async function recalculate(additionalMatches: IRRMatch[]=[], username: st
         }
     }
 
-    for(let player in winningSprees) {
+    for(const player in winningSprees) {
         rankings[player].longestWinningSpree = Math.max(rankings[player].longestWinningSpree, winningSprees[player])
     }
 
@@ -135,8 +135,8 @@ export async function recalculate(additionalMatches: IRRMatch[]=[], username: st
     }
 }
 
-export function getLeaderboardStat(stat: string, map:string = ""): object {
-    let obj = {
+export function getLeaderboardStat(stat: string, map=""): object {
+    const obj = {
         order: Object.keys(leaderboards),
         rankings: leaderboards
     };
@@ -168,8 +168,8 @@ export function getLeaderboardStat(stat: string, map:string = ""): object {
             obj.order = obj.order.filter(function(e) {
                 return obj.rankings[e].matchesWithoutGroups > 0;
             }).sort(function(a, b) {
-                let scoreA = obj.rankings[a].matchesWithDecider / obj.rankings[a].matchesWithoutGroups;
-                let scoreB = obj.rankings[b].matchesWithDecider / obj.rankings[b].matchesWithoutGroups;
+                const scoreA = obj.rankings[a].matchesWithDecider / obj.rankings[a].matchesWithoutGroups;
+                const scoreB = obj.rankings[b].matchesWithDecider / obj.rankings[b].matchesWithoutGroups;
                 return scoreB - scoreA;
             });
             break;

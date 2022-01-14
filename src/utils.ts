@@ -50,7 +50,7 @@ export function mapAbbreviationToArrayIndex(abv) {
 export function jsonDiff(oldObj, newObj, prefix="") {
     let changes = [];
 
-    for(let key in newObj) {
+    for(const key in newObj) {
         if(key.startsWith("_") || key.startsWith("$")) continue;
         if(typeof newObj[key] === "object") {
             if(oldObj[key] !== undefined) {

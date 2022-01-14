@@ -1,4 +1,4 @@
-const { DateTime } = require("luxon");
+import { DateTime } from "luxon";
 import { IRRMatch } from "./models/Match";
 import { RRPlayerModel } from "./models/Player";
 
@@ -84,8 +84,8 @@ interface ParserConfigOverrides {
 export async function csvParser(obj: any, competition: string, configOverrides: ParserConfigOverrides={}): Promise<IRRMatch[]> {
     if(configOverrides == undefined) configOverrides = {};
 
-    let config = Object.assign({}, defaultParserConfig());
-    for(let key in config) {
+    const config = Object.assign({}, defaultParserConfig());
+    for(const key in config) {
         if(configOverrides[key] !== undefined) {
             if(typeof configOverrides[key] === "object") {
                 Object.assign(config[key], configOverrides[key]);
@@ -98,7 +98,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
     if(config.debugLog) console.log(configOverrides);
     if(config.debugLog) console.log(config);
 
-    let matches = [];
+    const matches = [];
 
     let date;
     let timeCol = -1;
@@ -109,7 +109,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
     let shoutcastCol = -1;
 
     // Grabbing all the abbreviation overrides once to avoid long database queries
-    let abbreviationOverrides = {};
+    const abbreviationOverrides = {};
     const abbreviationOverridesQuery = await RRPlayerModel.find({ abbreviationOverride: {$ne: null} }).exec();
     abbreviationOverridesQuery.forEach(e => {
         if(e.abbreviationOverride !== "") {
@@ -118,13 +118,13 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
     });
     if(config.debugLog) console.log(abbreviationOverrides);
 
-    for await(let line of obj) {
+    for await(const line of obj) {
         if(config.debugLog) console.log(line);
-        for(let colIndexString in line) {
-            let col = line[colIndexString]
-            let colIndex = parseInt(colIndexString);
+        for(const colIndexString in line) {
+            const col = line[colIndexString]
+            const colIndex = parseInt(colIndexString);
             // Check for date
-            let dateMatch = col.match(config.dayRegex);
+            const dateMatch = col.match(config.dayRegex);
             if(dateMatch) {
                 date = DateTime.fromObject({year: config.year, month: monthToIndex(dateMatch[3]), day: dateMatch[1]}, {zone:'Europe/Berlin'});
                 if(config.debugLog) console.log(date.toString());
@@ -165,7 +165,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
             if(line[timeCol].toLowerCase() == "n/a") {
                 datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day}, {zone: date.zoneName});
             } else {
-                let timeSplit = line[timeCol].split(":");
+                const timeSplit = line[timeCol].split(":");
                 datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: date.zoneName});
                 if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
                     datetime = datetime.plus({days: 1});
@@ -178,10 +178,10 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
             } else {
                 round = line[bracketRoundCol];
             }
-            let player1 = line[resultCol].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", "");
-            let player2 = line[resultCol+2].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", "");
-            let scoreSplit = line[resultCol+1].split("-");
-            let score = {
+            const player1 = line[resultCol].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", "");
+            const player2 = line[resultCol+2].replace(" [C]", "").replace(" [PC]", "").replace(" [XB]", "").replace(" [PS]", "");
+            const scoreSplit = line[resultCol+1].split("-");
+            const score = {
                 player1Points: parseInt(scoreSplit[0]),
                 player2Points: parseInt(scoreSplit[1]),
                 winner: 0
@@ -189,7 +189,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
             if(score.player2Points > score.player1Points) score.winner = 2;
             if(score.player1Points > score.player2Points) score.winner = 1;
 
-            let maps = [];
+            const maps = [];
 
             let sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
                 .filter(e => e > mapsCol);   // Filter out everything thats smaller than maps
@@ -198,7 +198,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
                 if(!isMap(line[mIdx])) break;       // We break upon the first non-map
                 if(line[mIdx+1] == "") continue;    // We skip over maps with "no winner"
 
-                let map = {
+                const map = {
                     map: line[mIdx],
                     winner: 0,
                     pickedBy: 0
@@ -220,13 +220,13 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
                 maps.push(map);
             }
 
-            let bans = [];
+            const bans = [];
 
             sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
                 .filter(e => e > bansCol);   // Filter out everything thats smaller than maps
             for(let bIdx=bansCol; bIdx<sortedHeaders[0]; bIdx++) {
                 if(!isMap(line[bIdx])) break;
-                let ban = {
+                const ban = {
                     map: line[bIdx],
                     bannedBy: 0
                 }
@@ -236,7 +236,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
                 bans.push(ban);
             }
 
-            let match: IRRMatch = {
+            const match: IRRMatch = {
                 bans: bans,
                 competition: competition.replace("\n",""),
                 maps: maps,
@@ -251,18 +251,18 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
             matches.push(match);
         } else if(isMap(line[mapsCol])) {
             // Two liner detected!
-            let mapsToAddTo = matches[matches.length-1].maps;
-            let player1 = matches[matches.length-1].player1;
-            let player2 = matches[matches.length-1].player2;
+            const mapsToAddTo = matches[matches.length-1].maps;
+            const player1 = matches[matches.length-1].player1;
+            const player2 = matches[matches.length-1].player2;
 
-            let sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
+            const sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
                 .filter(e => e > mapsCol);   // Filter out everything thats smaller than maps
             if(config.debugLog) console.log(sortedHeaders);
             for(let mIdx=mapsCol; mIdx < sortedHeaders[0]; mIdx += 2) {
                 if(!isMap(line[mIdx])) break;       // We break upon the first non-map
                 if(line[mIdx+1] == "") continue;    // We skip over maps with "no winner"
 
-                let map = {
+                const map = {
                     map: line[mIdx],
                     winner: 0,
                     pickedBy: 0

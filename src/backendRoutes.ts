@@ -61,7 +61,7 @@ const addBackendRoutes = (server) => {
         path: '/backend/login',
         handler: async (request, h) => {
             request.log(['info', 'post'], '/backend/login');
-            let loginSuccess = await verifyLogin(request.payload.username, request.payload.password);
+            const loginSuccess = await verifyLogin(request.payload.username, request.payload.password);
             if(!loginSuccess) {
                 return h.redirect('/backend/login')
             }

@@ -1,8 +1,9 @@
-const axios = require('axios');
-require('dotenv').config();
+import axios from 'axios';
 import { recalculate } from './dataHandling/leaderboards';
 import  { parse } from "csv-parse";
 import { csvParser } from "./gDriveIntegration";
+import { config } from 'dotenv';
+config();
 
 const cache = {
     discordPB: {},
@@ -28,7 +29,7 @@ const getDiscordProfilePictureURL = async (uID) => {
             return "/defaultPB.png"
         }
     }
-    const req = await axios.get("https://discord.com/api/v9/users/" + uID, { headers: { "Authorization": "Bot " + discordID } }).catch((e) => { console.log(e) });
+    const req = await axios.get("https://discord.com/api/v9/users/" + uID, { headers: { "Authorization": "Bot " + discordID } });
     if(req.status === 429) {
         console.log(`\x1b[33m${new Date()} WARN Hit a 429 in discord\x1b[0m`)
         cache.discordPB[uID] = {

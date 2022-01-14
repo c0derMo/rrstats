@@ -4,17 +4,17 @@ import { RRMatchModel } from '../models/Match';
 import { RRPlayerModel } from '../models/Player';
 
 export async function getAllPlayers(): Promise<string[]> {
-    let players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, {name: true}).exec();
+    const players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, {name: true}).exec();
     return players.map((e) => {return e.name});
 }
 
 export async function getAllCompetitions(): Promise<object[]> {
-    let competitions = await RRCompetitionModel.find({}, {tag: true, hitmapsStatsURL: true}).sort("-sortingIndex").exec();
+    const competitions = await RRCompetitionModel.find({}, {tag: true, hitmapsStatsURL: true}).sort("-sortingIndex").exec();
     return competitions;
 }
 
 export async function getPlayer(name: string): Promise<object> {
-    let playerInfo = await RRPlayerModel.findOne({ name: name }).exec();
+    const playerInfo = await RRPlayerModel.findOne({ name: name }).exec();
     let title = playerInfo?.title || "";
     
     let matches = await RRMatchModel.find({ $or: [ {player1: name}, {player2: name} ] }).exec();
@@ -25,7 +25,7 @@ export async function getPlayer(name: string): Promise<object> {
     }
 
     const newestCompData = await RRCompetitionModel.find({ updateWithSheet: true }).sort("-sortingIndex").exec();
-    for(let e of newestCompData) {
+    for(const e of newestCompData) {
         const newestData = await getGDriveData(`https://docs.google.com/spreadsheets/d/e/${e.sheetId}/pub?gid=${e.gid}&single=true&output=csv`, e.tag, e.parserOptions);
         matches = matches.concat(newestData.filter(e => {
             return e.player1 == name || e.player2 == name;

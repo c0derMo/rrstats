@@ -10,14 +10,14 @@ import {RRRecordModel} from "../models/Record";
 import { parse } from "csv-parse";
 
 export async function verifyLogin(username: string, password: string): Promise<boolean> {
-    let user = await UserModel.findOne({name: username}).exec();
+    const user = await UserModel.findOne({name: username}).exec();
     if(user == null) return false;
     if(user.type !== "USER") return false;
     return await user.verifyPassword(password);
 }
 
 export async function updateUserPassword(username: string, password: string): Promise<boolean> {
-    let user = await UserModel.findOne({name: username}).exec();
+    const user = await UserModel.findOne({name: username}).exec();
     if(user == null) return false;
     await user.setPassword(password);
     await user.save();
@@ -30,7 +30,7 @@ export async function getStoredMatches(): Promise<IRRMatch[]> {
 }
 
 export async function editMatch(match: any, username: string): Promise<boolean> {
-    let dbMatch = await RRMatchModel.findOne({_id: match._id}).exec();
+    const dbMatch = await RRMatchModel.findOne({_id: match._id}).exec();
     if(dbMatch == null) return false;
     Object.assign(dbMatch, match);
     await dbMatch.save();
@@ -55,10 +55,10 @@ export async function getAllPlayers(): Promise<IRRPlayer[]> {
     return await RRPlayerModel.find({}).exec();
 }
 
-export async function patchPlayers(changes: Object, username: string): Promise<boolean> {
-    for(let change in changes) {
-        let split = change.split(";");
-        let element = await RRPlayerModel.findOne({_id: split[0]}).exec();
+export async function patchPlayers(changes: any, username: string): Promise<boolean> {
+    for(const change in changes) {
+        const split = change.split(";");
+        const element = await RRPlayerModel.findOne({_id: split[0]}).exec();
         element[split[1]] = changes[change];
         await element.save();
     }
@@ -68,12 +68,11 @@ export async function patchPlayers(changes: Object, username: string): Promise<b
 
 export async function importSpreadsheet(options: any, username: string): Promise<number> {
     if(options.id == "" || options.tabName == "" || options.comp == "") return -1;
-    let req = await axios.get(`https://docs.google.com/spreadsheets/d/e/${options.id}/pub?gid=${options.gid}&single=true&output=csv`);
-    let parsedCSV = parse(req.data);
-    let matches;
+    const req = await axios.get(`https://docs.google.com/spreadsheets/d/e/${options.id}/pub?gid=${options.gid}&single=true&output=csv`);
+    const parsedCSV = parse(req.data);
     if(options.parserOptions == "") options.parserOptions = "{}";
-    matches = await csvParser(parsedCSV, options.comp, JSON.parse(options.parserOptions));
-    for(let match of matches) {
+    const matches = await csvParser(parsedCSV, options.comp, JSON.parse(options.parserOptions));
+    for(const match of matches) {
        await RRMatchModel.create(match);
     }
     await AuditLogModel.newEntry(username, "Imported competition " + options.comp, {options: options, amountMatches: matches.length});
@@ -84,10 +83,10 @@ export async function importStandings(options: any, username: string): Promise<o
     if(options.compId == "" || options.placements == []) return {success: false, error: "Fill in the required fields"}
 
     let placements = 0;
-    let notFoundPlayers = [];
-    let competition = await RRCompetitionModel.findOne({_id: options.compId}).exec();
-    for(let placement of options.placements) {
-        let player = await RRPlayerModel.findOne({name: placement.player}).exec();
+    const notFoundPlayers = [];
+    const competition = await RRCompetitionModel.findOne({_id: options.compId}).exec();
+    for(const placement of options.placements) {
+        const player = await RRPlayerModel.findOne({name: placement.player}).exec();
         if(player == null) {
             notFoundPlayers.push(placement.player);
         } else {
@@ -110,17 +109,17 @@ export async function importStandings(options: any, username: string): Promise<o
 }
 
 export async function renamePlayer(oldName: string, newName: string, username: string): Promise<object> {
-    let changes = [];
+    const changes = [];
     
-    let players = await RRPlayerModel.find({name: oldName}).exec();
-    for(let player of players) {
+    const players = await RRPlayerModel.find({name: oldName}).exec();
+    for(const player of players) {
         player.name = newName;
         await player.save();
         changes.push(`Changed RRPlayer ${player._id} from ${oldName} to name ${newName}`);
     }
     
-    let matches = await RRMatchModel.find({ $or: [{player1: oldName}, {player2: oldName}] }).exec();
-    for(let match of matches) {
+    const matches = await RRMatchModel.find({ $or: [{player1: oldName}, {player2: oldName}] }).exec();
+    for(const match of matches) {
         if(match.player1 == oldName) {
             match.player1 = newName;
             changes.push(`Changed player 1 in match ${match._id} from ${oldName} to ${newName}`);
@@ -131,8 +130,8 @@ export async function renamePlayer(oldName: string, newName: string, username: s
         await match.save();
     }
 
-    let records = await RRRecordModel.find({}).exec();
-    for(let record of records) {
+    const records = await RRRecordModel.find({}).exec();
+    for(const record of records) {
         if(record.match.search(oldName) >= 0) {
             changes.push(`Record ${record._id} changed match from ${record.match} to ${record.match.replace(oldName, newName)}`)
             record.match = record.match.replace(oldName, newName);
@@ -158,8 +157,8 @@ export async function getAuditLogs(search: string, itemsPerPage: number, page: n
     if(itemsPerPage > 0) {
         itemsQuery = itemsQuery.limit(itemsPerPage);
     }
-    let items = await itemsQuery.exec();
-    let count = await AuditLogModel.countDocuments({});
+    const items = await itemsQuery.exec();
+    const count = await AuditLogModel.countDocuments({});
     return {
         itemCount: count,
         items: items
@@ -171,7 +170,7 @@ export async function getStoredCompetitions(): Promise<IRRCompetition[]> {
 }
 
 export async function editCompetition(comp: any, username: string): Promise<boolean> {
-    let dbComp = await RRCompetitionModel.findOne({_id: comp._id}).exec();
+    const dbComp = await RRCompetitionModel.findOne({_id: comp._id}).exec();
     if(dbComp == null) return false;
     Object.assign(dbComp, comp);
     await dbComp.save();

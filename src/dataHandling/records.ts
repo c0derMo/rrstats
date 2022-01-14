@@ -4,11 +4,11 @@ import {AuditLogModel} from "../models/AuditLogEntry";
 import {jsonDiff} from "../utils";
 
 export async function getRecords(): Promise<IRRRecord[]> {
-    let records = await RRRecordModel.find({}).sort("sortingIndex").exec();
-    for(let record of records) {
-        for(let player in record.players) {
+    const records = await RRRecordModel.find({}).sort("sortingIndex").exec();
+    for(const record of records) {
+        for(const player in record.players) {
             try {
-                let playerObject = await RRPlayerModel.findById(record.players[player]).exec();
+                const playerObject = await RRPlayerModel.findById(record.players[player]).exec();
                 record.players[player] = playerObject.name;
             } catch(e) {}
         }
@@ -21,7 +21,7 @@ export async function getStoredRecords(): Promise<IRRRecord[]> {
 }
 
 export async function editRecord(record: any, username: string): Promise<boolean> {
-    let dbRecord = await RRRecordModel.findOne({_id: record._id}).exec();
+    const dbRecord = await RRRecordModel.findOne({_id: record._id}).exec();
     if(dbRecord == null) return false;
     Object.assign(dbRecord, record);
     await dbRecord.save();

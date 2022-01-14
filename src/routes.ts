@@ -88,7 +88,7 @@ const addRoutes = (server) => {
         path: '/robots.txt',
         handler: (request, h) => {
             request.log(['get', 'info'], '/robots.txt');
-            return h.response("User-agent: *\nDisallow: /").type('text/plain');;
+            return h.response("User-agent: *\nDisallow: /").type('text/plain');
         }
     });
 

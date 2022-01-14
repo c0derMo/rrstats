@@ -1,15 +1,16 @@
 'use strict'
 
-import {recalculate} from "./dataHandling/leaderboards";
-
-const Hapi = require("@hapi/hapi");
-const Inert = require("@hapi/inert");
+import { recalculate } from "./dataHandling/leaderboards";
+import Hapi from "@hapi/hapi";
+import Inert from "@hapi/inert";
+import Cookie from "@hapi/cookie";
 import { addRoutes } from "./routes";
 import { addBackendRoutes } from "./backendRoutes";
 import { addAPIRoutes } from "./3rdPartyRoutes";
 import { connect } from "./databaseManager";
-const crypt = require("crypto");
-require('dotenv').config();
+import * as crypt from "crypto";
+import { config } from 'dotenv';
+config();
 
 const init = async() => {
 
@@ -19,7 +20,7 @@ const init = async() => {
     });
 
     await server.register(Inert);
-    await server.register(require('@hapi/cookie'));
+    await server.register(Cookie);
 
     server.auth.strategy('session', 'cookie', {
         cookie: {
