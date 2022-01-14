@@ -46,31 +46,31 @@ Vue.component('rrstats-backend-menulist', {
                 description: "Lists all the matches.",
                 icon: "mdi-book-edit-outline",
                 href: "/backend/matches"
-            },{
+            }, {
                 id: "players",
                 name: "Players",
                 description: "Lists all the players.",
                 icon: "mdi-account-edit-outline",
                 href: "/backend/players"
-            },{
+            }, {
                 id: "comps",
                 name: "Competitions",
                 description: "Lists all the competitions.",
                 icon: "mdi-tournament",
                 href: "/backend/competitions"
-            },{
+            }, {
                 id: "importSpreadsheet",
                 name: "Import spreadsheet",
                 description: "Imports a spreadsheet as a permanent part of the system.",
                 icon: "mdi-database-import-outline",
                 href: "/backend/importSpreadsheet"
-            },{
+            }, {
                 id: "importStandings",
                 name: "Bulk import standings",
                 description: "Import standings and adds them to the corresponding competition.",
                 icon: "mdi-database-import-outline",
                 href: "/backend/importStandings"
-            },{
+            }, {
                 id: "dbChecks",
                 name: "Database checks",
                 description: "Runs various checks on the database.",
@@ -82,26 +82,26 @@ Vue.component('rrstats-backend-menulist', {
                 description: "Renames a player across the database.",
                 icon: "mdi-account-wrench-outline",
                 href: "/backend/renamePlayer"
-            },{
+            }, {
                 id: "records",
                 name: "Records",
                 description: "Lists all records currently in the system.",
                 icon: "mdi-medal-outline",
                 href: "/backend/records"
-            },{
+            }, {
                 id: "log",
                 name: "Audit logs",
                 description: "Get a comprehensive log of all actions taken in the backend.",
                 icon: "mdi-book-search-outline",
                 href: "/backend/logs"
-            },{
+            }, {
                 id: 'tweet',
                 name: 'Tweet',
                 description: 'Tweet from the official @rrstats-Account',
                 icon: 'mdi-twitter',
                 href: '/backend/tweet'
             }]
-        } 
+        }
     },
     props: {
         includeSubtitle: {

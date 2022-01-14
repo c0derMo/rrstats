@@ -9,7 +9,7 @@ config();
 
 let database: Mongoose.Connection;
 
-export const connect = async() => {
+export async function connect() {
     const URI = process.env.MONGODB_URI;
     if (database) return;
     await Mongoose.connect(URI, {
@@ -26,7 +26,7 @@ export const connect = async() => {
     }
 }
 
-export const disconnect = () => {
+export function disconnect() {
     if (!database) return;
     Mongoose.disconnect();
 }

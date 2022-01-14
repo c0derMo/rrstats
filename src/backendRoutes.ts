@@ -25,7 +25,7 @@ import {tweet} from "./dataHandling/externalConnector";
 import {disconnect} from "./databaseManager";
 import {recalculate} from "./dataHandling/leaderboards";
 
-const addBackendRoutes = (server) => {
+export function addBackendRoutes(server) {
 
     server.route({
         method: 'GET',
@@ -236,7 +236,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -249,7 +249,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -268,7 +268,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -287,7 +287,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -298,15 +298,15 @@ const addBackendRoutes = (server) => {
             request.log(['delete', 'info'], '/backend/api/matches');
             let result;
             try {
-                result = {success: await deleteMatch(request.payload, request.auth.credentials.loggedInAs)};
+                result = { success: await deleteMatch(request.payload, request.auth.credentials.loggedInAs) };
             } catch(e) {
-                result = {success: false, error: e.toString()}
+                result = { success: false, error: e.toString() }
             }
             return result;
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     })
 
@@ -319,7 +319,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -338,7 +338,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -353,7 +353,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -372,7 +372,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -404,7 +404,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
     
@@ -424,7 +424,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     })
 
@@ -439,7 +439,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -452,7 +452,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
     
@@ -474,7 +474,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -493,7 +493,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -512,7 +512,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -531,7 +531,7 @@ const addBackendRoutes = (server) => {
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     })
 
@@ -652,5 +652,3 @@ const addBackendRoutes = (server) => {
     })
 
 }
-
-export { addBackendRoutes };

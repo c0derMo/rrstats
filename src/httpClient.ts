@@ -12,7 +12,7 @@ const cache = {
 
 const discordID = process.env.DISCORD_TOKEN;
 
-const getDiscordProfilePictureURL = async (uID) => {
+export async function getDiscordProfilePictureURL(uID) {
     if (uID === "") {
         return "/defaultPB.png"
     }
@@ -46,7 +46,7 @@ const getDiscordProfilePictureURL = async (uID) => {
     return "/defaultPB.png"
 }
 
-const getGDriveData = async (link, name, config=null) => {
+export async function getGDriveData(link, name, config=null) {
     //Check for cache, if the link in the cache isn't the same, we need to get something new anyways
     if(cache.newGDrive !== undefined) {
         // Cache stays for 15 minutes.
@@ -71,6 +71,3 @@ const getGDriveData = async (link, name, config=null) => {
     await recalculate(data);
     return data;
 }
-
-export { getGDriveData };
-export { getDiscordProfilePictureURL };

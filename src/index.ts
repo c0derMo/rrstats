@@ -12,7 +12,7 @@ import * as crypt from "crypto";
 import { config } from 'dotenv';
 config();
 
-const init = async() => {
+async function init() {
 
     const server = Hapi.server({
         port: process.env.PORT || 8000,

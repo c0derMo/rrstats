@@ -73,7 +73,7 @@ export async function importSpreadsheet(options: any, username: string): Promise
     if(options.parserOptions == "") options.parserOptions = "{}";
     const matches = await csvParser(parsedCSV, options.comp, JSON.parse(options.parserOptions));
     for(const match of matches) {
-       await RRMatchModel.create(match);
+        await RRMatchModel.create(match);
     }
     await AuditLogModel.newEntry(username, "Imported competition " + options.comp, {options: options, amountMatches: matches.length});
     return matches.length;

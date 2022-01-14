@@ -4,8 +4,8 @@ import { RRMatchModel } from '../models/Match';
 import { RRPlayerModel } from '../models/Player';
 
 export async function getAllPlayers(): Promise<string[]> {
-    const players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, {name: true}).exec();
-    return players.map((e) => {return e.name});
+    const players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, { name: true }).exec();
+    return players.map((e) => { return e.name });
 }
 
 export async function getAllCompetitions(): Promise<object[]> {
@@ -39,25 +39,25 @@ export async function getPlayer(name: string): Promise<object> {
     let competitions = [];
     if (playerInfo !== null) {
         competitions = await RRCompetitionModel.aggregate([{$match: {
-                'placements.playerId': playerInfo._id.toString()
-            }}, {$sort: {
-                sortingIndex: -1
-            }}, {$project: {
-                placements: {
-                    $filter: {
-                        input: '$placements',
-                        as: 'placement',
-                        cond: {
-                            $eq: [
-                                '$$placement.playerId',
-                                playerInfo._id.toString()
-                            ]
-                        }
+            'placements.playerId': playerInfo._id.toString()
+        }}, {$sort: {
+            sortingIndex: -1
+        }}, {$project: {
+            placements: {
+                $filter: {
+                    input: '$placements',
+                    as: 'placement',
+                    cond: {
+                        $eq: [
+                            '$$placement.playerId',
+                            playerInfo._id.toString()
+                        ]
                     }
-                },
-                officialCompetition: true,
-                name: true
-            }}]).exec();
+                }
+            },
+            officialCompetition: true,
+            name: true
+        }}]).exec();
     }
 
     return {

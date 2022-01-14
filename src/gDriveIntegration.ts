@@ -33,7 +33,7 @@ function monthToIndex(month: string): number {
     }
 }
 function isMap(map: string): boolean {
-    return ["PAR","SAP","MAR","BKK","COL","HOK","MIA","SF","MUM","WC","SGA","NY","HAV","DUB","DAR","BER","CHO","MEN"].includes(map);
+    return ["PAR", "SAP", "MAR", "BKK", "COL", "HOK", "MIA", "SF", "MUM", "WC", "SGA", "NY", "HAV", "DUB", "DAR", "BER", "CHO", "MEN"].includes(map);
 }
 function defaultParserConfig(): ParserConfig {
     return {
@@ -191,7 +191,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
 
             const maps = [];
 
-            let sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
+            let sortedHeaders = [timeCol, bracketRoundCol, resultCol, mapsCol, bansCol, shoutcastCol].sort()
                 .filter(e => e > mapsCol);   // Filter out everything thats smaller than maps
             if(config.debugLog) console.log(sortedHeaders);
             for(let mIdx=mapsCol; mIdx < sortedHeaders[0]; mIdx += 2) {
@@ -222,7 +222,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
 
             const bans = [];
 
-            sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
+            sortedHeaders = [timeCol, bracketRoundCol, resultCol, mapsCol, bansCol, shoutcastCol].sort()
                 .filter(e => e > bansCol);   // Filter out everything thats smaller than maps
             for(let bIdx=bansCol; bIdx<sortedHeaders[0]; bIdx++) {
                 if(!isMap(line[bIdx])) break;
@@ -238,12 +238,12 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
 
             const match: IRRMatch = {
                 bans: bans,
-                competition: competition.replace("\n",""),
+                competition: competition.replace("\n", ""),
                 maps: maps,
-                platform: bracket.replace("\n",""),
-                player1: player1.replace("\n",""),
-                player2: player2.replace("\n",""),
-                round: round.replace("\n",""),
+                platform: bracket.replace("\n", ""),
+                player1: player1.replace("\n", ""),
+                player2: player2.replace("\n", ""),
+                round: round.replace("\n", ""),
                 score: score,
                 timestamp: datetime
             }
@@ -255,7 +255,7 @@ export async function csvParser(obj: any, competition: string, configOverrides: 
             const player1 = matches[matches.length-1].player1;
             const player2 = matches[matches.length-1].player2;
 
-            const sortedHeaders = [timeCol,bracketRoundCol,resultCol,mapsCol,bansCol,shoutcastCol].sort()
+            const sortedHeaders = [timeCol, bracketRoundCol, resultCol, mapsCol, bansCol, shoutcastCol].sort()
                 .filter(e => e > mapsCol);   // Filter out everything thats smaller than maps
             if(config.debugLog) console.log(sortedHeaders);
             for(let mIdx=mapsCol; mIdx < sortedHeaders[0]; mIdx += 2) {

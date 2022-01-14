@@ -59,7 +59,7 @@ const RRMatchSchema = new Schema({
                 required: true
             } },
         required: true
-},
+    },
     competition: {
         type: String,
         required: true
@@ -72,7 +72,8 @@ const RRMatchSchema = new Schema({
         required: true
     },
     maps: {
-        type: [{ map: {
+        type: [{
+            map: {
                 type: String,
                 required: true
             }, winner: {
@@ -81,16 +82,19 @@ const RRMatchSchema = new Schema({
             }, pickedBy: {
                 type: Number,
                 required: true
-            } }]
+            }
+        }]
     },
     bans: {
-        type: [{ map: {
+        type: [{
+            map: {
                 type: String,
                 required: true
             }, bannedBy: {
                 type: Number,
                 required: true
-            } }]
+            }
+        }]
     },
     timestamp: {
         type: Date,

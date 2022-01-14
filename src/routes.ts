@@ -4,11 +4,11 @@ import { getRecords } from './dataHandling/records';
 
 let maintenanceMode = false;
 
-const setMaintenanceMode = (mode) => {
+export function setMaintenanceMode(mode) {
     maintenanceMode = mode;
 }
 
-const addRoutes = (server) => {
+export function addRoutes(server) {
 
     server.route({
         method: 'GET',
@@ -139,6 +139,3 @@ const addRoutes = (server) => {
     })
 
 }
-
-export { addRoutes };
-export { setMaintenanceMode };

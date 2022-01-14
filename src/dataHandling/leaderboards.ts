@@ -144,7 +144,7 @@ export function getLeaderboardStat(stat: string, map=""): object {
         case "WR":
             obj.order = obj.order.filter((e) => {
                 return obj.rankings[e].matches > 0;
-            }).sort((a,b) => {
+            }).sort((a, b) => {
                 return (obj.rankings[b].won/obj.rankings[b].matches) - (obj.rankings[a].won/obj.rankings[a].matches)
             });
             break;
@@ -234,8 +234,8 @@ function getDefaultRankingObject() {
         rrwcCompetitions: [],
         matches: 0,
         won: 0,
-        mapsPlayed: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        mapsWon: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        mapsPlayed: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        mapsWon: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         longestWinningSpree: 0,
         matchesWithDecider: 0,
         grandFinalAppearances: 0,
