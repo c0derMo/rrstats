@@ -1,3 +1,5 @@
+export const VERSION = "2.0beta"
+
 export function mapAbbreviationToArrayIndex(abv) {
     switch(abv) {
         // Season 1

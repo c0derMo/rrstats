@@ -1,9 +1,9 @@
 'use strict'
 
 import { recalculate } from "./dataHandling/leaderboards";
-import Hapi from "@hapi/hapi";
-import Inert from "@hapi/inert";
-import Cookie from "@hapi/cookie";
+import * as Hapi from "@hapi/hapi";
+import * as Inert from "@hapi/inert";
+import * as Cookie from "@hapi/cookie";
 import { addRoutes } from "./routes";
 import { addBackendRoutes } from "./backendRoutes";
 import { addAPIRoutes } from "./3rdPartyRoutes";

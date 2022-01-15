@@ -66,6 +66,13 @@
                 <v-spacer></v-spacer>
             </v-row>
             <v-row>
+                <v-spacer></v-spacer>
+                <v-col md="6" align="center">
+                    <a href="/changelog" style="font-size: 0.8rem">Changelog (v{{ version }})</a>
+                </v-col>
+                <v-spacer></v-spacer>
+            </v-row>
+            <v-row>
                 <v-col md="12">
                     <v-footer absolute padless>
                         <span style="font-style: italic; text-align: center; width: 100%">Made with precision german engineering, calculated hungarian stats & accurate german timings.</span>
@@ -87,7 +94,8 @@
             players: [],
             tabSelected: 0,
             playerSearch: null,
-            competitions: []
+            competitions: [],
+            version: ""
           }
       },
       methods: {
@@ -124,6 +132,7 @@
         let frontpageData = await axios.get("/frontpageInfo");
         this.players = frontpageData.data.players;
         this.competitions = frontpageData.data.competitions;
+        this.version = frontpageData.data.version;
       }
     })
   </script>
