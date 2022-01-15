@@ -1,14 +1,18 @@
 'use strict'
 
-const Hapi = require("@hapi/hapi");
-const Inert = require("@hapi/inert");
+import { recalculate } from "./dataHandling/leaderboards";
+import * as Hapi from "@hapi/hapi";
+import * as Inert from "@hapi/inert";
+import * as Cookie from "@hapi/cookie";
 import { addRoutes } from "./routes";
-import { loadConfigs } from "./dataManager";
 import { addBackendRoutes } from "./backendRoutes";
 import { addAPIRoutes } from "./3rdPartyRoutes";
-const crypt = require("crypto");
+import { connect } from "./databaseManager";
+import * as crypt from "crypto";
+import { config } from 'dotenv';
+config();
 
-const init = async() => {
+async function init() {
 
     const server = Hapi.server({
         port: process.env.PORT || 8000,
@@ -16,7 +20,7 @@ const init = async() => {
     });
 
     await server.register(Inert);
-    await server.register(require('@hapi/cookie'));
+    await server.register(Cookie);
 
     server.auth.strategy('session', 'cookie', {
         cookie: {
@@ -27,7 +31,7 @@ const init = async() => {
         },
         redirectTo: "/backend/login",
         validateFunc: async(request, session) => {
-            return { valid: session.loggedIn }
+            return { valid: session.loggedInAs !== "" }
         }
     });
 
@@ -44,11 +48,15 @@ const init = async() => {
         }
 
         if(tags.get) {
-            logMessage += "GET   "
+            logMessage += "GET    "
         } else if(tags.post) {
-            logMessage += "POST  "
+            logMessage += "POST   "
         } else if(tags.patch) {
-            logMessage += "PATCH "
+            logMessage += "PATCH  "
+        } else if(tags.delete) {
+            logMessage += "DELETE "
+        } else if(tags.put) {
+            logMessage += "PUT    "
         }
 
         logMessage += event.data;
@@ -61,10 +69,12 @@ const init = async() => {
     addBackendRoutes(server);
     addAPIRoutes(server);
 
-    await loadConfigs();
+    await connect();
 
     await server.start();
     console.log("F7SC Player Statistics running @ " + server.info.uri);
+
+    await recalculate([], "System (reboot)");
 }
 
 process.on("unhandledRejection", err => {

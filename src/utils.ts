@@ -1,22 +1,6 @@
-function getJSONPath(obj, path) {
-    let split = path.split(".").reverse();
-    let response = obj;
-    while(split.length > 0) {
-        response = response[split.pop()];
-    }
-    return response;
-}
+export const VERSION = "2.0beta"
 
-function setJSONPath(obj, path, value) {
-    let split = path.split(".").reverse();
-    let response = obj;
-    while(split.length > 1) {
-        response = response[split.pop()];
-    }
-    response[split.pop()] = value;
-}
-
-const mapAbreviationToArrayIndex = (abv) => {
+export function mapAbbreviationToArrayIndex(abv) {
     switch(abv) {
         // Season 1
         case "PAR":
@@ -65,6 +49,30 @@ const mapAbreviationToArrayIndex = (abv) => {
     }
 }
 
-export { getJSONPath };
-export { setJSONPath };
-export { mapAbreviationToArrayIndex };
+export function jsonDiff(oldObj, newObj, prefix="") {
+    let changes = [];
+
+    for(const key in newObj) {
+        if(key.startsWith("_") || key.startsWith("$")) continue;
+        if(typeof newObj[key] === "object") {
+            if(oldObj[key] !== undefined) {
+                changes = changes.concat(jsonDiff(oldObj[key], newObj[key], [prefix, key].join(".")));
+            } else {
+                changes.push({
+                    path: [prefix, key].join(".").substr(1),
+                    newValue: newObj[key]
+                });
+            }
+        } else {
+            if(oldObj[key] !== newObj[key]) {
+                changes.push({
+                    path: [prefix, key].join(".").substr(1),
+                    oldValue: oldObj[key],
+                    newValue: newObj[key]
+                });
+            }
+        }
+    }
+
+    return changes;
+}

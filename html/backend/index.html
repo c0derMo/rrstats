@@ -1,157 +1,146 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>RR Player Statistics</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+        <title>RRStats - Backend</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     </head>
     <body>
-        <div class="ui container">
-            <div class="ui basic modal" id="shutdownConfirmModal">
-                <div class="ui icon header">
-                    <i class="power off icon"></i>
-                    Shutdown server
-                </div>
-                <div class="content">
-                    <p>Are you sure that you want to <span style="font-weight: bold;">shutdown the server?</span></p>
-                    <div class="actions">
-                        <div class="ui red basic cancel inverted button">
-                            <i class="remove icon"></i>
-                            No
-                        </div>
-                        <div class="ui green ok inverted button" id="shutdownConfirm">
-                            <i class="checkmark icon"></i>
-                            Yes
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br>
-            <h1 class="ui header">RR Player Stats - Backend</h1>
-            <a class="negative ui right floated button" href="/backend/logout"><i class="sign out alternative icon"></i>Logout</a>
-            <br>
-            <br>
-            <br>
-            <div class="ui middle aligned divided list" id="menu">
-                
-            </div>
+        <div id="app">
+            <v-app>
+                <rrstats-backend-sidebar>
+                    <v-main>
+                        <v-container fluid>
+                            <v-row>
+                                <v-spacer></v-spacer>
+                                <v-col md="8">
+                                    <rrstats-backend-menulist>
+                                        <template v-slot:pre-list>
+                                            <v-list-item two-line>
+                                                <v-list-item-icon><v-icon>mdi-eye-off-outline</v-icon></v-list-item-icon>
+                                                <v-list-item-content>
+                                                    <v-list-item-title>Maintenance mode</v-list-item-title>
+                                                    <v-list-item-subtitle>Activates maintenance mode for the entire site. The frontend + API will become unavailable.</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                                <v-list-item-action>
+                                                    <v-switch @change="toggleMaintenanceMode" v-model="maintenanceMode"></v-switch>
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                        </template>
+
+                                        <template v-slot:post-list>
+                                            <v-list-item two-line>
+                                                <v-list-item-icon><v-icon>mdi-calculator</v-icon></v-list-item-icon>
+                                                <v-list-item-content>
+                                                    <v-list-item-title>Recalculate leaderboards</v-list-item-title>
+                                                    <v-list-item-subtitle>Recalculate leaderboards from saved matches. (Does not include live competitions - reload a player page instead.)</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                                <v-list-item-action>
+                                                    <v-btn @click="recalculateLeaderboards" icon><v-icon>mdi-calculator</v-icon></v-btn>
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                            <v-list-item two-line>
+                                                <v-list-item-icon><v-icon>mdi-power</v-icon></v-list-item-icon>
+                                                <v-list-item-content>
+                                                    <v-list-item-title>Shutdown</v-list-item-title>
+                                                    <v-list-item-subtitle>Shuts down the entire server.</v-list-item-subtitle>
+                                                </v-list-item-content>
+                                                <v-list-item-action>
+                                                    <v-dialog v-model="shutdownDialog">
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <v-btn icon v-bind="attrs" v-on="on">
+                                                                <v-icon>mdi-alert-decagram-outline</v-icon>
+                                                            </v-btn>
+                                                        </template>
+                                                        <v-card>
+                                                            <v-card-title>Shutdown server</v-card-title>
+                                                            <v-card-text>Are you sure that you want to <b>shutdown the server?</b></v-card-text>
+                                                            <v-divider></v-divider>
+                                                            <v-card-actions>
+                                                                <v-spacer></v-spacer>
+                                                                <v-btn text color="red" @click="shutdown">
+                                                                    Yes
+                                                                </v-btn>
+                                                                <v-btn text @click="shutdownDialog = false">
+                                                                    No
+                                                                </v-btn>
+                                                            </v-card-actions>
+                                                        </v-card>
+                                                    </v-dialog>
+                                                </v-list-item-action>
+                                            </v-list-item>
+                                        </template>
+                                    </rrstats-backend-menulist>
+                                </v-col>
+                                <v-spacer></v-spacer>
+                            </v-row>
+                        </v-container>
+                    </v-main>
+                    <v-snackbar
+                        v-model="snackbar">
+                        {{ snackbarText }}
+                    <template v-slot:action="{ attrs }">
+                        <v-btn
+                        color="pink"
+                        text
+                        v-bind="attrs"
+                        @click="snackbar = false"
+                        >
+                        Close
+                        </v-btn>
+                    </template>
+                    </v-snackbar>
+                </rrstats-backend-sidebar>
+            </v-app>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script src="backend/components.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
-            $.getJSON("/backend/api/menu", (data, status, x) => {
-                if(status == "success") {
-                    data.forEach(element => {
-                        const icon = $('<i></i>').addClass("large").addClass(element.icon).addClass("middle aligned icon");
-
-                        const title = $('<a></a>').addClass("header").css("font-weight", "bold").text(element.title);
-                        const description = $('<div></div>').addClass("description").text(element.description);
-                        const content = $("<div></div>").addClass("content").append(title).append(description);
-
-                        const rightFloatedContent = $('<div></div>').addClass("right floated content");
-
-                        switch(element.type) {
-                            case "link":
-                                const link = $('<a></a>').addClass("ui button").attr("href", element.href).append($("<i></i>").addClass("share icon"));
-                                rightFloatedContent.append(link);
-                                break;
-                            case "button":
-                                const button = $("<button>").addClass("ui button").attr("id", element.id).append($('<i></i>').addClass(element.icon).addClass("icon"));
-                                rightFloatedContent.append(button);
-                                break;
-                            case "checkbox":
-                                const checkbox = $('<input></input>').attr("type", "checkbox").attr("id", element.id);
-                                const box = $('<div></div>').addClass("ui toggle checkbox").append(checkbox).append($('<label></label>'));
-                                rightFloatedContent.append(box);
-                                break;
-                        }
-
-                        const item = $('<div></div>').addClass("item").append(rightFloatedContent).append(icon).append(content);
-                        $('#menu').append(item);
-                    });
-
-                    addHandlers();
-                }
-            });
-
-            function addHandlers() {
-                $('#maintenance-mode').on("click", (e) => {
-                    if($('#maintenance-mode').prop("checked")) {
-                        $.get("/backend/api/maintenance", {mode: "on"}, (data, status, x) => {
-                            console.log(data);
-                            console.log(status);
-                            $('body').toast({
-                                message: "Maintenance mode: enabled.",
-                                showProgress: 'top',
-                                class: 'success',
-                                displayTime: 15000
-                            })
-                        });
-                    } else {
-                        $.get("/backend/api/maintenance", {mode: "off"}, (data, status, x) => {
-                            console.log(data);
-                            console.log(status);
-                            $('body').toast({
-                                message: "Maintenance mode: disabled.",
-                                showProgress: 'top',
-                                class: 'success',
-                                displayTime: 15000
-                            })
-                        });
+            let vue = new Vue({
+                el: '#app',
+                vuetify: new Vuetify({theme: { dark: true }}),
+                data() {
+                    return {
+                        maintenanceMode: false,
+                        snackbar: false,
+                        snackbarText: "",
+                        shutdownDialog: false
                     }
-                });
-
-                $('#reload').on("click", (e) => {
-                    $.get("/backend/api/reloadConfigs", (data, status, x) => {
-                        if(status === "success" && data.status === "ok") {
-                            $('body').toast({
-                                message: 'Successfully reloaded the config files.',
-                                showProgress: 'top',
-                                class: 'success'
-                            });
+                },
+                methods: {
+                    async recalculateLeaderboards() {
+                        let response = await axios.get("/backend/api/recalculateLeaderboards");
+                        if(response.data.success) {
+                            this.snackbarText = "Successfully recalculated.";
                         } else {
-                            $('body').toast({
-                                message: "Failed to reload the files.",
-                                showProgress: 'top',
-                                class: 'failure'
-                            })
+                            this.snackbarText = "Failed to recalculate.";
                         }
-                    })
-                });
-
-
-                $('#recalcLeaderboard').on("click", (e) => {
-                    $.get("/backend/api/recalculateLeaderboards", (data, status, x) => {
-                        if(status === "success" && data.status === "ok") {
-                            $('body').toast({
-                                message: 'Successfully recalculated leaderboard info.',
-                                showProgress: 'top',
-                                class: 'success'
-                            });
-                        } else {
-                            $('body').toast({
-                                message: "Failed to recalculate leaderboard info.",
-                                showProgress: 'top',
-                                class: 'failure'
-                            })
+                        this.snackbar = true;
+                    },
+                    async toggleMaintenanceMode() {
+                        let response = await axios.get("/backend/api/maintenance", {params: {mode: this.maintenanceMode}})
+                        if(response.status == 200) {
+                            if(this.maintenanceMode) {
+                                this.snackbarText = "Maintenance mode: enabled";
+                            } else {
+                                this.snackbarText = "Maintenance mode: disabled";
+                            }
+                            this.snackbar = true;
                         }
-                    })
-                });
-
-                $('#shutdown').on("click", (e) => {
-                    $('#shutdownConfirmModal').modal("show");
-                })
-
-                $('#shutdownConfirm').on("click", (e) => {
-                    $.get("/backend/api/shutdown", (data, status, x) => {
-                        $('body').toast({
-                            message: 'Sent shutdown command.',
-                            showProgress: 'top',
-                            class: 'success'
-                        });
-                    })
-                })
-            }
+                    },
+                    async shutdown() {
+                        this.shutdownDialog = false;
+                        await axios.get("/backend/api/shutdown");
+                        this.snackbarText = "Sent shutdown command.";
+                        this.snackbar = true;
+                    }
+                }
+            })
         </script>
     </body>
 </html>

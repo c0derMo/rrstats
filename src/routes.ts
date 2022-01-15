@@ -1,14 +1,16 @@
-import gDriveToMatchlist from './gDriveIntegration';
-import { getNewestCompetitionData, getStoredMatches, getPlayerInfo, getAllPlayers, getRanking, getRecords } from "./dataManager";
-import { getDiscordProfilePictureURL, getGDriveData } from "./httpClient";
+import { getAllCompetitions, getAllPlayers, getPlayer } from './dataHandling/frontend';
+import { getLeaderboardStat } from './dataHandling/leaderboards';
+import { getRecords } from './dataHandling/records';
+import {VERSION} from "./utils";
+import {Server} from "@hapi/hapi";
 
 let maintenanceMode = false;
 
-const setMaintenanceMode = (mode) => {
+export function setMaintenanceMode(mode: boolean) {
     maintenanceMode = mode;
 }
 
-const addRoutes = (server) => {
+export function addRoutes(server: Server) {
 
     server.route({
         method: 'GET',
@@ -48,15 +50,15 @@ const addRoutes = (server) => {
             request.log(['get', 'info'], '/records');
             return h.file("html/records.html");
         }
-    })
+    });
 
     server.route({
         method: 'GET',
-        path: '/darkly.css',
+        path: '/changelog',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-            request.log(['get', 'info'], '/darkly.css');
-            return h.file("html/darkly.css");
+            request.log(['get', 'info'], '/changelog');
+            return h.file("html/changelog.html");
         }
     })
 
@@ -72,15 +74,6 @@ const addRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/utils.js',
-        handler: (request, h) => {
-            if(maintenanceMode) return "This? This is maintenance.";
-            return h.file("html/utils.js");
-        }
-    })
-
-    server.route({
-        method: 'GET',
         path: '/background.jpg',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
@@ -91,11 +84,15 @@ const addRoutes = (server) => {
 
     server.route({
         method: 'GET',
-        path: '/allPlayers.js',
-        handler: (request, h) => {
+        path: '/frontpageInfo',
+        handler: async (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-            request.log(['get', 'info'], '/allPlayers.js');
-            return "const players = " + JSON.stringify(getAllPlayers()) + ";";
+            request.log(['get', 'info'], '/frontpageInfo');
+            return h.response({
+                players: await getAllPlayers(),
+                competitions: await getAllCompetitions(),
+                version: VERSION
+            })
         }
     })
 
@@ -104,7 +101,7 @@ const addRoutes = (server) => {
         path: '/robots.txt',
         handler: (request, h) => {
             request.log(['get', 'info'], '/robots.txt');
-            return h.response("User-agent: *\nDisallow: /").type('text/plain');;
+            return h.response("User-agent: *\nDisallow: /").type('text/plain');
         }
     });
 
@@ -122,48 +119,8 @@ const addRoutes = (server) => {
         path: '/api/{player}',
         handler: async(request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-
-            // Query for player info
-            const playerInfo = getPlayerInfo(request.params.player);
-            let title = playerInfo.title;
-
-            // Query for stored matches
-            let matches = [];
-            
-            matches = matches.concat(getStoredMatches(request.params.player));
-
-            if(title === "" && matches.length > 0) {
-                title = "Returning Rival"
-            } else if(title === "") {
-                title = "Roulette Rookie"
-            }
-
-            // Query for matches in newest competition
-            const newestCompData = getNewestCompetitionData();
-            if(newestCompData.name !== "") {
-                const newestDoc = await getGDriveData(newestCompData.link, newestCompData.name);
-                const newestData = gDriveToMatchlist(JSON.parse(newestDoc.substring(47, newestDoc.length-2)), newestCompData.name);
-    
-                matches = matches.concat(newestData.filter(e => {
-                    return (e.player1.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player || e.player2.replace(" [C]", "").replace(" [PC]", "").replace(" [PS]", "").replace(" [XB]", "") == request.params.player);
-                }));
-            }
-
-            matches = matches.sort((a, b) => {
-                return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-            })
-
-            const obj = {
-                avatar: await getDiscordProfilePictureURL(playerInfo.discordId),
-                name: request.params.player,
-                title: title,
-                competitions: playerInfo.competitions,
-                matches: matches,
-                customTitle: playerInfo.customTitle
-            }
-
             request.log(['get', 'info'], '/api/' + request.params.player);
-            return "setPageContent(" + JSON.stringify(obj) + ");"
+            return h.response(await getPlayer(request.params.player));
         }
     });
 
@@ -177,9 +134,9 @@ const addRoutes = (server) => {
 
             request.log(['get', 'info'], '/api/leaderboards');
             if(map === undefined || map === "") {
-                return getRanking(stat);
+                return h.response(getLeaderboardStat(stat));
             } else {
-                return getRanking(stat, map);
+                return h.response(getLeaderboardStat(stat, map));
             }
         }
     });
@@ -187,14 +144,11 @@ const addRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/api/records',
-        handler: (request, h) => {
+        handler: async (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/records');
-            return getRecords();
+            return h.response(await getRecords());
         }
     })
 
 }
-
-export { addRoutes };
-export { setMaintenanceMode };

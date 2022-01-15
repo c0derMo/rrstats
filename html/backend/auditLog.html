@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RRStats - Backend</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <rrstats-backend-sidebar title="RRStats - Audit log">
+                    <v-main>
+                        <v-container fluid>
+                            <v-row>
+                                <v-spacer></v-spacer>
+                                <v-col md="8">
+                                    <v-text-field v-model="search" label="search"></v-text-field>
+                                    <v-data-table :headers="headers"
+                                    :options.sync="options"
+                                    :items="items"
+                                    :server-items-length="totalItems"
+                                    :loading="loading"
+                                    disable-sort
+                                    show-expand
+                                    item-key="_id">
+                                
+                                    <template v-slot:item.timestamp="{ item }">
+                                        {{ timestampToString(item.timestamp) }}
+                                    </template>
+                                    <template v-slot:expanded-item="{ headers, item }">
+                                        <td :colspan="headers.length">
+                                            <v-treeview dense :items="transformDetails(item.details)"></v-treeview>
+                                        </td>
+                                    </template>
+
+                                </v-data-table>
+                                </v-col>
+                                <v-spacer></v-spacer>
+                            </v-row>
+                        </v-container>
+                    </v-main>
+                </rrstats-backend-sidebar>
+            </v-app>
+        </div>
+
+        <script src="/backend/components.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
+        <script>
+            let vue = new Vue({
+                el: '#app',
+                vuetify: new Vuetify({theme: { dark: true }}),
+                data() {
+                    return {
+                        search: "",
+                        headers: [{
+                            text: "Date",
+                            value: "timestamp"
+                        },{
+                            text: "User",
+                            value: "user"
+                        },{
+                            text: "Action",
+                            value: "action"
+                        },{
+                            text: "",
+                            value: "log-entry-details"
+                        }],
+                        loading: true,
+                        totalItems: 0,
+                        options: {},
+                        items: []
+                    }
+                },
+                watch: {
+                    options: {
+                        async handler() {
+                            await this.loadNewItems();
+                        },
+                        deep: true
+                    },
+                    search: {
+                        async handler() {
+                            await this.loadNewItems();
+                        }
+                    }
+                },
+                methods: {
+                    async loadNewItems() {
+                        this.loading = true;
+                        let response = await axios.post("/backend/api/logs", {itemsPerPage: this.options.itemsPerPage, page: this.options.page, search: this.search});
+                        this.totalItems = response.data.itemCount;
+                        this.items = response.data.items;
+                        this.loading = false;
+                    },
+                    timestampToString(timestamp) {
+                        return luxon.DateTime.fromISO(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)
+                    },
+                    transformDetails(details, counterPrefix="") {
+                        let result = [];
+                        let counter = 0;
+                        for(let key in details) {
+                           if(typeof details[key] === "object") {
+                               result.push({
+                                   id: counterPrefix + counter,
+                                   name: key,
+                                   children: this.transformDetails(details[key], counter.toString())
+                               })
+                           } else {
+                               result.push({
+                                   id: counterPrefix + counter,
+                                   name: key + " : " + details[key]
+                               })
+                           }
+                           counter++;
+                        }
+                        return result;
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

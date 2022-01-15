@@ -1,13 +1,39 @@
 import { setMaintenanceMode } from './routes';
-import { getStoredCompetition, patchStoredComptition, getAllPlayersDetailed, patchUsers, loadConfigs, addCompetition, recalculateRankings, renamePlayer } from "./dataManager";
-const axios = require("axios");
-import gDriveObjectToMatchlist from './gDriveIntegration';
-import { runChecks } from './databaseChecks';
-import { renderBackendPage } from './backendTemplating';
+import { runChecks } from './dataHandling/databaseChecks';
+import {
+    getAllPlayers,
+    getStoredMatches,
+    importSpreadsheet,
+    patchPlayers,
+    addMatch,
+    editMatch,
+    renamePlayer,
+    deleteMatch,
+    verifyLogin,
+    updateUserPassword,
+    getAuditLogs,
+    deleteCompetition,
+    addCompetition,
+    lookupPlayer,
+    editCompetition,
+    getStoredCompetitions,
+    importStandings,
+} from './dataHandling/backend';
+import {
+    getStoredRecords, editRecord, addRecord, deleteRecord} from './dataHandling/records';
+import {tweet} from "./dataHandling/externalConnector";
+import {disconnect} from "./databaseManager";
+import {recalculate} from "./dataHandling/leaderboards";
 
-const accessToken = process.env.BACKEND_TOKEN || "DevToken123";
+export function addBackendRoutes(server) {
 
-const addBackendRoutes = (server) => {
+    server.route({
+        method: 'GET',
+        path: '/backend/components.js',
+        handler: (request, h) => {
+            return h.file("html/backend/components.js");
+        }
+    })
 
     server.route({
         method: 'GET',
@@ -33,13 +59,14 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'POST',
         path: '/backend/login',
-        handler: (request, h) => {
-            request.log(['info', 'post'], '/login');
-            if(request.payload.token !== accessToken) {
+        handler: async (request, h) => {
+            request.log(['info', 'post'], '/backend/login');
+            const loginSuccess = await verifyLogin(request.payload.username, request.payload.password);
+            if(!loginSuccess) {
                 return h.redirect('/backend/login')
             }
 
-            request.cookieAuth.set({ loggedIn: true })
+            request.cookieAuth.set({ loggedInAs: request.payload.username });
 
             return h.redirect('/backend')
         }
@@ -60,10 +87,10 @@ const addBackendRoutes = (server) => {
     
     server.route({
         method: 'GET',
-        path: '/backend/competitions',
-        handler: async (request, h) => {
-            request.log(['get', 'info'], '/backend/competitions');
-            return await renderBackendPage("matchList", "RR Matches");
+        path: '/backend/matches',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/matches');
+            return h.file("html/backend/matches.html")
         },
         options: {
             auth: 'session'
@@ -73,9 +100,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/players',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/players');
-            return await renderBackendPage("playerList", "RR Players");
+            return h.file("html/backend/players.html");
         },
         options: {
             auth: 'session'
@@ -85,9 +112,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/importSpreadsheet',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/importSpreadsheet');
-            return await renderBackendPage("competitionImport", "Import table");
+            return h.file("html/backend/importSpreadsheet.html");
         },
         options: {
             auth: 'session'
@@ -97,9 +124,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/importStandings',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/importStandings');
-            return await renderBackendPage("standingsImport", "Import standings");
+            return h.file("html/backend/importStandings.html");
         },
         options: {
             auth: 'session'
@@ -109,9 +136,9 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/databaseChecks',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/databaseChecks');
-            return await renderBackendPage("databaseChecks", "Database Checks");
+            return h.file("html/backend/databaseChecks.html");
         },
         options: {
             auth: 'session'
@@ -121,9 +148,69 @@ const addBackendRoutes = (server) => {
     server.route({
         method: 'GET',
         path: '/backend/renamePlayer',
-        handler: async (request, h) => {
+        handler: (request, h) => {
             request.log(['get', 'info'], '/backend/renamePlayer');
-            return await renderBackendPage("renamePlayer", "Rename Player");
+            return h.file("html/backend/renamePlayer.html");
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/user',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/user');
+            return h.file('html/backend/user.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/logs',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/logs');
+            return h.file('html/backend/auditLog.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/competitions',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/competitions');
+            return h.file('html/backend/comps.html');
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/tweet',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/tweet');
+            return h.file("html/backend/tweet.html");
+        },
+        options: {
+            auth: 'session'
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/records',
+        handler: (request, h) => {
+            request.log(['get', 'info'], '/backend/records');
+            return h.file("html/backend/records.html");
         },
         options: {
             auth: 'session'
@@ -138,63 +225,101 @@ const addBackendRoutes = (server) => {
         path: '/backend/api/maintenance',
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/api/maintenance');
-            if(request.query.mode === "on") {
+            console.log(request.query.mode);
+            if(request.query.mode == "true") {
                 setMaintenanceMode(true);
-                return {"maintenance": true}
+                return h.response({"maintenance": true});
             } else {
                 setMaintenanceMode(false);
-                return {"maintenance": false}
+                return h.response({"maintenance": false});
             }
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
     server.route({
         method: 'GET',
-        path: '/backend/api/competition',
-        handler: (request, h) => {
-            request.log(['get', 'info'], '/backend/api/competition');
-            return getStoredCompetition(request.query.competition);
+        path: '/backend/api/matches',
+        handler: async (request, h) => {
+            request.log(['get', 'info'], '/backend/api/matches');
+            return h.response(await getStoredMatches());
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
     server.route({
         method: 'PATCH',
-        path: '/backend/api/competition',
+        path: '/backend/api/matches',
         handler: async(request, h) => {
-            let { comp, changes } = request.payload;
-            changes = JSON.parse(changes);
-            if(await patchStoredComptition(comp, changes)) {
-                request.log(['patch', 'info'], '/backend/api/competition');
-                return {status: "ok"}
-            } else {
-                request.log(['patch', 'error'], '/backend/api/competition');
-                return {status: "error"}
+            request.log(['patch', 'info'], '/backend/api/matches');
+            let result;
+            try {
+                result = {success: await editMatch(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
             }
+            return h.response(result);
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
     server.route({
-        method: 'GET',
-        path: '/backend/api/players',
-        handler: (request, h) => {
-            request.log(['get', 'info'], '/backend/api/players');
-            return getAllPlayersDetailed();
+        method: 'PUT',
+        path: '/backend/api/matches',
+        handler: async(request, h) => {
+            request.log(['put', 'info'], '/backend/api/matches');
+            let result;
+            try {
+                result = {success: await addMatch(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'DELETE',
+        path: '/backend/api/matches',
+        handler: async(request, h) => {
+            request.log(['delete', 'info'], '/backend/api/matches');
+            let result;
+            try {
+                result = { success: await deleteMatch(request.payload, request.auth.credentials.loggedInAs) };
+            } catch(e) {
+                result = { success: false, error: e.toString() }
+            }
+            return h.response(result);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/players',
+        handler: async(request, h) => {
+            request.log(['get', 'info'], '/backend/api/players');
+            return h.response(await getAllPlayers());
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -202,33 +327,18 @@ const addBackendRoutes = (server) => {
         method: 'PATCH',
         path: '/backend/api/players',
         handler: async (request, h) => {
-            let { changes } = request.payload;
-            changes = JSON.parse(changes);
-            if(await patchUsers(changes)) {
-                request.log(['patch', 'info'], '/backend/api/players');
-                return {status: 'ok'}
-            } else {
-                request.log(['patch', 'error'], '/backend/api/players');
-                return {status: 'error'}
+            request.log(['patch', 'info'], '/backend/api/players');
+            let result;
+            try {
+                result = {success: await patchPlayers(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
             }
+            return h.response(result);
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
-        }
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/backend/api/reloadConfigs',
-        handler: async (request, h) => {
-            await loadConfigs();
-            request.log(['get', 'info'], '/backend/api/reloadConfigs');
-            return {status: 'ok'}
-        },
-        options: {
-            auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -238,11 +348,12 @@ const addBackendRoutes = (server) => {
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/api/shutdown');
             server.stop();
-            return "";
+            disconnect();
+            return h.response("");
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
@@ -250,150 +361,294 @@ const addBackendRoutes = (server) => {
         method: 'POST',
         path: '/backend/api/importSpreadsheet',
         handler: async (request, h) => {
-            const { sID, tabName, comp, cA, yearInput } = request.payload;
-            let req = await axios.get("https://docs.google.com/spreadsheets/d/" + sID + "/gviz/tq?tqx=out:json&sheet=" + tabName);
-            let fancyData;
-            if(cA === "") {
-                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), comp, true, yearInput);
-            } else {
-                fancyData = gDriveObjectToMatchlist(JSON.parse(req.data.substring(47, req.data.length-2)), comp, true, yearInput, JSON.parse(cA));
-            }
-            await addCompetition(comp, fancyData);
             request.log(['post', 'info'], '/backend/api/importSpreadsheet');
-            return fancyData;
+            let result;
+            try {
+                result = {success: true, amountOfMatches: await importSpreadsheet(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
-        }
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/backend/api/recalculateLeaderboards',
-        handler: async (request, h) => {
-            await recalculateRankings();
-            request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
-            return {status: 'ok'}
-        },
-        options: {
-            auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
 
     server.route({
         method: 'POST',
-        path: '/backend/api/runDatabaseChecks',
-        handler: (request, h) => {
-            const { checks } = request.payload;
-            request.log(['post', 'info'], '/backend/api/runDatabaseChecks');
-            return runChecks(JSON.parse(checks));
+        path: '/backend/api/importStandings',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/importStandings');
+            let result;
+            try {
+                result = {success: true, ...await importStandings(request.payload, request.auth.credentials.loggedInAs)}
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/databaseChecks',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/databaseChecks');
+            return h.response(await runChecks(request.payload));
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
     
     server.route({
         method: 'POST',
         path: '/backend/api/renamePlayer',
-        handler: (request, h) => {
+        handler: async(request, h) => {
             const { oldName, newName } = request.payload;
             request.log(['post', 'info'], '/backend/api/renamePlayer');
-            return renamePlayer(oldName, newName);
+            let result;
+            try {
+                result = {success: true, changes: await renamePlayer(oldName, newName, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     })
 
     server.route({
         method: 'GET',
-        path: '/backend/api/menu',
+        path: '/backend/api/user',
         handler: (request, h) => {
-            request.log(['post', 'info'], '/backend/api/menu');
-            return JSON.stringify([
-                {
-                    "title": "Maintenance mode",
-                    "icon": "eye lash",
-                    "type": "checkbox",
-                    "id": "maintenance-mode",
-                    "description": "Activates maintenance mode for the entire site. The frontend + API will become unavailable."
-                },
-                {
-                    "title": "Competitions",
-                    "icon": "edit",
-                    "type": "link",
-                    "href": "/backend/competitions",
-                    "description": "Lists all the matches of a competition."
-                },
-                {
-                    "title": "Players",
-                    "icon": "edit",
-                    "type": "link",
-                    "href": "/backend/players",
-                    "description": "Lists all the players."
-                },
-                {
-                    "title": "Import spreadsheet",
-                    "icon": "file import",
-                    "type": "link",
-                    "href": "/backend/importSpreadsheet",
-                    "description": "Imports a spreadsheet as a permanent part of the system."
-                },
-                {
-                    "title": "Bulk import standings",
-                    "icon": "file import",
-                    "type": "link",
-                    "href": "/backend/importStandings",
-                    "description": "Import standings and adds them to the corresponding players."
-                },
-                {
-                    "title": "Database checks",
-                    "icon": "stethoscope",
-                    "type": "link",
-                    "href": "/backend/databaseChecks",
-                    "description": "Runs various checks on the database."
-                },
-                {
-                    "title": "Rename player",
-                    "icon": "edit",
-                    "type": "link",
-                    "href": "/backend/renamePlayer",
-                    "description": "Renames a player across all databases."
-                },
-                {
-                    "title": "Reload configs",
-                    "icon": "upload",
-                    "type": "button",
-                    "id": "reload",
-                    "description": "Reloads all the config files from disk."
-                },
-                {
-                    "title": "Recalculate leaderboards",
-                    "icon": "calculator",
-                    "type": "button",
-                    "id": "recalcLeaderboard",
-                    "description": "Recalculate all leaderboard data. (Does not include data from active competition - load a player page instead)"
-                },
-                {
-                    "title": "Shutdown server",
-                    "icon": "power off",
-                    "type": "button",
-                    "id": "shutdown",
-                    "description": "Shuts down the entire server."
-                }
-            ])
+            request.log(['get', 'info'], '/backend/api/user');
+            return h.response({
+                username: request.auth.credentials.loggedInAs
+            });
         },
         options: {
             auth: 'session',
-            plugins: { 'hapi-auth-cookie': { redirectTo: false } } 
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/user',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/user');
+            return h.response({success: await updateUserPassword(request.auth.credentials.loggedInAs, request.payload.password)});
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+    
+    server.route({
+        method: 'POST',
+        path: '/backend/api/logs',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/logs');
+            return h.response(await getAuditLogs(request.payload.search, request.payload.itemsPerPage, request.payload.page));
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/competitions',
+        handler: async (request, h) => {
+            request.log(['get', 'info'], '/backend/api/competitions');
+            return h.response(await getStoredCompetitions());
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'PATCH',
+        path: '/backend/api/competitions',
+        handler: async(request, h) => {
+            request.log(['patch', 'info'], '/backend/api/competitions');
+            let result;
+            try {
+                result = {success: await editCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/backend/api/competitions',
+        handler: async(request, h) => {
+            request.log(['put', 'info'], '/backend/api/competitions');
+            let result;
+            try {
+                result = {success: await addCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'DELETE',
+        path: '/backend/api/competitions',
+        handler: async(request, h) => {
+            request.log(['delete', 'info'], '/backend/api/competitions');
+            let result;
+            try {
+                result = {success: await deleteCompetition(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/playerLookup',
+        handler: async(request, h) => {
+            request.log(['get', 'info'], '/backend/api/playerLookup');
+            if(request.query.id !== undefined) {
+                return h.response(await lookupPlayer(request.query.id, "id"));
+            } else if(request.query.name !== undefined) {
+                return h.response(await lookupPlayer(request.query.name, "name"));
+            } else {
+                return h.response({name: "", _id: ""});
+            }
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'POST',
+        path: '/backend/api/tweet',
+        handler: async(request, h) => {
+            request.log(['post', 'info'], '/backend/api/tweet');
+            return h.response(await tweet(request.payload, request.auth.credentials.loggedInAs));
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/records',
+        handler: async (request, h) => {
+            request.log(['get', 'info'], '/backend/api/records');
+            return h.response(await getStoredRecords());
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'PATCH',
+        path: '/backend/api/records',
+        handler: async(request, h) => {
+            request.log(['patch', 'info'], '/backend/api/records');
+            let result;
+            try {
+                result = {success: await editRecord(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'PUT',
+        path: '/backend/api/records',
+        handler: async(request, h) => {
+            request.log(['put', 'info'], '/backend/api/records');
+            let result;
+            try {
+                result = {success: await addRecord(request.payload, request.auth.credentials.loggedInAs)};
+            } catch(e) {
+                result = {success: false, error: e.toString()}
+            }
+            return h.response(result);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    });
+
+    server.route({
+        method: 'DELETE',
+        path: '/backend/api/records',
+        handler: async(request, h) => {
+            request.log(['delete', 'info'], '/backend/api/records');
+            let result;
+            try {
+                result = {success: await deleteRecord(request.payload, request.auth.credentials.loggedInAs)}
+            } catch(e) {
+                result = {success: false, error: e.toString() }
+            }
+            return h.response(result);
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
+        }
+    })
+
+    server.route({
+        method: 'GET',
+        path: '/backend/api/recalculateLeaderboards',
+        handler: async(request, h) => {
+            request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
+            await recalculate([], request.auth.credentials.loggedInAs);
+            return h.response({success: true})
+        },
+        options: {
+            auth: 'session',
+            plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     })
 
 }
-
-export { addBackendRoutes };
