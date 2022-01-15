@@ -38,10 +38,9 @@
         "no-undef-init": "error",
         "no-var": "error",
         "block-spacing": "error",
-        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "@typescript-eslint/brace-style": ["error", "1tbs", { "allowSingleLine": true }],
         "comma-spacing": ["error", { "before": false, "after": true }],
-        "indent": ["error", 4, { "SwitchCase": 1, "ObjectExpression": "first", "ArrayExpression": "first", "MemberExpression": "off" }],
-        "linebreak-style": "error",
+        "@typescript-eslint/indent": ["error", 4, { "SwitchCase": 1, "ObjectExpression": "first", "ArrayExpression": "first", "MemberExpression": "off" }],
         "no-trailing-spaces": ["warn", {"skipBlankLines": true}]
     }
 }

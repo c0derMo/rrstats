@@ -2,14 +2,15 @@ import { getAllCompetitions, getAllPlayers, getPlayer } from './dataHandling/fro
 import { getLeaderboardStat } from './dataHandling/leaderboards';
 import { getRecords } from './dataHandling/records';
 import {VERSION} from "./utils";
+import {Server} from "@hapi/hapi";
 
 let maintenanceMode = false;
 
-export function setMaintenanceMode(mode) {
+export function setMaintenanceMode(mode: boolean) {
     maintenanceMode = mode;
 }
 
-export function addRoutes(server) {
+export function addRoutes(server: Server) {
 
     server.route({
         method: 'GET',
@@ -87,11 +88,11 @@ export function addRoutes(server) {
         handler: async (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/frontpageInfo');
-            return {
+            return h.response({
                 players: await getAllPlayers(),
                 competitions: await getAllCompetitions(),
                 version: VERSION
-            }
+            })
         }
     })
 
@@ -119,7 +120,7 @@ export function addRoutes(server) {
         handler: async(request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/' + request.params.player);
-            return JSON.stringify(await getPlayer(request.params.player));
+            return h.response(await getPlayer(request.params.player));
         }
     });
 
@@ -133,9 +134,9 @@ export function addRoutes(server) {
 
             request.log(['get', 'info'], '/api/leaderboards');
             if(map === undefined || map === "") {
-                return JSON.stringify(getLeaderboardStat(stat));
+                return h.response(getLeaderboardStat(stat));
             } else {
-                return JSON.stringify(getLeaderboardStat(stat, map));
+                return h.response(getLeaderboardStat(stat, map));
             }
         }
     });
@@ -146,7 +147,7 @@ export function addRoutes(server) {
         handler: async (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/records');
-            return JSON.stringify(await getRecords());
+            return h.response(await getRecords());
         }
     })
 

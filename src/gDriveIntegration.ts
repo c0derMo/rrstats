@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { IRRMatch } from "./models/Match";
 import { RRPlayerModel } from "./models/Player";
+import {Parser} from "csv-parse";
 
 function monthToIndex(month: string): number {
     switch(month) {
@@ -81,7 +82,7 @@ interface ParserConfigOverrides {
     hasBracket?: boolean
 }
 
-export async function csvParser(obj: any, competition: string, configOverrides: ParserConfigOverrides={}): Promise<IRRMatch[]> {
+export async function csvParser(obj: Parser, competition: string, configOverrides: ParserConfigOverrides={}): Promise<IRRMatch[]> {
     if(configOverrides == undefined) configOverrides = {};
 
     const config = Object.assign({}, defaultParserConfig());

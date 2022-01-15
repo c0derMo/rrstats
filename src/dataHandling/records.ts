@@ -7,10 +7,10 @@ export async function getRecords(): Promise<IRRRecord[]> {
     const records = await RRRecordModel.find({}).sort("sortingIndex").exec();
     for(const record of records) {
         for(const player in record.players) {
-            try {
-                const playerObject = await RRPlayerModel.findById(record.players[player]).exec();
+            const playerObject = await RRPlayerModel.findById(record.players[player]).exec();
+            if(playerObject !== null) {
                 record.players[player] = playerObject.name;
-            } catch(e) {}
+            }
         }
     }
     return records;

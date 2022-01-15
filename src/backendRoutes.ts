@@ -228,10 +228,10 @@ export function addBackendRoutes(server) {
             console.log(request.query.mode);
             if(request.query.mode == "true") {
                 setMaintenanceMode(true);
-                return {"maintenance": true}
+                return h.response({"maintenance": true});
             } else {
                 setMaintenanceMode(false);
-                return {"maintenance": false}
+                return h.response({"maintenance": false});
             }
         },
         options: {
@@ -245,7 +245,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/matches',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/api/matches');
-            return await getStoredMatches();
+            return h.response(await getStoredMatches());
         },
         options: {
             auth: 'session',
@@ -264,7 +264,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -283,7 +283,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -302,7 +302,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = { success: false, error: e.toString() }
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -315,7 +315,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/players',
         handler: async(request, h) => {
             request.log(['get', 'info'], '/backend/api/players');
-            return await getAllPlayers();
+            return h.response(await getAllPlayers());
         },
         options: {
             auth: 'session',
@@ -334,7 +334,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -349,7 +349,7 @@ export function addBackendRoutes(server) {
             request.log(['get', 'info'], '/backend/api/shutdown');
             server.stop();
             disconnect();
-            return "";
+            return h.response("");
         },
         options: {
             auth: 'session',
@@ -368,7 +368,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -387,7 +387,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -400,7 +400,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/databaseChecks',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/databaseChecks');
-            return await runChecks(request.payload);
+            return h.response(await runChecks(request.payload));
         },
         options: {
             auth: 'session',
@@ -420,7 +420,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -433,9 +433,9 @@ export function addBackendRoutes(server) {
         path: '/backend/api/user',
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/api/user');
-            return {
+            return h.response({
                 username: request.auth.credentials.loggedInAs
-            }
+            });
         },
         options: {
             auth: 'session',
@@ -448,7 +448,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/user',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/user');
-            return {success: await updateUserPassword(request.auth.credentials.loggedInAs, request.payload.password)};
+            return h.response({success: await updateUserPassword(request.auth.credentials.loggedInAs, request.payload.password)});
         },
         options: {
             auth: 'session',
@@ -461,7 +461,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/logs',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/logs');
-            return await getAuditLogs(request.payload.search, request.payload.itemsPerPage, request.payload.page);
+            return h.response(await getAuditLogs(request.payload.search, request.payload.itemsPerPage, request.payload.page));
         }
     })
 
@@ -470,7 +470,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/competitions',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/api/competitions');
-            return await getStoredCompetitions();
+            return h.response(await getStoredCompetitions());
         },
         options: {
             auth: 'session',
@@ -489,7 +489,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -508,7 +508,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -527,7 +527,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -541,11 +541,11 @@ export function addBackendRoutes(server) {
         handler: async(request, h) => {
             request.log(['get', 'info'], '/backend/api/playerLookup');
             if(request.query.id !== undefined) {
-                return await lookupPlayer(request.query.id, "id");
+                return h.response(await lookupPlayer(request.query.id, "id"));
             } else if(request.query.name !== undefined) {
-                return await lookupPlayer(request.query.name, "name");
+                return h.response(await lookupPlayer(request.query.name, "name"));
             } else {
-                return {name: "", _id: ""}
+                return h.response({name: "", _id: ""});
             }
         },
         options: {
@@ -559,7 +559,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/tweet',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/tweet');
-            return await tweet(request.payload, request.auth.credentials.loggedInAs);
+            return h.response(await tweet(request.payload, request.auth.credentials.loggedInAs));
         },
         options: {
             auth: 'session',
@@ -572,7 +572,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/records',
         handler: async (request, h) => {
             request.log(['get', 'info'], '/backend/api/records');
-            return await getStoredRecords();
+            return h.response(await getStoredRecords());
         },
         options: {
             auth: 'session',
@@ -591,7 +591,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -610,7 +610,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString()}
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -629,7 +629,7 @@ export function addBackendRoutes(server) {
             } catch(e) {
                 result = {success: false, error: e.toString() }
             }
-            return result;
+            return h.response(result);
         },
         options: {
             auth: 'session',
@@ -643,7 +643,7 @@ export function addBackendRoutes(server) {
         handler: async(request, h) => {
             request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
             await recalculate([], request.auth.credentials.loggedInAs);
-            return {success: true}
+            return h.response({success: true})
         },
         options: {
             auth: 'session',
