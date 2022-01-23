@@ -11,10 +11,11 @@ export interface IRRRecord {
     sortingIndex: number;
 }
 
-interface IRecordDocument extends IRRRecord, Document {
+export interface IRecordDocument extends IRRRecord, Document {
 
 }
 
+// eslint-disable-next-line
 interface IRecordModel extends Model<IRecordDocument> {
 
 }

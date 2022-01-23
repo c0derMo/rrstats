@@ -1,7 +1,8 @@
 import { getGDriveData, getDiscordProfilePictureURL } from '../httpClient';
 import { RRCompetitionModel } from '../models/Competitions';
-import { RRMatchModel } from '../models/Match';
+import {IRRMatch, RRMatchModel} from '../models/Match';
 import { RRPlayerModel } from '../models/Player';
+import {Types} from "mongoose";
 
 export async function getAllPlayers(): Promise<string[]> {
     const players = await RRPlayerModel.find({ excludedFromSearch: { $ne: true } }, { name: true }).exec();
@@ -16,8 +17,8 @@ export async function getAllCompetitions(): Promise<object[]> {
 export async function getPlayer(name: string): Promise<object> {
     const playerInfo = await RRPlayerModel.findOne({ name: name }).exec();
     let title = playerInfo?.title || "";
-    
-    let matches = await RRMatchModel.find({ $or: [ {player1: name}, {player2: name} ] }).exec();
+
+    let matches = await RRMatchModel.find({ $or: [ {player1: name}, {player2: name} ] }).exec() as IRRMatch[];
     if(title === "" && matches.length > 0) {
         title = "Returning Rival";
     } else if(title === "") {
@@ -39,7 +40,7 @@ export async function getPlayer(name: string): Promise<object> {
     let competitions = [];
     if (playerInfo !== null) {
         competitions = await RRCompetitionModel.aggregate([{$match: {
-            'placements.playerId': playerInfo._id.toString()
+            'placements.playerId': (playerInfo._id as Types.ObjectId).toString()
         }}, {$sort: {
             sortingIndex: -1
         }}, {$project: {
@@ -50,7 +51,7 @@ export async function getPlayer(name: string): Promise<object> {
                     cond: {
                         $eq: [
                             '$$placement.playerId',
-                            playerInfo._id.toString()
+                            (playerInfo._id as Types.ObjectId).toString()
                         ]
                     }
                 }

@@ -1,8 +1,8 @@
 import { getAllCompetitions, getAllPlayers, getPlayer } from './dataHandling/frontend';
 import { getLeaderboardStat } from './dataHandling/leaderboards';
 import { getRecords } from './dataHandling/records';
-import {VERSION} from "./utils";
-import {Server} from "@hapi/hapi";
+import { VERSION } from "./utils";
+import { Server } from "@hapi/hapi";
 
 let maintenanceMode = false;
 
@@ -27,7 +27,7 @@ export function addRoutes(server: Server) {
         path: '/{player}',
         handler: (request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-            request.log(['get', 'info'], '/' + request.params.player);
+            request.log(['get', 'info'], '/' + (request.params.player as string));
             return h.file("html/playerpage.html");
         }
     });
@@ -119,8 +119,8 @@ export function addRoutes(server: Server) {
         path: '/api/{player}',
         handler: async(request, h) => {
             if(maintenanceMode) return "This? This is maintenance.";
-            request.log(['get', 'info'], '/api/' + request.params.player);
-            return h.response(await getPlayer(request.params.player));
+            request.log(['get', 'info'], '/api/' + (request.params.player as string));
+            return h.response(await getPlayer(request.params.player as string));
         }
     });
 
@@ -134,9 +134,9 @@ export function addRoutes(server: Server) {
 
             request.log(['get', 'info'], '/api/leaderboards');
             if(map === undefined || map === "") {
-                return h.response(getLeaderboardStat(stat));
+                return h.response(getLeaderboardStat(stat as string));
             } else {
-                return h.response(getLeaderboardStat(stat, map));
+                return h.response(getLeaderboardStat(stat as string, map as string));
             }
         }
     });

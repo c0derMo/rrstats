@@ -1,12 +1,24 @@
 import {RRMatchModel} from "../models/Match";
 import {RRPlayerModel} from "../models/Player";
 
-function _formatMessage(id, p1, p2, message) {
+interface DatabaseResult {
+    tournament: string;
+    type: string;
+    message: string;
+}
+
+export interface DatabaseChecks {
+    score: boolean;
+    matchesWithoutPlayers: boolean;
+    playersWithoutMatches: boolean;
+}
+
+function _formatMessage(id: string, p1: string, p2: string, message: string) {
     return "Match " + id + " (" + p1 + " vs " + p2 + "): " + message;
 }
 
-export async function runChecks(checks) {
-    let result = [];
+export async function runChecks(checks: DatabaseChecks): Promise<DatabaseResult[]> {
+    let result = [] as DatabaseResult[];
 
     if(checks.score) result = result.concat(await _scoreCheck());
     if(checks.matchesWithoutPlayers) result = result.concat(await _matchWithoutPlayer());
@@ -15,8 +27,8 @@ export async function runChecks(checks) {
     return result;
 }
 
-async function _scoreCheck() {
-    const result = [];
+async function _scoreCheck(): Promise<DatabaseResult[]> {
+    const result = [] as DatabaseResult[];
     const matches = await RRMatchModel.find({}).exec();
 
     for(const match of matches) {
@@ -56,8 +68,8 @@ async function _scoreCheck() {
     return result;
 }
 
-async function _matchWithoutPlayer() {
-    const result = [];
+async function _matchWithoutPlayer(): Promise<DatabaseResult[]> {
+    const result = [] as DatabaseResult[];
 
     const playersWithObject = await RRPlayerModel.find().distinct('name').exec();
     const matches = await RRMatchModel.find().exec();
@@ -82,8 +94,8 @@ async function _matchWithoutPlayer() {
     return result;
 }
 
-async function _playersWithoutMatches() {
-    const result = [];
+async function _playersWithoutMatches(): Promise<DatabaseResult[]> {
+    const result = [] as DatabaseResult[];
 
     const players = await RRPlayerModel.find().distinct('name').exec();
     const matches = await RRMatchModel.find().exec();
@@ -97,7 +109,7 @@ async function _playersWithoutMatches() {
         result.push({
             tournament: "",
             type: 'warning',
-            message: "Player " + p + " has no matches assigned." });
+            message: "Player " + (p as string) + " has no matches assigned." });
     });
 
     return result;

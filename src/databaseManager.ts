@@ -28,5 +28,5 @@ export async function connect() {
 
 export function disconnect() {
     if (!database) return;
-    Mongoose.disconnect();
+    void Mongoose.disconnect();
 }

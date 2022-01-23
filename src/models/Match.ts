@@ -6,12 +6,12 @@ interface IRRMatchScore {
     winner: number;
 }
 
-interface IRRBan {
+export interface IRRBan {
     map: string;
     bannedBy: number;
 }
 
-interface IRRMap {
+export interface IRRMap {
     map: string;
     winner: number;
     pickedBy: number;       // Picked by player number
@@ -29,10 +29,11 @@ export interface IRRMatch {
     timestamp: Date;
 }
 
-interface IMatchDocument extends IRRMatch, Document {
+export interface IMatchDocument extends IRRMatch, Document {
 
 }
 
+// eslint-disable-next-line
 interface IMatchModel extends Model<IMatchDocument> {
 
 }

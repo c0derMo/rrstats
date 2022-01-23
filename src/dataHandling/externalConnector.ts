@@ -23,6 +23,6 @@ export async function tweet(tweets: string[], username: string): Promise<object>
         }
     }
 
-    await AuditLogModel.newEntry(username, "Tweeted " + tweets.length + " messages", {tweets: tweets});
+    await AuditLogModel.newEntry(username, "Tweeted " + tweets.length.toString() + " messages", {tweets: tweets});
     return {success: true}
 }

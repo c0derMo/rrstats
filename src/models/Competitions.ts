@@ -1,4 +1,5 @@
 import { Schema, Document, Model, model } from 'mongoose';
+import { ParserConfigOverrides } from "../gDriveIntegration";
 
 interface IRRCompetitionPlacement {
     playerId: string;
@@ -17,13 +18,14 @@ export interface IRRCompetition {
     gid: string;
     officialCompetition: boolean;
     sortingIndex: number;
-    parserOptions: any;
+    parserOptions: ParserConfigOverrides;
 }
 
-interface ICompetitionDocument extends IRRCompetition, Document {
+export interface ICompetitionDocument extends IRRCompetition, Document {
 
 }
 
+// eslint-disable-next-line
 interface ICompetitionModel extends Model<ICompetitionDocument> {
     
 }

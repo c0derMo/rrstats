@@ -2,14 +2,38 @@ import { IRRMatch, RRMatchModel } from "../models/Match";
 import { mapAbbreviationToArrayIndex } from '../utils';
 import { AuditLogModel } from "../models/AuditLogEntry";
 
-let leaderboards = {};
+interface PlayerRanking {
+    rrCompetitions: string[];
+    rrwcCompetitions: string[];
+    matches: number;
+    won: number;
+    mapsPlayed: number[];
+    mapsWon: number[];
+    longestWinningSpree: number;
+    matchesWithDecider: number;
+    grandFinalAppearances: number;
+    matchesWithoutGroups: number;
+    deciderWin: number;
+    ownMapsWon: number;
+    ownMaps: number;
+    opponentMaps: number;
+    opponentMapsWon: number;
+    mapsPlayedAmount: number;
+    mapsWonAmount: number;
+}
+
+interface PlayerRankings {
+    [key: string]: PlayerRanking;
+}
+
+let leaderboards = {} as PlayerRankings;
 
 export async function recalculate(additionalMatches: IRRMatch[]=[], username=""): Promise<void> {
-    const rankings = {};
-    const winningSprees = {};
+    const rankings = {} as PlayerRankings;
+    const winningSprees = {} as { [key: string]: number };
 
     const storedMatches = await RRMatchModel.find({}).exec();
-    const matches = [].concat(additionalMatches).concat(storedMatches);
+    const matches = [].concat(additionalMatches).concat(storedMatches) as IRRMatch[];
     matches.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     for(const match of matches) {
         // Creating default player objects if they don't exist yet
@@ -45,13 +69,13 @@ export async function recalculate(additionalMatches: IRRMatch[]=[], username="")
         if(match.score.winner == 1) {
             rankings[match.player1].won += 1;
             winningSprees[match.player1] += 1;
-            
+
             rankings[match.player2].longestWinningSpree = Math.max(rankings[match.player2].longestWinningSpree, winningSprees[match.player2])
             winningSprees[match.player2] = 0;
         } else if(match.score.winner == 2) {
             rankings[match.player2].won += 1;
             winningSprees[match.player2] += 1;
-            
+
             rankings[match.player1].longestWinningSpree = Math.max(rankings[match.player1].longestWinningSpree, winningSprees[match.player1])
             winningSprees[match.player1] = 0;
         } else {
@@ -228,10 +252,10 @@ export function getLeaderboardStat(stat: string, map=""): object {
     return obj;
 }
 
-function getDefaultRankingObject() {
+function getDefaultRankingObject(): PlayerRanking {
     return {
-        rrCompetitions: [],
-        rrwcCompetitions: [],
+        rrCompetitions: [] as string[],
+        rrwcCompetitions: [] as string[],
         matches: 0,
         won: 0,
         mapsPlayed: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

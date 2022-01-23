@@ -9,10 +9,11 @@ export interface IRRPlayer {
     abbreviationOverride: string;
 }
 
-interface IPlayerDocument extends IRRPlayer, Document {
-    
+export interface IPlayerDocument extends IRRPlayer, Document {
+
 }
 
+// eslint-disable-next-line
 interface IPlayerModel extends Model<IPlayerDocument> {
 
 }
@@ -29,12 +30,10 @@ const RRPlayerSchema = new Schema({
         type: String
     },
     customTitle: {
-        type: Boolean,
-        required: true
+        type: Boolean
     },
     excludedFromSearch: {
-        type: Boolean,
-        required: true
+        type: Boolean
     },
     abbreviationOverride: {
         type: String

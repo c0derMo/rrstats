@@ -15,6 +15,7 @@ interface IUserDocument extends IRRUser, Document {
     verifyPassword(this: IUserDocument, password: string): Promise<boolean>;
 }
 
+// eslint-disable-next-line
 interface IUserModel extends Model<IUserDocument> {
 
 }

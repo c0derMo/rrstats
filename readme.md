@@ -4,7 +4,7 @@
 Website for displaying statistics about Roulette Rivals-players.
 
 # Deployed version
-To visit the official version, go to [the website.](https://rrstats.currymaker.net).
+To visit the official version, go to [the website](https://rrstats.currymaker.net).
 
 # Development
 Unorganized notes about development:

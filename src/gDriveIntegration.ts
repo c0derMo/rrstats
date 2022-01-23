@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { IRRMatch } from "./models/Match";
+import {IRRBan, IRRMap, IRRMatch} from "./models/Match";
 import { RRPlayerModel } from "./models/Player";
 import {Parser} from "csv-parse";
 
@@ -67,7 +67,7 @@ interface ParserConfig {
     dayRegex: string,
     hasBracket: boolean
 }
-interface ParserConfigOverrides {
+export interface ParserConfigOverrides {
     year?: number;
     headers?: {
         timeHeader?: string,
@@ -91,7 +91,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
             if(typeof configOverrides[key] === "object") {
                 Object.assign(config[key], configOverrides[key]);
             } else {
-                Object.assign(config, { [key]: configOverrides[key] });
+                Object.assign(config, { [key]: configOverrides[key] as unknown });
             }
         }
     }
@@ -99,9 +99,9 @@ export async function csvParser(obj: Parser, competition: string, configOverride
     if(config.debugLog) console.log(configOverrides);
     if(config.debugLog) console.log(config);
 
-    const matches = [];
+    const matches = [] as IRRMatch[];
 
-    let date;
+    let date: DateTime;
     let timeCol = -1;
     let bracketRoundCol = -1;
     let resultCol = -1;
@@ -119,15 +119,15 @@ export async function csvParser(obj: Parser, competition: string, configOverride
     });
     if(config.debugLog) console.log(abbreviationOverrides);
 
-    for await(const line of obj) {
+    for await(const lineWrap of obj) {
+        const line = lineWrap as string[];
         if(config.debugLog) console.log(line);
-        for(const colIndexString in line) {
-            const col = line[colIndexString]
-            const colIndex = parseInt(colIndexString);
+        for(let colIndex = 0; colIndex < line.length; colIndex++) {
+            const col = line[colIndex];
             // Check for date
             const dateMatch = col.match(config.dayRegex);
             if(dateMatch) {
-                date = DateTime.fromObject({year: config.year, month: monthToIndex(dateMatch[3]), day: dateMatch[1]}, {zone:'Europe/Berlin'});
+                date = DateTime.fromObject({year: config.year, month: monthToIndex(dateMatch[3]), day: parseInt(dateMatch[1])}, {zone:'Europe/Berlin'});
                 if(config.debugLog) console.log(date.toString());
             }
 
@@ -162,12 +162,12 @@ export async function csvParser(obj: Parser, competition: string, configOverride
 
         if(line[resultCol+1].match(/[0-9]+-[0-9]+/)) {
             // We got a match everyone
-            let datetime;
+            let datetime: DateTime;
             if(line[timeCol].toLowerCase() == "n/a") {
                 datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day}, {zone: date.zoneName});
             } else {
                 const timeSplit = line[timeCol].split(":");
-                datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day, hour: timeSplit[0], minute: timeSplit[1]}, {zone: date.zoneName});
+                datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day, hour: parseInt(timeSplit[0]), minute: parseInt(timeSplit[1])}, {zone: date.zoneName});
                 if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
                     datetime = datetime.plus({days: 1});
                 }
@@ -190,7 +190,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
             if(score.player2Points > score.player1Points) score.winner = 2;
             if(score.player1Points > score.player2Points) score.winner = 1;
 
-            const maps = [];
+            const maps = [] as IRRMap[];
 
             let sortedHeaders = [timeCol, bracketRoundCol, resultCol, mapsCol, bansCol, shoutcastCol].sort()
                 .filter(e => e > mapsCol);   // Filter out everything thats smaller than maps
@@ -221,7 +221,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                 maps.push(map);
             }
 
-            const bans = [];
+            const bans = [] as IRRBan[];
 
             sortedHeaders = [timeCol, bracketRoundCol, resultCol, mapsCol, bansCol, shoutcastCol].sort()
                 .filter(e => e > bansCol);   // Filter out everything thats smaller than maps
@@ -246,7 +246,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                 player2: player2.replace("\n", ""),
                 round: round.replace("\n", ""),
                 score: score,
-                timestamp: datetime
+                timestamp: datetime.toJSDate()
             }
 
             matches.push(match);

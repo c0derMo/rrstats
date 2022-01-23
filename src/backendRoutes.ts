@@ -1,5 +1,5 @@
 import { setMaintenanceMode } from './routes';
-import { runChecks } from './dataHandling/databaseChecks';
+import {DatabaseChecks, runChecks} from './dataHandling/databaseChecks';
 import {
     getAllPlayers,
     getStoredMatches,
@@ -17,15 +17,36 @@ import {
     lookupPlayer,
     editCompetition,
     getStoredCompetitions,
-    importStandings,
+    importStandings, SpreadsheetImportOptions, StandingsImportOptions,
 } from './dataHandling/backend';
 import {
     getStoredRecords, editRecord, addRecord, deleteRecord} from './dataHandling/records';
 import {tweet} from "./dataHandling/externalConnector";
 import {disconnect} from "./databaseManager";
 import {recalculate} from "./dataHandling/leaderboards";
+import {Server} from "@hapi/hapi";
+import {IMatchDocument} from "./models/Match";
+import {ICompetitionDocument} from "./models/Competitions";
+import {IRecordDocument} from "./models/Record";
 
-export function addBackendRoutes(server) {
+interface Payload {
+    username?: string;
+    password?: string;
+    search?: string;
+    itemsPerPage?: number;
+    page?: number;
+    oldName?: string;
+    newName?: string;
+}
+
+interface BackendResult {
+    success: boolean;
+    error?: string;
+    amountOfMatches?: number;
+    changes?: string[];
+}
+
+export function addBackendRoutes(server: Server) {
 
     server.route({
         method: 'GET',
@@ -61,17 +82,17 @@ export function addBackendRoutes(server) {
         path: '/backend/login',
         handler: async (request, h) => {
             request.log(['info', 'post'], '/backend/login');
-            const loginSuccess = await verifyLogin(request.payload.username, request.payload.password);
+            const loginSuccess = await verifyLogin((request.payload as Payload).username, (request.payload as Payload).password);
             if(!loginSuccess) {
                 return h.redirect('/backend/login')
             }
 
-            request.cookieAuth.set({ loggedInAs: request.payload.username });
+            request.cookieAuth.set({ loggedInAs: (request.payload as Payload).username });
 
             return h.redirect('/backend')
         }
     });
-    
+
     server.route({
         method: 'GET',
         path: '/backend/logout',
@@ -84,7 +105,7 @@ export function addBackendRoutes(server) {
 
 
     // Pages below
-    
+
     server.route({
         method: 'GET',
         path: '/backend/matches',
@@ -258,10 +279,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['patch', 'info'], '/backend/api/matches');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await editMatch(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await editMatch(request.payload as IMatchDocument, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -277,10 +298,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['put', 'info'], '/backend/api/matches');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await addMatch(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await addMatch(request.payload as IMatchDocument, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -296,10 +317,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/matches',
         handler: async(request, h) => {
             request.log(['delete', 'info'], '/backend/api/matches');
-            let result;
+            let result: BackendResult;
             try {
-                result = { success: await deleteMatch(request.payload, request.auth.credentials.loggedInAs) };
-            } catch(e) {
+                result = { success: await deleteMatch(request.payload as IMatchDocument, request.auth.credentials.loggedInAs as string) };
+            } catch(e: unknown) {
                 result = { success: false, error: e.toString() }
             }
             return h.response(result);
@@ -328,10 +349,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/players',
         handler: async (request, h) => {
             request.log(['patch', 'info'], '/backend/api/players');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await patchPlayers(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await patchPlayers(request.payload as {[key: string]: string}, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -347,7 +368,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/shutdown',
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/api/shutdown');
-            server.stop();
+            void server.stop();
             disconnect();
             return h.response("");
         },
@@ -362,10 +383,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/importSpreadsheet',
         handler: async (request, h) => {
             request.log(['post', 'info'], '/backend/api/importSpreadsheet');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: true, amountOfMatches: await importSpreadsheet(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: true, amountOfMatches: await importSpreadsheet(request.payload as SpreadsheetImportOptions, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -381,10 +402,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/importStandings',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/importStandings');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: true, ...await importStandings(request.payload, request.auth.credentials.loggedInAs)}
-            } catch(e) {
+                result = {success: true, ...await importStandings(request.payload as StandingsImportOptions, request.auth.credentials.loggedInAs as string)}
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -400,24 +421,24 @@ export function addBackendRoutes(server) {
         path: '/backend/api/databaseChecks',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/databaseChecks');
-            return h.response(await runChecks(request.payload));
+            return h.response(await runChecks(request.payload as DatabaseChecks));
         },
         options: {
             auth: 'session',
             plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
-    
+
     server.route({
         method: 'POST',
         path: '/backend/api/renamePlayer',
         handler: async(request, h) => {
-            const { oldName, newName } = request.payload;
+            const { oldName, newName } = request.payload as Payload;
             request.log(['post', 'info'], '/backend/api/renamePlayer');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: true, changes: await renamePlayer(oldName, newName, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: true, changes: await renamePlayer(oldName, newName, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -448,20 +469,20 @@ export function addBackendRoutes(server) {
         path: '/backend/api/user',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/user');
-            return h.response({success: await updateUserPassword(request.auth.credentials.loggedInAs, request.payload.password)});
+            return h.response({success: await updateUserPassword(request.auth.credentials.loggedInAs as string, (request.payload as Payload).password)});
         },
         options: {
             auth: 'session',
             plugins: { 'hapi-auth-cookie': { redirectTo: false } }
         }
     });
-    
+
     server.route({
         method: 'POST',
         path: '/backend/api/logs',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/logs');
-            return h.response(await getAuditLogs(request.payload.search, request.payload.itemsPerPage, request.payload.page));
+            return h.response(await getAuditLogs((request.payload as Payload).search, (request.payload as Payload).itemsPerPage, (request.payload as Payload).page));
         }
     })
 
@@ -483,10 +504,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/competitions',
         handler: async(request, h) => {
             request.log(['patch', 'info'], '/backend/api/competitions');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await editCompetition(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await editCompetition(request.payload as ICompetitionDocument, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -502,10 +523,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/competitions',
         handler: async(request, h) => {
             request.log(['put', 'info'], '/backend/api/competitions');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await addCompetition(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await addCompetition(request.payload as ICompetitionDocument, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -521,10 +542,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/competitions',
         handler: async(request, h) => {
             request.log(['delete', 'info'], '/backend/api/competitions');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await deleteCompetition(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await deleteCompetition(request.payload as ICompetitionDocument, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -541,9 +562,9 @@ export function addBackendRoutes(server) {
         handler: async(request, h) => {
             request.log(['get', 'info'], '/backend/api/playerLookup');
             if(request.query.id !== undefined) {
-                return h.response(await lookupPlayer(request.query.id, "id"));
+                return h.response(await lookupPlayer(request.query.id as string, "id"));
             } else if(request.query.name !== undefined) {
-                return h.response(await lookupPlayer(request.query.name, "name"));
+                return h.response(await lookupPlayer(request.query.name as string, "name"));
             } else {
                 return h.response({name: "", _id: ""});
             }
@@ -559,7 +580,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/tweet',
         handler: async(request, h) => {
             request.log(['post', 'info'], '/backend/api/tweet');
-            return h.response(await tweet(request.payload, request.auth.credentials.loggedInAs));
+            return h.response(await tweet(request.payload as string[], request.auth.credentials.loggedInAs as string));
         },
         options: {
             auth: 'session',
@@ -585,10 +606,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/records',
         handler: async(request, h) => {
             request.log(['patch', 'info'], '/backend/api/records');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await editRecord(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await editRecord(request.payload as IRecordDocument, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -604,10 +625,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/records',
         handler: async(request, h) => {
             request.log(['put', 'info'], '/backend/api/records');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await addRecord(request.payload, request.auth.credentials.loggedInAs)};
-            } catch(e) {
+                result = {success: await addRecord(request.payload as IRecordDocument, request.auth.credentials.loggedInAs as string)};
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
             return h.response(result);
@@ -623,10 +644,10 @@ export function addBackendRoutes(server) {
         path: '/backend/api/records',
         handler: async(request, h) => {
             request.log(['delete', 'info'], '/backend/api/records');
-            let result;
+            let result: BackendResult;
             try {
-                result = {success: await deleteRecord(request.payload, request.auth.credentials.loggedInAs)}
-            } catch(e) {
+                result = {success: await deleteRecord(request.payload as IRecordDocument, request.auth.credentials.loggedInAs as string)}
+            } catch(e: unknown) {
                 result = {success: false, error: e.toString() }
             }
             return h.response(result);
@@ -642,7 +663,7 @@ export function addBackendRoutes(server) {
         path: '/backend/api/recalculateLeaderboards',
         handler: async(request, h) => {
             request.log(['get', 'info'], '/backend/api/recalculateLeaderboards');
-            await recalculate([], request.auth.credentials.loggedInAs);
+            await recalculate([], request.auth.credentials.loggedInAs as string);
             return h.response({success: true})
         },
         options: {

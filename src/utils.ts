@@ -49,14 +49,20 @@ export function mapAbbreviationToArrayIndex(abv) {
     }
 }
 
-export function jsonDiff(oldObj, newObj, prefix="") {
-    let changes = [];
+interface JsonChanges {
+    path: string;
+    oldValue?: unknown;
+    newValue: unknown;
+}
+
+export function jsonDiff(oldObj: object, newObj: object, prefix=""): JsonChanges[] {
+    let changes: JsonChanges[] = [];
 
     for(const key in newObj) {
         if(key.startsWith("_") || key.startsWith("$")) continue;
         if(typeof newObj[key] === "object") {
             if(oldObj[key] !== undefined) {
-                changes = changes.concat(jsonDiff(oldObj[key], newObj[key], [prefix, key].join(".")));
+                changes = changes.concat(jsonDiff(oldObj[key] as object, newObj[key] as object, [prefix, key].join(".")));
             } else {
                 changes.push({
                     path: [prefix, key].join(".").substr(1),

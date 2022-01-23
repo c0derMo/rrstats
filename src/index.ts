@@ -30,15 +30,15 @@ async function init() {
             ttl: 14400000
         },
         redirectTo: "/backend/login",
-        validateFunc: async(request, session) => {
+        validateFunc: (request, session: RRStatsSession) => {
             return { valid: session.loggedInAs !== "" }
         }
     });
 
     server.events.on({ name: 'request', channels: 'app' }, (request, event, tags) => {
-        
+
         let logMessage = new Date().toString();
-        
+
         if(tags.info) {
             logMessage = "\x1b[34m" + logMessage + "      "
         } else if(tags.warning) {
@@ -82,4 +82,4 @@ process.on("unhandledRejection", err => {
     process.exit(1);
 });
 
-init();
+void init();
