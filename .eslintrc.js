@@ -1,29 +1,27 @@
-{
-    "env": {
-        "browser": true,
-        "es2021": true,
-        "node": true
+module.exports = {
+    env: {
+        browser: true,
+        es2021: true,
+        node: true
     },
-    "extends": [
+    extends: [
         "eslint:recommended",
         "plugin:vue/essential",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
-    "parserOptions": {
-        "ecmaVersion": 13,
-        "parser": "@typescript-eslint/parser",
-        "sourceType": "module"
+    parserOptions: {
+        ecmaVersion: 13,
+        parser: "@typescript-eslint/parser",
+        sourceType: "module",
+        tsconfigRootDir: __dirname,
+        project: ['./tsconfig.json']
     },
-    "plugins": [
+    plugins: [
         "vue",
         "@typescript-eslint"
     ],
-    "ignorePatterns": [
-        "**/scripts/*",
-        "out/*",
-        "deploy/*"
-    ],
-    "rules": {
+    rules: {
         "no-duplicate-imports": "warn",
         "no-self-compare": "warn",
         "no-unmodified-loop-condition": "warn",
@@ -42,5 +40,6 @@
         "comma-spacing": ["error", { "before": false, "after": true }],
         "@typescript-eslint/indent": ["error", 4, { "SwitchCase": 1, "ObjectExpression": "first", "ArrayExpression": "first", "MemberExpression": "off" }],
         "no-trailing-spaces": ["warn", {"skipBlankLines": true}]
-    }
+    },
+    ignorePatterns: [".eslintrc.js", "html/*"]
 }
