@@ -49,7 +49,7 @@ export async function getStoredMatches(): Promise<IRRMatch[]> {
 }
 
 export async function editMatch(match: IMatchDocument, username: string): Promise<boolean> {
-    const dbMatch = await RRMatchModel.findOne({_id: (match._id as Types.ObjectId)}).exec();
+    const dbMatch = await RRMatchModel.findOne({_id: (match._id as Types.ObjectId).toString()}).exec();
     if(dbMatch == null) return false;
     Object.assign(dbMatch, match);
     await dbMatch.save();

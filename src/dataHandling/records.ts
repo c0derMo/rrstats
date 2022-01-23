@@ -7,11 +7,13 @@ import { Types } from "mongoose";
 export async function getRecords(): Promise<IRRRecord[]> {
     const records = await RRRecordModel.find({}).sort("sortingIndex").exec();
     for(const record of records) {
-        for(const player of record.players) {
-            const playerObject = await RRPlayerModel.findById(record.players[player]).exec();
-            if(playerObject !== null) {
-                record.players[player] = playerObject.name;
-            }
+        for(let player = 0; player < record.players.length; player++) {
+            try {
+                const playerObject = await RRPlayerModel.findById(record.players[player]).exec();
+                if(playerObject !== null) {
+                    record.players[player] = playerObject.name;
+                }
+            } catch {} // eslint-disable-line
         }
     }
     return records;
@@ -22,7 +24,7 @@ export async function getStoredRecords(): Promise<IRRRecord[]> {
 }
 
 export async function editRecord(record: IRecordDocument, username: string): Promise<boolean> {
-    const dbRecord = await RRRecordModel.findOne({_id: record._id as Types.ObjectId }).exec();
+    const dbRecord = await RRRecordModel.findOne({_id: (record._id as Types.ObjectId).toString() }).exec();
     if(dbRecord == null) return false;
     Object.assign(dbRecord, record);
     await dbRecord.save();
