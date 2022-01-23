@@ -30,9 +30,9 @@
                         </v-col>
                         <v-spacer></v-spacer>
                     </v-row>
-                    <v-row>
+                    <v-row v-for="(entry, idx) in changelogEntries" :key="idx" class="mb-5">
                         <v-spacer></v-spacer>
-                        <v-card elevation="2" v-for="(entry, idx) in changelogEntries" :key="idx" max-width="800px">
+                        <v-card elevation="2" width="800px">
                             <v-card-title>{{ entry.title }}</v-card-title>
                             <v-card-subtitle>{{ entry.subtitle }}</v-card-subtitle>
                             <v-card-text>
@@ -59,8 +59,17 @@
                 return {
                     changelogEntries: [
                         {
+                            title: "v2.1 - The first fixes",
+                            subtitle: "Released 23rd January 2022",
+                            text: [],
+                            details: [
+                                "Re-added Colorado & Haven to the leaderboards page",
+                                "Fixed some backend stuff",
+                                "Disabled vue dev mode"
+                            ]
+                        }, {
                             title: "v2.0 - The great revamp",
-                            subtitle: "Released 20th January 2021",
+                            subtitle: "Released 20th January 2022",
                             text: [
                                 "There is a serious ton to cover here.",
                                 "Basically, nothing of rrstats got away untouched here - almost everything got a rewrite.",
