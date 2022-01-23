@@ -79,4 +79,5 @@ for(let fileIndex=0; fileIndex < files.length; fileIndex++) {
         _replaceInFile(file, old, replacementDir[old]);
     }
 }
+_replaceInFile("deploy/utils.js", "dev", "");
 _prettyPrintStatus(files.length, files.length, "Finished!\n");

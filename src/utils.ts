@@ -1,4 +1,4 @@
-export const VERSION = "2.0beta"
+export const VERSION = "2.1dev"
 
 export function mapAbbreviationToArrayIndex(abv) {
     switch(abv) {
@@ -15,7 +15,7 @@ export function mapAbbreviationToArrayIndex(abv) {
             return 4
         case "HOK":
             return 5
-        
+
         // Season 2
         case "MIA":
             return 6
@@ -43,7 +43,7 @@ export function mapAbbreviationToArrayIndex(abv) {
             return 16
         case "MEN":
             return 17
-        
+
         default:
             return "Unknown"
     }
