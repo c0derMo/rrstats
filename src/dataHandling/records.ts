@@ -4,8 +4,12 @@ import {AuditLogModel} from "../models/AuditLogEntry";
 import {jsonDiff} from "../utils";
 import { Types } from "mongoose";
 
-export async function getRecords(): Promise<IRRRecord[]> {
-    const records = await RRRecordModel.find({}).sort("sortingIndex").exec();
+export async function getRecords(filter?: string): Promise<IRRRecord[]> {
+    let filterObj = {};
+    if(filter) {
+        filterObj = { category: filter };
+    }
+    const records = await RRRecordModel.find(filterObj).sort("sortingIndex").exec();
     for(const record of records) {
         for(let player = 0; player < record.players.length; player++) {
             try {
