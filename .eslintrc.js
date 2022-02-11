@@ -39,6 +39,7 @@ module.exports = {
         "@typescript-eslint/brace-style": ["error", "1tbs", { "allowSingleLine": true }],
         "comma-spacing": ["error", { "before": false, "after": true }],
         "@typescript-eslint/indent": ["error", 4, { "SwitchCase": 1, "ObjectExpression": "first", "ArrayExpression": "first", "MemberExpression": "off" }],
-        "no-trailing-spaces": ["warn", {"skipBlankLines": true}]
+        "no-trailing-spaces": ["warn", {"skipBlankLines": true}],
+        "eqeqeq": "warn"
     }
 }

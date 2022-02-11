@@ -83,7 +83,7 @@ export interface ParserConfigOverrides {
 }
 
 export async function csvParser(obj: Parser, competition: string, configOverrides: ParserConfigOverrides={}): Promise<IRRMatch[]> {
-    if(configOverrides == undefined) configOverrides = {};
+    if(configOverrides === undefined) configOverrides = {};
 
     const config = Object.assign({}, defaultParserConfig());
     for(const key in config) {
@@ -163,12 +163,12 @@ export async function csvParser(obj: Parser, competition: string, configOverride
         if(line[resultCol+1].match(/[0-9]+-[0-9]+/)) {
             // We got a match everyone
             let datetime: DateTime;
-            if(line[timeCol].toLowerCase() == "n/a") {
+            if(line[timeCol].toLowerCase() === "n/a") {
                 datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day}, {zone: date.zoneName});
             } else {
                 const timeSplit = line[timeCol].split(":");
                 datetime = DateTime.fromObject({year: date.year, month: date.month, day: date.day, hour: parseInt(timeSplit[0]), minute: parseInt(timeSplit[1])}, {zone: date.zoneName});
-                if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) == 6 && parseInt(timeSplit[1]) == 0)) {
+                if(parseInt(timeSplit[0]) < 6 || (parseInt(timeSplit[0]) === 6 && parseInt(timeSplit[1]) === 0)) {
                     datetime = datetime.plus({days: 1});
                 }
             }
@@ -197,7 +197,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
             if(config.debugLog) console.log(sortedHeaders);
             for(let mIdx=mapsCol; mIdx < sortedHeaders[0]; mIdx += 2) {
                 if(!isMap(line[mIdx])) break;       // We break upon the first non-map
-                if(line[mIdx+1] == "") continue;    // We skip over maps with "no winner"
+                if(line[mIdx+1] === "") continue;    // We skip over maps with "no winner"
 
                 const map = {
                     map: line[mIdx],
@@ -205,11 +205,11 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                     pickedBy: 0
                 }
 
-                if(maps.length == 0) map.pickedBy = 1;
-                if(maps.length == 1) map.pickedBy = 2;
+                if(maps.length === 0) map.pickedBy = 1;
+                if(maps.length === 1) map.pickedBy = 2;
 
                 if(abbreviationOverrides[line[mIdx+1]] !== undefined) {
-                    map.winner = (abbreviationOverrides[line[mIdx+1]] == player1) ? 1 : 2
+                    map.winner = (abbreviationOverrides[line[mIdx+1]] === player1) ? 1 : 2
                 } else {
                     if(player1.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
                         map.winner = 1;
@@ -231,8 +231,8 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                     map: line[bIdx],
                     bannedBy: 0
                 }
-                if(bans.length == 0) ban.bannedBy = 1;
-                if(bans.length == 1) ban.bannedBy = 2;
+                if(bans.length === 0) ban.bannedBy = 1;
+                if(bans.length === 1) ban.bannedBy = 2;
 
                 bans.push(ban);
             }
@@ -261,7 +261,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
             if(config.debugLog) console.log(sortedHeaders);
             for(let mIdx=mapsCol; mIdx < sortedHeaders[0]; mIdx += 2) {
                 if(!isMap(line[mIdx])) break;       // We break upon the first non-map
-                if(line[mIdx+1] == "") continue;    // We skip over maps with "no winner"
+                if(line[mIdx+1] === "") continue;    // We skip over maps with "no winner"
 
                 const map = {
                     map: line[mIdx],
@@ -269,11 +269,11 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                     pickedBy: 0
                 }
 
-                if(mapsToAddTo.length == 0) map.pickedBy = 1;
-                if(mapsToAddTo.length == 1) map.pickedBy = 2;
+                if(mapsToAddTo.length === 0) map.pickedBy = 1;
+                if(mapsToAddTo.length === 1) map.pickedBy = 2;
 
                 if(abbreviationOverrides[line[mIdx+1]] !== undefined) {
-                    map.winner = (abbreviationOverrides[line[mIdx+1]] == player1) ? 1 : 2
+                    map.winner = (abbreviationOverrides[line[mIdx+1]] === player1) ? 1 : 2
                 } else {
                     if(player1.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
                         map.winner = 1;

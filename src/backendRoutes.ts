@@ -247,7 +247,7 @@ export function addBackendRoutes(server: Server) {
         handler: (request, h) => {
             request.log(['get', 'info'], '/backend/api/maintenance');
             console.log(request.query.mode);
-            if(request.query.mode == "true") {
+            if(request.query.mode === "true") {
                 setMaintenanceMode(true);
                 return h.response({"maintenance": true});
             } else {

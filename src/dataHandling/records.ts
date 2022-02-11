@@ -29,7 +29,7 @@ export async function getStoredRecords(): Promise<IRRRecord[]> {
 
 export async function editRecord(record: IRecordDocument, username: string): Promise<boolean> {
     const dbRecord = await RRRecordModel.findOne({_id: (record._id as Types.ObjectId).toString() }).exec();
-    if(dbRecord == null) return false;
+    if(dbRecord === null) return false;
     Object.assign(dbRecord, record);
     await dbRecord.save();
     await AuditLogModel.newEntry(username, "Edited record " + (dbRecord._id as Types.ObjectId).toString(), jsonDiff(dbRecord, record));

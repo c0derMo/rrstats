@@ -29,7 +29,7 @@ export async function getPlayer(name: string): Promise<object> {
     for(const e of newestCompData) {
         const newestData = await getGDriveData(`https://docs.google.com/spreadsheets/d/e/${e.sheetId}/pub?gid=${e.gid}&single=true&output=csv`, e.tag, e.parserOptions);
         matches = matches.concat(newestData.filter(e => {
-            return e.player1 == name || e.player2 == name;
+            return e.player1 === name || e.player2 === name;
         }));
     }
 

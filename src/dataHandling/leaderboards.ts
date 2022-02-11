@@ -66,13 +66,13 @@ export async function recalculate(additionalMatches: IRRMatch[]=[], username="")
         // TODO: Matches that went to a decider
 
         // Winrate & Winningspree
-        if(match.score.winner == 1) {
+        if(match.score.winner === 1) {
             rankings[match.player1].won += 1;
             winningSprees[match.player1] += 1;
 
             rankings[match.player2].longestWinningSpree = Math.max(rankings[match.player2].longestWinningSpree, winningSprees[match.player2])
             winningSprees[match.player2] = 0;
-        } else if(match.score.winner == 2) {
+        } else if(match.score.winner === 2) {
             rankings[match.player2].won += 1;
             winningSprees[match.player2] += 1;
 

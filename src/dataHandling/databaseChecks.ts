@@ -34,7 +34,7 @@ async function _scoreCheck(): Promise<DatabaseResult[]> {
     for(const match of matches) {
         if((match.score.player1Points > match.score.player2Points && match.score.winner !== 1)
             || (match.score.player2Points > match.score.player1Points && match.score.winner !== 2)
-            || (match.score.player1Points == match.score.player2Points && match.score.winner !== 0)) {
+            || (match.score.player1Points === match.score.player2Points && match.score.winner !== 0)) {
             result.push({
                 tournament: match.competition,
                 type: 'error',

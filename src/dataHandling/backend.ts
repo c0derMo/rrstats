@@ -30,14 +30,14 @@ export interface StandingsImportOptions {
 
 export async function verifyLogin(username: string, password: string): Promise<boolean> {
     const user = await UserModel.findOne({name: username}).exec();
-    if(user == null) return false;
+    if(user === null) return false;
     if(user.type !== "USER") return false;
     return await user.verifyPassword(password);
 }
 
 export async function updateUserPassword(username: string, password: string): Promise<boolean> {
     const user = await UserModel.findOne({name: username}).exec();
-    if(user == null) return false;
+    if(user === null) return false;
     await user.setPassword(password);
     await user.save();
     await AuditLogModel.newEntry(username, "Changed own password");
@@ -50,7 +50,7 @@ export async function getStoredMatches(): Promise<IRRMatch[]> {
 
 export async function editMatch(match: IMatchDocument, username: string): Promise<boolean> {
     const dbMatch = await RRMatchModel.findOne({_id: (match._id as Types.ObjectId).toString()}).exec();
-    if(dbMatch == null) return false;
+    if(dbMatch === null) return false;
     Object.assign(dbMatch, match);
     await dbMatch.save();
     await AuditLogModel.newEntry(username, "Edited match " + (dbMatch._id as Types.ObjectId).toString(), jsonDiff(dbMatch, match));
@@ -86,10 +86,10 @@ export async function patchPlayers(changes: { [key: string]: string }, username:
 }
 
 export async function importSpreadsheet(options: SpreadsheetImportOptions, username: string): Promise<number> {
-    if(options.id == "" || options.gid == "" || options.comp == "") return -1;
+    if(options.id === "" || options.gid === "" || options.comp === "") return -1;
     const req = await axios.get(`https://docs.google.com/spreadsheets/d/e/${options.id}/pub?gid=${options.gid}&single=true&output=csv`);
     const parsedCSV = parse(req.data as string);
-    if(options.parserOptions == "" || options.parserOptions == undefined) options.parserOptions = "{}";
+    if(options.parserOptions === "" || options.parserOptions === undefined) options.parserOptions = "{}";
     const matches = await csvParser(parsedCSV, options.comp, JSON.parse(options.parserOptions) as ParserConfigOverrides);
     for(const match of matches) {
         await RRMatchModel.create(match);
@@ -99,14 +99,14 @@ export async function importSpreadsheet(options: SpreadsheetImportOptions, usern
 }
 
 export async function importStandings(options: StandingsImportOptions, username: string): Promise<object> {
-    if(options.compId == "" || options.placements == []) return {success: false, error: "Fill in the required fields"}
+    if(options.compId === "" || options.placements === []) return {success: false, error: "Fill in the required fields"}
 
     let placements = 0;
     const notFoundPlayers = [];
     const competition = await RRCompetitionModel.findOne({_id: options.compId}).exec();
     for(const placement of options.placements) {
         const player = await RRPlayerModel.findOne({name: placement.player}).exec();
-        if(player == null) {
+        if(player === null) {
             notFoundPlayers.push(placement.player);
         } else {
             competition.placements.push({
@@ -139,10 +139,10 @@ export async function renamePlayer(oldName: string, newName: string, username: s
 
     const matches = await RRMatchModel.find({ $or: [{player1: oldName}, {player2: oldName}] }).exec();
     for(const match of matches) {
-        if(match.player1 == oldName) {
+        if(match.player1 === oldName) {
             match.player1 = newName;
             changes.push(`Changed player 1 in match ${(match._id as Types.ObjectId).toString()} from ${oldName} to ${newName}`);
-        } else if(match.player2 == oldName) {
+        } else if(match.player2 === oldName) {
             match.player2 = newName;
             changes.push(`Changed player 2 in match ${(match._id as Types.ObjectId).toString()} from ${oldName} to ${newName}`);
         }
@@ -165,7 +165,7 @@ export async function renamePlayer(oldName: string, newName: string, username: s
 
 export async function getAuditLogs(search: string, itemsPerPage: number, page: number): Promise<object> {
     let itemsQuery: Query<unknown, unknown>;
-    if(search == "") {
+    if(search === "") {
         itemsQuery = AuditLogModel.find({}).sort('-timestamp');
     } else {
         itemsQuery = AuditLogModel.find({ $or: [{ user: { $regex: search, $options: 'i' }}, { action: { $regex: search, $options: 'i' } }] })
@@ -190,7 +190,7 @@ export async function getStoredCompetitions(): Promise<IRRCompetition[]> {
 
 export async function editCompetition(comp: ICompetitionDocument, username: string): Promise<boolean> {
     const dbComp = await RRCompetitionModel.findOne({_id: (comp._id as Types.ObjectId).toString()}).exec();
-    if(dbComp == null) return false;
+    if(dbComp === null) return false;
     Object.assign(dbComp, comp);
     await dbComp.save();
     await AuditLogModel.newEntry(username, "Edited competition " + (dbComp._id as Types.ObjectId).toString(), jsonDiff(dbComp, comp));
@@ -211,9 +211,9 @@ export async function deleteCompetition(comp: ICompetitionDocument, username: st
 }
 
 export async function lookupPlayer(info: string, type: string): Promise<object> {
-    if(type == "id") {
+    if(type === "id") {
         return await RRPlayerModel.findOne({_id: info}).exec();
-    } else if(type == "name") {
+    } else if(type === "name") {
         return await RRPlayerModel.findOne({name: info}).exec();
     } else {
         return {name: '', _id: ''}

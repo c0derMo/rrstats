@@ -41,7 +41,7 @@ function addAPIRoutes(server: Server) {
             for(const e of newestCompData) {
                 const newestData = await getGDriveData(`https://docs.google.com/spreadsheets/d/e/${e.sheetId}/pub?gid=${e.gid}&single=true&output=csv`, e.tag, e.parserOptions);
                 matches = matches.concat(newestData.filter(e => {
-                    return e.player1 == requestedPlayer.name || e.player2 == requestedPlayer.name;
+                    return e.player1 === requestedPlayer.name || e.player2 === requestedPlayer.name;
                 }) as ExtendedRRMatch[]);
             }
 
