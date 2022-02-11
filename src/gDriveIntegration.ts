@@ -83,7 +83,7 @@ export interface ParserConfigOverrides {
 }
 
 export async function csvParser(obj: Parser, competition: string, configOverrides: ParserConfigOverrides={}): Promise<IRRMatch[]> {
-    if(configOverrides === undefined) configOverrides = {};
+    if(configOverrides === null) configOverrides = {};
 
     const config = Object.assign({}, defaultParserConfig());
     for(const key in config) {
