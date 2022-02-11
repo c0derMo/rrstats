@@ -40,7 +40,7 @@ function defaultParserConfig(): ParserConfig {
     return {
         year: new Date().getFullYear(),
         headers: {
-            timeHeader: "CEST",
+            timeHeader: "CET",
             bracketRoundHeader: "Bracket/Round",
             resultHeader: "Result",
             mapsHeader: "Maps",
@@ -250,7 +250,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
             }
 
             matches.push(match);
-        } else if(isMap(line[mapsCol])) {
+        } else if(isMap(line[mapsCol]) && line[resultCol+1] !== "-") {
             // Two liner detected!
             const mapsToAddTo = matches[matches.length-1].maps;
             const player1 = matches[matches.length-1].player1;
