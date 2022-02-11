@@ -16,6 +16,7 @@
     "twitter-api-v2": "^1.8.0"
   },
   "scripts": {
+    "dev": "ts-node --files src/index.ts",
     "build": "tsc",
     "start": "node out/index.js",
     "deploy": "yarn build && ts-node deploy.ts",
