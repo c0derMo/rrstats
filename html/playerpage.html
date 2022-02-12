@@ -218,6 +218,9 @@
                         },{
                             text: "RRWC2021",
                             value: 'RRWC2021'
+                        },{
+                            text: 'RR7',
+                            value: 'RR7'
                         }],
                         mapPicksHeaders: [{
                             text: 'Map',
@@ -242,8 +245,8 @@
                             text: "Played",
                             value: "played"
                         }],
-                        mapWinratesComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
-                        mapPicksComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021'],
+                        mapWinratesComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021', 'RR7'],
+                        mapPicksComps: ['RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021', 'RR7'],
                         mapWinrates: [],
                         mapPicks: [],
                         winrate: "",
@@ -292,10 +295,11 @@
                             e.maps.forEach(m => {
                                 playedMaps += 1;
                                 if(m.winner == localPlayer) wonMaps += 1;
+                                if(m.winner == 0) wonMaps += 0.5;
                             })
                         });
 
-                        this.winrate = Math.round((wonMatches / this.player.matches.length) * 1000) / 10 + "%";
+                        this.winrate = Math.round(((wonMatches + (tiedMatches / 2)) / this.player.matches.length) * 1000) / 10 + "%";
                         this.mapWinrate = Math.round((wonMaps / playedMaps) * 1000) / 10 + "%";
                         this.wtl = wonMatches + "-" + tiedMatches + "-" + lossMatches;
                     },
@@ -375,7 +379,7 @@
                                 return "Colorado"
                             case "HOK":
                                 return "Hokkaido"
-                            
+
                             // Season 2
                             case "MIA":
                                 return "Miami"
@@ -403,7 +407,7 @@
                                 return "Chongqing"
                             case "MEN":
                                 return "Mendoza"
-                            
+
                             default:
                                 return "Unknown"
                         }
