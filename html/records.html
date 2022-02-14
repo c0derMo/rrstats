@@ -124,7 +124,7 @@
                         let s = "";
                         if(hours > 0) {
                             s += hours + ":"
-                            if(minutes > 10) {
+                            if(minutes >= 10) {
                                 s += minutes + ":"
                             } else {
                                 s += "0" + minutes + ":"
@@ -132,7 +132,7 @@
                         } else {
                             s += minutes + ":";
                         }
-                        if(timeInSeconds > 10) {
+                        if(timeInSeconds >= 10) {
                             s += timeInSeconds
                         } else {
                             s += "0" + timeInSeconds
