@@ -78,7 +78,7 @@
                             text: 'Score',
                             value: 'score'
                         }],
-                        stat: "",
+                        stat: "WR",
                         search: "",
                         statsList: [{
                             name: "Winrate",
@@ -184,6 +184,9 @@
                         stats: [],
                         map: ""
                     }
+                },
+                async created() {
+                  await this.getStat();
                 },
                 methods: {
                     async getStat() {

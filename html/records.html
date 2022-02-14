@@ -52,7 +52,7 @@
                                                 <td>
                                                     <a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}<br></a>
                                                 </td>
-                                                <td><a :href="record.videoLink">{{ record.match }}</a></td>
+                                                <td><a :href="record.videoLink" target="_blank">{{ record.match }}</a></td>
                                             </tr>
                                         </tbody>
                                     </template>
@@ -82,7 +82,7 @@
                                                 <td>{{ record.details }}</td>
                                                 <td>{{ secondsToTimeString(record.time) }}</td>
                                                 <td><a v-for="player in record.players" :href="'/' + player" class="playerLink">{{ player }}<br></a></td>
-                                                <td><a :href="record.videoLink">{{ record.match }}</a></td>
+                                                <td><a :href="record.videoLink" target="_blank">{{ record.match }}</a></td>
                                             </tr>
                                         </tbody>
                                     </template>
