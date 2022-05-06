@@ -2,6 +2,6 @@
     "compilerOptions": {
         "outDir": "out"
     },
-    "include": ["src/*", "tests/*"],
+    "include": ["src/*"],
     "exclude": ["src/scripts/*"]
 }
