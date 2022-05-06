@@ -40,7 +40,7 @@ function defaultParserConfig(): ParserConfig {
     return {
         year: new Date().getFullYear(),
         headers: {
-            timeHeader: "CET",
+            timeHeader: "CEST",
             bracketRoundHeader: "Bracket/Round",
             resultHeader: "Result",
             mapsHeader: "Maps",
