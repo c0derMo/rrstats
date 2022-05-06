@@ -5,3 +5,4 @@ node_modules
 .eslintrc.js
 html
 deploy.ts
+jest.config.js

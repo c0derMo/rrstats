@@ -22,19 +22,23 @@
     "deploy": "yarn build && ts-node deploy.ts",
     "clean": "rm -r out deploy",
     "clean-win": "rmdir /S /Q out deploy",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/hapi__cookie": "^10.1.4",
     "@types/hapi__hapi": "^20.0.10",
     "@types/hapi__inert": "^5.2.3",
+    "@types/jest": "^27.5.0",
     "@types/luxon": "^2.0.7",
     "@types/node": "^15.6.0",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "eslint": "^8.6.0",
     "eslint-plugin-vue": "^8.3.0",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.1",
     "typescript": "^4.5.4"
   }
 }
