@@ -89,6 +89,9 @@ export async function recalculate(additionalMatches: IRRMatch[]=[], username="")
 
         // Per Map Stats
         for(const map of match.maps) {
+            if (map.forfeit) {
+                continue;
+            }
             rankings[match.player1].mapsPlayedAmount += 1;
             rankings[match.player2].mapsPlayedAmount += 1;
             rankings[match.player1].mapsPlayed[mapAbbreviationToArrayIndex(map.map)] += 1

@@ -208,15 +208,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                 if(maps.length === 0) map.pickedBy = 1;
                 if(maps.length === 1) map.pickedBy = 2;
 
-                if(abbreviationOverrides[line[mIdx+1]] !== undefined) {
-                    map.winner = (abbreviationOverrides[line[mIdx+1]] === player1) ? 1 : 2
-                } else {
-                    if(player1.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
-                        map.winner = 1;
-                    } else if(player2.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
-                        map.winner = 2;
-                    }
-                }
+                Object.assign(map, getMapWinner(abbreviationOverrides, player1, player2, line[mIdx+1]));
 
                 maps.push(map);
             }
@@ -272,19 +264,32 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                 if(mapsToAddTo.length === 0) map.pickedBy = 1;
                 if(mapsToAddTo.length === 1) map.pickedBy = 2;
 
-                if(abbreviationOverrides[line[mIdx+1]] !== undefined) {
-                    map.winner = (abbreviationOverrides[line[mIdx+1]] === player1) ? 1 : 2
-                } else {
-                    if(player1.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
-                        map.winner = 1;
-                    } else if(player2.toLowerCase().indexOf(line[mIdx+1].toLowerCase()) !== -1) {
-                        map.winner = 2;
-                    }
-                }
+                Object.assign(map, getMapWinner(abbreviationOverrides, player1, player2, line[mIdx+1]));
 
                 mapsToAddTo.push(map);
             }
         }
     }
     return matches;
+}
+
+function getMapWinner(abbreviationOverrides: unknown, player1: string, player2: string, abbreviation: string): { winner: number, forfeit: boolean } {
+    let forfeit = false;
+    let winner = 0;
+    if(abbreviation.startsWith("(") && abbreviation.endsWith(")")) {
+        forfeit = true;
+        abbreviation = abbreviation.substring(1, abbreviation.length - 1);
+    }
+
+    if (abbreviationOverrides[abbreviation] !== undefined) {
+        winner = (abbreviationOverrides[abbreviation] === player1) ? 1 : 2;
+    } else {
+        if (player1.toLowerCase().indexOf(abbreviation.toLowerCase()) !== -1) {
+            winner = 1;
+        } else if (player2.toLowerCase().indexOf(abbreviation.toLowerCase()) !== -1) {
+            winner = 2;
+        }
+    }
+
+    return { winner, forfeit };
 }

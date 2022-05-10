@@ -90,7 +90,7 @@
                                     </template>
                                     <template v-slot:item.score="{ item }">
                                         <v-chip :color="getMatchColor(item)">
-                                            {{ item.score.player1Points }}-{{ item.score.player2Points }}
+                                            {{getMatchTitle(item)}}
                                         </v-chip>
                                     </template>
                                     <template v-slot:item.maps="{ item }">
@@ -102,6 +102,7 @@
                                             </template>
                                             <span>Map: {{ mapAbbreviationToFullName(map.map) }}</span><br>
                                             <span>Picked by: {{ playerNumberToName(item, map.pickedBy, "RNG") }}</span><br>
+                                            <span v-if="map.forfeit">Map won by forfeit</span><br>
                                             <span>Won by: {{ playerNumberToName(item, map.winner, "Tie") }}</span>
                                         </v-tooltip>
                                     </template>
@@ -350,16 +351,27 @@
                         return defaultName;
                     },
                     getMapColor(match, map) {
-                        if(map.winner == 1 && match.player1 == vue.name) return "green";
-                        if(map.winner == 2 && match.player2 == vue.name) return "green";
-                        if(map.winner !== 1 && map.winner !== 2) return "yellow";
-                        return "red";
+                        let result = "";
+                        if(map.forfeit) result = "lighten-2 ";
+                        if(map.winner == 1 && match.player1 == vue.name) return result + "green";
+                        if(map.winner == 2 && match.player2 == vue.name) return result + "green";
+                        if(map.winner !== 1 && map.winner !== 2) return result + "yellow";
+                        return result + "red";
                     },
                     getMatchColor(match) {
                         if(match.score.winner == 1 && match.player1 == vue.name) return "green";
                         if(match.score.winner == 2 && match.player2 == vue.name) return "green";
                         if(match.score.winner !== 1 && match.score.winner !== 2) return "yellow";
                         return "red";
+                    },
+                    getMatchTitle(match) {
+                        if(match.score.player1Points + match.score.player2Points === 1) {
+                            if ((match.score.player1Points === 1 && match.player1 === vue.name) ||
+                                (match.score.player2Points === 1 && match.player2 === vue.name )) return "W";
+                            return "L";
+                        } else {
+                            return `${match.score.player1Points}-${match.score.player2Points}`
+                        }
                     },
                     timestampToString(timestamp) {
                         return luxon.DateTime.fromISO(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)

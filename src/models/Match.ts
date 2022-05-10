@@ -14,7 +14,8 @@ export interface IRRBan {
 export interface IRRMap {
     map: string;
     winner: number;
-    pickedBy: number;       // Picked by player number
+    pickedBy: number;       // Picked by player
+    forfeit?: boolean;
 }
 
 export interface IRRMatch {
