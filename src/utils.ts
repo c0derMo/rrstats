@@ -1,4 +1,4 @@
-export const VERSION = "2.2dev"
+export const VERSION = "2.3dev"
 
 export function mapAbbreviationToArrayIndex(abv) {
     switch(abv) {
@@ -43,6 +43,8 @@ export function mapAbbreviationToArrayIndex(abv) {
             return 16
         case "MEN":
             return 17
+        case "AMB":
+            return 18
 
         default:
             return "Unknown"

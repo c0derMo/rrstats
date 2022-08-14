@@ -99,6 +99,30 @@ function addAPIRoutes(server: Server) {
             return h.response(response).type("application/json");
         }
     })
+
+    server.route({
+        method: 'GET',
+        path: '/external-api/accolate/{player}',
+        handler: async (request, h) => {
+            const user = await validateAPIKey(request.headers.authorization);
+            if(!user) {
+                return h.response().code(403);
+            }
+            const requestedPlayer = request.params.player as string;
+            request.log(['get', 'info'], `/external-api/accolate/${requestedPlayer} [User: ${user}]`);
+
+            const player = await RRPlayerModel.findOne({ discordId: requestedPlayer }).exec();
+            if (player.title && (!player.customTitle || request.query.includeCustomTitles )) {
+                return h.response(player.title);
+            }
+            const matches = await RRMatchModel.count({ $or: [ {player1: requestedPlayer}, {player2: requestedPlayer} ] }).exec();
+            if (matches > 0) {
+                return h.response("Returning Rival");
+            } else {
+                return h.response("Roulette Rookie");
+            }
+        }
+    })
 }
 
 async function validateAPIKey(apiKey: string): Promise<string> {

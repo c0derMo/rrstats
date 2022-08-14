@@ -34,7 +34,7 @@ function monthToIndex(month: string): number {
     }
 }
 function isMap(map: string): boolean {
-    return ["PAR", "SAP", "MAR", "BKK", "COL", "HOK", "MIA", "SF", "MUM", "WC", "SGA", "NY", "HAV", "DUB", "DAR", "BER", "CHO", "MEN"].includes(map);
+    return ["PAR", "SAP", "MAR", "BKK", "COL", "HOK", "MIA", "SF", "MUM", "WC", "SGA", "NY", "HAV", "DUB", "DAR", "BER", "CHO", "MEN", "AMB"].includes(map);
 }
 function defaultParserConfig(): ParserConfig {
     return {
