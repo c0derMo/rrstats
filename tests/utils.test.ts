@@ -19,6 +19,7 @@ test("mapAbbreviationToArrayIndex - Correct calls", () => {
     expect(mapAbbreviationToArrayIndex("BER")).toBe(15);
     expect(mapAbbreviationToArrayIndex("CHO")).toBe(16);
     expect(mapAbbreviationToArrayIndex("MEN")).toBe(17);
+    expect(mapAbbreviationToArrayIndex("AMB")).toBe(18);
 });
 
 test("mapAbbreviationToArrayIndex - Incorrect calls", () => {
