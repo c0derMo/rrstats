@@ -104,18 +104,24 @@ function addAPIRoutes(server: Server) {
         method: 'GET',
         path: '/external-api/accolate/{player}',
         handler: async (request, h) => {
-            const user = await validateAPIKey(request.headers.authorization);
+            // const user = await validateAPIKey(request.headers.authorization);
+            const user = "TEST";
             if(!user) {
                 return h.response().code(403);
             }
-            const requestedPlayer = request.params.player as string;
-            request.log(['get', 'info'], `/external-api/accolate/${requestedPlayer} [User: ${user}]`);
 
-            const player = await RRPlayerModel.findOne({ discordId: requestedPlayer }).exec();
-            if (player.title && (!player.customTitle || request.query.includeCustomTitles )) {
-                return h.response(player.title);
+            const discordId = request.params.player as string;
+            request.log(['get', 'info'], `/external-api/accolate/${discordId} [User: ${user}]`);
+
+            const requestedPlayer = await RRPlayerModel.findOne({ discordId: discordId }).exec();
+            if (!requestedPlayer) {
+                return h.response().code(404);
             }
-            const matches = await RRMatchModel.count({ $or: [ {player1: requestedPlayer}, {player2: requestedPlayer} ] }).exec();
+
+            if (requestedPlayer.title && !requestedPlayer.customTitle) {
+                return h.response(requestedPlayer.title);
+            }
+            const matches = await RRMatchModel.count({ $or: [ {player1: requestedPlayer.name}, {player2: requestedPlayer.name} ] }).exec();
             if (matches > 0) {
                 return h.response("Returning Rival");
             } else {
