@@ -104,8 +104,7 @@ function addAPIRoutes(server: Server) {
         method: 'GET',
         path: '/external-api/accolate/{player}',
         handler: async (request, h) => {
-            // const user = await validateAPIKey(request.headers.authorization);
-            const user = "TEST";
+            const user = await validateAPIKey(request.headers.authorization);
             if(!user) {
                 return h.response().code(403);
             }
