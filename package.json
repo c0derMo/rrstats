@@ -12,7 +12,7 @@
     "csv-parse": "^5.0.4",
     "dotenv": "^10.0.0",
     "luxon": "^2.0.2",
-    "mongoose": "^6.0.13",
+    "mongoose": "^6.4.6",
     "twitter-api-v2": "^1.8.0"
   },
   "scripts": {
