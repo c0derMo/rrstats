@@ -41,7 +41,7 @@ function defaultParserConfig(): ParserConfig {
         year: new Date().getFullYear(),
         headers: {
             timeHeader: "CEST",
-            bracketRoundHeader: "Bracket/Round",
+            bracketRoundHeader: "Group",
             resultHeader: "Result",
             mapsHeader: "Maps",
             bansHeader: "Bans",
@@ -49,7 +49,7 @@ function defaultParserConfig(): ParserConfig {
         },
         debugLog: false,
         dayRegex: ".*Day \\d+ - .+, (\\d+)(st|nd|rd|th) (.+)",
-        hasBracket: true
+        hasBracket: false
     }
 }
 
