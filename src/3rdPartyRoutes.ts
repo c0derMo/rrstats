@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { getGDriveData } from "./httpClient";
 import {getRecords} from "./dataHandling/records";
 import {Server} from "@hapi/hapi";
