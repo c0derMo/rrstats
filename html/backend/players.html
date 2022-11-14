@@ -24,7 +24,7 @@
                                     :search="search"
                                     disable-sort
                                     show-expand
-                                    item-key="_id">
+                                    item-key="uuid">
                                     <template v-slot:top>
                                         <v-toolbar>
                                             <v-toolbar-title>Players</v-toolbar-title>
@@ -51,21 +51,21 @@
                                     </template>
 
                                     <template v-slot:item.name="{ item }">
-                                        <v-text-field @change="e => changeInput(e, item._id + ';name')" :value="item.name"></v-text-field>
+                                        <v-text-field @change="e => changeInput(e, item.uuid + ';name')" :value="item.name"></v-text-field>
                                     </template>
                                     <template v-slot:item.title="{ item }">
-                                        <v-text-field @change="e => changeInput(e, item._id + ';title')" :value="item.title"></v-text-field>
+                                        <v-text-field @change="e => changeInput(e, item.uuid + ';title')" :value="item.title"></v-text-field>
                                     </template>
                                     <template v-slot:item.customtitle="{ item }">
-                                        <v-switch @change="e => changeInput(e, item._id + ';customTitle')" :input-value="item.customTitle"></v-switch>
+                                        <v-switch @change="e => changeInput(e, item.uuid + ';customTitle')" :input-value="item.customTitle"></v-switch>
                                     </template>
                                     <template v-slot:item.discordid="{ item }">
-                                        <v-text-field @change="e => changeInput(e, item._id + ';discordId')" :value="item.discordId"></v-text-field>
+                                        <v-text-field @change="e => changeInput(e, item.uuid + ';discordId')" :value="item.discordId"></v-text-field>
                                     </template>
                                     <template v-slot:expanded-item="{ headers, item }">
                                         <td :colspan="headers.length">
-                                            <v-switch @change="e => changeInput(e, item._id + ';excludedFromSearch')" :input-value="item.excludedFromSearch" label="Excluded from Search"></v-switch>
-                                            <v-text-field @change="e => changeInput(e, item._id + ';abbreviationOverride')" :value="item.abbreviationOverride" label="Abbreviation override"></v-text-field>
+                                            <v-switch @change="e => changeInput(e, item.uuid + ';excludedFromSearch')" :input-value="item.excludedFromSearch" label="Excluded from Search"></v-switch>
+                                            <v-text-field @change="e => changeInput(e, item.uuid + ';abbreviationOverride')" :value="item.abbreviationOverride" label="Abbreviation override"></v-text-field>
                                         </td>
                                     </template>
                                 </v-data-table>
@@ -135,7 +135,7 @@
                         let response = await axios.get("/backend/api/players");
                         this.players = response.data;
                         this.players.forEach(element => {
-                            this.originalData[element._id] = element;
+                            this.originalData[element.uuid] = element;
                         });
                     },
                     async sendConfirm() {

@@ -1,43 +1,19 @@
-import { Schema, Document, Model, model } from 'mongoose'
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-export interface IRRPlayer {
-    name: string;
-    discordId: string;
-    title: string;
-    customTitle: boolean;
-    excludedFromSearch: boolean;
-    abbreviationOverride: string;
+@Entity()
+export class RRPlayer {
+    @PrimaryGeneratedColumn("uuid")
+        uuid: string;
+    @Column()
+        name: string;
+    @Column({ nullable: true })
+        discordId: string;
+    @Column({ nullable: true })
+        title: string;
+    @Column({ nullable: true })
+        customTitle: boolean;
+    @Column({ nullable: true })
+        excludedFromSearch: boolean;
+    @Column({ nullable: true })
+        abbreviationOverride: string;
 }
-
-export interface IPlayerDocument extends IRRPlayer, Document {
-
-}
-
-// eslint-disable-next-line
-interface IPlayerModel extends Model<IPlayerDocument> {
-
-}
-
-const RRPlayerSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    discordId: {
-        type: String
-    },
-    title: {
-        type: String
-    },
-    customTitle: {
-        type: Boolean
-    },
-    excludedFromSearch: {
-        type: Boolean
-    },
-    abbreviationOverride: {
-        type: String
-    }
-});
-
-export const RRPlayerModel = model<IPlayerDocument>("player", RRPlayerSchema) as IPlayerModel;

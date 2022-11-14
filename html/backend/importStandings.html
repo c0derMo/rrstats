@@ -108,7 +108,7 @@
                     let splitStanding = standing.split(": ");
                     standings.push({player: splitStanding[0], placement: parseInt(splitStanding[1])});
                 }
-                let response = await axios.post("/backend/api/importStandings", {compId: this.compToAdd._id, bracket: this.bracket, placements: standings});
+                let response = await axios.post("/backend/api/importStandings", {compId: this.compToAdd.uuid, bracket: this.bracket, placements: standings});
                 if(response.data.success) {
                     this.amountPlacements = response.data.amountPlacements;
                     this.notFoundPlayers = response.data.notFoundPlayers;

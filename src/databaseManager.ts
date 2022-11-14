@@ -1,32 +1,29 @@
-import * as Mongoose from 'mongoose';
-import { RRCompetitionModel } from './models/Competitions';
-import { RRPlayerModel } from './models/Player';
-import { RRMatchModel } from './models/Match';
-import { RRRecordModel } from './models/Record';
-import { UserModel } from './models/User';
-import { config } from 'dotenv';
-config();
+import "dotenv/config";
+import "reflect-metadata";
+import { DataSource } from 'typeorm';
+import { AuditLogEntry } from './models/AuditLogEntry';
+import { RRCompetiton } from "./models/Competitions";
+import { RRMatch } from "./models/Match";
+import { RRPlayer } from "./models/Player";
+import { RRRecord } from "./models/Record";
+import { RRUser } from "./models/User";
 
-let database: Mongoose.Connection;
+export let database: DataSource;
 
-export async function connect() {
-    const URI = process.env.MONGODB_URI;
+export async function connect(): Promise<void> {
     if (database) return;
-    await Mongoose.connect(URI, {
-        autoIndex: true,
-        autoCreate: true
+    database = new DataSource({
+        type: "sqlite",
+        database: process.env.DATABASE,
+        entities: [ AuditLogEntry, RRCompetiton, RRMatch, RRPlayer, RRRecord, RRUser ]
     });
-    database = Mongoose.connection;
-    return {
-        RRCompetitionModel,
-        RRPlayerModel,
-        RRMatchModel,
-        RRRecordModel,
-        UserModel
-    }
+
+    await database.initialize();
+    await database.synchronize();
 }
 
-export function disconnect() {
+export function disconnect(): void {
     if (!database) return;
-    void Mongoose.disconnect();
+    void database.destroy();
+    database = undefined;
 }

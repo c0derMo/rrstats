@@ -1,5 +1,5 @@
 import TwitterAPI from 'twitter-api-v2'
-import {AuditLogModel} from "../models/AuditLogEntry";
+import {newEntry} from "../models/AuditLogEntry";
 import { config } from 'dotenv';
 config();
 
@@ -23,6 +23,6 @@ export async function tweet(tweets: string[], username: string): Promise<object>
         }
     }
 
-    await AuditLogModel.newEntry(username, "Tweeted " + tweets.length.toString() + " messages", {tweets: tweets});
+    await newEntry(username, "Tweeted " + tweets.length.toString() + " messages", {tweets: tweets});
     return {success: true}
 }

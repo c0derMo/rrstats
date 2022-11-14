@@ -36,7 +36,7 @@
                                             </template>
 
                                             <v-card>
-                                                <v-card-title>Edit Record - {{ itemEdit._id }}</v-card-title>
+                                                <v-card-title>Edit Record - {{ itemEdit.uuid }}</v-card-title>
                                                 <v-card-text>
                                                     <v-container>
                                                         <v-row>
@@ -209,7 +209,7 @@
             },
             async playerNameToId() {
                 let response = await axios.get("/backend/api/playerLookup?name=" + this.playerToId);
-                this.idToPlayer = response.data._id;
+                this.idToPlayer = response.data.uuid;
             },
             close() {
                 this.editDialog = false;

@@ -1,20 +1,20 @@
 import { getGDriveData } from "./httpClient";
-import { RRPlayerModel } from "./models/Player";
-import {IRRMatch, RRMatchModel} from "./models/Match";
-import {RRCompetitionModel} from "./models/Competitions";
-import {IRRRecord} from "./models/Record";
 import {getRecords} from "./dataHandling/records";
-import {UserModel} from "./models/User";
 import {Server} from "@hapi/hapi";
+import { database } from "./databaseManager";
+import { RRPlayer } from "./models/Player";
+import { RRMatch } from "./models/Match";
+import { RRCompetiton } from "./models/Competitions";
+import { In } from "typeorm";
+import { RRRecord } from "./models/Record";
+import { RRUser } from "./models/User";
 
-interface ExtendedRRMatch extends IRRMatch {
-    _id?: string;
-    __v?: string;
+interface ExtendedRRMatch extends RRMatch {
     player1Discord?: string;
     player2Discord?: string;
 }
 
-interface ExtendedRRRecord extends IRRRecord {
+interface ExtendedRRRecord extends RRRecord {
     player: string;
 }
 
@@ -31,13 +31,13 @@ function addAPIRoutes(server: Server) {
             const discordId = request.params.player as string;
             request.log(['get', 'info'], `/external-api/player/${discordId} [User: ${user}]`);
 
-            const requestedPlayer = await RRPlayerModel.findOne({ discordId: discordId }).exec();
+            const requestedPlayer = await database.getRepository(RRPlayer).findOneBy({ discordId: discordId });
             if (!requestedPlayer) {
                 return h.response().code(404);
             }
 
-            let matches = JSON.parse(JSON.stringify(await RRMatchModel.find({ $or: [ {player1: requestedPlayer.name}, {player2: requestedPlayer.name} ] }, { _id: 0, __v: 0}).exec())) as ExtendedRRMatch[];
-            const newestCompData = await RRCompetitionModel.find({ updateWithSheet: true }).sort("-sortingIndex").exec();
+            let matches = JSON.parse(JSON.stringify(await database.getRepository(RRMatch).findBy([ {player1: requestedPlayer.name}, {player2: requestedPlayer.name} ]))) as ExtendedRRMatch[];
+            const newestCompData = await database.getRepository(RRCompetiton).find({ where: {updateWithSheet: true}, order: { "sortingIndex": "DESC"} });
             for(const e of newestCompData) {
                 const newestData = await getGDriveData(`https://docs.google.com/spreadsheets/d/e/${e.sheetId}/pub?gid=${e.gid}&single=true&output=csv`, e.tag, e.parserOptions);
                 matches = matches.concat(newestData.filter(e => {
@@ -57,7 +57,7 @@ function addAPIRoutes(server: Server) {
             }
 
             // Looking up all discord id's
-            const players = await RRPlayerModel.find({ name: { $in: playerNames } }).exec();
+            const players = await database.getRepository(RRPlayer).findBy({ name: In(playerNames) });
             for(const match of matches) {
                 const player1 = players.find((e) => { return e.name === match.player1 });
                 if(player1) {
@@ -112,7 +112,7 @@ function addAPIRoutes(server: Server) {
             const discordId = request.params.player as string;
             request.log(['get', 'info'], `/external-api/accolate/${discordId} [User: ${user}]`);
 
-            const requestedPlayer = await RRPlayerModel.findOne({ discordId: discordId }).exec();
+            const requestedPlayer = await database.getRepository(RRPlayer).findOneBy({ discordId: discordId });
             if (!requestedPlayer) {
                 return h.response().code(404);
             }
@@ -120,7 +120,8 @@ function addAPIRoutes(server: Server) {
             if (requestedPlayer.title && !requestedPlayer.customTitle) {
                 return h.response(requestedPlayer.title);
             }
-            const matches = await RRMatchModel.count({ $or: [ {player1: requestedPlayer.name}, {player2: requestedPlayer.name} ] }).exec();
+
+            const matches = await database.getRepository(RRMatch).countBy([ {player1: requestedPlayer.name }, {player2: requestedPlayer.name}]);
             if (matches > 0) {
                 return h.response("Returning Rival");
             } else {
@@ -131,7 +132,7 @@ function addAPIRoutes(server: Server) {
 }
 
 async function validateAPIKey(apiKey: string): Promise<string> {
-    const user = await UserModel.findOne({ passwordHash: apiKey, type: 'APIKEY' }).exec();
+    const user = await database.getRepository(RRUser).findOneBy({ passwordHash: apiKey, type: 'APIKEY' });
     if(!user) return undefined;
     return user.name;
 }

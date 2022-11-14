@@ -1,6 +1,7 @@
-import { IRRMatch, RRMatchModel } from "../models/Match";
+import { database } from '../databaseManager';
+import { newEntry } from '../models/AuditLogEntry';
+import { RRMatch } from '../models/Match';
 import { mapAbbreviationToArrayIndex } from '../utils';
-import { AuditLogModel } from "../models/AuditLogEntry";
 
 interface PlayerRanking {
     rrCompetitions: string[];
@@ -28,12 +29,12 @@ interface PlayerRankings {
 
 let leaderboards = {} as PlayerRankings;
 
-export async function recalculate(additionalMatches: IRRMatch[]=[], username=""): Promise<void> {
+export async function recalculate(additionalMatches: RRMatch[]=[], username=""): Promise<void> {
     const rankings = {} as PlayerRankings;
     const winningSprees = {} as { [key: string]: number };
 
-    const storedMatches = await RRMatchModel.find({}).exec();
-    const matches = [].concat(additionalMatches).concat(storedMatches) as IRRMatch[];
+    const storedMatches = await database.getRepository(RRMatch).find();
+    const matches = [].concat(additionalMatches).concat(storedMatches) as RRMatch[];
     matches.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     for(const match of matches) {
         // Creating default player objects if they don't exist yet
@@ -158,7 +159,7 @@ export async function recalculate(additionalMatches: IRRMatch[]=[], username="")
 
     leaderboards = rankings;
     if(username !== "") {
-        await AuditLogModel.newEntry(username, "Recalculated leaderboards", {});
+        await newEntry(username, "Recalculated leaderboards", {});
     }
 }
 

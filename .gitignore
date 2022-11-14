@@ -3,3 +3,4 @@ deploy
 out
 .DS_Store
 .env
+*.db
