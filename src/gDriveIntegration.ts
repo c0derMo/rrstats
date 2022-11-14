@@ -1,7 +1,10 @@
 import { DateTime } from "luxon";
-import {IRRBan, IRRMap, IRRMatch} from "./models/Match";
-import { RRPlayerModel } from "./models/Player";
+import {IRRBan, IRRMap, RRMatch} from "./models/Match";
 import {Parser} from "csv-parse";
+import { database } from "./databaseManager";
+import { RRPlayer } from "./models/Player";
+import { Not } from "typeorm";
+import { randomUUID } from "crypto";
 
 function monthToIndex(month: string): number {
     switch(month) {
@@ -82,7 +85,7 @@ export interface ParserConfigOverrides {
     hasBracket?: boolean
 }
 
-export async function csvParser(obj: Parser, competition: string, configOverrides: ParserConfigOverrides={}): Promise<IRRMatch[]> {
+export async function csvParser(obj: Parser, competition: string, configOverrides: ParserConfigOverrides={}): Promise<RRMatch[]> {
     if(configOverrides === null) configOverrides = {};
 
     const config = Object.assign({}, defaultParserConfig());
@@ -99,7 +102,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
     if(config.debugLog) console.log(configOverrides);
     if(config.debugLog) console.log(config);
 
-    const matches = [] as IRRMatch[];
+    const matches = [] as RRMatch[];
 
     let date: DateTime;
     let timeCol = -1;
@@ -111,7 +114,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
 
     // Grabbing all the abbreviation overrides once to avoid long database queries
     const abbreviationOverrides = {};
-    const abbreviationOverridesQuery = await RRPlayerModel.find({ abbreviationOverride: {$ne: null} }).exec();
+    const abbreviationOverridesQuery = await database.getRepository(RRPlayer).findBy({ abbreviationOverride: Not(null) });
     abbreviationOverridesQuery.forEach(e => {
         if(e.abbreviationOverride !== "") {
             abbreviationOverrides[e.abbreviationOverride] = e.name;
@@ -229,7 +232,8 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                 bans.push(ban);
             }
 
-            const match: IRRMatch = {
+            const match: RRMatch = {
+                uuid: randomUUID(),
                 bans: bans,
                 competition: competition.replace("\n", ""),
                 maps: maps,

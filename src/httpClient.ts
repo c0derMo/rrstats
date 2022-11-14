@@ -3,7 +3,7 @@ import { recalculate } from './dataHandling/leaderboards';
 import  { parse } from "csv-parse";
 import {csvParser, ParserConfigOverrides} from "./gDriveIntegration";
 import { config } from 'dotenv';
-import {IRRMatch} from "./models/Match";
+import {RRMatch} from "./models/Match";
 config();
 
 type Cache = {
@@ -24,7 +24,7 @@ type DiscordCache = {
 type GDriveCache = {
     requestTime: number;
     rawData: string;
-    data: IRRMatch[];
+    data: RRMatch[];
 }
 
 interface DiscordResponse {
@@ -73,7 +73,7 @@ export async function getDiscordProfilePictureURL(uID: string) {
     return "/defaultPB.png"
 }
 
-export async function getGDriveData(link: string, name: string, config: ParserConfigOverrides = null) {
+export async function getGDriveData(link: string, name: string, config: ParserConfigOverrides = null): Promise<RRMatch[]> {
     //Check for cache, if the link in the cache isn't the same, we need to get something new anyways
     if(cache.newGDrive !== undefined) {
         // Cache stays for 15 minutes.

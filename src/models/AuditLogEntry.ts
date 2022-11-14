@@ -16,7 +16,7 @@ export class AuditLogEntry {
 }
 
 
-export async function newEntry(username: string, message: string, details: Record<string, unknown>={}): Promise<void> {
+export async function newEntry(username: string, message: string, details: Record<string | number, unknown>={}): Promise<void> {
     const entry = new AuditLogEntry();
     entry.user = username;
     entry.action = message,

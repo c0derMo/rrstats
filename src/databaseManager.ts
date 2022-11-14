@@ -22,7 +22,7 @@ export async function connect(): Promise<void> {
     await database.synchronize();
 }
 
-export function disconnect(): Promise<void> {
+export function disconnect(): void {
     if (!database) return;
     void database.destroy();
     database = undefined;

@@ -41,15 +41,3 @@ export interface IRRMap {
     pickedBy: number;       // Picked by player
     forfeit?: boolean;
 }
-
-export interface IRRMatch {
-    player1: string;
-    player2: string;
-    score: IRRMatchScore;
-    competition: string;
-    platform: string;
-    round: string;
-    maps: IRRMap[];
-    bans: IRRBan[];
-    timestamp: Date;
-}

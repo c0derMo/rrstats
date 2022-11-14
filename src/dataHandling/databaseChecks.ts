@@ -1,5 +1,6 @@
-import {RRMatchModel} from "../models/Match";
-import {RRPlayerModel} from "../models/Player";
+import { database } from "../databaseManager";
+import { RRMatch } from "../models/Match";
+import { RRPlayer } from "../models/Player";
 
 interface DatabaseResult {
     tournament: string;
@@ -29,7 +30,7 @@ export async function runChecks(checks: DatabaseChecks): Promise<DatabaseResult[
 
 async function _scoreCheck(): Promise<DatabaseResult[]> {
     const result = [] as DatabaseResult[];
-    const matches = await RRMatchModel.find({}).exec();
+    const matches = await database.getRepository(RRMatch).find();
 
     for(const match of matches) {
         if((match.score.player1Points > match.score.player2Points && match.score.winner !== 1)
@@ -71,8 +72,8 @@ async function _scoreCheck(): Promise<DatabaseResult[]> {
 async function _matchWithoutPlayer(): Promise<DatabaseResult[]> {
     const result = [] as DatabaseResult[];
 
-    const playersWithObject = await RRPlayerModel.find().distinct('name').exec();
-    const matches = await RRMatchModel.find().exec();
+    const playersWithObject = (await database.getRepository(RRPlayer).find()).map(e => e.name);
+    const matches = await database.getRepository(RRMatch).find();
 
     for(const match of matches) {
         if(!playersWithObject.includes(match.player1)) {
@@ -97,8 +98,8 @@ async function _matchWithoutPlayer(): Promise<DatabaseResult[]> {
 async function _playersWithoutMatches(): Promise<DatabaseResult[]> {
     const result = [] as DatabaseResult[];
 
-    const players = await RRPlayerModel.find().distinct('name').exec();
-    const matches = await RRMatchModel.find().exec();
+    const players = (await database.getRepository(RRPlayer).find()).map(e => e.name);
+    const matches = await database.getRepository(RRMatch).find();
 
     for(const match of matches) {
         if(players.indexOf(match.player1) >= 0) players.splice(players.indexOf(match.player1), 1);
@@ -109,7 +110,7 @@ async function _playersWithoutMatches(): Promise<DatabaseResult[]> {
         result.push({
             tournament: "",
             type: 'warning',
-            message: "Player " + (p as string) + " has no matches assigned." });
+            message: `Player ${p} has no matches assigned.` });
     });
 
     return result;

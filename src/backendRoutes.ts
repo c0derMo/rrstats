@@ -25,9 +25,9 @@ import {tweet} from "./dataHandling/externalConnector";
 import {disconnect} from "./databaseManager";
 import {recalculate} from "./dataHandling/leaderboards";
 import {Server} from "@hapi/hapi";
-import {IMatchDocument} from "./models/Match";
-import {ICompetitionDocument} from "./models/Competitions";
-import {IRecordDocument} from "./models/Record";
+import { RRMatch } from './models/Match';
+import { RRCompetiton } from './models/Competitions';
+import { RRRecord } from './models/Record';
 
 interface Payload {
     username?: string;
@@ -281,7 +281,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['patch', 'info'], '/backend/api/matches');
             let result: BackendResult;
             try {
-                result = {success: await editMatch(request.payload as IMatchDocument, request.auth.credentials.loggedInAs as string)};
+                result = {success: await editMatch(request.payload as RRMatch, request.auth.credentials.loggedInAs as string)};
             } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
@@ -300,7 +300,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['put', 'info'], '/backend/api/matches');
             let result: BackendResult;
             try {
-                result = {success: await addMatch(request.payload as IMatchDocument, request.auth.credentials.loggedInAs as string)};
+                result = {success: await addMatch(request.payload as RRMatch, request.auth.credentials.loggedInAs as string)};
             } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
@@ -319,7 +319,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['delete', 'info'], '/backend/api/matches');
             let result: BackendResult;
             try {
-                result = { success: await deleteMatch(request.payload as IMatchDocument, request.auth.credentials.loggedInAs as string) };
+                result = { success: await deleteMatch(request.payload as RRMatch, request.auth.credentials.loggedInAs as string) };
             } catch(e: unknown) {
                 result = { success: false, error: e.toString() }
             }
@@ -506,7 +506,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['patch', 'info'], '/backend/api/competitions');
             let result: BackendResult;
             try {
-                result = {success: await editCompetition(request.payload as ICompetitionDocument, request.auth.credentials.loggedInAs as string)};
+                result = {success: await editCompetition(request.payload as RRCompetiton, request.auth.credentials.loggedInAs as string)};
             } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
@@ -525,7 +525,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['put', 'info'], '/backend/api/competitions');
             let result: BackendResult;
             try {
-                result = {success: await addCompetition(request.payload as ICompetitionDocument, request.auth.credentials.loggedInAs as string)};
+                result = {success: await addCompetition(request.payload as RRCompetiton, request.auth.credentials.loggedInAs as string)};
             } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
@@ -544,7 +544,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['delete', 'info'], '/backend/api/competitions');
             let result: BackendResult;
             try {
-                result = {success: await deleteCompetition(request.payload as ICompetitionDocument, request.auth.credentials.loggedInAs as string)};
+                result = {success: await deleteCompetition(request.payload as RRCompetiton, request.auth.credentials.loggedInAs as string)};
             } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
@@ -608,7 +608,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['patch', 'info'], '/backend/api/records');
             let result: BackendResult;
             try {
-                result = {success: await editRecord(request.payload as IRecordDocument, request.auth.credentials.loggedInAs as string)};
+                result = {success: await editRecord(request.payload as RRRecord, request.auth.credentials.loggedInAs as string)};
             } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
@@ -627,7 +627,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['put', 'info'], '/backend/api/records');
             let result: BackendResult;
             try {
-                result = {success: await addRecord(request.payload as IRecordDocument, request.auth.credentials.loggedInAs as string)};
+                result = {success: await addRecord(request.payload as RRRecord, request.auth.credentials.loggedInAs as string)};
             } catch(e: unknown) {
                 result = {success: false, error: e.toString()}
             }
@@ -646,7 +646,7 @@ export function addBackendRoutes(server: Server) {
             request.log(['delete', 'info'], '/backend/api/records');
             let result: BackendResult;
             try {
-                result = {success: await deleteRecord(request.payload as IRecordDocument, request.auth.credentials.loggedInAs as string)}
+                result = {success: await deleteRecord(request.payload as RRRecord, request.auth.credentials.loggedInAs as string)}
             } catch(e: unknown) {
                 result = {success: false, error: e.toString() }
             }
