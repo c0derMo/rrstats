@@ -44,6 +44,7 @@ function defaultParserConfig(): ParserConfig {
         year: new Date().getFullYear(),
         headers: {
             timeHeader: "CEST",
+            alternativeTimeHeader: "CET",
             bracketRoundHeader: "Group",
             resultHeader: "Result",
             mapsHeader: "Maps",
@@ -60,6 +61,7 @@ interface ParserConfig {
     year: number;
     headers: {
         timeHeader: string,
+        alternativeTimeHeader: string,
         bracketRoundHeader: string,
         resultHeader: string,
         mapsHeader: string,
@@ -74,6 +76,7 @@ export interface ParserConfigOverrides {
     year?: number;
     headers?: {
         timeHeader?: string,
+        alternativeTimeHeader?: string,
         bracketRoundHeader?: string,
         resultHeader?: string,
         mapsHeader?: string,
@@ -145,7 +148,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                     mapsCol = colIndex;
                     break;
                 case config.headers.timeHeader:
-                case "CET":
+                case config.headers.alternativeTimeHeader:
                     if(config.debugLog) console.log(`New Time Column: ${colIndex}`);
                     timeCol = colIndex;
                     break;
