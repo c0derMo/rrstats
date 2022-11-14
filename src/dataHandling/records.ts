@@ -31,7 +31,7 @@ export async function editRecord(record: RRRecord, username: string): Promise<bo
     const dbRecord = await database.getRepository(RRRecord).findOneBy({ uuid: record.uuid });
     if(dbRecord === null) return false;
     Object.assign(dbRecord, record);
-    await database.manager.save(dbRecord);
+    await database.getRepository(RRRecord).save(dbRecord);
     await newEntry(username, "Edited record " + dbRecord.uuid, jsonDiff(dbRecord, record) as Record<number, unknown>);
     return true;
 }

@@ -11,7 +11,7 @@ export class AuditLogEntry {
         action: string;
     @Column()
         timestamp: Date;
-    @Column()
+    @Column("simple-json")
         details: Record<string, unknown>;
 }
 
@@ -22,5 +22,5 @@ export async function newEntry(username: string, message: string, details: Recor
     entry.action = message,
     entry.timestamp = new Date();
     entry.details = details;
-    await database.manager.save(entry);
+    await database.getRepository(AuditLogEntry).save(entry);
 }

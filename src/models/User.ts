@@ -18,7 +18,7 @@ export class RRUser {
 
 export async function setPassword(user: RRUser, newPassword: string): Promise<void> {
     user.passwordHash = await hash(newPassword, saltRounds);
-    await database.manager.save(user);
+    await database.getRepository(RRUser).save(user);
 }
 
 export async function verifyPassword(user: RRUser, password: string): Promise<boolean> {

@@ -145,6 +145,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                     mapsCol = colIndex;
                     break;
                 case config.headers.timeHeader:
+                case "CET":
                     if(config.debugLog) console.log(`New Time Column: ${colIndex}`);
                     timeCol = colIndex;
                     break;
@@ -157,6 +158,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                     shoutcastCol = colIndex;
                     break;
                 case config.headers.bracketRoundHeader:
+                case "Round":
                     if(config.debugLog) console.log(`New Bracket Column: ${colIndex}`);
                     bracketRoundCol = colIndex;
                     break;

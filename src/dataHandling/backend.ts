@@ -51,14 +51,14 @@ export async function editMatch(match: RRMatch, username: string): Promise<boole
     const dbMatch = await database.getRepository(RRMatch).findOneBy({ uuid: match.uuid });
     if(dbMatch === null) return false;
     Object.assign(dbMatch, match);
-    await database.manager.save(dbMatch);
+    await database.getRepository(RRMatch).save(dbMatch);
     await newEntry(username, "Edited match " + dbMatch.uuid, jsonDiff(dbMatch, match) as Record<number, unknown>);
     return true;
 }
 
 export async function addMatch(match: RRMatch, username: string): Promise<boolean> {
     delete match.uuid;
-    await database.manager.save(match);
+    await database.getRepository(RRMatch).save(match);
     await newEntry(username, "Added match", {matchData: match});
     return true;
 }
@@ -78,7 +78,7 @@ export async function patchPlayers(changes: { [key: string]: string }, username:
         const split = change.split(";");
         const element = await database.getRepository(RRPlayer).findOneBy({ uuid: split[0] });
         element[split[1]] = changes[change];
-        await database.manager.save(element);
+        await database.getRepository(RRPlayer).save(element);
     }
     await newEntry(username, "Edited players", {changes});
     return true;
@@ -91,7 +91,7 @@ export async function importSpreadsheet(options: SpreadsheetImportOptions, usern
     if(options.parserOptions === "" || options.parserOptions === undefined) options.parserOptions = "{}";
     const matches = await csvParser(parsedCSV, options.comp, JSON.parse(options.parserOptions) as ParserConfigOverrides);
     for(const match of matches) {
-        await database.manager.save(match);
+        await database.getRepository(RRMatch).save(match);
     }
     await newEntry(username, "Imported competition " + options.comp, {options: options, amountMatches: matches.length});
     return matches.length;
@@ -116,7 +116,7 @@ export async function importStandings(options: StandingsImportOptions, username:
             placements += 1;
         }
     }
-    await database.manager.save(competition);
+    await database.getRepository(RRCompetiton).save(competition);
     await newEntry(username, "Imported standings " + competition.name + " - " + options.bracket, {placements: options.placements});
 
     return {
@@ -132,7 +132,7 @@ export async function renamePlayer(oldName: string, newName: string, username: s
     const players = await database.getRepository(RRPlayer).findBy({ name: oldName });
     for(const player of players) {
         player.name = newName;
-        await database.manager.save(player);
+        await database.getRepository(RRPlayer).save(player);
         changes.push(`Changed RRPlayer ${player.uuid} from ${oldName} to name ${newName}`);
     }
 
@@ -145,7 +145,7 @@ export async function renamePlayer(oldName: string, newName: string, username: s
             match.player2 = newName;
             changes.push(`Changed player 2 in match ${match.uuid} from ${oldName} to ${newName}`);
         }
-        await database.manager.save(match);
+        await database.getRepository(RRMatch).save(match);
     }
 
     const records = await database.getRepository(RRRecord).find();
@@ -153,7 +153,7 @@ export async function renamePlayer(oldName: string, newName: string, username: s
         if(record.match.search(oldName) >= 0) {
             changes.push(`Record ${record.uuid} changed match from ${record.match} to ${record.match.replace(oldName, newName)}`)
             record.match = record.match.replace(oldName, newName);
-            await database.manager.save(record);
+            await database.getRepository(RRRecord).save(record);
         }
     }
 
@@ -163,11 +163,10 @@ export async function renamePlayer(oldName: string, newName: string, username: s
 }
 
 export async function getAuditLogs(search: string, itemsPerPage: number, page: number): Promise<object> {
-    // TODO: Test
     let query = database.getRepository(AuditLogEntry).createQueryBuilder("log");
     if (search !== "") {
-        query = query.where("log.user REGEXP :search", { search: search })
-            .orWhere("log.action REGEXP :search", { search: search });
+        query = query.where("log.user LIKE :search", { search: `%${search}%` })
+            .orWhere("log.action LIKE :search", { search: `%${search}%` });
     } else {
         query = query.orderBy("log.timestamp", "DESC");
     }
@@ -186,22 +185,21 @@ export async function getAuditLogs(search: string, itemsPerPage: number, page: n
 }
 
 export async function getStoredCompetitions(): Promise<RRCompetiton[]> {
-    // TODO: Test
-    return (await database.getRepository(RRCompetiton).find()).sort((a, b) => a.sortingIndex - b.sortingIndex);
+    return (await database.getRepository(RRCompetiton).find({ order: { sortingIndex: "DESC" }}));
 }
 
 export async function editCompetition(comp: RRCompetiton, username: string): Promise<boolean> {
     const dbComp = await database.getRepository(RRCompetiton).findOneBy({ uuid: comp.uuid });
     if(dbComp === null) return false;
     Object.assign(dbComp, comp);
-    await database.manager.save(dbComp);
+    await database.getRepository(RRCompetiton).save(dbComp);
     await newEntry(username, "Edited competition " + dbComp.uuid, jsonDiff(dbComp, comp) as Record<number, unknown>);
     return true;
 }
 
 export async function addCompetition(comp: RRCompetiton, username: string): Promise<boolean> {
     delete comp.uuid;
-    await database.manager.save(comp);
+    await database.getRepository(RRCompetiton).save(comp);
     await newEntry(username, "Added competition", {compData: comp});
     return true;
 }
@@ -218,6 +216,6 @@ export async function lookupPlayer(info: string, type: string): Promise<object> 
     } else if(type === "name") {
         return await database.getRepository(RRPlayer).findOneBy({ name: info });
     } else {
-        return {name: '', _id: ''}
+        return {name: '', uuid: ''}
     }
 }

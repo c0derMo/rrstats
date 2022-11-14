@@ -1,3 +1,4 @@
+import { IsNull } from 'typeorm';
 import { database } from '../databaseManager';
 import { getGDriveData, getDiscordProfilePictureURL } from '../httpClient';
 import { RRCompetiton } from '../models/Competitions';
@@ -5,8 +6,7 @@ import { RRMatch } from '../models/Match';
 import { RRPlayer } from '../models/Player';
 
 export async function getAllPlayers(): Promise<string[]> {
-    // TODO: Test with excluded from search
-    const players = await database.getRepository(RRPlayer).findBy({ excludedFromSearch: false });
+    const players = await database.getRepository(RRPlayer).findBy([{ excludedFromSearch: IsNull() }, { excludedFromSearch: false }]);
     return players.map((e) => { return e.name });
 }
 
@@ -41,12 +41,12 @@ export async function getPlayer(name: string): Promise<object> {
     if (playerInfo !== null) {
         const allCompetitions = await database.getRepository(RRCompetiton).find();
         for (const competition of allCompetitions) {
-            const filteredPlacements = competition.placements.filter(a => { a.playerId == playerInfo.uuid });
+            const filteredPlacements = competition.placements.filter(a => { return a.playerId === playerInfo.uuid });
             if (filteredPlacements.length > 0) {
                 competitions.push({
-                    placement: filteredPlacements[0].placement,
+                    name: competition.name,
                     officialCompetition: competition.officialCompetition,
-                    name: competition.officialCompetition
+                    placements: filteredPlacements.map(e => { return { placement: e.placement, bracket: e.bracket } })
                 });
             }
         }

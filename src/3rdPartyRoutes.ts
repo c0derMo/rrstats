@@ -10,8 +10,6 @@ import { RRRecord } from "./models/Record";
 import { RRUser } from "./models/User";
 
 interface ExtendedRRMatch extends RRMatch {
-    _id?: string;
-    __v?: string;
     player1Discord?: string;
     player2Discord?: string;
 }

@@ -26,7 +26,7 @@
                                     :loading="loading"
                                     disable-sort
                                     show-expand
-                                    item-key="_id">
+                                    item-key="uuid">
                                 
                                     <template v-slot:item.timestamp="{ item }">
                                         {{ timestampToString(item.timestamp) }}

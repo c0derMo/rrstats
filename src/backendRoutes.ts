@@ -566,7 +566,7 @@ export function addBackendRoutes(server: Server) {
             } else if(request.query.name !== undefined) {
                 return h.response(await lookupPlayer(request.query.name as string, "name"));
             } else {
-                return h.response({name: "", _id: ""});
+                return h.response({name: "", uuid: ""});
             }
         },
         options: {
