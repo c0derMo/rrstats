@@ -8,7 +8,7 @@ To visit the official version, go to [the website](https://rrstats.currymaker.ne
 
 # Development
 Unorganized notes about development:
-- Frontend & backend are split. Frontend is developed using Vue & Vuetify, backend using MongoDB & Hapi.
+- Frontend & backend are split. Frontend is developed using Vue & Vuetify, backend using TypeORM with sqlite & Hapi.
 - Use `yarn build` to build the project, `yarn start` to run it, `yarn deploy` to create a "deployment-ready" version in `deploy/*`.
 - Use `yarn clean` to clean builds & deployments.
 - There are windows alternatives for `yarn deploy` and `yarn clean` called `yarn deploy-win` and `yarn clean-win`.
@@ -17,5 +17,5 @@ Unorganized notes about development:
 
 # Environment variables
 - `DISCORD_TOKEN`: Token for accessing the discord API to grab player profile pictures.
-- `MONGODB_URI`: URI for connecting to the mongoDB database.
+- `DATABASE`: Database name for the sqlite database.
 - `TWITTER_API_KEY`, `TWITTER_API_SECRET`, `TWITTER_ACCESS_TOKEN`, `TWITTER_TOKEN_SECRET`: For accessing the twitter API to tweet from the backend.
