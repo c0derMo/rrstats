@@ -1,48 +1,26 @@
-import { Schema, Document, Model, model } from 'mongoose'
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { database } from "../databaseManager";
 
-export interface IAuditLogEntry {
-    user: string;
-    action: string;
-    timestamp: Date;
-    details: object;
+@Entity()
+export class AuditLogEntry {
+    @PrimaryGeneratedColumn()
+        id: number;
+    @Column()
+        user: string;
+    @Column()
+        action: string;
+    @Column()
+        timestamp: Date;
+    @Column()
+        details: Record<string, unknown>;
 }
 
-interface IAuditLogEntryDocument extends IAuditLogEntry, Document {
-    
+
+export async function newEntry(username: string, message: string, details: Record<string, unknown>={}): Promise<void> {
+    const entry = new AuditLogEntry();
+    entry.user = username;
+    entry.action = message,
+    entry.timestamp = new Date();
+    entry.details = details;
+    await database.manager.save(entry);
 }
-
-interface IAuditLogEntryModel extends Model<IAuditLogEntryDocument> {
-    newEntry(username: string, message: string, details?: object): Promise<void>
-}
-
-const AuditLogEntrySchema = new Schema({
-    user: {
-        type: String,
-        required: true
-    },
-    action: {
-        type: String,
-        required: true
-    },
-    timestamp: {
-        type: Date,
-        required: true
-    },
-    details: {
-        type: Object,
-        required: true
-    }
-});
-
-AuditLogEntrySchema.statics.newEntry = newEntry;
-
-async function newEntry(username: string, message: string, details: object={}): Promise<void> {
-    await AuditLogModel.create({
-        user: username,
-        action: message,
-        timestamp: new Date(),
-        details: details
-    });
-}
-
-export const AuditLogModel = model<IAuditLogEntryDocument>("auditlog", AuditLogEntrySchema) as IAuditLogEntryModel;

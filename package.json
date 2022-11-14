@@ -12,8 +12,10 @@
     "csv-parse": "^5.0.4",
     "dotenv": "^10.0.0",
     "luxon": "^2.0.2",
-    "mongoose": "^6.0.13",
-    "twitter-api-v2": "^1.8.0"
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.1.2",
+    "twitter-api-v2": "^1.8.0",
+    "typeorm": "^0.3.10"
   },
   "scripts": {
     "dev": "ts-node --files src/index.ts",

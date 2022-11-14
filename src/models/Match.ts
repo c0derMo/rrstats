@@ -1,4 +1,28 @@
-import { Schema, Document, Model, model } from "mongoose";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity()
+export class RRMatch {
+    @PrimaryGeneratedColumn("uuid")
+        uuid: string;
+    @Column()
+        player1: string;
+    @Column()
+        player2: string;
+    @Column("simple-json")
+        score: IRRMatchScore;
+    @Column()
+        competition: string;
+    @Column({ nullable: true })
+        platform: string;
+    @Column()
+        round: string;
+    @Column("simple-json")
+        maps: IRRMap[];
+    @Column("simple-json")
+        bans: IRRBan[];
+    @Column()
+        timestamp: Date;
+}
 
 interface IRRMatchScore {
     player1Points: number;
@@ -29,79 +53,3 @@ export interface IRRMatch {
     bans: IRRBan[];
     timestamp: Date;
 }
-
-export interface IMatchDocument extends IRRMatch, Document {
-
-}
-
-// eslint-disable-next-line
-interface IMatchModel extends Model<IMatchDocument> {
-
-}
-
-const RRMatchSchema = new Schema({
-    player1: {
-        type: String,
-        required: true
-    },
-    player2: {
-        type: String,
-        required: true
-    },
-    score: {
-        type: {
-            player1Points: {
-                type: Number,
-                required: true
-            }, player2Points: {
-                type: Number,
-                required: true
-            }, winner: {
-                type: Number,
-                required: true
-            } },
-        required: true
-    },
-    competition: {
-        type: String,
-        required: true
-    },
-    platform: {
-        type: String
-    },
-    round: {
-        type: String,
-        required: true
-    },
-    maps: {
-        type: [{
-            map: {
-                type: String,
-                required: true
-            }, winner: {
-                type: Number,
-                required: true
-            }, pickedBy: {
-                type: Number,
-                required: true
-            }
-        }]
-    },
-    bans: {
-        type: [{
-            map: {
-                type: String,
-                required: true
-            }, bannedBy: {
-                type: Number,
-                required: true
-            }
-        }]
-    },
-    timestamp: {
-        type: Date,
-        required: true
-    }
-});
-
-export const RRMatchModel = model<IMatchDocument>("match", RRMatchSchema) as IMatchModel;

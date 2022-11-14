@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
-        "outDir": "out"
+        "outDir": "out",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
     },
     "include": ["src/*"],
     "exclude": ["src/scripts/*"]
