@@ -117,7 +117,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
 
     // Grabbing all the abbreviation overrides once to avoid long database queries
     const abbreviationOverrides = {};
-    const abbreviationOverridesQuery = await database.getRepository(RRPlayer).findBy({ abbreviationOverride: Not(null) });
+    const abbreviationOverridesQuery = await database.getRepository(RRPlayer).findBy([{ abbreviationOverride: Not(null) }, { abbreviationOverride: Not("") }]);
     abbreviationOverridesQuery.forEach(e => {
         if(e.abbreviationOverride !== "") {
             abbreviationOverrides[e.abbreviationOverride] = e.name;
