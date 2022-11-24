@@ -40,7 +40,7 @@ const cache: Cache = {
 const discordID = process.env.DISCORD_TOKEN;
 
 export async function getDiscordProfilePictureURL(uID: string) {
-    if (uID === "") {
+    if (uID === "" || discordID === undefined) {
         return "/defaultPB.png"
     }
 
@@ -56,7 +56,7 @@ export async function getDiscordProfilePictureURL(uID: string) {
             return "/defaultPB.png"
         }
     }
-    const req = await axios.get("https://discord.com/api/v9/users/" + uID, { headers: { "Authorization": "Bot " + discordID } });
+    const req = await axios.get("https://discord.com/api/v9/users/" + uID, { headers: { "Authorization": "Bot " + discordID }, validateStatus: () => { return true } });
     if(req.status === 429) {
         console.log(`\x1b[33m${new Date().toString()} WARN Hit a 429 in discord\x1b[0m`)
         cache.discordPB[uID] = {

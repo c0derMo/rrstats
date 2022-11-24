@@ -247,7 +247,7 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                 player2: player2.replace("\n", ""),
                 round: round.replace("\n", ""),
                 score: score,
-                timestamp: datetime.toJSDate()
+                timestamp: datetime.toMillis()
             }
 
             matches.push(match);

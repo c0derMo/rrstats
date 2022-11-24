@@ -21,7 +21,7 @@ export class RRMatch {
     @Column("simple-json")
         bans: IRRBan[];
     @Column()
-        timestamp: Date;
+        timestamp: number;
 }
 
 interface IRRMatchScore {

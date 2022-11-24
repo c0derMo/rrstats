@@ -39,7 +39,7 @@ export async function getPlayer(name: string): Promise<object> {
 
     const competitions = [];
     if (playerInfo !== null) {
-        const allCompetitions = await database.getRepository(RRCompetiton).find();
+        const allCompetitions = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC" } });
         for (const competition of allCompetitions) {
             const filteredPlacements = competition.placements.filter(a => { return a.playerId === playerInfo.uuid });
             if (filteredPlacements.length > 0) {
