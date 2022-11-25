@@ -27,21 +27,25 @@
                         </v-row>
                         <v-row>
                             <v-spacer></v-spacer>
-                            <v-col md="4">
-                                <v-select dense v-model="stat" @change="getStat" :items="statsList" label="Statistic" item-text="name" item-value="tag"></v-select>
+                            <v-col justify="center" md="3">
+                                <v-list dense>
+                                    <v-list-item-group mandatory v-model="stat">
+                                        <v-list-item v-for="item of statsList" :value="item.tag" :key="item.tag">
+                                            <v-list-item-icon><v-icon>mdi-chevron-right</v-icon></v-list-item-icon>
+                                            <v-list-item-content>{{ item.name }}</v-list-item-content>
+                                        </v-list-item>
+                                    </v-list-item-group>
+                                </v-list>
                             </v-col>
-                            <v-col md="4">
-                                <v-select dense v-model="map" @change="getStat" :items="maps" label="Map" item-text="name" item-value="tag" v-if="stat == 'MapPlayed' || stat == 'MapWR'"></v-select>
-                            </v-col>
-                            <v-spacer></v-spacer>
-                        </v-row>
-                        <v-row>
-                            <v-spacer></v-spacer>
-                            <v-col justify="center" md="8">
-                                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search"></v-text-field>
+                            <v-col justify="center" md="5">
+                                <v-row>
+                                    <v-col v-if="stat == 'MapPlayed' || stat == 'MapWR'"><v-select v-model="map" :items="maps" label="Map" item-text="name" item-value="tag"></v-select></v-col>
+                                    <v-col><v-text-field v-model="search" append-icon="mdi-magnify" label="Search"></v-text-field></v-col>
+                                    <v-col><v-text-field type="number" :label="amountFilterLabel" v-model="minGamesPlayed"></v-text-field></v-col>
+                                </v-row>
                                 <v-data-table
                                 :headers="headers"
-                                :items="stats"
+                                :items="filteredStats"
                                 :search="search"
                                 >
                                 </v-data-table>
@@ -66,18 +70,6 @@
                 vuetify: new Vuetify({theme: {dark: true}}),
                 data () {
                     return {
-                        headers: [{
-                            text: '#',
-                            align: 'start',
-                            value: 'placement'
-                        }, {
-                            text: 'Player',
-                            sortable: false,
-                            value: 'player'
-                        }, {
-                            text: 'Score',
-                            value: 'score'
-                        }],
                         stat: "WR",
                         search: "",
                         statsList: [{
@@ -96,8 +88,17 @@
                             name: "Appearances in the Grand Finals",
                             tag: "FinalAppearances"
                         },{
-                            name: "Amount of matches",
+                            name: "Amount of matches played",
                             tag: "Matches"
+                        },{
+                            name: "Amount of matches won",
+                            tag: "MatchesWon"
+                        },{
+                            name: "Amount of maps played",
+                            tag: "Maps"
+                        },{
+                            name: "Amount of maps won",
+                            tag: "MapsWon"
                         },{
                             name: "Winrate of own-map-picks",
                             tag: "OwnMapWinrate"
@@ -105,8 +106,11 @@
                             name: "Winrate of opponent-map-picks",
                             tag: "OpponentMapWinrate"
                         },{
-                            name: "Longest winning-streak",
-                            tag: "LongestWinSpree"
+                            name: "Most matches won in a row",
+                            tag: "MostMatchesWonInARow"
+                        },{
+                            name: "Most maps won in a row",
+                            tag: "MostMapsWonInARow"
                         },{
                             name: "Amount of matches on map",
                             tag: "MapPlayed"
@@ -185,7 +189,8 @@
                             tag: "AMB"
                         }],
                         stats: [],
-                        map: ""
+                        map: "PAR",
+                        minGamesPlayed: undefined
                     }
                 },
                 async created() {
@@ -203,7 +208,8 @@
                             let obj = {
                                 placement: idx+1,
                                 player: e,
-                                score: ""
+                                score: "",
+                                played: leaderboardData.data.rankings[e].matches
                             };
                             switch(vue.stat) {
                                 case "WR":
@@ -218,26 +224,42 @@
                                 case "Matches":
                                     obj.score = leaderboardData.data.rankings[e].matches;
                                     break;
+                                case "MatchesWon":
+                                    obj.score = leaderboardData.data.rankings[e].won;
+                                    break;
+                                case "Maps":
+                                    obj.score = leaderboardData.data.rankings[e].mapsPlayedAmount;
+                                    break;
+                                case "MapsWon":
+                                    obj.score = leaderboardData.data.rankings[e].mapsWonAmount;
+                                    break;
                                 case "FinalAppearances":
                                     obj.score = leaderboardData.data.rankings[e].grandFinalAppearances;
                                     break;
-                                case "LongestWinSpree":
-                                    obj.score = leaderboardData.data.rankings[e].longestWinningSpree;
+                                case "MostMatchesWonInARow":
+                                    obj.score = leaderboardData.data.rankings[e].mostMatchesWonInARow;
+                                    break;
+                                case "MostMapsWonInARow":
+                                    obj.score = leaderboardData.data.rankings[e].mostMapsWonInARow;
                                     break;
                                 case "MapPlayed":
                                     obj.score = leaderboardData.data.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)];
                                     break;
                                 case "MapWR":
                                     obj.score = Math.floor((leaderboardData.data.rankings[e].mapsWon[vue.mapAbbreviationToArrayIndex(vue.map)] / leaderboardData.data.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)])*1000)/10 + "%";
+                                    obj.played = leaderboardData.data.rankings[e].mapsPlayed[vue.mapAbbreviationToArrayIndex(vue.map)];
                                     break;
                                 case "OwnMapWinrate":
                                     obj.score = Math.floor((leaderboardData.data.rankings[e].ownMapsWon / leaderboardData.data.rankings[e].ownMaps) * 1000) / 10 + "%";
+                                    obj.played = leaderboardData.data.rankings[e].ownMaps;
                                     break;
                                 case "OpponentMapWinrate":
                                     obj.score = Math.floor((leaderboardData.data.rankings[e].opponentMapsWon / leaderboardData.data.rankings[e].opponentMaps) * 1000) / 10 + "%";
+                                    obj.played = leaderboardData.data.rankings[e].opponentMaps;
                                     break;
                                 case "MapWinrate":
                                     obj.score = Math.floor((leaderboardData.data.rankings[e].mapsWonAmount / leaderboardData.data.rankings[e].mapsPlayedAmount) * 1000) / 10 + "%";
+                                    obj.played = leaderboardData.data.rankings[e].mapsPlayedAmount;
                                     break;
                             }
                             this.stats.push(obj);
@@ -293,6 +315,55 @@
                             default:
                                 return "Unknown"
                         }
+                    }
+                },
+                computed: {
+                    filteredStats() {
+                        if (!this.minGamesPlayed) return this.stats;
+                        return this.stats.filter(e => { return e.played >= this.minGamesPlayed });
+                    },
+                    headers() {
+                        const stats = [{
+                            text: '#',
+                            align: 'start',
+                            value: 'placement'
+                        }, {
+                            text: 'Player',
+                            sortable: false,
+                            value: 'player'
+                        }, {
+                            text: 'Score',
+                            value: 'score'
+                        }];
+
+                        if (["MapWinrate", "OwnMapWinrate", "OpponentMapWinrate", "MapWR"].includes(this.stat)) {
+                            stats.push({
+                                text: 'Maps played',
+                                value: 'played'
+                            });
+                        }
+                        if (["WR"].includes(this.stat)) {
+                            stats.push({
+                                text: 'Games played',
+                                value: 'played'
+                            });
+                        }
+
+                        return stats;
+                    },
+                    amountFilterLabel() {
+                        if (["MapWinrate", "OwnMapWinrate", "OpponentMapWinrate", "MapWR"].includes(this.stat)) {
+                            return "Minimum maps played";
+                        }
+                        return "Minimum games played";
+                    }
+                },
+                watch: {
+                    async stat() {
+                        await this.getStat();
+                    },
+                    async map() {
+                        await this.getStat();
                     }
                 }
             })
