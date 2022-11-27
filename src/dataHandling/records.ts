@@ -9,7 +9,7 @@ export async function getRecords(filter?: string): Promise<RRRecord[]> {
     if(filter) {
         filterObj = { category: filter };
     }
-    const records = await database.getRepository(RRRecord).findBy(filterObj);
+    const records = await database.getRepository(RRRecord).find({ where: filterObj, order: { "sortingIndex": "ASC" } });
     for(const record of records) {
         for(let player = 0; player < record.players.length; player++) {
             try {
