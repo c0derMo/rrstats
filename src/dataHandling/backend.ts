@@ -104,7 +104,7 @@ export async function importStandings(options: StandingsImportOptions, username:
     const notFoundPlayers = [];
     const competition = await database.getRepository(RRCompetiton).findOneBy({ uuid: options.compId });
     for(const placement of options.placements) {
-        const player = await database.getRepository(RRCompetiton).findOneBy({ name: placement.player });
+        const player = await database.getRepository(RRPlayer).findOneBy({ name: placement.player });
         if(player === null) {
             notFoundPlayers.push(placement.player);
         } else {
