@@ -389,7 +389,7 @@
                         }
                     },
                     timestampToString(timestamp) {
-                        return luxon.DateTime.fromISO(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)
+                        return luxon.DateTime.fromMillis(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)
                     },
                     mapAbbreviationToFullName(abv)  {
                         switch(abv) {
