@@ -22,6 +22,8 @@ export class RRMatch {
         bans: IRRBan[];
     @Column()
         timestamp: number;
+    @Column({ nullable: true })
+        hitmapsMatchId: string;
 }
 
 interface IRRMatchScore {

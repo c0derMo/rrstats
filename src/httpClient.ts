@@ -4,6 +4,7 @@ import  { parse } from "csv-parse";
 import {csvParser, ParserConfigOverrides} from "./gDriveIntegration";
 import { config } from 'dotenv';
 import {RRMatch} from "./models/Match";
+import {HitmapsMatch, HitmapsTournamentMatch, parseHitmapsTournaments} from "./hitmapsIntegration";
 config();
 
 type Cache = {
@@ -12,7 +13,8 @@ type Cache = {
     },
     newGDrive: {
         [key: string]: GDriveCache
-    }
+    },
+    hitmapsTournament: Record<string, number>
 }
 
 type DiscordCache = {
@@ -34,7 +36,8 @@ interface DiscordResponse {
 
 const cache: Cache = {
     discordPB: {},
-    newGDrive: {}
+    newGDrive: {},
+    hitmapsTournament: {}
 }
 
 const discordID = process.env.DISCORD_TOKEN;
@@ -97,4 +100,27 @@ export async function getGDriveData(link: string, name: string, config: ParserCo
     // Also, we want to recalculate the leaderboard everytime we get new google data (i think)
     await recalculate(data);
     return data;
+}
+
+export async function getHitmapsTournament(slug: string): Promise<void> {
+    if (cache.hitmapsTournament !== undefined) {
+        if (cache.hitmapsTournament[slug] !== undefined && Date.now() - cache.hitmapsTournament[slug] < 900000) {
+            console.log(`\x1b[34m${new Date().toString()}      Last hitmaps call isn't too far in the past\x1b[0m`)
+            return;
+        }
+    } else {
+        cache.hitmapsTournament = {};
+    }
+
+    const req = await axios.get(`https://tournamentsapi.hitmaps.com/api/events/${slug}/statistics?statsKey=MatchHistory`);
+    await parseHitmapsTournaments((req.data as {matches: HitmapsTournamentMatch[]}).matches)
+    cache.hitmapsTournament[slug] = Date.now();
+
+    console.log(`\x1b[34m${new Date().toString()}      Added new hitmaps tournaments matches to database\x1b[0m`)
+}
+
+export async function getHitmapsMatches(matches: string[]): Promise<HitmapsMatch[]> {
+    const listOfMatches = matches.join(",");
+    const req = await axios.get(`https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`)
+    return (req.data as {matches: HitmapsMatch[]}).matches;
 }

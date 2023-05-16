@@ -25,8 +25,10 @@ export class RRCompetiton {
         officialCompetition: boolean;
     @Column()
         sortingIndex: number;
-    @Column({ nullable: true, type: "simple-json"})
+    @Column({ nullable: true, type: "simple-json" })
         parserOptions: ParserConfigOverrides;
+    @Column({ nullable: true })
+        hitmapsSlug: string;
 }
 
 interface IRRCompetitionPlacement {
