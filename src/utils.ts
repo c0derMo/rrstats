@@ -51,6 +51,54 @@ export function mapAbbreviationToArrayIndex(abv) {
     }
 }
 
+export function mapSlugToAbbreviation(slug: string): string {
+    switch (slug) {
+        // Season 1
+        case "the-showstopper":
+            return "PAR"
+        case "world-of-tomorrow":
+            return "SAP"
+        case "a-gilded-cage":
+            return "MAR"
+        case "club-27":
+            return "BKK"
+        case "freedom-fighters":
+            return "COL"
+        case "situs-inversus":
+            return "HOK"
+
+        // Season 2
+        case "finish-line":
+            return "MIA"
+        case "three-headed-serpent":
+            return "SF"
+        case "chasing-a-ghost":
+            return "MUM"
+        case "another-life":
+            return "WC"
+        case "ark-society":
+            return "SGA"
+        case "golden-handshake":
+            return "NY"
+        case "the-last-resort":
+            return "HAV"
+
+        // Season 3
+        case "on-top-of-the-world":
+            return "DUB"
+        case "death-in-the-family":
+            return "DAR"
+        case "apex-predator":
+            return "BER"
+        case "end-of-an-era":
+            return "CHO"
+        case "the-farewell":
+            return "MEN"
+        case "shadows-in-the-water":
+            return "AMB"
+    }
+}
+
 interface JsonChanges {
     path: string;
     oldValue?: unknown;

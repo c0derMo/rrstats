@@ -73,6 +73,11 @@
                                                                     </v-col>
                                                                 </v-row>
                                                                 <v-row>
+                                                                    <v-col cols="12" md="4">
+                                                                        <v-text-field v-model="itemEdit.hitmapsSlug" label="Hitmaps Slug" prepend-icon="mdi-cog"></v-text-field>
+                                                                    </v-col>
+                                                                </v-row>
+                                                                <v-row>
                                                                     <v-col cols="24" md="8">
                                                                         <v-btn @click="addPlacement">Add placement</v-btn>
                                                                         <v-simple-table>
@@ -193,6 +198,7 @@
                             gid: "",
                             updateWithSheet: false,
                             placements: [],
+                            hitmapsSlug: "",
                             sortingIndex: 0
                         },
                         defaultItem: {
@@ -205,6 +211,7 @@
                             gid: "",
                             updateWithSheet: false,
                             placements: [],
+                            hitmapsSlug: "",
                             sortingIndex: 0
                         },
                         editIndex: -1,

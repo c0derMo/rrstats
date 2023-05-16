@@ -4,7 +4,6 @@ import {Parser} from "csv-parse";
 import { database } from "./databaseManager";
 import { RRPlayer } from "./models/Player";
 import { Not } from "typeorm";
-import { randomUUID } from "crypto";
 
 function monthToIndex(month: string): number {
     switch(month) {
@@ -237,18 +236,16 @@ export async function csvParser(obj: Parser, competition: string, configOverride
                 bans.push(ban);
             }
 
-            const match: RRMatch = {
-                uuid: randomUUID(),
-                bans: bans,
-                competition: competition.replace("\n", ""),
-                maps: maps,
-                platform: bracket.replace("\n", ""),
-                player1: player1.replace("\n", ""),
-                player2: player2.replace("\n", ""),
-                round: round.replace("\n", ""),
-                score: score,
-                timestamp: datetime.toMillis()
-            }
+            const match = new RRMatch();
+            match.bans = bans
+            match.competition = competition.replace("\n", "")
+            match.maps = maps
+            match.platform = bracket.replace("\n", "")
+            match.player1 = player1.replace("\n", "")
+            match.player2 = player2.replace("\n", "")
+            match.round = round.replace("\n", "")
+            match.score = score
+            match.timestamp = datetime.toMillis()
 
             matches.push(match);
         } else if(isMap(line[mapsCol]) && line[resultCol+1] !== "-") {

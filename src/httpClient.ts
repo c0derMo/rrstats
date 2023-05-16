@@ -5,6 +5,7 @@ import {csvParser, ParserConfigOverrides} from "./gDriveIntegration";
 import { config } from 'dotenv';
 import {RRMatch} from "./models/Match";
 import {HitmapsMatch, HitmapsTournamentMatch, parseHitmapsTournaments} from "./hitmapsIntegration";
+import {RRCompetiton} from "./models/Competitions";
 config();
 
 type Cache = {
@@ -102,9 +103,9 @@ export async function getGDriveData(link: string, name: string, config: ParserCo
     return data;
 }
 
-export async function getHitmapsTournament(slug: string): Promise<void> {
+export async function getHitmapsTournament(competition: RRCompetiton): Promise<void> {
     if (cache.hitmapsTournament !== undefined) {
-        if (cache.hitmapsTournament[slug] !== undefined && Date.now() - cache.hitmapsTournament[slug] < 900000) {
+        if (cache.hitmapsTournament[competition.hitmapsSlug] !== undefined && Date.now() - cache.hitmapsTournament[competition.hitmapsSlug] < 900000) {
             console.log(`\x1b[34m${new Date().toString()}      Last hitmaps call isn't too far in the past\x1b[0m`)
             return;
         }
@@ -112,9 +113,9 @@ export async function getHitmapsTournament(slug: string): Promise<void> {
         cache.hitmapsTournament = {};
     }
 
-    const req = await axios.get(`https://tournamentsapi.hitmaps.com/api/events/${slug}/statistics?statsKey=MatchHistory`);
-    await parseHitmapsTournaments((req.data as {matches: HitmapsTournamentMatch[]}).matches)
-    cache.hitmapsTournament[slug] = Date.now();
+    const req = await axios.get(`https://tournamentsapi.hitmaps.com/api/events/${competition.hitmapsSlug}/statistics?statsKey=MatchHistory`);
+    await parseHitmapsTournaments((req.data as {matches: HitmapsTournamentMatch[]}).matches, competition)
+    cache.hitmapsTournament[competition.hitmapsSlug] = Date.now();
 
     console.log(`\x1b[34m${new Date().toString()}      Added new hitmaps tournaments matches to database\x1b[0m`)
 }

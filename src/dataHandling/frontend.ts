@@ -1,6 +1,6 @@
-import { IsNull } from 'typeorm';
+import {IsNull, Not} from 'typeorm';
 import { database } from '../databaseManager';
-import { getGDriveData, getDiscordProfilePictureURL } from '../httpClient';
+import {getGDriveData, getDiscordProfilePictureURL, getHitmapsTournament} from '../httpClient';
 import { RRCompetiton } from '../models/Competitions';
 import { RRMatch } from '../models/Match';
 import { RRPlayer } from '../models/Player';
@@ -18,6 +18,12 @@ export async function getPlayer(name: string): Promise<object> {
     const playerInfo = await database.getRepository(RRPlayer).findOneBy({ name: name });
     let title = playerInfo?.title || "";
 
+    const newestHitmapsData = await database.getRepository(RRCompetiton).find({ where: {hitmapsSlug: Not(IsNull())}, order: { "sortingIndex": "DESC"} });
+    for (const e of newestHitmapsData) {
+        await getHitmapsTournament(e);
+    }
+
+    // TODO: This'll break lol
     let matches = await database.getRepository(RRMatch).findBy([ {player1: name}, {player2: name} ]);
     if(title === "" && matches.length > 0) {
         title = "Returning Rival";
