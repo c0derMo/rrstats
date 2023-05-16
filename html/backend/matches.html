@@ -281,20 +281,20 @@
                     },
                     timeToEdit: {
                         get: function() {
-                            return luxon.DateTime.fromMillis(this.itemEdit.timestamp).toFormat("HH':'mm':'ss");
+                            return luxon.DateTime.fromISO(this.itemEdit.timestamp).toFormat("HH':'mm':'ss");
                         },
                         set: function(newValue) {
-                            let oldDT = luxon.DateTime.fromMillis(this.itemEdit.timestamp);
+                            let oldDT = luxon.DateTime.fromISO(this.itemEdit.timestamp);
                             let parsedValue = newValue.split(":");
                             this.itemEdit.timestamp = oldDT.set({hour: parseInt(parsedValue[0]), minute: parseInt(parsedValue[1]), second: parseInt(parsedValue[2])}).toISO();
                         }
                     },
                     dateToEdit: {
                         get: function() {
-                            return luxon.DateTime.fromMillis(this.itemEdit.timestamp).toFormat("yyyy'-'MM'-'dd");
+                            return luxon.DateTime.fromISO(this.itemEdit.timestamp).toFormat("yyyy'-'MM'-'dd");
                         },
                         set: function(newValue) {
-                            let oldDT = luxon.DateTime.fromMillis(this.itemEdit.timestamp);
+                            let oldDT = luxon.DateTime.fromISO(this.itemEdit.timestamp);
                             let parsedValue = newValue.split("-");
                             this.itemEdit.timestamp = oldDT.set({year: parseInt(parsedValue[0]), month: parseInt(parsedValue[1]), day: parseInt(parsedValue[2])}).toISO();
                         }
