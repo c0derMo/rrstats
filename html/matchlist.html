@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Matches - RR Player Statistics</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+        <style>
+            html { overflow-y: auto }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-btn href="/" icon><v-icon>mdi-arrow-left-circle</v-icon></v-btn>
+                    <v-container fluid>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col md="8" align="center">
+                                <h1 style="font-size: 3.2rem">Roulette Rivals Matches</h1>
+                                <br>
+                                <span style="font-style: italic">
+                                    This page displays all finished matches of the currently running Roulette Rivals tournament.
+                                </span>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row>
+                            <v-spacer></v-spacer>
+                            <v-col justify="center" md="10">
+                                <v-simple-table>
+                                    <template v-slot:default>
+                                        <thead>
+                                            <tr>
+                                                <th>Date & Time</th>
+                                                <th>Round</th>
+                                                <th>Player 1</th>
+                                                <th></th>
+                                                <th>Player 2</th>
+                                                <th>Bans</th>
+                                                <th>Maps</th>
+                                                <th>Shoutcast</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template v-for="(match, idx) in matches" :key="match.uuid">
+                                                <tr>
+                                                    <td>{{ formatTimestamp(match.timestamp) }}</td>
+                                                    <td>{{ match.round }}</td>
+                                                    <td>
+                                                        <a :href="'/' + match.player1">{{ match.player1 }}</a>
+                                                    </td>
+                                                    <td>
+                                                        <v-chip>{{ match.score.player1Points }} - {{ match.score.player2Points }}</v-chip>
+                                                    </td>
+                                                    <td>
+                                                        <a :href="'/' + match.player2">{{ match.player2 }}</a>
+                                                    </td>
+                                                    <td>
+                                                        <v-tooltip bottom v-for="(ban, idx) in match.bans" :key="idx">
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <v-chip v-bind="attrs" v-on="on" :color="getMapColor(ban.map)">
+                                                                    {{ ban.map }}
+                                                                </v-chip>
+                                                            </template>
+                                                            <span>Map: {{ mapAbbreviationToFullName(ban.map) }}</span><br>
+                                                            <span>Banned by: {{ playerNumberToName(ban.bannedBy, match, "") }}</span>
+                                                        </v-tooltip>
+                                                    </td>
+                                                    <td>
+                                                        <v-tooltip bottom v-for="(map, idx) in match.maps" :key="idx">
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <v-chip v-bind="attrs" v-on="on" :color="getMapColor(map.map)">
+                                                                    {{ map.map }}
+                                                                </v-chip>
+                                                            </template>
+                                                            <span>Map: {{ mapAbbreviationToFullName(map.map) }}</span><br>
+                                                            <span>Picked by: {{ playerNumberToName(map.pickedBy, match, "RNG") }}</span><br>
+                                                            <span v-if="map.forfeit">Map won by forfeit</span><br>
+                                                            <span>Won by: {{ playerNumberToName(map.pickedBy, match, "Tie") }}</span>
+                                                        </v-tooltip>
+                                                    </td>
+                                                    <td>COMING SOON :tm:</td>
+                                                </tr>
+                                                <tr v-if="checkDay(idx)" height="20">
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </template>
+                                </v-simple-table>
+                            </v-col>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
+        <script>
+            let vue = new Vue({
+                el: '#app',
+                vuetify: new Vuetify({theme: { dark: true }}),
+                data() {
+                    return {
+                        matches: []
+                    }
+                },
+                async created() {
+                    let matchData = await axios.get('/api/matches');
+
+                    this.matches = matchData.data.sort((a, b) => {
+                        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+                    });
+                },
+                methods: {
+                    formatTimestamp(timestamp) {
+                        return luxon.DateTime.fromMillis(timestamp).toLocaleString(luxon.DateTime.DATETIME_FULL)
+                    },
+                    playerNumberToName(number, match, defaultValue) {
+                        if (number == 1) return match.player1;
+                        if (number == 2) return match.player2;
+                        return defaultValue;
+                    },
+                    getMapColor(map) {
+                        switch(map) {
+                            // Season 1
+                            case "PAR":
+                                return "#f76b5f"
+                            case "SAP":
+                                return "#a1bbee"
+                            case "MAR":
+                                return "#f5d468"
+                            case "BKK":
+                                return "#dc9fbb"
+                            case "COL":
+                                return "#c5a38b"
+                            case "HOK":
+                                return "#96ccc8"
+
+                            // Season 2
+                            case "MIA":
+                                return "#f964ba"
+                            case "SF":
+                                return "#3cbb39"
+                            case "MUM":
+                                return "#c1a3ef"
+                            case "WC":
+                                return "#f8b459"
+                            case "SGA":
+                                return "#9e9b9b"
+                            case "NY":
+                                return "#c6a641"
+                            case "HAV":
+                                return "#48dfcf"
+
+                            // Season 3
+                            case "DUB":
+                                return "#df9850"
+                            case "DAR":
+                                return "#7e91b9"
+                            case "BER":
+                                return "#9ab995"
+                            case "CHO":
+                                return "#e453da"
+                            case "MEN":
+                                return "#c55869"
+                            case "AMB":
+                                return "#70cab2"
+
+                            default:
+                                return "red"
+                        }
+                    },
+                    mapAbbreviationToFullName(map) {
+                        switch(map) {
+                            // Season 1
+                            case "PAR":
+                                return "Paris"
+                            case "SAP":
+                                return "Sapienza"
+                            case "MAR":
+                                return "Marrakesh"
+                            case "BKK":
+                                return "Bangkok"
+                            case "COL":
+                                return "Colorado"
+                            case "HOK":
+                                return "Hokkaido"
+
+                            // Season 2
+                            case "MIA":
+                                return "Miami"
+                            case "SF":
+                                return "Santa Fortuna"
+                            case "MUM":
+                                return "Mumbai"
+                            case "WC":
+                                return "Whittleton Creek"
+                            case "SGA":
+                                return "Isle of Sgàil"
+                            case "NY":
+                                return "New York"
+                            case "HAV":
+                                return "Haven Island"
+
+                            // Season 3
+                            case "DUB":
+                                return "Dubai"
+                            case "DAR":
+                                return "Dartmoor"
+                            case "BER":
+                                return "Berlin"
+                            case "CHO":
+                                return "Chongqing"
+                            case "MEN":
+                                return "Mendoza"
+                            case "AMB":
+                                return "Ambrose Island"
+
+                            default:
+                                return "Unknown"
+                        }
+                    },
+                    checkDay(index) {
+                        if (index+1 === this.matches.length) return false;
+                        const currentDT = luxon.DateTime.fromMillis(this.matches[index].timestamp);
+                        const nextDT = luxon.DateTime.fromMillis(this.matches[index+1].timestamp);
+                        if (currentDT.day != nextDT.day) return true;
+                        return false;
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>

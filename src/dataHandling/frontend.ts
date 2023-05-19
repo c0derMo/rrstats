@@ -67,3 +67,10 @@ export async function getPlayer(name: string): Promise<object> {
         customTitle: playerInfo?.customTitle || false
     }
 }
+
+export async function getMatches(): Promise<RRMatch[]> {
+    const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC"} });
+    const newestComp = allComps[0];
+
+    return await database.getRepository(RRMatch).findBy({ competition: newestComp.tag });
+}

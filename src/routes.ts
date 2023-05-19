@@ -1,4 +1,4 @@
-import { getAllCompetitions, getAllPlayers, getPlayer } from './dataHandling/frontend';
+import {getAllCompetitions, getAllPlayers, getMatches, getPlayer} from './dataHandling/frontend';
 import { getLeaderboardStat } from './dataHandling/leaderboards';
 import { getRecords } from './dataHandling/records';
 import { VERSION } from "./utils";
@@ -59,6 +59,16 @@ export function addRoutes(server: Server) {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/changelog');
             return h.file("html/changelog.html");
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/matches',
+        handler: (request, h) => {
+            if(maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/matches');
+            return h.file("html/matchlist.html");
         }
     })
 
@@ -148,6 +158,16 @@ export function addRoutes(server: Server) {
             if(maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/records');
             return h.response(await getRecords());
+        }
+    });
+
+    server.route({
+        method: 'GET',
+        path: '/api/matches',
+        handler: async (request, h) => {
+            if (maintenanceMode) return "This? This is maintenance.";
+            request.log(['get', 'info'], '/api/matches');
+            return h.response(await getMatches());
         }
     })
 
