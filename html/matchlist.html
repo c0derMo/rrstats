@@ -37,20 +37,17 @@
                                         <thead>
                                             <tr>
                                                 <th>Date & Time</th>
-                                                <th>Round</th>
                                                 <th>Player 1</th>
                                                 <th></th>
                                                 <th>Player 2</th>
                                                 <th>Bans</th>
                                                 <th>Maps</th>
-                                                <th>Shoutcast</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <template v-for="(match, idx) in matches" :key="match.uuid">
                                                 <tr>
                                                     <td>{{ formatTimestamp(match.timestamp) }}</td>
-                                                    <td>{{ match.round }}</td>
                                                     <td>
                                                         <a :href="'/' + match.player1">{{ match.player1 }}</a>
                                                     </td>
@@ -84,11 +81,8 @@
                                                             <span>Won by: {{ playerNumberToName(map.pickedBy, match, "Tie") }}</span>
                                                         </v-tooltip>
                                                     </td>
-                                                    <td>COMING SOON :tm:</td>
                                                 </tr>
                                                 <tr v-if="checkDay(idx)" height="20">
-                                                    <td></td>
-                                                    <td></td>
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>

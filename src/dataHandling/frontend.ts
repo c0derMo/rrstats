@@ -23,9 +23,12 @@ export async function getPlayer(name: string): Promise<object> {
         await getHitmapsTournament(e);
     }
 
-    // TODO: This'll break lol
     let matches = await database.getRepository(RRMatch).findBy([ {player1: name}, {player2: name} ]);
-    if(title === "" && matches.length > 0) {
+
+    const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC"} });
+    const newestComp = allComps[0];
+    const matchesPriorNewestComp = await database.getRepository(RRMatch).countBy([ {player1: name, competition: Not(newestComp.tag)}, {player2: name, competition: Not(newestComp.tag)}])
+    if(title === "" && matchesPriorNewestComp > 0) {
         title = "Returning Rival";
     } else if(title === "") {
         title = "Roulette Rookie";
@@ -69,6 +72,11 @@ export async function getPlayer(name: string): Promise<object> {
 }
 
 export async function getMatches(): Promise<RRMatch[]> {
+    const newestHitmapsData = await database.getRepository(RRCompetiton).find({ where: {hitmapsSlug: Not(IsNull())}, order: { "sortingIndex": "DESC"} });
+    for (const e of newestHitmapsData) {
+        await getHitmapsTournament(e);
+    }
+
     const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC"} });
     const newestComp = allComps[0];
 

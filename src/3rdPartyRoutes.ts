@@ -7,7 +7,7 @@ import { database } from "./databaseManager";
 import { RRPlayer } from "./models/Player";
 import { RRMatch } from "./models/Match";
 import { RRCompetiton } from "./models/Competitions";
-import { In } from "typeorm";
+import {In, Not} from "typeorm";
 import { RRRecord } from "./models/Record";
 import { RRUser } from "./models/User";
 
@@ -116,15 +116,17 @@ function addAPIRoutes(server: Server) {
 
             const requestedPlayer = await database.getRepository(RRPlayer).findOneBy({ discordId: discordId });
             if (!requestedPlayer) {
-                return h.response().code(404);
+                return h.response("Roulette Rookie");
             }
 
             if (requestedPlayer.title && !requestedPlayer.customTitle) {
                 return h.response(requestedPlayer.title);
             }
 
-            const matches = await database.getRepository(RRMatch).countBy([ {player1: requestedPlayer.name }, {player2: requestedPlayer.name}]);
-            if (matches > 0) {
+            const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC"} });
+            const newestComp = allComps[0];
+            const matchesPriorNewestComp = await database.getRepository(RRMatch).countBy([ {player1: requestedPlayer.name, competition: Not(newestComp.tag)}, {player2: requestedPlayer.name, competition: Not(newestComp.tag)}])
+            if (matchesPriorNewestComp > 0) {
                 return h.response("Returning Rival");
             } else {
                 return h.response("Roulette Rookie");

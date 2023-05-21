@@ -80,7 +80,7 @@ export async function parseHitmapsTournaments(matches: HitmapsTournamentMatch[],
         dbMatch.player1 = newMatch.competitors[0].challongeName;
         dbMatch.player2 = newMatch.competitors[1].challongeName;
         dbMatch.competition = competition.tag;
-        dbMatch.round = "Unknown";
+        dbMatch.round = "";
         dbMatch.timestamp = DateTime.fromISO(newMatch.matchScheduledAt).toMillis();
 
         let p1Score = 0;

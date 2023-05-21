@@ -11,9 +11,9 @@
     "bcrypt": "^5.0.1",
     "csv-parse": "^5.0.4",
     "dotenv": "^10.0.0",
-    "luxon": "^2.0.2",
+    "luxon": "2.5.2",
     "reflect-metadata": "^0.1.13",
-    "sqlite3": "^5.1.2",
+    "sqlite3": "^5.1.5",
     "twitter-api-v2": "^1.8.0",
     "typeorm": "^0.3.10"
   },
