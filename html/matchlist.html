@@ -78,7 +78,7 @@
                                                             <span>Map: {{ mapAbbreviationToFullName(map.map) }}</span><br>
                                                             <span>Picked by: {{ playerNumberToName(map.pickedBy, match, "RNG") }}</span><br>
                                                             <span v-if="map.forfeit">Map won by forfeit</span><br>
-                                                            <span>Won by: {{ playerNumberToName(map.pickedBy, match, "Tie") }}</span>
+                                                            <span>Won by: {{ playerNumberToName(map.winner, match, "Tie") }}</span>
                                                         </v-tooltip>
                                                     </td>
                                                 </tr>
