@@ -18,7 +18,11 @@ export async function getPlayer(name: string): Promise<object> {
     const playerInfo = await database.getRepository(RRPlayer).findOneBy({ name: name });
     let title = playerInfo?.title || "";
 
-    const newestHitmapsData = await database.getRepository(RRCompetiton).find({ where: {hitmapsSlug: Not(IsNull())}, order: { "sortingIndex": "DESC"} });
+    const newestHitmapsData = await database.getRepository(RRCompetiton).createQueryBuilder("comp")
+        .where("comp.hitmapsSlug IS NOT NULL")
+        .andWhere("comp.hitmapsSlug != ''")
+        .addOrderBy("comp.sortingIndex", "DESC")
+        .getMany();
     for (const e of newestHitmapsData) {
         await getHitmapsTournament(e);
     }
