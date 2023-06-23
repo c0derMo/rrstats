@@ -76,12 +76,17 @@ export async function getPlayer(name: string): Promise<object> {
 }
 
 export async function getMatches(): Promise<RRMatch[]> {
-    const newestHitmapsData = await database.getRepository(RRCompetiton).find({ where: {hitmapsSlug: Not(IsNull())}, order: { "sortingIndex": "DESC"} });
+    //const newestHitmapsData = await database.getRepository(RRCompetiton).find({ where: { hitmapsSlug: Not(IsNull()) }, order: { "sortingIndex": "DESC"} });
+    const newestHitmapsData = await database.getRepository(RRCompetiton).createQueryBuilder('comp')
+        .where('comp.hitmapsSlug IS NOT NULL')
+        .andWhere('comp.hitmapsSlug IS NOT ""')
+        .addOrderBy("sortingIndex", "DESC")
+        .getMany();
     for (const e of newestHitmapsData) {
         await getHitmapsTournament(e);
     }
 
-    const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC"} });
+    const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC" }, where: { officialCompetition: true } });
     const newestComp = allComps[0];
 
     return await database.getRepository(RRMatch).findBy({ competition: newestComp.tag });
