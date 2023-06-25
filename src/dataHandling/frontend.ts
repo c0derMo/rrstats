@@ -11,7 +11,7 @@ export async function getAllPlayers(): Promise<string[]> {
 }
 
 export async function getAllCompetitions(): Promise<object[]> {
-    return await database.getRepository(RRCompetiton).find({ select: {tag: true, officialCompetition: true}, order: { sortingIndex: 'DESC' }});
+    return await database.getRepository(RRCompetiton).find({ select: {tag: true, hitmapsStatsURL: true}, order: { sortingIndex: 'DESC' }});
 }
 
 export async function getPlayer(name: string): Promise<object> {

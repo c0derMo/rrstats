@@ -44,7 +44,7 @@
                                     <v-tab v-bind="attrs" v-on="on">Tournaments</v-tab>
                                   </template>
                                   <v-list>
-                                    <v-list-item v-for="comp in competitions" v-if="comp.officialCompetition" :href=`/matches?tournament=${comp.tag}` target="_blank" :key="comp.tag">
+                                    <v-list-item v-for="comp in competitions" v-if="comp.hitmapsStatsURL !== ''" :href=`/matches?tournament=${comp.tag}` :key="comp.tag">
                                       <v-list-item-title>{{ comp.tag }}</v-list-item-title>
                                     </v-list-item>
                                   </v-list>
