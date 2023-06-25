@@ -25,7 +25,9 @@ export interface HitmapsTournamentMatch {
         competitorName: string;
         selectionType: "Ban" | "Pick" | "Random";
         mapSlug: string;
-    }[]
+    }[];
+    platform: string;
+    round: number | null;
 }
 
 export interface HitmapsMatch {
@@ -77,11 +79,23 @@ export async function parseHitmapsTournaments(matches: HitmapsTournamentMatch[],
 
         const dbMatch = new RRMatch();
         dbMatch.hitmapsMatchId = newMatch.gameModeMatchId;
-        dbMatch.player1 = newMatch.competitors[0].challongeName;
-        dbMatch.player2 = newMatch.competitors[1].challongeName;
+        dbMatch.player1 = newMatch.competitors[0].challongeName.trim();
+        dbMatch.player2 = newMatch.competitors[1].challongeName.trim();
         dbMatch.competition = competition.tag;
         dbMatch.round = "";
         dbMatch.timestamp = DateTime.fromISO(newMatch.matchScheduledAt).toMillis();
+
+        if (newMatch.round !== null && newMatch.round !== undefined) {
+            if (newMatch.round < 0) {
+                dbMatch.round = `LB Round ${-newMatch.round}`;
+            } else {
+                dbMatch.round = `Round ${newMatch.round}`;
+            }
+        }
+
+        if (newMatch.platform !== "All") {
+            dbMatch.platform = newMatch.platform;
+        }
 
         let p1Score = 0;
         let p2Score = 0;
