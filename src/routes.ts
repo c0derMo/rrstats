@@ -167,7 +167,10 @@ export function addRoutes(server: Server) {
         handler: async (request, h) => {
             if (maintenanceMode) return "This? This is maintenance.";
             request.log(['get', 'info'], '/api/matches');
-            return h.response(await getMatches());
+
+            const tournament = request.query.tournament as string | undefined;
+
+            return h.response(await getMatches(tournament));
         }
     })
 

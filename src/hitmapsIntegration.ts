@@ -70,6 +70,11 @@ export async function parseHitmapsTournaments(matches: HitmapsTournamentMatch[],
         return m < 0;
     });
 
+    if (matchesToQuery.length <= 0) {
+        // We dont have any matches to query
+        return;
+    }
+
     const hitmapsMatches = await getHitmapsMatches(matchesToQuery.map(m => m.gameModeMatchId));
 
     // Create database matches for all matches that dont exist yet

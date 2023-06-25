@@ -21,11 +21,11 @@
                         <v-row>
                             <v-spacer></v-spacer>
                             <v-col md="8" align="center">
-                                <h1 style="font-size: 3.2rem">Roulette Rivals Matches</h1>
+                                <h1 style="font-size: 3.2rem">{{ pageTitle }}</h1>
                                 <br>
-                                <span style="font-style: italic">
-                                    This page displays all finished matches of the currently running Roulette Rivals tournament.
-                                </span>
+                                <v-alert type="info" outlined v-if="statsUrl !== ''">
+                                    HITMAPS has tournament-specific statistics available! Check them out <a :href="statsUrl" target="_blank">here</a>!
+                                </v-alert>
                             </v-col>
                             <v-spacer></v-spacer>
                         </v-row>
@@ -109,15 +109,26 @@
                 vuetify: new Vuetify({theme: { dark: true }}),
                 data() {
                     return {
-                        matches: []
+                        matches: [],
+                        pageTitle: "Roulette Rivals Matches",
+                        statsUrl: "",
                     }
                 },
                 async created() {
-                    let matchData = await axios.get('/api/matches');
+                    const tournament = (new URL(window.location)).searchParams.get("tournament");
 
-                    this.matches = matchData.data.sort((a, b) => {
+                    let urlToQuery = '/api/matches';
+                    if (tournament !== null) {
+                        urlToQuery += `?tournament=${tournament}`
+                    }
+
+                    let matchData = await axios.get(urlToQuery);
+
+                    this.matches = matchData.data.matches.sort((a, b) => {
                         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
                     });
+                    this.statsUrl = matchData.data.statsUrl;
+                    this.pageTitle = matchData.data.tournamentName + " - Matches";
                 },
                 methods: {
                     formatTimestamp(timestamp) {

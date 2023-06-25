@@ -1,4 +1,4 @@
-import {IsNull, Not} from 'typeorm';
+import {IsNull, Like, Not} from 'typeorm';
 import { database } from '../databaseManager';
 import {getGDriveData, getDiscordProfilePictureURL, getHitmapsTournament} from '../httpClient';
 import { RRCompetiton } from '../models/Competitions';
@@ -11,7 +11,7 @@ export async function getAllPlayers(): Promise<string[]> {
 }
 
 export async function getAllCompetitions(): Promise<object[]> {
-    return await database.getRepository(RRCompetiton).find({ select: {tag: true, hitmapsStatsURL: true}, order: { sortingIndex: 'DESC' }});
+    return await database.getRepository(RRCompetiton).find({ select: {tag: true, officialCompetition: true}, order: { sortingIndex: 'DESC' }});
 }
 
 export async function getPlayer(name: string): Promise<object> {
@@ -75,8 +75,7 @@ export async function getPlayer(name: string): Promise<object> {
     }
 }
 
-export async function getMatches(): Promise<RRMatch[]> {
-    //const newestHitmapsData = await database.getRepository(RRCompetiton).find({ where: { hitmapsSlug: Not(IsNull()) }, order: { "sortingIndex": "DESC"} });
+export async function getMatches(tournament?: string): Promise<{ matches: RRMatch[], statsUrl: string, tournamentName: string }> {
     const newestHitmapsData = await database.getRepository(RRCompetiton).createQueryBuilder('comp')
         .where('comp.hitmapsSlug IS NOT NULL')
         .andWhere('comp.hitmapsSlug IS NOT ""')
@@ -86,8 +85,19 @@ export async function getMatches(): Promise<RRMatch[]> {
         await getHitmapsTournament(e);
     }
 
-    const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC" }, where: { officialCompetition: true } });
-    const newestComp = allComps[0];
+    let tournamentToLookUp: RRCompetiton;
+    if (tournament === undefined || tournament === null) {
+        const allComps = await database.getRepository(RRCompetiton).find({ order: { "sortingIndex": "DESC" }, where: { officialCompetition: true } });
+        tournamentToLookUp = allComps[0];
+    } else {
+        tournamentToLookUp = await database.getRepository(RRCompetiton).findOneBy({ tag: tournament });
+    }
 
-    return await database.getRepository(RRMatch).findBy({ competition: newestComp.tag });
+
+    const matches = await database.getRepository(RRMatch).findBy({ competition: Like(tournamentToLookUp.tag) });
+    return {
+        matches,
+        statsUrl: tournamentToLookUp.hitmapsStatsURL,
+        tournamentName: tournamentToLookUp.name
+    }
 }
