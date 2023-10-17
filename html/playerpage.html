@@ -454,6 +454,7 @@
                         return "#555";
                     },
                     placementEnding(placement) {
+                        if(placement == null) return "GS";
                         if(placement >= 11 && placement <= 13) return "th";
                         if(placement % 10 == 3) return "rd";
                         if(placement % 10 == 2) return "nd";
