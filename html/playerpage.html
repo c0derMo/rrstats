@@ -96,7 +96,7 @@
                                     <template v-slot:item.maps="{ item }">
                                         <v-tooltip bottom v-for="(map, index) in item.maps" :key="index">
                                             <template v-slot:activator="{ on, attrs }">
-                                              <v-chip :key="index" v-bind="attrs" v-on="on" :color="getMapColor(item, map)">
+                                              <v-chip :key="index" v-bind="attrs" v-on="on" :color="getMapColor(item, map)"  @click="copySpin(map.spin)">
                                                     {{ map.map }}
                                                 </v-chip>
                                             </template>
@@ -247,6 +247,12 @@
                         },{
                             text: 'RR11',
                             value: 'RR11'
+                        },{
+                            text: 'RR12',
+                            value: 'RR12'
+                        },{
+                            text: 'RRWC2023',
+                            value: 'RRWC2023'
                         }],
                         mapPicksHeaders: [{
                             text: 'Map',
@@ -271,8 +277,8 @@
                             text: "Played",
                             value: "played"
                         }],
-                        mapWinratesComps: ['RR1', 'RR2', 'RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021', 'RR7', 'RR8', 'RR9','RRWC2022', 'RR10', 'RR11'],
-                        mapPicksComps: ['RR1', 'RR2', 'RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021', 'RR7', 'RR8', 'RR9','RRWC2022', 'RR10', 'RR11'],
+                        mapWinratesComps: ['RR1', 'RR2', 'RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021', 'RR7', 'RR8', 'RR9','RRWC2022', 'RR10', 'RR11','RR12','RRWC2023'],
+                        mapPicksComps: ['RR1', 'RR2', 'RR3', 'RRWC', 'RR4', 'RR5', 'RR6', 'RRWC2021', 'RR7', 'RR8', 'RR9','RRWC2022', 'RR10', 'RR11','RR12','RRWC2023'],
                         mapWinrates: [],
                         mapPicks: [],
                         winrate: "",
@@ -481,6 +487,15 @@
                             result.push(targetString);
                         }
                         return result;
+                    },
+                    copySpin(spin) {
+                        const input = document.createElement("textarea");
+                        input.style.opacity = 0;
+                        document.body.appendChild(input);
+                        input.value = this.spinToText(spin).join("\n");
+                        input.select();
+                        document.execCommand('copy');
+                        input.remove();
                     }
                 },
                 async created() {
