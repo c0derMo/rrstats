@@ -42,4 +42,49 @@ export interface IRRMap {
     winner: number;
     pickedBy: number;       // Picked by player
     forfeit?: boolean;
+    spin?: ISpin;
+}
+
+export interface ISpin {
+    mission: {
+        slug: string;
+        publicIdPrefix: number;
+        targets: {
+            name: string;
+            tileUrl: string;
+        }[];
+    };
+    targetConditions: {
+        target: {
+            name: string;
+            tileUrl: string;
+        };
+        killMethod: {
+            name: string;
+            tileUrl: string;
+            selectedVariant: string;
+        };
+        disguise: {
+            name: string;
+            tileUrl: string;
+        };
+        complications: {
+            name: string;
+            tileUrl: string;
+        }[];
+    }[];
+    additionalObjectives: {
+        objective: {
+            name: string;
+            tileUrl: string;
+        };
+        completionMethod: {
+            name: string;
+            tileUrl: string;
+        };
+        disguise: {
+            name: string;
+            tileUrl: string;
+        };
+    }[];
 }

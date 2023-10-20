@@ -103,7 +103,11 @@
                                             <span>Map: {{ mapAbbreviationToFullName(map.map) }}</span><br>
                                             <span>Picked by: {{ playerNumberToName(item, map.pickedBy, "RNG") }}</span><br>
                                             <span v-if="map.forfeit">Map won by forfeit</span><br>
-                                            <span>Won by: {{ playerNumberToName(item, map.winner, "Tie") }}</span>
+                                            <span>Won by: {{ playerNumberToName(item, map.winner, "Tie") }}</span><br>
+                                            <template v-if="map.spin != null">
+                                                <br><span>Spin: </span><br>
+                                                <span v-for="target of spinToText(map.spin)">{{ target }}<br></span>
+                                            </template>
                                         </v-tooltip>
                                     </template>
                                 </v-data-table>
@@ -460,6 +464,23 @@
                         if(placement % 10 == 2) return "nd";
                         if(placement % 10 == 1) return "st";
                         return "th";
+                    },
+                    spinToText(spin) {
+                        if (spin == null) return;
+                        let result = [];
+                        for (const target of spin.targetConditions) {
+                            let targetString = target.target.name + ": ";
+                            if (target.killMethod.selectedVariant != null) {
+                                targetString += target.killMethod.selectedVariant + " ";
+                            }
+                            targetString += target.killMethod.name + " as ";
+                            targetString += target.disguise.name;
+                            for (const complication of target.complications) {
+                                targetString += " (" + complication.name + ")";
+                            }
+                            result.push(targetString);
+                        }
+                        return result;
                     }
                 },
                 async created() {

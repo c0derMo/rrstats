@@ -24,7 +24,7 @@
                                 <h1 style="font-size: 3.2rem">Roulette Rivals Matches</h1>
                                 <br>
                                 <span style="font-style: italic">
-                                    This page displays all finished matches of the currently running Roulette Rivals tournament.
+                                    This page displays all finished matches of the currently running Roulette Rivals tournament. Hover over a map to see the spin played.
                                 </span>
                             </v-col>
                             <v-spacer></v-spacer>
@@ -79,6 +79,10 @@
                                                             <span>Picked by: {{ playerNumberToName(map.pickedBy, match, "RNG") }}</span><br>
                                                             <span v-if="map.forfeit">Map won by forfeit</span><br>
                                                             <span>Won by: {{ playerNumberToName(map.winner, match, "Tie") }}</span>
+                                                            <template v-if="map.spin != null">
+                                                                <br><span>Spin: </span><br>
+                                                                <span v-for="target of spinToText(map.spin)">{{ target }}<br></span>
+                                                            </template>
                                                         </v-tooltip>
                                                     </td>
                                                 </tr>
@@ -234,6 +238,23 @@
                         const nextDT = luxon.DateTime.fromMillis(this.matches[index+1].timestamp);
                         if (currentDT.day != nextDT.day) return true;
                         return false;
+                    },
+                    spinToText(spin) {
+                        if (spin == null) return;
+                        let result = [];
+                        for (const target of spin.targetConditions) {
+                            let targetString = target.target.name + ": ";
+                            if (target.killMethod.selectedVariant != null) {
+                                targetString += target.killMethod.selectedVariant + " ";
+                            }
+                            targetString += target.killMethod.name + " as ";
+                            targetString += target.disguise.name;
+                            for (const complication of target.complications) {
+                                targetString += " (" + complication.name + ")";
+                            }
+                            result.push(targetString);
+                        }
+                        return result;
                     }
                 }
             })

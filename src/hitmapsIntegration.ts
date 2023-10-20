@@ -1,10 +1,11 @@
 import {database} from "./databaseManager";
-import {IRRBan, IRRMap, RRMatch} from "./models/Match";
+import {IRRBan, IRRMap, ISpin, RRMatch} from "./models/Match";
 import {In} from "typeorm";
 import {getHitmapsMatches} from "./httpClient";
 import {RRCompetiton} from "./models/Competitions";
 import {DateTime} from "luxon";
 import {mapSlugToAbbreviation} from "./utils";
+import { recalculate } from "./dataHandling/leaderboards";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -25,7 +26,7 @@ export interface HitmapsTournamentMatch {
         competitorName: string;
         selectionType: "Ban" | "Pick" | "Random";
         mapSlug: string;
-    }[]
+    }[];
 }
 
 export interface HitmapsMatch {
@@ -44,6 +45,7 @@ export interface HitmapsMatch {
         chosenByName: string;
         complete: boolean;
         winnerName: string;
+        spin: ISpin;
     }[]
 }
 
@@ -108,7 +110,8 @@ export async function parseHitmapsTournaments(matches: HitmapsTournamentMatch[],
             maps.push({
                 map: mapSlugToAbbreviation(map.hitmapsSlug),
                 winner,
-                pickedBy
+                pickedBy,
+                spin: map.spin,
             });
         }
 
@@ -142,5 +145,6 @@ export async function parseHitmapsTournaments(matches: HitmapsTournamentMatch[],
 
         await database.getRepository(RRMatch).save(dbMatch);
     }
-
+    
+    await recalculate();
 }
