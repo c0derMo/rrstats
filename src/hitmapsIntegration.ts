@@ -27,6 +27,8 @@ export interface HitmapsTournamentMatch {
         selectionType: "Ban" | "Pick" | "Random";
         mapSlug: string;
     }[];
+    platform: string;
+    round: number | null;
 }
 
 export interface HitmapsMatch {
@@ -70,6 +72,11 @@ export async function parseHitmapsTournaments(matches: HitmapsTournamentMatch[],
         return m < 0;
     });
 
+    if (matchesToQuery.length <= 0) {
+        // We dont have any matches to query
+        return;
+    }
+
     const hitmapsMatches = await getHitmapsMatches(matchesToQuery.map(m => m.gameModeMatchId));
 
     // Create database matches for all matches that dont exist yet
@@ -79,11 +86,23 @@ export async function parseHitmapsTournaments(matches: HitmapsTournamentMatch[],
 
         const dbMatch = new RRMatch();
         dbMatch.hitmapsMatchId = newMatch.gameModeMatchId;
-        dbMatch.player1 = newMatch.competitors[0].challongeName;
-        dbMatch.player2 = newMatch.competitors[1].challongeName;
+        dbMatch.player1 = newMatch.competitors[0].challongeName.trim();
+        dbMatch.player2 = newMatch.competitors[1].challongeName.trim();
         dbMatch.competition = competition.tag;
         dbMatch.round = "";
         dbMatch.timestamp = DateTime.fromISO(newMatch.matchScheduledAt).toMillis();
+
+        if (newMatch.round !== null && newMatch.round !== undefined) {
+            if (newMatch.round < 0) {
+                dbMatch.round = `LB Round ${-newMatch.round}`;
+            } else {
+                dbMatch.round = `Round ${newMatch.round}`;
+            }
+        }
+
+        if (newMatch.platform !== "All") {
+            dbMatch.platform = newMatch.platform;
+        }
 
         let p1Score = 0;
         let p2Score = 0;

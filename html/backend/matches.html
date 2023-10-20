@@ -281,7 +281,7 @@
                     },
                     timeToEdit: {
                         get: function() {
-                            return luxon.DateTime.fromISO(this.itemEdit.timestamp).toFormat("HH':'mm':'ss");
+                            return luxon.DateTime.fromSQL(this.itemEdit.timestamp).toFormat("HH':'mm':'ss");
                         },
                         set: function(newValue) {
                             let oldDT = luxon.DateTime.fromISO(this.itemEdit.timestamp);
@@ -291,7 +291,7 @@
                     },
                     dateToEdit: {
                         get: function() {
-                            return luxon.DateTime.fromISO(this.itemEdit.timestamp).toFormat("yyyy'-'MM'-'dd");
+                            return luxon.DateTime.fromSQL(this.itemEdit.timestamp).toFormat("yyyy'-'MM'-'dd");
                         },
                         set: function(newValue) {
                             let oldDT = luxon.DateTime.fromISO(this.itemEdit.timestamp);
@@ -372,6 +372,7 @@
                 },
                 async created() {
                     let matches = await axios.get("/backend/api/matches");
+                    console.log(matches);
                     this.matches = matches.data;
                 }
             })
