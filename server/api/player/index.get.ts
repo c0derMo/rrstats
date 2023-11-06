@@ -5,9 +5,15 @@ import HitmapsIntegration from '../../controller/HitmapsIntegration';
 import { Competition } from '~/server/model/Competition';
 
 export default defineEventHandler(async (event) => {
-    const playerName = getRouterParam(event, 'player');
+    const query = getQuery(event);
+    let playerName;
+    if (query.player !== undefined) {
+        playerName = query.player as string;
+    } else {
+        playerName = "";
+    }
 
-    const competitionsToUpdate = await Competition.find({ where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) }, select: ['hitmapsSlug'] });
+    const competitionsToUpdate = await Competition.find({ where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) }, select: ['hitmapsSlug', 'tag'] });
     for (const competitionToUpdate of competitionsToUpdate) {
         await HitmapsIntegration.updateHitmapsTournament(competitionToUpdate.hitmapsSlug!, competitionToUpdate.tag);
     }

@@ -21,11 +21,14 @@ export type IMapRecord = {
 }
 
 export enum GenericRecordType {
+    LONGEST_REGULAR_MATCH = "Longest regular match",
     SHORTEST_MATCH_2MAPS = "Shortest match with 2+ maps",
-    LONGEST_DECIDER = "Longest decider"
+    SHORTEST_MATCH_3MAPS = "Shortest match with 3+ maps",
+    LONGEST_DECIDER = "Longest decider",
+    SHORTEST_DECIIDER = "Shortest decider"
 }
 
-const retiredRecords = [GenericRecordType.LONGEST_DECIDER]
+const retiredRecords = [GenericRecordType.LONGEST_DECIDER, GenericRecordType.LONGEST_REGULAR_MATCH]
 
 export const isRetiredRecord = (type: GenericRecordType): boolean => {
     if (retiredRecords.includes(type)) {

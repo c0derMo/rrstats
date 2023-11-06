@@ -13,11 +13,11 @@
             <div class="grid grid-cols-2 gap-x-32 gap-y-3 my-5">
                 <div v-if="match.bannedMaps.length > 0">
                     Ban:
-                    <Tag v-for="ban in playerOneBans">{{ getMap(ban.map)?.name }}</Tag>
+                    <Tag v-for="ban in playerOneBans" :color="getMap(ban.map)!.color">{{ getMap(ban.map)!.name }}</Tag>
                 </div>
                 <div v-if="match.bannedMaps.length > 0">
                     Ban:
-                    <Tag v-for="ban in playerTwoBans">{{ getMap(ban.map)?.name }}</Tag>
+                    <Tag v-for="ban in playerTwoBans" :color="getMap(ban.map)!.color">{{ getMap(ban.map)!.name }}</Tag>
                 </div>
             </div>
             <div class="grid grid-cols-6 gap-2">
@@ -37,11 +37,11 @@
                     </div>
                     <div class="col-span-3">
                         Spin started at:
-                        <Tag>{{ timestampToLocale(map.startedTimestamp) }}</Tag>
+                        {{ map.startedTimestamp > 0 ? timestampToLocale(map.startedTimestamp) : 'unknown' }}
                     </div>
                     <div class="col-span-3 mb-10">
                         Finished after:
-                        <Tag>{{ map.endedTimestamp > 0 ? durationToLocale(map.endedTimestamp - map.startedTimestamp) : 'unknown' }}</Tag>
+                        {{ map.endedTimestamp > 0 ? durationToLocale(map.endedTimestamp - map.startedTimestamp) : 'unknown' }}
                         <span v-if="!map.timeAccurate"> (estimate)</span>
                     </div>
                 </template>

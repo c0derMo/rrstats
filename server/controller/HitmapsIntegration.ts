@@ -76,6 +76,11 @@ export default class HitmapsIntegration {
     }
 
     private static async fetchHitmapsMatches(hitmapsMatchIds: string[]): Promise<HitmapsMatch[]> {
+        if (hitmapsMatchIds.length > 200) {
+            const listOne = hitmapsMatchIds.slice(0, 200);
+            const listTwo = hitmapsMatchIds.slice(200);
+            return (await this.fetchHitmapsMatches(listOne)).concat(await this.fetchHitmapsMatches(listTwo))
+        }
         const listOfMatches = hitmapsMatchIds.join(",");
         const req = await axios.get<{matches: HitmapsMatch[]}>(`https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`);
         return req.data.matches;
@@ -118,7 +123,7 @@ export default class HitmapsIntegration {
             return;
         }
 
-        const matchesToQuery = matches.filter((rawMatch) => {
+        const matchesToQuery = matches.filter(rawMatch => rawMatch.gameModeMatchId !== "00000000-0000-0000-0000-000000000000").filter((rawMatch) => {
             return !existingMatches.some((m) => m.hitmapsMatchId === rawMatch.gameModeMatchId);
         });
 
@@ -138,7 +143,7 @@ export default class HitmapsIntegration {
 
             // Figuring out players
             match.playerOne = await this.createOrFindPlayer(newMatch.competitors[0].discordId, newMatch.competitors[0].challongeName.trim())
-            match.playerTwo = await this.createOrFindPlayer(newMatch.competitors[1].discordId, newMatch.competitors[0].challongeName.trim())
+            match.playerTwo = await this.createOrFindPlayer(newMatch.competitors[1].discordId, newMatch.competitors[1].challongeName.trim())
 
             let p1Score = 0;
             let p2Score = 0;

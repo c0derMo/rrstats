@@ -1,6 +1,6 @@
 <template>
     <MatchDetailsDialog v-if="matchToShow != null" @clickOutside="matchToShow = null" :match="matchToShow" :opponents="players" />
-    <TableComponent :headers="headers" :rows="matches">
+    <DataTableComponent :headers="headers" :rows="matches">
         <template v-slot:playerOne="{ value }">
             {{ players[value as string] || `Unknown player (${value})` }}
         </template>
@@ -30,7 +30,7 @@
                 <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
             </ButtonComponent>
         </template>
-    </TableComponent>
+    </DataTableComponent>
 </template>
 
 <script setup lang="ts">
@@ -44,7 +44,7 @@ library.add(faEllipsisH);
 
 const headers = [
     { title: 'Competition', key: 'competition' },
-    { title: 'Round', key: 'round' },
+    { title: '', key: 'round' },
     { title: 'Player 1', key: 'playerOne' },
     { title: 'Score', key: 'score' },
     { title: 'Player 2', key: 'playerTwo' },

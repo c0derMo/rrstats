@@ -71,6 +71,10 @@ const tournament = useRoute().query.tournament;
 const data = (await useFetch("/api/matches", { query: { tournament } })).data;
 const competition = (await useFetch("/api/competitions", { query: { tag: tournament }})).data;
 
+useHead({
+    title: `${competition.value?.name} - RRStats v3`
+});
+
 const sortedMatches = computed(() => {
     if (data.value === null) {
         return [];

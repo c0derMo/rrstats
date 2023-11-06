@@ -1,7 +1,7 @@
 <template>
     <div class="p-2 border rounded w-fit inline-block dark:border-neutral-500">
         <select class="bg-transparent" v-model="value">
-            <option v-for="(item, idx) of convertedItems" :key="idx" :value="item.value">{{ item.text }}</option>
+            <option v-for="(item, idx) of convertedItems" :key="idx" :value="item.value" class="dark:bg-neutral-500">{{ item.text }}</option>
         </select>
     </div>
 </template>

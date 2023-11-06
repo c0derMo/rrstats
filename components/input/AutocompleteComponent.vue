@@ -34,7 +34,7 @@ const currentSuggestions = computed(() => {
     if (value.value === "") {
         return [];
     }
-    return props.suggestions.filter(v => v.toLowerCase().includes(value.value.toLowerCase()) && v != value.value);
+    return props.suggestions.filter(v => v.toLowerCase().includes(value.value.toLowerCase()) && v != value.value).slice(0, 8);
 });
 
 function onKeyDown(event: KeyboardEvent) {

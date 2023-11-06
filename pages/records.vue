@@ -26,6 +26,10 @@
 <script setup lang="ts">
 import { isRetiredRecord } from '~/utils/interfaces/IRecord';
 
+useHead({
+    title: "Records - RRStats v3"
+});
+
 const records = (await useFetch("/api/records")).data;
 
 const mapRecords = computed(() => {
