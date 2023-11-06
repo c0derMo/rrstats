@@ -14,10 +14,10 @@ export default defineEventHandler(async (event) => {
     let records: (IMapRecord | IGenericRecord)[] = [];
 
     if (query.map !== undefined) {
-        records = await MapRecord.findBy({ map: query.map as number });
+        records = await MapRecord.find({ where: { map: query.map as number }, order: { timestamp: 'ASC' } });
     }
     if (query.generic !== undefined) {
-        records = await GenericRecord.findBy({ record: query.generic as GenericRecordType });
+        records = await GenericRecord.find({ where: { record: query.generic as GenericRecordType}, order: { timestamp: 'ASC' }  });
     }
 
     if (records.length === 0) {

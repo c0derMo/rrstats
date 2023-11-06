@@ -67,11 +67,11 @@ const data = computed(() => {
     const sortedRecords = records.value?.toSorted((a, b) => a.timestamp - b.timestamp) || [];
 
     // Finding the first record in our timeframe
-    let currentRecordIndex = sortedRecords.findIndex(r => r.timestamp >= startDate.toSeconds()) - 1;
+    let currentRecordIndex = sortedRecords.findIndex(r => r.timestamp >= startDate.toMillis()) - 1;
     if (currentRecordIndex < 0) currentRecordIndex = 0;
 
     for (let i = 0; i < amountDays; i++) {
-        if (sortedRecords[currentRecordIndex+1]?.timestamp < startDate.plus({ days: i }).toSeconds()) {
+        if (sortedRecords[currentRecordIndex+1]?.timestamp < startDate.plus({ days: i }).toMillis()) {
             currentRecordIndex++;
         }
 
@@ -85,7 +85,7 @@ const data = computed(() => {
         }
 
 
-        data.push({y: sortedRecords[currentRecordIndex].time, x: startDate.plus({ days: i }).toSeconds(), recordHolders });
+        data.push({y: sortedRecords[currentRecordIndex].time, x: startDate.plus({ days: i }).toMillis(), recordHolders });
     }
 
     return data;
