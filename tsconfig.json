@@ -1,9 +1,4 @@
 {
-    "compilerOptions": {
-        "outDir": "out",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-    },
-    "include": ["src/*"],
-    "exclude": ["src/scripts/*"]
+  // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json"
 }

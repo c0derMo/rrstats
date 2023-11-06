@@ -1,21 +1,75 @@
-# rrstats
-[![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://forthebadge.com)
+# Nuxt 3 Minimal Starter
 
-Website for displaying statistics about Roulette Rivals-players.
+Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-# Deployed version
-To visit the official version, go to [the website](https://rrstats.currymaker.net).
+## Setup
 
-# Development
-Unorganized notes about development:
-- Frontend & backend are split. Frontend is developed using Vue & Vuetify, backend using TypeORM with sqlite & Hapi.
-- Use `yarn build` to build the project, `yarn start` to run it, `yarn deploy` to create a "deployment-ready" version in `deploy/*`.
-- Use `yarn clean` to clean builds & deployments.
-- There are windows alternatives for `yarn deploy` and `yarn clean` called `yarn deploy-win` and `yarn clean-win`.
-- This project is linted using ESLint and a redicilous config, linted using `yarn lint`.
-- ~~too many errors have been ignored~~
+Make sure to install the dependencies:
 
-# Environment variables
-- `DISCORD_TOKEN`: Token for accessing the discord API to grab player profile pictures.
-- `DATABASE`: Database name for the sqlite database.
-- `TWITTER_API_KEY`, `TWITTER_API_SECRET`, `TWITTER_ACCESS_TOKEN`, `TWITTER_TOKEN_SECRET`: For accessing the twitter API to tweet from the backend.
+```bash
+# npm
+npm install
+
+# pnpm
+pnpm install
+
+# yarn
+yarn install
+
+# bun
+bun install
+```
+
+## Development Server
+
+Start the development server on `http://localhost:3000`:
+
+```bash
+# npm
+npm run dev
+
+# pnpm
+pnpm run dev
+
+# yarn
+yarn dev
+
+# bun
+bun run dev
+```
+
+## Production
+
+Build the application for production:
+
+```bash
+# npm
+npm run build
+
+# pnpm
+pnpm run build
+
+# yarn
+yarn build
+
+# bun
+bun run build
+```
+
+Locally preview production build:
+
+```bash
+# npm
+npm run preview
+
+# pnpm
+pnpm run preview
+
+# yarn
+yarn preview
+
+# bun
+bun run preview
+```
+
+Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

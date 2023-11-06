@@ -1,0 +1,227 @@
+import axios from 'axios';
+import { Match } from '../model/Match';
+import { Player } from '../model/Player';
+import { In } from 'typeorm';
+import { DateTime } from 'luxon';
+import { HitmanMap, getMapBySlug } from '../../utils/mapUtils';
+import { Spin, RRMap, WinningPlayer, ChoosingPlayer, RRBannedMap } from '~/utils/interfaces/IMatch';
+
+export interface HitmapsTournamentMatch {
+    id: number;
+    challongeMatchId: number;
+    matchScheduledAt: string;
+    matchCompletedAt: string;
+    competitors: {
+        id: number;
+        bracketId: number;
+        discordId: string;
+        challongePlayerId: number;
+        challongeName: string;
+        countryCode: string;
+    }[];
+    gameModeMatchId: string;
+    maps: {
+        competitorId: number;
+        competitorName: string;
+        selectionType: "Ban" | "Pick" | "Random";
+        mapSlug: string;
+    }[];
+    platform: string;
+    round: number | null;
+}
+
+export interface HitmapsMatch {
+    matchupId: string;
+    participants: {
+        publicId: string;
+        name: string;
+        avatarUrl: string;
+        lastPing: string;
+        completeTime: null;
+        forfeit: boolean;
+    }[];
+    mapSelections: {
+        id: string;
+        hitmapsSlug: string;
+        chosenByName: string;
+        complete: boolean;
+        winnerName: string;
+        spin: Spin;
+        mapStartedAt: string;
+        winnerFinishedAt: string;
+        resultVerifiedAt: string;
+    }[]
+}
+
+export default class HitmapsIntegration {
+    
+    private static cache: Record<string, number> = {};
+
+    static async updateHitmapsTournament(hitmapsSlug: string): Promise<void> {
+        if (this.cache[hitmapsSlug] !== undefined) {
+            if (Date.now() - this.cache[hitmapsSlug] < 900000) {
+                // Cache is too old
+                return;
+            }
+        }
+
+        const request = await axios.get<{matches: HitmapsTournamentMatch[]}>(`https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`);
+        if (request.status !== 200) {
+            // Error out somehow
+            return;
+        }
+
+        await this.parseHitmapsTournament(request.data.matches);
+        this.cache[hitmapsSlug] = Date.now();
+    }
+
+    private static async fetchHitmapsMatches(hitmapsMatchIds: string[]): Promise<HitmapsMatch[]> {
+        const listOfMatches = hitmapsMatchIds.join(",");
+        const req = await axios.get<{matches: HitmapsMatch[]}>(`https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`);
+        return req.data.matches;
+    }
+
+    private static async createNewPlayer(primaryName: string, discordId: string): Promise<string> {
+        const player = new Player();
+        player.primaryName = primaryName;
+        player.discordId = discordId;
+        player.alternativeNames = [];
+        await player.save();
+        console.log('Creating new player ' + primaryName);
+        return player.uuid;
+    }
+
+    private static async parseHitmapsTournament(matches: HitmapsTournamentMatch[]) {
+
+        // Avoid adding duplicate matches
+        const existingMatches = await Match.find({
+            where: { hitmapsMatchId: In(matches.map(m => m.gameModeMatchId )) },
+            select: ['hitmapsMatchId']
+        });
+
+        if (existingMatches.length === matches.length) {
+            // We already have all matches, no new ones were added
+            return;
+        }
+
+        const matchesToQuery = matches.filter((rawMatch) => {
+            return !existingMatches.some((m) => m.hitmapsMatchId === rawMatch.gameModeMatchId);
+        });
+
+        if (matchesToQuery.length <= 0) {
+            return;
+        }
+
+        const hitmapsMatches = await this.fetchHitmapsMatches(matchesToQuery.map(m => m.gameModeMatchId));
+
+        for (const newMatch of matchesToQuery) {
+            const fullMatch = hitmapsMatches.find(m => m.matchupId === newMatch.gameModeMatchId);
+            if (!fullMatch) throw new Error('Got Hitmaps tournament match without detailed information');
+
+            const match = new Match();
+            match.hitmapsMatchId = newMatch.gameModeMatchId;
+            match.timestamp = DateTime.fromISO(newMatch.matchScheduledAt).toMillis();
+
+            // Figuring out players
+            const dbPlayerOne = await Player.findOneBy({ discordId: newMatch.competitors[0].discordId });
+            if (dbPlayerOne === null) {
+                // Player one doesn't exist - creating new
+                const newUUID = await this.createNewPlayer(newMatch.competitors[0].challongeName.trim(), newMatch.competitors[0].discordId);
+                match.playerOne = newUUID;
+            } else {
+                match.playerOne = dbPlayerOne.uuid;
+            }
+
+            const dbPlayerTwo = await Player.findOneBy({ discordId: newMatch.competitors[1].discordId });
+            if (dbPlayerTwo === null) {
+                // Player two doesn't exist - creating new
+                const newUUID = await this.createNewPlayer(newMatch.competitors[1].challongeName.trim(), newMatch.competitors[1].discordId);
+                match.playerTwo = newUUID;
+            } else {
+                match.playerTwo = dbPlayerTwo.uuid;
+            }
+
+            let p1Score = 0;
+            let p2Score = 0;
+            const picks: RRMap[] = [];
+            const bans: RRBannedMap[] = [];
+
+            for (const map of fullMatch.mapSelections) {
+                if (!map.complete) continue;
+
+                let winner = WinningPlayer.DRAW;
+                if (map.winnerName === fullMatch.participants[0].name) {
+                    winner = WinningPlayer.PLAYER_ONE;
+                    p1Score += 2;
+                } else if (map.winnerName === fullMatch.participants[1].name) {
+                    winner = WinningPlayer.PLAYER_TWO;
+                    p2Score += 2;
+                } else {
+                    p1Score += 1;
+                    p2Score += 1;
+                }
+
+                let pickedBy = ChoosingPlayer.RANDOM;
+                if (map.chosenByName === fullMatch.participants[0].name) pickedBy = ChoosingPlayer.PLAYER_ONE;
+                if (map.chosenByName === fullMatch.participants[1].name) pickedBy = ChoosingPlayer.PLAYER_TWO;
+
+                let endingTimestamp = -1;
+                if (map.winnerFinishedAt != null) {
+                    endingTimestamp = DateTime.fromISO(map.winnerFinishedAt).toMillis()
+                } else if (map.resultVerifiedAt != null) {
+                    endingTimestamp = DateTime.fromISO(map.resultVerifiedAt).toMillis();
+                }
+                
+                picks.push({
+                    map: getMapBySlug(map.hitmapsSlug)?.map || HitmanMap.PARIS,
+                    winner,
+                    picked: pickedBy,
+                    spin: map.spin,
+                    startedTimestamp: DateTime.fromISO(map.mapStartedAt).toMillis(),
+                    endedTimestamp: endingTimestamp,
+                });
+            }
+
+            for (const map of newMatch.maps) {
+                if (map.selectionType !== "Ban") continue;
+
+                let picked = ChoosingPlayer.RANDOM;
+                if (map.competitorId === newMatch.competitors[0].id) picked = ChoosingPlayer.PLAYER_ONE;
+                if (map.competitorId === newMatch.competitors[1].id) picked = ChoosingPlayer.PLAYER_TWO;
+
+                bans.push({
+                    map: getMapBySlug(map.mapSlug)?.map || HitmanMap.PARIS,
+                    picked
+                });
+            }
+
+            match.playedMaps = picks;
+            match.bannedMaps = bans;
+            match.playerOneScore = p1Score;
+            match.playerTwoScore = p2Score;
+
+            match.competition = "RRWC2023";
+            match.round = "ABC";
+
+            await match.save();
+
+            /*
+        dbMatch.competition = competition.tag;
+        dbMatch.round = "";
+
+        if (newMatch.round !== null && newMatch.round !== undefined) {
+            if (newMatch.round < 0) {
+                dbMatch.round = `LB Round ${-newMatch.round}`;
+            } else {
+                dbMatch.round = `Round ${newMatch.round}`;
+            }
+        }
+
+        if (newMatch.platform !== "All") {
+            dbMatch.platform = newMatch.platform;
+        }
+            */
+        }
+    }
+
+}

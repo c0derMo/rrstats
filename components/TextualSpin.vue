@@ -1,0 +1,33 @@
+<template>
+    <ul v-if="spin">
+        <li v-for="target in spin.targetConditions">
+            <span class="font-bold">{{ target.target.name }}</span>: {{ buildKillMethod(target.killMethod) }} as {{ target.disguise.name }} {{ buildComplications(target.complications) }}
+        </li>
+    </ul>
+</template>
+
+<script setup lang="ts">
+import { Spin } from '~/utils/interfaces/IMatch';
+
+defineProps({
+    'spin': {
+        type: Object as PropType<Spin>,
+        required: false
+    }
+});
+
+function buildKillMethod(method: { selectedVariant: string, name: string }): string {
+    if (method.selectedVariant !== null) {
+        return `${method.selectedVariant} ${method.name}`;
+    } else {
+        return method.name;
+    }
+}
+
+function buildComplications(complications: { name: string }[]): string {
+    if (complications.length <= 0) {
+        return "";
+    }
+    return `(${complications.map(c => c.name).join(', ')})`;
+}
+</script>
