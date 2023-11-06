@@ -57,7 +57,7 @@ export default class HitmapsIntegration {
     
     private static cache: Record<string, number> = {};
 
-    static async updateHitmapsTournament(hitmapsSlug: string): Promise<void> {
+    static async updateHitmapsTournament(hitmapsSlug: string, competitionSlug: string): Promise<void> {
         if (this.cache[hitmapsSlug] !== undefined) {
             if (Date.now() - this.cache[hitmapsSlug] < 900000) {
                 // Cache is too old
@@ -71,7 +71,7 @@ export default class HitmapsIntegration {
             return;
         }
 
-        await this.parseHitmapsTournament(request.data.matches);
+        await this.parseHitmapsTournament(request.data.matches, competitionSlug);
         this.cache[hitmapsSlug] = Date.now();
     }
 
@@ -91,7 +91,21 @@ export default class HitmapsIntegration {
         return player.uuid;
     }
 
-    private static async parseHitmapsTournament(matches: HitmapsTournamentMatch[]) {
+    private static async createOrFindPlayer(discordId: string, name: string): Promise<string> {
+        const playerInDb = await Player.findOne({ where: { discordId }, select: ['primaryName', 'alternativeNames', 'uuid', 'discordId']});
+        if (playerInDb === null) {
+            // Player doesn't exist - creating new
+            return await this.createNewPlayer(name, discordId);
+        } else {
+            if (playerInDb.primaryName != name && !playerInDb.alternativeNames.includes(name)) {
+                playerInDb.alternativeNames.push(name);
+                await playerInDb.save();
+            }
+            return playerInDb.uuid;
+        }
+    }
+
+    private static async parseHitmapsTournament(matches: HitmapsTournamentMatch[], tournamentSlug: string) {
 
         // Avoid adding duplicate matches
         const existingMatches = await Match.find({
@@ -123,23 +137,8 @@ export default class HitmapsIntegration {
             match.timestamp = DateTime.fromISO(newMatch.matchScheduledAt).toMillis();
 
             // Figuring out players
-            const dbPlayerOne = await Player.findOneBy({ discordId: newMatch.competitors[0].discordId });
-            if (dbPlayerOne === null) {
-                // Player one doesn't exist - creating new
-                const newUUID = await this.createNewPlayer(newMatch.competitors[0].challongeName.trim(), newMatch.competitors[0].discordId);
-                match.playerOne = newUUID;
-            } else {
-                match.playerOne = dbPlayerOne.uuid;
-            }
-
-            const dbPlayerTwo = await Player.findOneBy({ discordId: newMatch.competitors[1].discordId });
-            if (dbPlayerTwo === null) {
-                // Player two doesn't exist - creating new
-                const newUUID = await this.createNewPlayer(newMatch.competitors[1].challongeName.trim(), newMatch.competitors[1].discordId);
-                match.playerTwo = newUUID;
-            } else {
-                match.playerTwo = dbPlayerTwo.uuid;
-            }
+            match.playerOne = await this.createOrFindPlayer(newMatch.competitors[0].discordId, newMatch.competitors[0].challongeName.trim())
+            match.playerTwo = await this.createOrFindPlayer(newMatch.competitors[1].discordId, newMatch.competitors[0].challongeName.trim())
 
             let p1Score = 0;
             let p2Score = 0;
@@ -173,7 +172,7 @@ export default class HitmapsIntegration {
                 }
                 
                 picks.push({
-                    map: getMapBySlug(map.hitmapsSlug)?.map || HitmanMap.PARIS,
+                    map: getMapBySlug(map.hitmapsSlug)?.map ?? HitmanMap.PARIS,
                     winner,
                     picked: pickedBy,
                     spin: map.spin,
@@ -190,7 +189,7 @@ export default class HitmapsIntegration {
                 if (map.competitorId === newMatch.competitors[1].id) picked = ChoosingPlayer.PLAYER_TWO;
 
                 bans.push({
-                    map: getMapBySlug(map.mapSlug)?.map || HitmanMap.PARIS,
+                    map: getMapBySlug(map.mapSlug)?.map ?? HitmanMap.PARIS,
                     picked
                 });
             }
@@ -200,27 +199,21 @@ export default class HitmapsIntegration {
             match.playerOneScore = p1Score;
             match.playerTwoScore = p2Score;
 
-            match.competition = "RRWC2023";
-            match.round = "ABC";
+            match.competition = tournamentSlug;
+            match.round = "";
+            if (newMatch.round !== null && newMatch.round !== undefined) {
+                if (newMatch.round < 0) {
+                    match.round = `LB Round ${-newMatch.round}`;
+                } else {
+                    match.round = `Round ${newMatch.round}`;
+                }
+            }
+
+            if (newMatch.platform !== "All") {
+                match.platform = newMatch.platform;
+            }
 
             await match.save();
-
-            /*
-        dbMatch.competition = competition.tag;
-        dbMatch.round = "";
-
-        if (newMatch.round !== null && newMatch.round !== undefined) {
-            if (newMatch.round < 0) {
-                dbMatch.round = `LB Round ${-newMatch.round}`;
-            } else {
-                dbMatch.round = `Round ${newMatch.round}`;
-            }
-        }
-
-        if (newMatch.platform !== "All") {
-            dbMatch.platform = newMatch.platform;
-        }
-            */
         }
     }
 

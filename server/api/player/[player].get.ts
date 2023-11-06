@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
     const competitionsToUpdate = await Competition.find({ where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) }, select: ['hitmapsSlug'] });
     for (const competitionToUpdate of competitionsToUpdate) {
-        await HitmapsIntegration.updateHitmapsTournament(competitionToUpdate.hitmapsSlug as string);
+        await HitmapsIntegration.updateHitmapsTournament(competitionToUpdate.hitmapsSlug!, competitionToUpdate.tag);
     }
 
     const player = await Player.findOneBy({ primaryName: playerName });

@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
     const competition = await Competition.findOneBy({ tag: query.tag as string });
     if (competition?.updateWithHitmaps && competition.hitmapsSlug !== undefined) {
-        await HitmapsIntegration.updateHitmapsTournament(competition.hitmapsSlug);
+        await HitmapsIntegration.updateHitmapsTournament(competition.hitmapsSlug, competition.tag);
     }
 
     return competition;
