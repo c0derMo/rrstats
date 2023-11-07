@@ -69,6 +69,12 @@ const props = defineProps({
         required: false,
         default: false,
     },
+    defaultSortingOrder: {
+        type: String,
+        required: false,
+        default: "ASC",
+        validator: (v) => v === "ASC" || v === "DESC"
+    },
     rowsPerPage: {
         type: Array<number>,
         required: false,
@@ -99,8 +105,12 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
 });
 
 if (props.alwaysSort) {
-    sortingBy.value = convertedHeaders.value[0].key;
-    sortingOrder.value = 'ASC';
+    const firstSortable = convertedHeaders.value.find(v => !v.disableSort);
+    if (firstSortable === undefined) {
+        throw new Error("AlwaysSort enabled, but no sortable column found")
+    }
+    sortingBy.value = firstSortable.key;
+    sortingOrder.value = props.defaultSortingOrder as ("ASC" | "DESC");
 }
 
 const startIndex = computed(() => {

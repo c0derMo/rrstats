@@ -45,7 +45,7 @@
         <CardComponent>
             <TabbedContainer :tabs="['Maps', 'Time Heatmap']">
                 <template #Maps>
-                    <PlayerMapList :matches="player?.matches || []" :localPlayer="player?.uuid || ''" />
+                    <PlayerMapList :matches="player?.matches || []" :localPlayer="player?.uuid || ''" :competitions="competitions || []" />
                 </template>
                 <template v-slot:[tH]>
                     <PlaytimeHeatmap :matches="player?.matches || []" />
@@ -67,6 +67,7 @@ useHead({
 
 const tH = "Time Heatmap";
 const player = (await useFetch(`/api/player/?player=${route.params.player}`)).data;
+const competitions = (await useFetch("/api/competitions/list")).data;
 
 const wtl = computed(() => {
     const wins = player.value?.matches.filter((m) => {
