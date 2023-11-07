@@ -1,6 +1,10 @@
 <template>
     <MatchDetailsDialog v-if="matchToShow != null" @clickOutside="matchToShow = null" :match="matchToShow" :opponents="players" />
-    <DataTableComponent :headers="headers" :rows="matches">
+
+    <div class="w-4/5 mx-auto">
+        <TextInputComponent class="w-full mb-4" placeholder="Search" v-model="searchFilter" />
+    </div>
+    <DataTableComponent :headers="headers" :rows="filteredSortedMatches" :disableSort="true">
         <template v-slot:playerOne="{ value }">
             {{ players[value as string] || `Unknown player (${value})` }}
         </template>
@@ -53,6 +57,7 @@ const headers = [
 ];
 
 const matchToShow: Ref<IMatch | null> = ref(null);
+const searchFilter = ref("");
 
 const props = defineProps({
     'matches': {
@@ -69,6 +74,16 @@ const props = defineProps({
         type: String,
         required: true,
     }
+});
+
+const filteredSortedMatches = computed(() => {
+    return props.matches.filter((m) => {
+        if (searchFilter.value === "") return true;
+
+        const searchableValues = [m.competition, props.players[m.playerOne], props.players[m.playerTwo], m.round, ...m.playedMaps.map(map => getMap(map.map)!.abbreviation)];
+
+        return searchableValues.some(s => s.includes(searchFilter.value));
+    }).sort((a, b) => b.timestamp - a.timestamp);
 });
 
 function getMapColor(map: RRMap, match: IMatch): string {
