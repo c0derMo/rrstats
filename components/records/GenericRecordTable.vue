@@ -2,7 +2,7 @@
     <MatchDetailsDialog v-if="detailedMatch != null" :match="detailedMatch" :opponents="players" @clickOutside="detailedMatch = null" />
     <RecordHistoryDialog v-if="historyRecord != null" :genericRecord="historyRecord" :players="players" @clickOutside="historyRecord = null" />
 
-    <TableComponent :headers="headers" :rows="records">
+    <TableComponent :headers="headers" :rows="sortedRecords">
 
         <template v-slot:maps="{ value }">
             <Tag v-for="(time, map) in value" :color="getMap(Number(map))?.color" class="mr-2">
@@ -37,7 +37,7 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEllipsisH, faChartLine } from '@fortawesome/free-solid-svg-icons';
-import { IGenericRecord } from '~/utils/interfaces/IRecord';
+import { GenericRecordType, IGenericRecord } from '~/utils/interfaces/IRecord';
 import { IMatch } from '~/utils/interfaces/IMatch';
 import { Duration } from 'luxon';
 
@@ -56,7 +56,7 @@ const headers = [
 const detailedMatch: Ref<IMatch | null> = ref(null);
 const historyRecord: Ref<string | null> = ref(null);
 
-defineProps({
+const props = defineProps({
     'records': {
         type: Array<IGenericRecord>,
         required: true
@@ -81,4 +81,8 @@ function secondsToTime(seconds: number): string {
         return dur.toFormat("mm:ss")
     }
 }
+
+const sortedRecords = computed(() => {
+    return [...props.records].sort((a, b) => Object.values(GenericRecordType).findIndex(g => a.record === g) - Object.values(GenericRecordType).findIndex(g => b.record === g));
+})
 </script>
