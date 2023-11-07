@@ -1,8 +1,8 @@
 <template>
     <MatchDetailsDialog v-if="detailedMatch != null" :match="detailedMatch" :opponents="players" @clickOutside="detailedMatch = null" />
-    <RecordHistoryDialog v-if="historyMap != null" :map="historyMap" :players="players" @clickOutside="historyMap = null" />
+    <RecordHistoryDialog v-if="historyMap != null" :map="historyMap" @clickOutside="historyMap = null" />
 
-    <TableComponent :headers="headers" :rows="records">
+    <TableComponent :headers="headers" :rows="sortedRecords">
         <template v-slot:map="{ value }">
             <Tag :color="getMap(value as number)?.color">{{ getMap(value as number)?.name }}</Tag>
         </template>
@@ -43,6 +43,7 @@ import { faEllipsisH, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { IMapRecord } from '~/utils/interfaces/IRecord';
 import { IMatch } from '~/utils/interfaces/IMatch';
 import { Duration } from 'luxon';
+import { mergeProps } from 'vue';
 
 library.add(faEllipsisH);
 library.add(faChartLine);
@@ -59,7 +60,7 @@ const headers = [
 const detailedMatch: Ref<IMatch | null> = ref(null);
 const historyMap: Ref<number | null> = ref(null);
 
-defineProps({
+const props = defineProps({
     'records': {
         type: Array<IMapRecord>,
         required: true
@@ -84,4 +85,8 @@ function secondsToTime(seconds: number): string {
         return dur.toFormat("mm:ss")
     }
 }
+
+const sortedRecords = computed(() => {
+    return [...props.records].sort((a, b) => getAllMaps().findIndex(m => a.map === m) - getAllMaps().findIndex(m => b.map === m));
+})
 </script>

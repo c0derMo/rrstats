@@ -27,16 +27,18 @@ const props = defineProps({
     'genericRecord': {
         type: String,
         required: false,
-    },
-    'players': {
-        type: Object as PropType<Record<string, string>>,
-        required: false,
-        default: {}
     }
 });
 
 const label = getMap(props.map ?? -1)?.name ?? props.genericRecord ?? "";
 const records = (await useFetch("/api/records/history", { query: { map: props.map, generic: props.genericRecord } })).data;
+let playersToLookup: string[] = [];
+if (records.value !== undefined && props.map !== undefined) {
+    playersToLookup = (records.value as IMapRecord[]).map(p => p.player);
+} else if (records.value !== undefined && props.genericRecord !== undefined) {
+    playersToLookup = (records.value as IGenericRecord[]).map(p => p.players).reduce((a, b) => a.concat(b));
+}
+const players = (await useFetch("/api/player/lookup", { query: { players: playersToLookup }})).data;
 
 const selectedScale = ref('Year');
 const selectedYear = ref(DateTime.now().year);
@@ -77,11 +79,13 @@ const data = computed(() => {
 
         const recordHolders: string[] = [];
         const record = sortedRecords[currentRecordIndex];
-        if (isMapRecord(record)) {
-            recordHolders.push(props.players[record.player] || `Unknown player: ${record.player}`);
-        }
-        if (isGenericRecord(record)) {
-            recordHolders.push(...record.players.map(p => props.players[p] || `Unknown player: ${p}`));
+        if (players.value !== null) {
+            if (isMapRecord(record)) {
+                recordHolders.push((players.value as Record<string, string>)[record.player] || `Unknown player: ${record.player}`);
+            }
+            if (isGenericRecord(record)) {
+                recordHolders.push(...record.players.map(p => (players.value as Record<string, string>)[p] || `Unknown player: ${p}`));
+            }
         }
 
 
