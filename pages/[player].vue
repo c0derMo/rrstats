@@ -12,8 +12,11 @@
                         <h3 v-if="player?.alternativeNames && player?.alternativeNames.length > 0">Also played as: {{ player?.alternativeNames?.join(", ") }}</h3>
                     </div>
                     <div class="text-xl font-light text-right">
-                        <span class="italic opacity-75">Winrate: </span><span class="text-2xl w-20">{{ Math.round(winrate * 100) }}%</span><br>
-                        <span class="italic opacity-75">Map-Winrate: </span><span class="text-2xl w-20">{{ Math.round(mapWinrate * 100) }}%</span>
+                        <span class="italic opacity-75">Winrate: </span><span class="text-2xl">{{ Math.round(winrate * 100) }}%</span><br>
+                        <span class="italic opacity-75">Map-Winrate: </span><span class="text-2xl">{{ Math.round(mapWinrate * 100) }}%</span><br>
+                        <template v-if="debut !== undefined">
+                            <span class="italic opacity-75">Debut: </span><span class="text-2xl">{{ DateTime.fromMillis(debut.timestamp).toLocaleString(DateTime.DATE_SHORT) }} ({{ debut.competition }})</span>
+                        </template>
                     </div>
                 </div>
             </CardComponent>
@@ -57,6 +60,7 @@
 
 <script setup lang="ts">
 import { HitmanMap } from '#imports';
+import { DateTime } from 'luxon';
 import { ChoosingPlayer, IMatch, WinningPlayer } from '~/utils/interfaces/IMatch';
 
 const route = useRoute();
@@ -137,4 +141,11 @@ const pickedMaps = computed(() => {
         return undefined;
     }
 });
+
+const debut = computed(() => {
+    if (player.value?.matches === undefined) {
+        return undefined
+    }
+    return [...player.value.matches].sort((a, b) => a.timestamp - b.timestamp)[0];
+})
 </script>
