@@ -4,7 +4,7 @@
     <div class="w-4/5 mx-auto">
         <TextInputComponent class="w-full mb-4" placeholder="Search" v-model="searchFilter" />
     </div>
-    <DataTableComponent :headers="headers" :rows="filteredSortedMatches" :disableSort="true">
+    <DataTableComponent :headers="headers" :rows="filteredSortedMatches" :enableSorting="false">
         <template v-slot:playerOne="{ value }">
             {{ players[value as string] || `Unknown player (${value})` }}
         </template>

@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   typescript: { shim: false },
   modules: [ '@nuxtjs/tailwindcss' ],
   components: [{ path: '~/components', pathPrefix: false }],
+  runtimeConfig: {
+    discordToken: '',
+  },
   nitro: {
     plugins: ['~/server/index.ts'],
     esbuild: {

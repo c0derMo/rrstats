@@ -4,7 +4,7 @@
         <div class="flex flex-row gap-5 justify-center">
             <CardComponent class="md:w-3/5">
                 <div class="flex md:flex-row flex-col">
-                    <img class="rounded-full w-20 h-20 self-center" src="~/assets/defaultPB.png" alt="Player Profile Picture"/>
+                    <img class="rounded-full w-20 h-20 self-center" :src="avatar!" alt="Player Profile Picture"/>
                     <div class="flex-grow ml-5">
                         <h1 class="text-5xl">{{ route.params.player }}</h1>
                         <!-- <h3>{{ player?.uuid || "no player found" }}</h3> -->
@@ -68,6 +68,7 @@ useHead({
 const tH = "Time Heatmap";
 const player = (await useFetch(`/api/player/?player=${route.params.player}`)).data;
 const competitions = (await useFetch("/api/competitions/list")).data;
+const avatar = (await useFetch(`/api/player/avatar?player=${route.params.player}`)).data;
 
 const wtl = computed(() => {
     const wins = player.value?.matches.filter((m) => {
