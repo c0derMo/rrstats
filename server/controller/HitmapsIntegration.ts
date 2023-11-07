@@ -142,8 +142,12 @@ export default class HitmapsIntegration {
             match.timestamp = DateTime.fromISO(newMatch.matchScheduledAt).toMillis();
 
             // Figuring out players
-            match.playerOne = await this.createOrFindPlayer(newMatch.competitors[0].discordId, newMatch.competitors[0].challongeName.trim())
-            match.playerTwo = await this.createOrFindPlayer(newMatch.competitors[1].discordId, newMatch.competitors[1].challongeName.trim())
+            const playerOne = { name: fullMatch.participants[0].name.trim(), discordId: "" };
+            const playerTwo = { name: fullMatch.participants[1].name.trim(), discordId: "" };
+            playerOne.discordId = newMatch.competitors.find(c => c.challongeName.trim() === playerOne.name)!.discordId;
+            playerTwo.discordId = newMatch.competitors.find(c => c.challongeName.trim() === playerTwo.name)!.discordId;
+            match.playerOne = await this.createOrFindPlayer(playerOne.discordId, playerOne.name)
+            match.playerTwo = await this.createOrFindPlayer(playerTwo.discordId, playerTwo.name)
 
             let p1Score = 0;
             let p2Score = 0;
