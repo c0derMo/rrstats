@@ -1,10 +1,10 @@
 <template>
     <div class="relative">
         <TextInputComponent v-model="value" @keydown="onKeyDown" @focus-change="value => isFocussed = value" :placeholder="placeholder" class="w-full" />
-        <div class="z-10 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm" v-if="isFocussed && currentSuggestions.length > 0">
+        <div class="z-10 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm" v-if="(isDropdownFocussed || isFocussed) && currentSuggestions.length > 0" @mouseenter="isDropdownFocussed = true" @mouseleave="isDropdownFocussed = false">
             <div v-for="(suggestion, idx) of currentSuggestions" :key="idx" class="px-5 py-2 transition" :class="{
                 'bg-neutral-300 dark:bg-neutral-600': selectedSuggestion === idx,
-            }">
+            }" @click="confirmEntry(idx)">
                 {{ suggestion }}
             </div>
         </div>
@@ -15,6 +15,7 @@
 const value = ref("");
 const selectedSuggestion = ref(0);
 const isFocussed = ref(false);
+const isDropdownFocussed = ref(false);
 
 const emits = defineEmits(['confirm'])
 const props = defineProps({
@@ -46,12 +47,23 @@ function onKeyDown(event: KeyboardEvent) {
         selectedSuggestion.value = clampToRegion(selectedSuggestion.value-1, 0, currentSuggestions.value.length-1);
         event.preventDefault();
     }
-    if (event.key === 'Enter' || event.key === 'Tab') {
+    if (event.key === 'Enter') {
+        confirmEntry(selectedSuggestion.value);
+    }
+    if (event.key === 'Tab') {
         if (currentSuggestions.value.length != 0) {
-            value.value = currentSuggestions.value[selectedSuggestion.value];
-        } else {
-            emits('confirm', value.value);
+            confirmEntry(selectedSuggestion.value, true);
+            event.preventDefault();
         }
+    }
+}
+
+function confirmEntry(suggestionIndex?: number, disableEmit = false) {
+    if (suggestionIndex !== undefined && currentSuggestions.value.length != 0) {
+        value.value = currentSuggestions.value[suggestionIndex];
+    }
+    if (!disableEmit) {
+        emits('confirm', value.value);
     }
 }
 
