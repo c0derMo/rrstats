@@ -185,7 +185,9 @@ const winrateRows = computed(() => {
 
             maps[mapString].played += 1;
 
-            if (map.winner === WinningPlayer.PLAYER_ONE && match.playerOne === props.localPlayer || map.winner === WinningPlayer.PLAYER_TWO && match.playerTwo === props.localPlayer) {
+            if (map.winner === WinningPlayer.DRAW) {
+                maps[mapString].won += 0.5;
+            } else if (map.winner === WinningPlayer.PLAYER_ONE && match.playerOne === props.localPlayer || map.winner === WinningPlayer.PLAYER_TWO && match.playerTwo === props.localPlayer) {
                 maps[mapString].won += 1;
             }
         }
