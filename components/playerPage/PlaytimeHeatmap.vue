@@ -3,35 +3,13 @@
         <thead>
             <tr class="w-full">
                 <th></th>
-                <th>00 - 02</th>
-                <th>03 - 04</th>
-                <th>05 - 06</th>
-                <th>07 - 08</th>
-                <th>09 - 10</th>
-                <th>11 - 12</th>
-                <th>13 - 14</th>
-                <th>15 - 16</th>
-                <th>17 - 18</th>
-                <th>19 - 20</th>
-                <th>21 - 22</th>
-                <th>23 - 24</th>
+                <th v-for="timeslot in timeslots">{{ timeslot }}</th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="weekday, index in weekdays">
+            <tr v-for="weekday, index in weekdays" class="text-center transition-all">
                 <td>{{ weekday }}</td>
-                <td :class="getDayColorClass(index, 0)"></td>
-                <td :class="getDayColorClass(index, 1)"></td>
-                <td :class="getDayColorClass(index, 2)"></td>
-                <td :class="getDayColorClass(index, 3)"></td>
-                <td :class="getDayColorClass(index, 4)"></td>
-                <td :class="getDayColorClass(index, 5)"></td>
-                <td :class="getDayColorClass(index, 6)"></td>
-                <td :class="getDayColorClass(index, 7)"></td>
-                <td :class="getDayColorClass(index, 8)"></td>
-                <td :class="getDayColorClass(index, 9)"></td>
-                <td :class="getDayColorClass(index, 10)"></td>
-                <td :class="getDayColorClass(index, 11)"></td>
+                <td v-for="timeslot, tIndex in timeslots" :class="getDayColorClass(index, tIndex)" class="text-[0px] hover:text-base transition-all">{{ getMatchesInTimeslot(index, tIndex) }}</td>
             </tr>
         </tbody>
     </table>
@@ -42,18 +20,20 @@ import { DateTime } from 'luxon';
 import { IMatch } from '~/utils/interfaces/IMatch';
 
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const timeslots = ["00 - 01", "02 - 03", "04 - 05", "06 - 07", "08 - 09", "10 - 11", "12 - 13", "14 - 15", "16 - 17", "18 - 19", "20 - 21", "22 - 23"];
 
 const colorMap = {
-    0: 'bg-gray-900',
-    1: 'bg-blue-900',
-    2: 'bg-blue-800',
-    3: 'bg-blue-700',
-    4: 'bg-blue-600',
-    5: 'bg-blue-500',
-    6: 'bg-blue-400',
-    7: 'bg-blue-300',
-    8: 'bg-blue-200',
-    9: 'bg-blue-100',
+    0: 'bg-gray-900 text-white dark:text-white',
+    1: 'bg-blue-950 text-white dark:text-white',
+    2: 'bg-blue-900 text-white dark:text-white',
+    3: 'bg-blue-800 text-white dark:text-white',
+    4: 'bg-blue-700 text-white dark:text-white',
+    5: 'bg-blue-600 text-white dark:text-white',
+    6: 'bg-blue-500 text-white dark:text-white',
+    7: 'bg-blue-400 text-black dark:text-black',
+    8: 'bg-blue-300 text-black dark:text-black',
+    9: 'bg-blue-200 text-black dark:text-black',
+    10: 'bg-blue-100 text-black dark:text-black',
 } as Record<number, string>;
 
 const props = defineProps({
@@ -63,20 +43,25 @@ const props = defineProps({
     }
 });
 
-function getMatchesInTimeslot(weekday: number, timeslot: number): number {
-    const timeframeStart = timeslot * 2;
-    const timeframeEnd = timeframeStart + 1;
+const matchesInSlots = computed(() => {
+    const timeslots: number[] = Array(7 * 12).fill(0);
 
-    const matches = props.matches.filter((m) => {
-        const dt = DateTime.fromMillis(m.timestamp);
-        return dt.weekday === weekday && (dt.hour >= timeframeStart && dt.hour <= timeframeEnd);
-    });
-    return matches.length;
+    for (const match of props.matches) {
+        const dt = DateTime.fromMillis(match.timestamp);
+        const index = (dt.weekday - 1) * 12 + Math.floor(dt.hour / 2);
+        timeslots[index]++;
+    }
+
+    return timeslots;
+})
+
+function getMatchesInTimeslot(weekday: number, timeslot: number): number {
+    return matchesInSlots.value[weekday * 12 + timeslot];
 }
 
 function getDayColorClass(weekday: number, timeslot: number): string {
     const amountMatches = getMatchesInTimeslot(weekday, timeslot);
-    const percentage = amountMatches / props.matches.length;
+    const percentage = amountMatches / matchesInSlots.value.reduce((a, b) => Math.max(a, b));
     return colorMap[Math.ceil(percentage * 10)];
 }
 </script>
