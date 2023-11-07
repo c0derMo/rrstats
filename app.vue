@@ -4,6 +4,14 @@
         <div class="dark:text-white min-w-screen min-h-screen w-full h-full flex flex-col">
             <div class="dark:bg-slate-900 fixed w-full h-full -z-50"></div>
             <NuxtLayout>
+                <template #BackButton>
+                    <FontAwesomeIcon
+                        :icon="['fas', 'chevron-circle-left']"
+                        class="cursor-pointer"
+                        @click="$router.back()"
+                    />
+                </template>
+
                 <template #DarkModeToggle>
                     <div class="flex flex-row mt-2">
                         <FontAwesomeIcon
@@ -16,6 +24,7 @@
                         />
                     </div>
                 </template>
+
                 <NuxtLoadingIndicator />
                 <NuxtPage />
             </NuxtLayout>
@@ -26,10 +35,11 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+import { faSun, faMoon, faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faSun);
 library.add(faMoon);
+library.add(faChevronCircleLeft);
 
 const isDarkMode = ref(true);
 </script>

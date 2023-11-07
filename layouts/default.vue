@@ -1,6 +1,11 @@
 <template>
-    <div class="self-end mr-3 mt-1">
-        <slot name="DarkModeToggle" />
+    <div class="flex flex-row justify-between mt-1 mx-3">
+        <div>
+            <slot name="BackButton" />
+        </div>
+        <div>
+            <slot name="DarkModeToggle" />
+        </div>
     </div>
     <slot />
 </template>
