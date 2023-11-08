@@ -1,5 +1,5 @@
 <template>
-    <TableComponent :headers="['Opponent', 'Matches', 'W-T-L']" :rows="rows" />
+    <DataTableComponent :headers="headers" :rows="rows" :alwaysSort="true" />
 </template>
 
 <script setup lang="ts">
@@ -19,6 +19,21 @@ const props = defineProps({
         required: true
     }
 });
+
+const headers = [
+    { key: 'Opponent', title: 'Opponent', disableSort: true },
+    { key: 'Matches', title: 'Matches' },
+    { key: 'W-T-L', title: 'W-T-L', sort: (a: unknown, b: unknown) => {
+        const aSplit = (a as string).split("-").map(m => parseInt(m));
+        const bSplit = (b as string).split("-").map(m => parseInt(m));
+        const aScore = aSplit[0] + (aSplit[1] / 2);
+        const bScore = bSplit[0] + (bSplit[1] / 2);
+        const aMatches = aSplit[0] + aSplit[1] + aSplit[2]
+        const bMatches = bSplit[0] + bSplit[1] + bSplit[2]
+        console.log(`Sorting ${(aScore / aMatches)} vs ${(bScore / bMatches)}`)
+        return (aScore / aMatches) - (bScore / bMatches);
+    } }
+]
 
 const rows = computed(() => {
     const opponents: Record<string, { w: number, t: number, l: number }> = {};

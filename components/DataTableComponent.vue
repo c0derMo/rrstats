@@ -3,10 +3,10 @@
         <template v-for="header of convertedHeaders" :key="header.key" v-slot:[`header-${header.key}`]="{ value }">
             <span @click="changeSorting(header)" class="group">
                 <FontAwesomeIcon
-                    :icon="['fas', 'arrow-up']"
+                    :icon="['fas', 'arrow-down']"
                     :class="{
-                        'rotate-180': sortingOrder === 'DESC' && sortingBy === header.key,
-                        '!opacity-100': sortingBy === header.key,
+                        'rotate-180': sortingOrder === 'ASC' && sortingBy?.key === header.key,
+                        '!opacity-100': sortingBy?.key === header.key,
                         'group-hover:opacity-40': enableSorting && !header.disableSort
                     }"
                     class="transition opacity-0 mr-1"
@@ -40,15 +40,16 @@
 <script setup lang="ts" generic="R extends { [key in keyof any]: unknown }">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 interface ExtendedHeader {
     key: string,
     title: string,
     disableSort?: boolean,
+    sort?: (a: unknown, b: unknown) => number
 }
 
-library.add(faArrowUp);
+library.add(faArrowDown);
 
 const props = defineProps({
     headers: {
@@ -72,7 +73,7 @@ const props = defineProps({
     defaultSortingOrder: {
         type: String,
         required: false,
-        default: "ASC",
+        default: "DESC",
         validator: (v) => v === "ASC" || v === "DESC"
     },
     rowsPerPage: {
@@ -89,7 +90,7 @@ const props = defineProps({
 
 const selectedRowsPerPage = ref(props.defaultRowsPerPage);
 const selectedPage = ref(1);
-const sortingBy: Ref<string | null> = ref(null);
+const sortingBy: Ref<ExtendedHeader | null> = ref(null);
 const sortingOrder: Ref<"ASC" | "DESC" | null> = ref(null);
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
@@ -109,7 +110,7 @@ if (props.alwaysSort) {
     if (firstSortable === undefined) {
         throw new Error("AlwaysSort enabled, but no sortable column found")
     }
-    sortingBy.value = firstSortable.key;
+    sortingBy.value = firstSortable;
     sortingOrder.value = props.defaultSortingOrder as ("ASC" | "DESC");
 }
 
@@ -125,23 +126,23 @@ const filteredRows = computed(() => {
 
     if (sortingBy.value !== null && props.enableSorting) {
         result = result.sort((a, b) => {
-            const valA = a[sortingBy.value as string];
-            const valB = b[sortingBy.value as string];
+            const valA = a[sortingBy.value!.key];
+            const valB = b[sortingBy.value!.key];
+
+            if (sortingBy.value!.sort !== undefined) {
+                return sortingBy.value!.sort(valA, valB);
+            }
 
             if (!isNaN(valA as number) && !isNaN(valB as number)) {
-                if (sortingOrder.value === 'ASC') {
-                    return valA as number - (valB as number);
-                } else {
-                    return valB as number - (valA as number);
-                }
+                return valA as number - (valB as number);
             }
 
-            if (sortingOrder.value === 'ASC') {
-                return (valA as string).localeCompare((valB as string));
-            } else {
-                return (valB as string).localeCompare((valA as string));
-            }
+            return (valA as string).localeCompare((valB as string));
         });
+    }
+
+    if (sortingOrder.value === 'DESC') {
+        result.reverse();
     }
 
     result = result.slice(startIndex.value, endIndex.value);
@@ -165,17 +166,17 @@ function changeSorting(key: ExtendedHeader) {
     if (!props.enableSorting || key.disableSort) {
         return;
     }
-    if (sortingBy.value !== key.key) {
-        sortingBy.value = key.key;
-        sortingOrder.value = 'ASC';
+    if (sortingBy.value?.key !== key.key) {
+        sortingBy.value = key;
+        sortingOrder.value = 'DESC';
     } else {
         switch (sortingOrder.value) {
-            case 'ASC':
-                sortingOrder.value = 'DESC';
-                break;
             case 'DESC':
+                sortingOrder.value = 'ASC';
+                break;
+            case 'ASC':
                 if (props.alwaysSort) {
-                    sortingOrder.value = 'ASC';
+                    sortingOrder.value = 'DESC';
                 } else {
                     sortingBy.value = null;
                     sortingOrder.value = null;

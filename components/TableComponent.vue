@@ -2,7 +2,7 @@
     <table class="min-w-full text-left font-light">
         <thead class="border-b dark:border-neutral-500">
             <tr>
-                <th v-for="header of convertedHeaders" :key="header.key" class="px-6 py-2">
+                <th v-for="header of convertedHeaders" :key="header.key" class="px-3 py-2">
                     <slot :name="`header-${header.key}`" :value="header.title">
                         {{ header.title }}
                     </slot>
