@@ -16,7 +16,7 @@
             </template>
 
             <template v-slot:score="{ row }">
-                {{ row.playerOneScore }} - {{ row.playerTwoScore }}
+                <span class="whitespace-nowrap">{{ row.playerOneScore }} - {{ row.playerTwoScore }}</span>
             </template>
 
             <template v-slot:playerTwo="{ value }">
@@ -24,11 +24,15 @@
             </template>
 
             <template v-slot:bans="{ row }">
-                <Tag v-for="ban in row.bannedMaps" :color="getMap(ban.map)?.color">{{ getMap(ban.map)?.abbreviation }}</Tag>
+                <div class="flex flex-wrap">
+                    <Tag v-for="ban in row.bannedMaps" :color="getMap(ban.map)?.color">{{ getMap(ban.map)?.abbreviation }}</Tag>
+                </div>
             </template>
 
             <template v-slot:playedMaps="{ value }">
-                <Tag v-for="play in (value as RRMap[])" :color="getMap(play.map)?.color">{{ getMap(play.map)?.abbreviation }}</Tag>
+                <div class="flex flex-wrap">
+                    <Tag v-for="play in (value as RRMap[])" :color="getMap(play.map)?.color">{{ getMap(play.map)?.abbreviation }}</Tag>
+                </div>
             </template>
 
             <template v-slot:shoutcasters="{ value }">

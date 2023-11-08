@@ -10,6 +10,7 @@
                         'group-hover:opacity-40': enableSorting && !header.disableSort
                     }"
                     class="transition opacity-0 mr-1"
+                    v-if="enableSorting"
                 ></FontAwesomeIcon>
                 <slot :name="`header-${header.key}`" :value="header.title">
                     {{ value }}
@@ -18,11 +19,11 @@
         </template>
 
         <template v-for="header of convertedHeaders" :key="header.key" v-slot:[`${header.key}`]="{ value, row }">
-            <span class="ml-4">
+            <div :class="{ 'ml-4': enableSorting }">
                 <slot :name="header.key" :value="value" :row="row">
                     {{ value }}
                 </slot>
-            </span>
+            </div>
         </template>
     </TableComponent>
 
