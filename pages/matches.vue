@@ -25,13 +25,28 @@
 
             <template v-slot:bans="{ row }">
                 <div class="flex flex-wrap">
-                    <Tag v-for="ban in row.bannedMaps" :color="getMap(ban.map)?.color">{{ getMap(ban.map)?.abbreviation }}</Tag>
+                    <TooltipComponent v-for="ban in (row.bannedMaps as RRBannedMap[])">
+                        <Tag :color="getMap(ban.map)?.color">{{ getMap(ban.map)?.abbreviation }}</Tag>
+
+                        <template #tooltip>
+                            Map: {{ getMap(ban.map)?.name }}<br>
+                            Banned by: {{ getMapPicker(ban, row) }}
+                        </template>
+                    </TooltipComponent>
                 </div>
             </template>
 
-            <template v-slot:playedMaps="{ value }">
+            <template v-slot:playedMaps="{ value, row }">
                 <div class="flex flex-wrap">
-                    <Tag v-for="play in (value as RRMap[])" :color="getMap(play.map)?.color">{{ getMap(play.map)?.abbreviation }}</Tag>
+                    <TooltipComponent v-for="play in (value as RRMap[])">
+                        <Tag :color="getMap(play.map)?.color">{{ getMap(play.map)?.abbreviation }}</Tag>
+
+                        <template #tooltip>
+                            Map: {{ getMap(play.map)?.name }}<br>
+                            Picked by: {{ getMapPicker(play, row) }}<br>
+                            Won by: {{ getMapWinner(play, row) }}
+                        </template>
+                    </TooltipComponent>
                 </div>
             </template>
 
@@ -51,7 +66,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon';
-import { IMatch, RRMap } from '~/utils/interfaces/IMatch';
+import { ChoosingPlayer, IMatch, RRBannedMap, RRMap, WinningPlayer } from '~/utils/interfaces/IMatch';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
@@ -85,4 +100,18 @@ const sortedMatches = computed(() => {
     }
     return data.value.matches.sort((a, b) => b.timestamp - a.timestamp);
 })
+
+function getMapPicker(map: RRMap | RRBannedMap, match: IMatch): string {
+    if (map.picked === ChoosingPlayer.RANDOM) return "Random";
+    if (map.picked === ChoosingPlayer.PLAYER_ONE) return data.value?.players[match.playerOne] ?? "Unknown";
+    if (map.picked === ChoosingPlayer.PLAYER_TWO) return data.value?.players[match.playerTwo] ?? "Unknown";
+    return "Unknown";
+}
+
+function getMapWinner(map: RRMap, match: IMatch): string {
+    if (map.winner === WinningPlayer.DRAW) return "Draw";
+    if (map.winner === WinningPlayer.PLAYER_ONE) return data.value?.players[match.playerOne] ?? "Unknown";
+    if (map.winner === WinningPlayer.PLAYER_TWO) return data.value?.players[match.playerTwo] ?? "Unknown";
+    return "Unknown";
+}
 </script>

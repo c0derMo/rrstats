@@ -1,5 +1,5 @@
 <template>
-    <table class="min-w-full text-left font-light">
+    <table class="min-w-full text-left">
         <thead class="border-b dark:border-neutral-500">
             <tr>
                 <th v-for="header of convertedHeaders" :key="header.key" class="px-3 py-2">

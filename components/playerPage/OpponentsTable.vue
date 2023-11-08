@@ -1,5 +1,11 @@
 <template>
-    <DataTableComponent :headers="headers" :rows="rows" :alwaysSort="true" />
+    <DataTableComponent :headers="headers" :rows="rows" :alwaysSort="true">
+
+        <template v-slot:wtl="{ value }">
+            <span class="whitespace-nowrap">{{ value }}</span>
+        </template>
+
+    </DataTableComponent>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +29,7 @@ const props = defineProps({
 const headers = [
     { key: 'Opponent', title: 'Opponent', disableSort: true },
     { key: 'Matches', title: 'Matches' },
-    { key: 'W-T-L', title: 'W-T-L', sort: (a: unknown, b: unknown) => {
+    { key: 'wtl', title: 'W-T-L', sort: (a: unknown, b: unknown) => {
         const aSplit = (a as string).split("-").map(m => parseInt(m));
         const bSplit = (b as string).split("-").map(m => parseInt(m));
         const aScore = aSplit[0] + (aSplit[1] / 2);
@@ -59,7 +65,7 @@ const rows = computed(() => {
         result.push({
             'Opponent': props.opponents[opponent],
             'Matches': wtl.w + wtl.t + wtl.l,
-            'W-T-L': `${wtl.w}-${wtl.t}-${wtl.l}`
+            'wtl': `${wtl.w}-${wtl.t}-${wtl.l}`
         });
     }
     return result;

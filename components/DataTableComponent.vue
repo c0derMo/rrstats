@@ -1,7 +1,7 @@
 <template>
     <TableComponent :headers="convertedHeaders" :rows="filteredRows">
         <template v-for="header of convertedHeaders" :key="header.key" v-slot:[`header-${header.key}`]="{ value }">
-            <span @click="changeSorting(header)" class="group">
+            <span @click="changeSorting(header)" class="group whitespace-nowrap">
                 <FontAwesomeIcon
                     :icon="['fas', 'arrow-down']"
                     :class="{

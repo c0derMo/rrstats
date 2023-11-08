@@ -5,6 +5,16 @@
         <TextInputComponent class="w-full mb-4" placeholder="Search" v-model="searchFilter" />
     </div>
     <DataTableComponent :headers="headers" :rows="filteredSortedMatches" :enableSorting="false">
+        <template v-slot:round="{ value, row }">
+            <TooltipComponent>
+                {{ value }}
+
+                <template #tooltip>
+                    {{ DateTime.fromMillis(row.timestamp).toLocaleString(DateTime.DATETIME_FULL) }}
+                </template>
+            </TooltipComponent>
+        </template>
+
         <template v-slot:playerOne="{ value }">
             {{ players[value as string] || `Unknown player (${value})` }}
         </template>
@@ -20,13 +30,20 @@
         </template>
 
         <template v-slot:playedMaps="{ value, row }">
-            <Tag
-                v-for="map of value"
-                :color="getMapColor(map, row)"
-                class="ml-2"
-            >
-                {{ getMap((map as HitmanMapInfo).map)?.abbreviation }}
-            </Tag>
+            <TooltipComponent v-for="map of value">
+                <Tag
+                    :color="getMapColor(map, row)"
+                    class="ml-2"
+                >
+                    {{ getMap((map as RRMap).map)?.abbreviation }}
+                </Tag>
+                
+                <template #tooltip>
+                    Map: {{ getMap((map as RRMap).map)?.name }}<br>
+                    Picked by: {{ getMapPicker(map, row) }}<br>
+                    Won by: {{ getMapWinner(map, row) }}
+                </template>
+            </TooltipComponent>
         </template>
 
         <template v-slot:more="{ row }">
@@ -39,10 +56,11 @@
 
 <script setup lang="ts">
 import { PropType } from 'vue';
-import { IMatch, RRMap, WinningPlayer } from '~/utils/interfaces/IMatch';
+import { ChoosingPlayer, IMatch, RRMap, WinningPlayer } from '~/utils/interfaces/IMatch';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { DateTime } from 'luxon';
 
 library.add(faEllipsisH);
 
@@ -110,5 +128,19 @@ function getMatchColor(match: IMatch): string {
     } else {
         return '#f44336';
     }
+}
+
+function getMapPicker(map: RRMap, match: IMatch): string {
+    if (map.picked === ChoosingPlayer.RANDOM) return "Random";
+    if (map.picked === ChoosingPlayer.PLAYER_ONE) return props.players[match.playerOne];
+    if (map.picked === ChoosingPlayer.PLAYER_TWO) return props.players[match.playerTwo];
+    return "Unknown";
+}
+
+function getMapWinner(map: RRMap, match: IMatch): string {
+    if (map.winner === WinningPlayer.DRAW) return "Draw";
+    if (map.winner === WinningPlayer.PLAYER_ONE) return props.players[match.playerOne];
+    if (map.winner === WinningPlayer.PLAYER_TWO) return props.players[match.playerTwo];
+    return "Unknown";
 }
 </script>
