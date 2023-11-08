@@ -18,17 +18,17 @@
 
     <div class="flex md:flex-row flex-col gap-5">
         <div class="flex-grow">
-            <DataTableComponent :headers="pickedHeaders" :rows="pickedRows" :alwaysSort="true" defaultSortingOrder="DESC" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10" />
+            <DataTableComponent :headers="pickedHeaders" :rows="pickedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10" />
         </div>
         <div class="flex-grow">
-            <DataTableComponent :headers="winrateHeaders" :rows="winrateRows" :alwaysSort="true" defaultSortingOrder="DESC" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10">
+            <DataTableComponent :headers="winrateHeaders" :rows="winrateRows" :alwaysSort="true" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10">
                 <template v-slot:Winrate="{ value }">
                     {{ value }}%
                 </template>
             </DataTableComponent>
         </div>
         <div class="flex-grow">
-            <DataTableComponent :headers="bannedHeaders" :rows="bannedRows" :alwaysSort="true" defaultSortingOrder="DESC" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10" />
+            <DataTableComponent :headers="bannedHeaders" :rows="bannedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10" />
         </div>
     </div>
 </template>
