@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
     for (const genericRecordType of genericRecordTypes) {
         if (queriedTypes[genericRecordType.record] !== true) {
-            const genericRecord = await GenericRecord.findOneOrFail({ where: { record: genericRecordType.record }, order: { time: 'ASC' }, select: ['time'] });
+            const genericRecord = await GenericRecord.findOneOrFail({ where: { record: genericRecordType.record }, order: { timestamp: 'DESC' }, select: ['time'] });
             const allGenericRecordsWithTime = await GenericRecord.find({ where: { record: genericRecordType.record, time: genericRecord.time } });
 
             genericRecords.push(...allGenericRecordsWithTime);
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     }
     for (const mapWithRecord of mapsWithRecords) {
         if (queriedMaps[mapWithRecord.map] !== true) {
-            const mapRecord = await MapRecord.findOneOrFail({ where: { map: mapWithRecord.map }, order: { time: 'ASC' }, select: ['time'] });
+            const mapRecord = await MapRecord.findOneOrFail({ where: { map: mapWithRecord.map }, order: { timestamp: 'DESC' }, select: ['time'] });
             const allMapRecordsWithTime = await MapRecord.find({ where: { map: mapWithRecord.map, time: mapRecord.time } });
 
             mapRecords.push(...allMapRecordsWithTime);

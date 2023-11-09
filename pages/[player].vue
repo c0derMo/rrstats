@@ -31,16 +31,19 @@
 
         <div class="flex md:flex-row gap-5 flex-col">
             <CardComponent class="md:w-1/4">
-                <TabbedContainer :tabs="['Competitions', 'Opponents']">
+                <TabbedContainer :tabs="['Competitions', 'Opponents', 'Records']">
                     <template #Competitions>
                         <TableComponent :headers="['Competition', 'Placement']" :rows="[{'Competition': 'Roulette Rivals World Championship 2023', 'Placement': 'GS'}]" />
                     </template>
                     <template #Opponents>
                         <OpponentsTable :matches="player?.matches || []" :localPlayer="player?.uuid || ''" :opponents="player?.opponents || {}" />
                     </template>
+                    <template #Records>
+                        <PlayerRecordsList :player="player?.uuid || ''" />
+                    </template>
                 </TabbedContainer>
             </CardComponent>
-            <CardComponent class="flex-grow">
+            <CardComponent class="flex-grow overflow-x-visible">
                 <MatchList :matches="(player?.matches as IMatch[])" :players="player?.opponents" :localPlayer="player?.uuid || ''" />
             </CardComponent>
         </div>
