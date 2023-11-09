@@ -7,7 +7,7 @@
                 <template #BackButton>
                     <FontAwesomeIcon
                         :icon="['fas', 'chevron-circle-left']"
-                        class="cursor-pointer"
+                        class="cursor-pointer text-white"
                         @click="$router.back()"
                     />
                 </template>
@@ -16,11 +16,12 @@
                     <div class="flex flex-row mt-2">
                         <FontAwesomeIcon
                             :icon="['fas', 'sun']"
+                            class="text-white"
                         />
                         <SwitchComponent v-model="isDarkMode" id="light-dark" />
                         <FontAwesomeIcon
                             :icon="['fas', 'moon']"
-                            class="ml-3"
+                            class="ml-3 text-white"
                         />
                     </div>
                 </template>
@@ -42,4 +43,11 @@ library.add(faMoon);
 library.add(faChevronCircleLeft);
 
 const isDarkMode = ref(true);
+onMounted(() => {
+    isDarkMode.value = (window.localStorage.getItem('theme') === 'dark') || (window.localStorage.getItem('theme') === null && window.matchMedia('(prefers-color-scheme: dark)').matches)
+})
+
+watch(isDarkMode, () => {
+    window.localStorage.setItem('theme', isDarkMode.value ? 'dark' : 'light');
+});
 </script>
