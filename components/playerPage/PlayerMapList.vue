@@ -18,17 +18,17 @@
 
     <div class="flex md:flex-row flex-col gap-5">
         <div class="flex-grow">
-            <DataTableComponent :headers="pickedHeaders" :rows="pickedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10" />
+            <DataTableComponent :headers="pickedHeaders" :rows="pickedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" v-model:itemsPerPage="selectedMapsPerPage" defaultSortingKey="Picked" />
         </div>
         <div class="flex-grow">
-            <DataTableComponent :headers="winrateHeaders" :rows="winrateRows" :alwaysSort="true" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10">
+            <DataTableComponent :headers="winrateHeaders" :rows="winrateRows" :alwaysSort="true" :rowsPerPage="[10, 20]" v-model:itemsPerPage="selectedMapsPerPage" defaultSortingKey="Winrate">
                 <template v-slot:Winrate="{ value }">
                     {{ value }}%
                 </template>
             </DataTableComponent>
         </div>
         <div class="flex-grow">
-            <DataTableComponent :headers="bannedHeaders" :rows="bannedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" :defaultRowsPerPage="10" />
+            <DataTableComponent :headers="bannedHeaders" :rows="bannedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" v-model:itemsPerPage="selectedMapsPerPage" defaultSortingKey="Banned" />
         </div>
     </div>
 </template>
@@ -52,18 +52,22 @@ const props = defineProps({
     }
 });
 
+const selectedMapsPerPage = ref(10);
+
+const mapSort = (a: unknown, b: unknown) => { return getAllMaps().findIndex(m => getMap(m)!.name === b) - getAllMaps().findIndex(m => getMap(m)!.name === a) };
+
 const pickedHeaders = [
-    { key: "Map", title: "Map", disableSort: true },
+    { key: "Map", title: "Map", sort: mapSort },
     { key: "Picked", title: "Picked" },
 ];
 const winrateHeaders = [
-    { key: 'Map', title: 'Map', disableSort: true },
+    { key: 'Map', title: 'Map', sort: mapSort },
     { key: 'Winrate', title: 'Winrate' },
     { key: 'Won', title: 'Won' },
     { key: 'Played', title: 'Played' },
 ];
 const bannedHeaders = [
-    { key: "Map", title: "Map", disableSort: true },
+    { key: "Map", title: "Map", sort: mapSort },
     { key: "Banned", title: "Banned" },
 ];
 

@@ -71,6 +71,10 @@ const props = defineProps({
         required: false,
         default: false,
     },
+    defaultSortingKey: {
+        type: String,
+        required: false,
+    },
     defaultSortingOrder: {
         type: String,
         required: false,
@@ -82,17 +86,26 @@ const props = defineProps({
         required: false,
         default: [5, 10, 20]
     },
-    defaultRowsPerPage: {
+    itemsPerPage: {
         type: Number,
         required: false,
         default: 5
     }
 });
 
-const selectedRowsPerPage = ref(props.defaultRowsPerPage);
+const emits = defineEmits(['update:itemsPerPage']);
+
+const selectedRowsPerPage = ref(props.itemsPerPage);
 const selectedPage = ref(1);
 const sortingBy: Ref<ExtendedHeader | null> = ref(null);
 const sortingOrder: Ref<"ASC" | "DESC" | null> = ref(null);
+
+watch(selectedRowsPerPage, () => {
+    emits("update:itemsPerPage", selectedRowsPerPage.value);
+})
+watch(() => props.itemsPerPage, () => {
+    selectedRowsPerPage.value = props.itemsPerPage;
+});
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     if (props.headers.length === 0) {
@@ -107,11 +120,18 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
 });
 
 if (props.alwaysSort) {
-    const firstSortable = convertedHeaders.value.find(v => !v.disableSort);
-    if (firstSortable === undefined) {
-        throw new Error("AlwaysSort enabled, but no sortable column found")
+    if (props.defaultSortingKey) {
+        const searchedHeader = convertedHeaders.value.find(h => h.key === props.defaultSortingKey);
+        if (searchedHeader) {
+            sortingBy.value = searchedHeader;
+        }
+    } else {
+        const firstSortable = convertedHeaders.value.find(v => !v.disableSort);
+        if (firstSortable === undefined) {
+            throw new Error("AlwaysSort enabled, but no sortable column found")
+        }
+        sortingBy.value = firstSortable;
     }
-    sortingBy.value = firstSortable;
     sortingOrder.value = props.defaultSortingOrder as ("ASC" | "DESC");
 }
 
