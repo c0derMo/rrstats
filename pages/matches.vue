@@ -5,7 +5,9 @@
     <div class="flex flex-col gap-3 mx-10">
         <h1 class="text-center text-5xl bold">{{ competition?.name }} - Matches</h1>
 
-        <DataTableComponent :headers="headers" :rows="sortedMatches" :enable-sorting="false" :rows-per-page="[10, 25, 50, 100]" :default-rows-per-page="25" >
+        <GroupsTables v-if="competition?.groupsConfig !== null && competition?.groupsConfig !== undefined" :groupsInfo="competition.groupsConfig" :matches="sortedMatches" :players="data?.players ?? {}" />
+
+        <DataTableComponent :headers="headers" :rows="sortedMatches" :enable-sorting="false" :rows-per-page="[10, 25, 50, 100]" :items-per-page="25" >
 
             <template v-slot:timestamp="{ value }">
                 {{ DateTime.fromMillis(value as number).toLocaleString(DateTime.DATETIME_FULL) }}

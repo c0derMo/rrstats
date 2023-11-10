@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import { ICompetition } from "~/utils/interfaces/ICompetition";
+import { ICompetition, IGroupSettings } from "~/utils/interfaces/ICompetition";
 
 @Entity()
 export class Competition extends BaseEntity implements ICompetition {
@@ -22,4 +22,7 @@ export class Competition extends BaseEntity implements ICompetition {
 
     @Column('text', { nullable: true })
     backgroundImage?: string;
+
+    @Column('simple-json', { nullable: true })
+    groupsConfig?: IGroupSettings;
 }
