@@ -8,6 +8,9 @@
             <NuxtLink to="/records">
                 <ButtonComponent>Records</ButtonComponent>
             </NuxtLink>
+            <NuxtLink to="/compare">
+                <ButtonComponent>Compare</ButtonComponent>
+            </NuxtLink>
         </div>
         <br>
         <AutocompleteComponent placeholder="Player" class="w-[600px]" :suggestions="players || []" @confirm="p => navigateTo(`/${p}`)"/>

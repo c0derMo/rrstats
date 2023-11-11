@@ -1,7 +1,7 @@
 <template>
     <div class="relative">
         <TextInputComponent v-model="value" @keydown="onKeyDown" @focus-change="value => isFocussed = value" :placeholder="placeholder" class="w-full" />
-        <div class="z-10 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm" v-if="(isDropdownFocussed || isFocussed) && currentSuggestions.length > 0" @mouseenter="isDropdownFocussed = true" @mouseleave="isDropdownFocussed = false">
+        <div class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm" v-if="(isDropdownFocussed || isFocussed) && currentSuggestions.length > 0" @mouseenter="isDropdownFocussed = true" @mouseleave="isDropdownFocussed = false">
             <div v-for="(suggestion, idx) of currentSuggestions" :key="idx" class="px-5 py-2 transition" :class="{
                 'bg-neutral-300 dark:bg-neutral-600': selectedSuggestion === idx,
             }" @click="confirmEntry(idx)">
@@ -64,6 +64,7 @@ function confirmEntry(suggestionIndex?: number, disableEmit = false) {
     }
     if (!disableEmit) {
         emits('confirm', value.value);
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     }
 }
 

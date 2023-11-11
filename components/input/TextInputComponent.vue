@@ -1,7 +1,7 @@
 <template>
     <div class="relative w-fit h-fit">
         <input 
-            class="rounded py-1 px-3 bg-transparent peer outline-none w-full h-fit"
+            class="rounded py-1 px-3 peer outline-none w-full h-fit bg-neutral-100 dark:bg-neutral-800"
             required
             ref="input"
             :value="modelValue"
@@ -12,7 +12,7 @@
         />
 
         <label
-            class="absolute left-3 top-1 peer-focus:-translate-y-4 peer-focus:scale-75 origin-left pointer-events-none transition-all peer-valid:-translate-y-4 peer-valid:scale-75"
+            class="absolute left-3 top-1 peer-focus:-translate-y-4 peer-focus:scale-75 origin-left pointer-events-none transition-all peer-valid:-translate-y-4 peer-valid:scale-75 dark:text-neutral-300 text-neutral-800"
         >
             {{ placeholder }}
         </label>

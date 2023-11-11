@@ -22,5 +22,11 @@ const props = defineProps({
     }
 })
 
+const emits = defineEmits(['changeTab']);
+
 const selectedTab = ref(props.tabs[0]);
+
+watch(selectedTab, () => {
+    emits('changeTab', selectedTab.value);
+});
 </script>
