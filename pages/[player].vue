@@ -22,7 +22,7 @@
         </div>
 
         <CardComponent class="flex md:flex-row w-3/5 mx-auto flex-col">
-            <div class="flex-grow md:text-left text-center md:pl-10">Best RR Placement: 1st</div>
+            <div class="flex-grow md:text-left text-center md:pl-10">Best RR Placement: {{ bestPlacement }}</div>
             <div class="flex-grow text-center md:border-x border-neutral-500">Maps played: {{ player?.matches.map(m => m.playedMaps.length).reduce((prev, cur) => prev+cur, 0) || 0 }}</div>
             <div class="flex-grow text-center md:border-x border-neutral-500">Matches played: {{ player?.matches.length || 0 }}</div>
             <div class="flex-grow md:text-right text-center md:pr-10">W-T-L: {{ wtl }}</div>
