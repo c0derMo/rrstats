@@ -1,6 +1,6 @@
 <template>
     <DialogComponent dialogClass="w-3/5">
-        <CardComponent>
+        <CardComponent class="overflow-y-auto">
             <TabbedContainer :tabs="['Basic', 'Groups']">
                 <template #Basic>
                     <div class="flex flex-col gap-5 w-full">
@@ -9,7 +9,7 @@
                         
                         <SwitchComponent label="Official competition:" v-model="compData.officialCompetition" id="officialCompetition" />
 
-                        <!-- DateTime selector for staring timestamp -->
+                        <DateTimeInputComponent v-model="compData.startingTimestamp" />
 
                         <TextInputComponent v-model="compData.hitmapsStatsUrl" placeholder="Hitmaps Stats URL" class="w-full" />
                         <TextInputComponent v-model="compData.hitmapsSlug" placeholder="Hitmaps Slug" class="w-full" />
@@ -21,7 +21,7 @@
                 </template>
 
                 <template #Groups>
-                    <SwitchComponent label="Enable groups:" v-model="groupsEnabled" id="enableGroups" />
+                    <SwitchComponent label="Enable groups:" v-model="groupsEnabled" id="enableGroups" class="mb-5" />
                 </template>
             </TabbedContainer>
         </CardComponent>

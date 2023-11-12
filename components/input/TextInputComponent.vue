@@ -1,10 +1,11 @@
 <template>
     <div class="relative w-fit h-fit">
         <input 
-            class="rounded py-1 px-3 peer outline-none w-full h-fit bg-neutral-100 dark:bg-neutral-800"
+            class="rounded py-1 px-3 peer outline-none w-full bg-neutral-100 dark:bg-neutral-800"
             required
             ref="input"
             :value="modelValue"
+            :type="type"
             @input="$emit('update:model-value', (<HTMLInputElement>$event.target).value)"
             @focusin="isFocused = true"
             @focusout="isFocused = false"
@@ -51,9 +52,13 @@ defineProps({
         default: ''
     },
     'modelValue': {
-        type: String,
+        type: [String, Number],
         required: false,
         default: '',
+    },
+    'type': {
+        type: String,
+        default: 'text'
     }
 });
 
