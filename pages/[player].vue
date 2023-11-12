@@ -150,4 +150,26 @@ const debut = computed(() => {
     }
     return [...player.value.matches].sort((a, b) => a.timestamp - b.timestamp)[0];
 })
+
+const bestPlacement = computed(() => {
+    if (player.value?.placements == null || player.value.placements.filter(m => m.placement != null).length == 0) {
+        return "n/a"
+    }
+    let bestPlacement = Number.MAX_SAFE_INTEGER;
+    for (const placement of player.value.placements.filter(m => m.placement != null)) {
+        if (placement.placement! < bestPlacement) {
+            bestPlacement = placement.placement!;
+        }
+    }
+    if (bestPlacement % 10 === 1) {
+        return `${bestPlacement}st`;
+    }
+    if (bestPlacement % 10 === 2) {
+        return `${bestPlacement}nd`
+    }
+    if (bestPlacement % 10 === 3) {
+        return `${bestPlacement}rd`
+    }
+    return `${bestPlacement}th
+});
 </script>
