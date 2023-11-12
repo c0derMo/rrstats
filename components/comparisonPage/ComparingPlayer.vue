@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="flex gap-3" :class="{ 'flex-row': !reverse, 'flex-row-reverse': reverse }">
-                    <span class="flex-grow font-light">Map-Windate</span>
+                    <span class="flex-grow font-light">Map-Winrate</span>
                     <span :class="getAheadBehindClass(getMapWinrate)">
                         {{ Math.round( getMapWinrate(player.uuid, playerMatches) * 100) }}%
                     </span>
