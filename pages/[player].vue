@@ -170,6 +170,6 @@ const bestPlacement = computed(() => {
     if (bestPlacement % 10 === 3) {
         return `${bestPlacement}rd`
     }
-    return `${bestPlacement}th
+    return `${bestPlacement}th`;
 });
 </script>
