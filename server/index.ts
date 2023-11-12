@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from 'typeorm';
 import { Match } from './model/Match';
-import { Player } from './model/Player';
+import { Player, PlayerSubscriber } from './model/Player';
 import { useLogger } from '@nuxt/kit';
 import { GenericRecord, MapRecord } from "./model/Record";
 import { Competition, CompetitionPlacement } from "./model/Competition";
@@ -15,6 +15,7 @@ export default defineNitroPlugin((nitroApp) => {
         type: 'sqlite',
         database: 'dev.db',
         entities: [Match, Player, GenericRecord, MapRecord, Competition, CompetitionPlacement],
+        subscribers: [PlayerSubscriber],
         synchronize: true
     });
     db.initialize();

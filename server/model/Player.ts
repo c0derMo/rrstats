@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, EventSubscriber, EntitySubscriberInterface, LoadEvent } from "typeorm";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
+import { CompetitionPlacement } from "./Competition";
 
 @Entity()
 export class Player extends BaseEntity implements IPlayer {
@@ -21,4 +22,27 @@ export class Player extends BaseEntity implements IPlayer {
 
     @Column('boolean', { nullable: true })
     excludedFromSearch?: boolean;
+
+    accolade: string;
+}
+
+@EventSubscriber()
+export class PlayerSubscriber implements EntitySubscriberInterface<Player> {
+    listenTo() {
+        return Player
+    }
+
+    async afterLoad(entity: Player): Promise<void> {
+        if (entity.title != null) {
+            entity.accolade = entity.title;
+            return;
+        }
+
+        const placements = await CompetitionPlacement.countBy({ player: entity.uuid });
+        if (placements > 0) {
+            entity.accolade = "Returning Rival";
+        } else {
+            entity.accolade = "Roulette Rookie";
+        }
+    }
 }

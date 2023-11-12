@@ -7,8 +7,7 @@
                     <img class="rounded-full w-20 h-20 self-center" :src="avatar!" alt="Player Profile Picture"/>
                     <div class="flex-grow ml-5">
                         <h1 class="text-5xl">{{ route.params.player }}</h1>
-                        <!-- <h3>{{ player?.uuid || "no player found" }}</h3> -->
-                        <h3>Some cool accolate</h3>
+                        <h3 :class="{ 'italic': player?.hasCustomTitle }" class="mt-1">{{ player?.accolade }}</h3>
                         <h3 v-if="player?.alternativeNames && player?.alternativeNames.length > 0">Also played as: {{ player?.alternativeNames?.join(", ") }}</h3>
                     </div>
                     <div class="text-xl font-light text-right">

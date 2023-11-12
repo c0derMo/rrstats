@@ -9,5 +9,7 @@ export type IPlayer = {
     title?: string;
     hasCustomTitle?: boolean;
 
+    accolade: string;
+
     excludedFromSearch?: boolean;
 }

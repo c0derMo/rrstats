@@ -5,8 +5,7 @@
                 <img class="rounded-full w-20 h-20" :src="playerAvatar" alt="Player Profile Picture"/>
                 <div class="flex-grow mx-5" :class="{ 'text-right': reverse }">
                     <h1 class="text-5xl">{{ player.primaryName }}</h1>
-                    <!-- <h3>{{ player?.uuid || "no player found" }}</h3> -->
-                    <h3>Some cool accolate</h3>
+                    <h3 :class="{ 'italic': player.hasCustomTitle }" class="mt-1">{{ player.accolade }}</h3>
                 </div>
             </div>
 
