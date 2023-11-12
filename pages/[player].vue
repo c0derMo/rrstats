@@ -33,7 +33,7 @@
             <CardComponent class="md:w-1/4">
                 <TabbedContainer :tabs="['Competitions', 'Opponents', 'Records']">
                     <template #Competitions>
-                        <TableComponent :headers="['Competition', 'Placement']" :rows="[{'Competition': 'Roulette Rivals World Championship 2023', 'Placement': 'GS'}]" />
+                        <CompetitionsTable :placements="player?.placements" :competitionNames="player?.competitions" />
                     </template>
                     <template #Opponents>
                         <OpponentsTable :matches="player?.matches || []" :localPlayer="player?.uuid || ''" :opponents="player?.opponents || {}" />

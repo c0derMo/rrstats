@@ -62,21 +62,21 @@
                 <div class="flex gap-3" :class="{ 'flex-row': !reverse, 'flex-row-reverse': reverse }">
                     <span class="flex-grow font-light">RRs won</span>
                     <span :class="getAheadBehindClass(getRRWins)">
-                        {{ getRRWins(player.uuid, playerMatches) }}
+                        {{ getRRWins(player.uuid, playerMatches, playerPlacements) }}
                     </span>
                 </div>
 
                 <div class="flex gap-3" :class="{ 'flex-row': !reverse, 'flex-row-reverse': reverse }">
                     <span class="flex-grow font-light">Best RR placement</span>
-                    <span :class="getAheadBehindClass(getBestRRPlacement)">
-                        {{ getBestRRPlacement(player.uuid, playerMatches) }}
+                    <span :class="getAheadBehindClass(getBestRRPlacement, true)">
+                        {{ getBestRRPlacement(player.uuid, playerMatches, playerPlacements) === Number.MAX_SAFE_INTEGER ? "n/a" : getBestRRPlacement(player.uuid, playerMatches, playerPlacements) }}
                     </span>
                 </div>
 
                 <div class="flex gap-3" :class="{ 'flex-row': !reverse, 'flex-row-reverse': reverse }">
                     <span class="flex-grow font-light">Average RR placement</span>
-                    <span :class="getAheadBehindClass(getAverageRRPlacement)">
-                        {{ getAverageRRPlacement(player.uuid, playerMatches) }}
+                    <span :class="getAheadBehindClass(getAverageRRPlacement, true)">
+                        {{ getAverageRRPlacement(player.uuid, playerMatches, playerPlacements) === Number.MAX_SAFE_INTEGER ? "n/a" : Math.round(getAverageRRPlacement(player.uuid, playerMatches, playerPlacements)) }}
                     </span>
                 </div>
             </div>
@@ -85,6 +85,7 @@
 </template>
 
 <script setup lang="ts">
+import { ICompetitionPlacement } from '~/utils/interfaces/ICompetition';
 import { IMatch, WinningPlayer } from '~/utils/interfaces/IMatch';
 import { IPlayer } from '~/utils/interfaces/IPlayer';
 
@@ -101,6 +102,10 @@ const props = defineProps({
         type: String,
         required: true
     },
+    'playerPlacements': {
+        type: Array<ICompetitionPlacement>,
+        required: true,
+    },
     'comparingPlayer': {
         type: String,
         required: false
@@ -108,6 +113,10 @@ const props = defineProps({
     'comparingMatches': {
         type: Array<IMatch>,
         required: false,
+    },
+    'comparingPlacements': {
+        type: Array<ICompetitionPlacement>,
+        required: false
     },
     'reverse': {
         type: Boolean,
@@ -171,40 +180,60 @@ function getRRAmount(player: string, matches: IMatch[]): number {
     return rrs.size;
 }
 
-function getRRWins(player: string, matches: IMatch[]): number {
-    // TODO
-    return 0;
+function getRRWins(player: string, matches: IMatch[], placements: ICompetitionPlacement[]): number {
+    let wins = 0;
+    for (const placement of placements) {
+        if (placement.placement === 1) {
+            wins++;
+        }
+    }
+    return wins;
 }
 
-function getBestRRPlacement(player: string, matches: IMatch[]): number {
-    // TODO
-    return 1;
+function getBestRRPlacement(player: string, matches: IMatch[], placements: ICompetitionPlacement[]): number {
+    let bestFinish = Number.MAX_SAFE_INTEGER;
+    for (const placement of placements) {
+        if (placement.placement != null && placement.placement < bestFinish) {
+            bestFinish = placement.placement;
+        }
+    }
+    return bestFinish;
 }
 
-function getAverageRRPlacement(player: string, matches: IMatch[]): number {
-    // TODO
-    return 1;
+function getAverageRRPlacement(player: string, matches: IMatch[], placements: ICompetitionPlacement[]): number {
+    let average = 0;
+    let numOfPlacements = 0;
+    for (const placement of placements) {
+        if (placement.placement != null) {
+            average += placement.placement;
+            numOfPlacements++;
+        }
+    }
+    if (numOfPlacements === 0) {
+        return Number.MAX_SAFE_INTEGER;
+    }
+    return average / numOfPlacements;
 }
 
-function isAhead(f: (player: string, matches: IMatch[]) => number): boolean {
-    if (props.comparingPlayer == null || props.comparingMatches == null) {
+function isAhead(f: (player: string, matches: IMatch[], placements: ICompetitionPlacement[]) => number): boolean {
+    if (props.comparingPlayer == null || props.comparingMatches == null || props.comparingPlacements == null) {
         return false;
     }
-    return f(props.player.uuid, props.playerMatches) > f(props.comparingPlayer, props.comparingMatches);
+    return f(props.player.uuid, props.playerMatches, props.playerPlacements) > f(props.comparingPlayer, props.comparingMatches, props.comparingPlacements);
 }
 
-function isBehind(f: (player: string, matches: IMatch[]) => number): boolean {
-    if (props.comparingPlayer == null || props.comparingMatches == null) {
+function isBehind(f: (player: string, matches: IMatch[], placements: ICompetitionPlacement[]) => number): boolean {
+    if (props.comparingPlayer == null || props.comparingMatches == null || props.comparingPlacements == null) {
         return false;
     }
-    return f(props.player.uuid, props.playerMatches) < f(props.comparingPlayer, props.comparingMatches);
+    return f(props.player.uuid, props.playerMatches, props.playerPlacements) < f(props.comparingPlayer, props.comparingMatches, props.comparingPlacements);
 }
 
-function getAheadBehindClass(f: (player: string, matches: IMatch[]) => number): string {
-    if (isAhead(f)) {
+function getAheadBehindClass(f: (player: string, matches: IMatch[], placements: ICompetitionPlacement[]) => number, reverse = false): string {
+    if (isAhead(f) && !reverse || isBehind(f) && reverse) {
         return "ahead";
     }
-    if (isBehind(f)) {
+    if (isBehind(f) && !reverse || isAhead(f) && reverse) {
         return "behind";
     }
     return "";

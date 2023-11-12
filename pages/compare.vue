@@ -15,11 +15,11 @@
         </div>
 
         <div>
-            <ComparingPlayer v-if="leftPlayerObject !== null" :player="leftPlayerObject.player" :playerMatches="leftPlayerObject.matches" :playerAvatar="leftPlayerObject.avatar" :comparingPlayer="rightPlayerObject?.player.uuid" :comparingMatches="rightPlayerObject?.matches" />
+            <ComparingPlayer v-if="leftPlayerObject !== null" :player="leftPlayerObject.player" :playerMatches="leftPlayerObject.matches" :playerAvatar="leftPlayerObject.avatar" :playerPlacements="leftPlayerObject.placements" :comparingPlayer="rightPlayerObject?.player.uuid" :comparingMatches="rightPlayerObject?.matches" :comparingPlacements="rightPlayerObject?.placements" />
         </div>
 
         <div>
-            <ComparingPlayer :reverse="true" v-if="rightPlayerObject !== null" :player="rightPlayerObject.player" :playerMatches="rightPlayerObject.matches" :playerAvatar="rightPlayerObject.avatar" :comparingPlayer="leftPlayerObject?.player.uuid" :comparingMatches="leftPlayerObject?.matches" />
+            <ComparingPlayer :reverse="true" v-if="rightPlayerObject !== null" :player="rightPlayerObject.player" :playerMatches="rightPlayerObject.matches" :playerAvatar="rightPlayerObject.avatar" :playerPlacements="rightPlayerObject.placements" :comparingPlayer="leftPlayerObject?.player.uuid" :comparingMatches="leftPlayerObject?.matches" :comparingPlacements="leftPlayerObject?.placements" />
         </div>
 
         <TabbedContainer v-if="leftPlayerObject !== null || rightPlayerObject !== null"  class="col-span-2" :tabs="['Season 1', 'Season 2', 'Season 3']" @changeTab="(val) => selectedSeason = val"/>
@@ -37,6 +37,7 @@ import { IMatch } from '~/utils/interfaces/IMatch';
 import { IPlayer } from '~/utils/interfaces/IPlayer';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { ICompetitionPlacement } from '~/utils/interfaces/ICompetition';
 
 library.add(faSpinner);
 
@@ -44,6 +45,7 @@ interface ComparisonData {
     player: IPlayer,
     matches: IMatch[],
     avatar: string,
+    placements: ICompetitionPlacement[]
 }
 
 useHead({
@@ -104,7 +106,8 @@ async function getComparisonData(player: string): Promise<ComparisonData | null>
     return {
         player: playerData.data.value as IPlayer,
         matches: playerData.data.value!.matches,
-        avatar: avatar.data.value!
+        avatar: avatar.data.value!,
+        placements: playerData.data.value!.placements
     }
 }
 

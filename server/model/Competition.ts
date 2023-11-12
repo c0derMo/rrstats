@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import { ICompetition, IGroupSettings } from "~/utils/interfaces/ICompetition";
+import { ICompetition, ICompetitionPlacement, IGroupSettings } from "~/utils/interfaces/ICompetition";
 
 @Entity()
 export class Competition extends BaseEntity implements ICompetition {
@@ -25,4 +25,17 @@ export class Competition extends BaseEntity implements ICompetition {
 
     @Column('simple-json', { nullable: true })
     groupsConfig?: IGroupSettings;
+}
+
+@Entity()
+export class CompetitionPlacement extends BaseEntity implements ICompetitionPlacement {
+    @PrimaryColumn('text')
+    player: string;
+    @PrimaryColumn('text')
+    competition: string;
+    @PrimaryColumn('text')
+    bracket: string;
+
+    @Column('integer', { nullable: true })
+    placement?: number;
 }

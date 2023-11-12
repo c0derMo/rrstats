@@ -25,3 +25,10 @@ export type ICompetition = {
 
     groupsConfig?: IGroupSettings;
 }
+
+export type ICompetitionPlacement = {
+    player: string;
+    bracket: string;
+    competition: string;
+    placement?: number;
+}

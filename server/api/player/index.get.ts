@@ -2,7 +2,7 @@ import { Match } from '~/server/model/Match';
 import { Player } from '../../model/Player';
 import { In, IsNull, Not } from 'typeorm';
 import HitmapsIntegration from '../../controller/HitmapsIntegration';
-import { Competition } from '~/server/model/Competition';
+import { Competition, CompetitionPlacement } from '~/server/model/Competition';
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
@@ -21,6 +21,8 @@ export default defineEventHandler(async (event) => {
     const player = await Player.findOneBy({ primaryName: playerName });
     let matches: Match[] = [];
     let opponents: Record<string, string> = {};
+    let placements: CompetitionPlacement[] = [];
+    let competitions: Record<string, string> = {};
     if (player != null) {
         matches = await Match.find({ where: [{ playerOne: player.uuid }, { playerTwo: player.uuid }] });
         const rawOpponentUUIDs = matches.map(m => m.playerOne)
@@ -29,11 +31,19 @@ export default defineEventHandler(async (event) => {
         rawOpponents.forEach((op) => {
             opponents[op.uuid] = op.primaryName;
         });
+        placements = await CompetitionPlacement.findBy({ player: player.uuid });
+        const rawCompetitions = await Competition.findBy({ tag: In(placements.map(p => p.competition)) });
+        rawCompetitions.forEach((comp) => {
+            competitions[comp.tag] = comp.name
+        });
     }
+
 
     return {
         ...player,
         matches,
-        opponents
+        opponents,
+        placements,
+        competitions,
     };
 });
