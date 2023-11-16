@@ -1,6 +1,6 @@
 <template>
     <DialogComponent dialogClass="w-3/5">
-        <CardComponent class="overflow-y-auto">
+        <CardComponent class="overflow-y-auto flex flex-col gap-3">
             <TabbedContainer :tabs="['Basic', 'Groups', 'Placements']">
                 <template #Basic>
                     <div class="flex flex-col gap-5 w-full">
