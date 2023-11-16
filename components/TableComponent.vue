@@ -12,7 +12,7 @@
         <tbody>
             <tr v-for="(row, idx) of rows" :key="idx" class="border-b dark:border-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600">
                 <td v-for="header of convertedHeaders" :key="header.key" class="px-6 py-2">
-                    <slot :name="header.key" :value="row[header.key]" :row="row">
+                    <slot :name="header.key" :value="row[header.key]" :row="row" :index="idx">
                         {{ row[header.key] }}
                     </slot>
                 </td>

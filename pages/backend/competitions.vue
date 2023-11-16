@@ -1,5 +1,5 @@
 <template>
-    <CompetitionEditor v-if="competitionToShow !== null" :competition="competitionToShow" />
+    <CompetitionEditor v-if="competitionToShow !== null" :competition="competitionToShow" :placements="placementsToShow!" />
 
     Competitions:
     <DataTableComponent :headers="headers" :rows="competitions" :enableSorting="false">
@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ICompetition } from '~/utils/interfaces/ICompetition';
+import { ICompetition, ICompetitionPlacement } from '~/utils/interfaces/ICompetition';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
@@ -43,6 +43,7 @@ library.add(faTrash);
 const competitions: Ref<ICompetition[]> = ref([]);
 const error = ref(false);
 const competitionToShow: Ref<ICompetition | null> = ref(null);
+const placementsToShow: Ref<ICompetitionPlacement[] | null> = ref(null);
 const competitionToLoad = ref("");
 
 const headers = [
@@ -64,10 +65,12 @@ async function updateList() {
 async function loadUpdateMatch(tag: string) {
     competitionToLoad.value = tag;
     const compQuery = await useFetch('/api/competitions', { query: { tag } });
-    if (compQuery.status.value !== 'success' || compQuery.data.value == null) {
+    const placementsQuery = await useFetch('/api/competitions/placements', { query: { tag } });
+    if (compQuery.status.value !== 'success' || compQuery.data.value == null || placementsQuery.status.value !== 'success' || placementsQuery.data.value == null) {
         error.value = true;
     } else {
         competitionToShow.value = compQuery.data.value;
+        placementsToShow.value = placementsQuery.data.value;
     }
     competitionToLoad.value = "";
 }

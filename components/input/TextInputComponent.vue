@@ -1,7 +1,7 @@
 <template>
-    <div class="relative w-fit h-fit">
+    <div class="relative h-fit">
         <input 
-            class="rounded py-1 px-3 peer outline-none w-full bg-neutral-100 dark:bg-neutral-800"
+            class="rounded py-1 px-3 peer w-full outline-none bg-neutral-100 dark:bg-neutral-800"
             required
             ref="input"
             :value="modelValue"
@@ -22,20 +22,23 @@
             <div
                 class="h-full w-3 inline-block border rounded-l border-r-0 dark:border-neutral-500"
                 :class="{
-                    '!border-blue-700': isFocused
+                    '!border-blue-700': isFocused,
+                    '!border-red-600': error
                 }"
             ></div>
             <div
                 class="h-full w-fit inline-block border border-l-0 border-r-0 text-transparent text-xs dark:border-neutral-500"
                 :class="{
                     '!border-blue-700': isFocused,
-                    'border-t-0': isFocused || modelValue !== ''
+                    'border-t-0': isFocused || modelValue !== '',
+                    '!border-red-600': error
                 }"
             >{{ placeholder }}</div>
             <div
                 class="h-full grow inline-block border border-l-0 rounded-r dark:border-neutral-500"
                 :class="{
-                    '!border-blue-700': isFocused
+                    '!border-blue-700': isFocused,
+                    '!border-red-600': error
                 }"
             ></div>
         </div>
@@ -59,6 +62,10 @@ defineProps({
     'type': {
         type: String,
         default: 'text'
+    },
+    'error': {
+        type: Boolean,
+        default: false,
     }
 });
 
