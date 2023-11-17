@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, BeforeUpdate, Column, Entity, PrimaryColumn } from "typeorm";
 import { ICompetition, ICompetitionPlacement, IGroupSettings } from "~/utils/interfaces/ICompetition";
 
 @Entity()
@@ -25,6 +25,20 @@ export class Competition extends BaseEntity implements ICompetition {
 
     @Column('simple-json', { nullable: true })
     groupsConfig?: IGroupSettings;
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    checkOptionalFields() {
+        if (this.backgroundImage === "") {
+            this.backgroundImage = undefined;
+        }
+        if (this.hitmapsSlug === "") {
+            this.hitmapsSlug = undefined;
+        }
+        if (this.hitmapsStatsUrl === "") {
+            this.hitmapsStatsUrl = undefined;
+        }
+    }
 }
 
 @Entity()
@@ -38,4 +52,12 @@ export class CompetitionPlacement extends BaseEntity implements ICompetitionPlac
 
     @Column('integer', { nullable: true })
     placement?: number;
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    checkPlacement() {
+        if (this.placement !== undefined && this.placement <= 0) {
+            this.placement = undefined;
+        }
+    }
 }

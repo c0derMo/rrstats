@@ -6,7 +6,7 @@ import { IPlayer } from '~/utils/interfaces/IPlayer';
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
 
-    if (query.players === undefined && (query.names === undefined || !AuthController.isAuthenticated())) {
+    if (query.players === undefined && !AuthController.isAuthenticated()) {
         return createError({
             statusCode: 400,
             statusMessage: "players must be set"
@@ -16,8 +16,10 @@ export default defineEventHandler(async (event) => {
     let rawPlayers: IPlayer[];
     if (query.players !== undefined) {
         rawPlayers = await Player.find({ where: { uuid: In(query.players as string[]) }, select: ['uuid', 'primaryName'] });
-    } else {
+    } else if (query.names !== undefined) {
         rawPlayers = await Player.find({ where: { primaryName: In(query.names as string[] )}, select: ['uuid', 'primaryName'] });
+    } else {
+        rawPlayers = await Player.find({ select: ['uuid', 'primaryName'] });
     }
     const playerMap: Record<string, string> = {};
     for (const player of rawPlayers) {

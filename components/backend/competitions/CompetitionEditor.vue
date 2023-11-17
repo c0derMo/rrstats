@@ -31,7 +31,10 @@
                 </template>
             </TabbedContainer>
 
-            <ButtonComponent @click="save()">Save</ButtonComponent>
+            <div class="flex flex-row gap-3">
+                <ButtonComponent @click="save()" :loading="isSaving" >Save</ButtonComponent>
+                <ButtonComponent @click="close()">Discard</ButtonComponent>
+            </div>
         </CardComponent>
     </DialogComponent>
 </template>
@@ -50,18 +53,38 @@ const props = defineProps({
     }
 });
 
+const emits = defineEmits(['close']);
+
 const compData = toRef(props.competition);
 const placementsData = toRef(props.placements);
 const groupsEnabled = ref(compData.value.groupsConfig != null);
-const groupSettings: Ref<IGroupSettings> = ref(compData.value.groupsConfig || {
+const groupSettings: Ref<IGroupSettings> = ref(compData.value.groupsConfig ?? {
     matchesBetweenPlayers: 0,
     maxPointsPerMatch: 0,
     groups: []
 });
+const isSaving = ref(false);
 
-function save() {
-    // TODO: Set correct tag for each placement!
-    console.log(compData.value);
-    console.log(placementsData.value);
+async function save() {
+    isSaving.value = true;
+    if (groupsEnabled.value) {
+        compData.value.groupsConfig = groupSettings.value;
+    } else {
+        compData.value.groupsConfig = undefined;
+    }
+
+    for (const placement of placementsData.value) {
+        placement.competition = compData.value.tag;
+    }
+
+    await useFetch('/api/competitions', { method: 'post', body: compData.value });
+    await useFetch('/api/competitions/placements', { method: 'post', body: placementsData.value });
+
+    isSaving.value = false;
+    emits('close');
+}
+
+function close() {
+    emits('close');
 }
 </script>

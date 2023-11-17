@@ -1,7 +1,8 @@
 <template>
-    <CompetitionEditor v-if="competitionToShow !== null" :competition="competitionToShow" :placements="placementsToShow!" />
+    <CompetitionEditor v-if="competitionToShow !== null" :competition="competitionToShow" :placements="placementsToShow!" @close="competitionToShow = null; updateList()" />
 
-    Competitions:
+    <div class="ml-5 text-3xl bold mt-5">Competitions</div>
+
     <DataTableComponent :headers="headers" :rows="competitions" :enableSorting="false">
 
         <template v-slot:header-more="">
@@ -39,6 +40,10 @@ import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 library.add(faPen);
 library.add(faPlus);
 library.add(faTrash);
+
+definePageMeta({
+    layout: 'backend',
+});
 
 const competitions: Ref<ICompetition[]> = ref([]);
 const error = ref(false);

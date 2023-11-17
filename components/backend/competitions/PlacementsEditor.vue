@@ -50,7 +50,7 @@ const placementsHeaders = [
 ]
 
 onBeforeMount(async () => {
-    const playersRequest = await useFetch('/api/player/lookup', { query: { players: placementsData.value.map(p => p.player) } });
+    const playersRequest = await useFetch('/api/player/lookup');
     if (playersRequest.data.value != null && playersRequest.status.value === 'success') {
         const uuidsToPlayer = playersRequest.data.value as Record<string, string>;
         for (const uuid in playersRequest.data.value) {
@@ -98,29 +98,12 @@ function removePlacement(index: number) {
     checkAndEmit();
 }
 
-async function tryLookupPlayer(player: string, index: number) {
+function tryLookupPlayer(player: string, index: number) {
     if (playerToUUIDTable.value[player] != undefined) {
         playersIncorrect.value[index] = false;
         checkAndEmit();
-        return;
-    }
-
-    const lookupQuery = await useFetch('/api/player/lookup', { query: { names: [player, ''] }});
-    if (lookupQuery.status.value !== 'success' || lookupQuery.data.value == null) {
+    } else {
         playersIncorrect.value[index] = true;
-        return;
     }
-
-    const newUUIDsToPlayer = lookupQuery.data.value as Record<string, string>;
-    for (const uuid in newUUIDsToPlayer) {
-        if (newUUIDsToPlayer[uuid] === player) {
-            playerToUUIDTable.value[player] = uuid;
-            playersIncorrect.value[index] = false;
-            checkAndEmit();
-            return;
-        }
-    }
-
-    playersIncorrect.value[index] = true;
 }
 </script>
