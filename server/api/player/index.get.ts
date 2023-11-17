@@ -36,6 +36,11 @@ export default defineEventHandler(async (event) => {
         rawCompetitions.forEach((comp) => {
             competitions[comp.tag] = comp.name
         });
+        placements.sort((a, b) => {
+            const compA = rawCompetitions.find(c => c.tag === a.competition)!;
+            const compB = rawCompetitions.find(c => c.tag === b.competition)!;
+            return compB.startingTimestamp - compA.startingTimestamp;
+        });
     }
 
 
