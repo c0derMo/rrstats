@@ -325,9 +325,11 @@
                             else lossMatches += 1;
 
                             e.maps.forEach(m => {
-                                playedMaps += 1;
-                                if(m.winner == localPlayer) wonMaps += 1;
-                                if(m.winner == 0) wonMaps += 0.5;
+                                if (m.forfeit !== true) {
+                                    playedMaps += 1;
+                                    if(m.winner == localPlayer) wonMaps += 1;
+                                    if(m.winner == 0) wonMaps += 0.5;
+                                }
                             })
                         });
 
@@ -343,18 +345,20 @@
                             if(!this.mapWinratesComps.includes(m.competition) && !this.mapPicksComps.includes(m.competition)) continue;
                             const localPlayer = m.player1 == this.name ? 1 : 2;
                             m.maps.forEach(map => {
-                                if(played[map.map] == undefined) {
-                                    played[map.map] = 0;
-                                    picked[map.map] = 0;
-                                    won[map.map] = 0;
-                                }
-                                if(this.mapWinratesComps.includes(m.competition)) {
-                                    played[map.map] += 1;
-                                    if(map.winner == localPlayer) won[map.map] += 1;
-                                    if(map.winner == 0) won[map.map] += 0.5;
-                                }
-                                if(this.mapPicksComps.includes(m.competition)) {
-                                    if(map.pickedBy == localPlayer) picked[map.map] += 1;
+                                if (m.forfeit !== true) {
+                                    if(played[map.map] == undefined) {
+                                        played[map.map] = 0;
+                                        picked[map.map] = 0;
+                                        won[map.map] = 0;
+                                    }
+                                    if(this.mapWinratesComps.includes(m.competition)) {
+                                        played[map.map] += 1;
+                                        if(map.winner == localPlayer) won[map.map] += 1;
+                                        if(map.winner == 0) won[map.map] += 0.5;
+                                    }
+                                    if(this.mapPicksComps.includes(m.competition)) {
+                                        if(map.pickedBy == localPlayer) picked[map.map] += 1;
+                                    }
                                 }
                             });
                         }
