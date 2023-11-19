@@ -1,6 +1,8 @@
 <template>
-    <div class="w-56 h-56 bg-slate-200 dark:bg-slate-700 rounded-3xl flex flex-col p-5 hover:dark:bg-slate-800 hover:bg-slate-300 transition hover:scale-105 cursor-pointer" @click="navigateTo(target)">
-
+    <div
+        class="w-56 h-56 bg-slate-200 dark:bg-slate-700 rounded-3xl flex flex-col p-5 hover:dark:bg-slate-800 hover:bg-slate-300 transition hover:scale-105 cursor-pointer"
+        @click="navigateTo(target)"
+    >
         <div class="h-3/5 text-center text-7xl">
             <slot />
         </div>
@@ -17,18 +19,18 @@
 
 <script setup lang="ts">
 defineProps({
-    "title": {
+    title: {
         type: String,
         required: true,
     },
-    "subtitle": {
+    subtitle: {
         type: String,
         required: false,
-        default: ""
+        default: "",
     },
-    "target": {
+    target: {
         type: String,
         required: true,
-    }
-})
+    },
+});
 </script>

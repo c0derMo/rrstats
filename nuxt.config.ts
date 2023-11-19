@@ -2,13 +2,13 @@
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
     typescript: { shim: false },
-    modules: ["@nuxtjs/tailwindcss", '@sidebase/nuxt-session'],
+    modules: ["@nuxtjs/tailwindcss", "@sidebase/nuxt-session"],
     components: [{ path: "~/components", pathPrefix: false }],
     runtimeConfig: {
         discordToken: "",
         discordId: "",
         discordSecret: "",
-        publicOrigin: "http://localhost:3000"
+        publicOrigin: "http://localhost:3000",
     },
     nitro: {
         plugins: ["~/server/index.ts"],
@@ -24,10 +24,8 @@ export default defineNuxtConfig({
         },
     },
     session: { api: { isEnabled: false }, session: { rolling: true } },
-    css: [
-        '@fortawesome/fontawesome-svg-core/styles.css'
-    ],
+    css: ["@fortawesome/fontawesome-svg-core/styles.css"],
     build: {
-        transpile: ['@fortawesome/vue-fontawesome']
-    }
+        transpile: ["@fortawesome/vue-fontawesome"],
+    },
 });

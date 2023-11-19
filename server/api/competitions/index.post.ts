@@ -5,7 +5,12 @@ import { IPermission } from "~/utils/interfaces/IUser";
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
 
-    if (!await AuthController.isAuthenticated(event.context.session.user, IPermission.EDIT_COMPETITIONS)) {
+    if (
+        !(await AuthController.isAuthenticated(
+            event.context.session.user,
+            IPermission.EDIT_COMPETITIONS,
+        ))
+    ) {
         throw createError({
             statusCode: 403,
         });

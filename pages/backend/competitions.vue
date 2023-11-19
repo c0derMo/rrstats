@@ -47,7 +47,7 @@ import {
 
 definePageMeta({
     layout: "backend",
-    middleware: ['auth']
+    middleware: ["auth"],
 });
 
 const competitions: Ref<ICompetition[]> = ref([]);

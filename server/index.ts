@@ -22,7 +22,7 @@ export default defineNitroPlugin((nitroApp) => {
             MapRecord,
             Competition,
             CompetitionPlacement,
-            User
+            User,
         ],
         subscribers: [PlayerSubscriber],
         synchronize: true,

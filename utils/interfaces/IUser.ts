@@ -3,7 +3,7 @@ export type IUser = {
     discordId: string;
 
     permissions: IPermission[];
-}
+};
 
 export enum IPermission {
     EDIT_COMPETITIONS,
