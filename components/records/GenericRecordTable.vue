@@ -54,14 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEllipsisH, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { GenericRecordType, IGenericRecord } from "~/utils/interfaces/IRecord";
 import { IMatch } from "~/utils/interfaces/IMatch";
-
-library.add(faEllipsisH);
-library.add(faChartLine);
 
 const headers = [
     { title: "Record", key: "record" },

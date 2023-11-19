@@ -61,18 +61,12 @@
 </template>
 
 <script setup lang="ts" generic="R extends { [key in keyof any]: unknown }">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
-
 interface ExtendedHeader {
     key: string;
     title: string;
     disableSort?: boolean;
     sort?: (a: unknown, b: unknown) => number;
 }
-
-library.add(faArrowDown);
 
 const props = defineProps({
     headers: {

@@ -89,14 +89,9 @@
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { IMatch } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
-
-library.add(faSpinner);
 
 interface ComparisonData {
     player: IPlayer;

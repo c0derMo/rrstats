@@ -40,17 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
     ICompetition,
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-
-library.add(faPen);
-library.add(faPlus);
-library.add(faTrash);
 
 definePageMeta({
     layout: "backend",

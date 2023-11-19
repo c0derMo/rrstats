@@ -76,12 +76,7 @@ import {
     RRMap,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import { DateTime } from "luxon";
-
-library.add(faEllipsisH);
 
 const headers = [
     { title: "Competition", key: "competition" },

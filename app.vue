@@ -44,18 +44,6 @@
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-    faSun,
-    faMoon,
-    faChevronCircleLeft,
-} from "@fortawesome/free-solid-svg-icons";
-
-library.add(faSun);
-library.add(faMoon);
-library.add(faChevronCircleLeft);
-
 const isDarkMode = ref(true);
 const lightDarkSwitch = ref(true);
 const showForm = ref(false);

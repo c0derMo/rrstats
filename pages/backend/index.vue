@@ -25,19 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faTrophy, faUserEdit, faGamepad, faMedal, faUserCog, faStethoscope } from "@fortawesome/free-solid-svg-icons";
-import { faTwitter } from "@fortawesome/free-brands-svg-icons";
-
-library.add(faTrophy);
-library.add(faUserEdit);
-library.add(faGamepad);
-library.add(faMedal);
-library.add(faUserCog);
-library.add(faTwitter);
-library.add(faStethoscope);
-
 definePageMeta({
     layout: 'backend',
     middleware: ['auth']
