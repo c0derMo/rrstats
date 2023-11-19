@@ -42,7 +42,8 @@
 
 <script setup lang="ts">
 import { HitmanMap } from '#imports';
-import { ChoosingPlayer, IMatch, WinningPlayer } from '~/utils/interfaces/IMatch';
+import { IMatch } from '~/utils/interfaces/IMatch';
+import { mapBansForMap, mapPicksForMap, mapPlaysForMap, mapWinsForMap } from '~/utils/statCalculators/mapStatCalculators';
 
 const props = defineProps({
     'maps': {
@@ -77,55 +78,19 @@ const rows = computed(() => {
 });
 
 function getPicked(map: HitmanMap, player: string, matches: IMatch[]): number {
-    let picked = 0;
-    for (const match of matches) {
-        for (const playedMap of match.playedMaps) {
-            if (playedMap.map !== map) continue;
-            if (playedMap.picked === ChoosingPlayer.PLAYER_ONE && match.playerOne === player || playedMap.picked === ChoosingPlayer.PLAYER_TWO && match.playerTwo === player) {
-                picked++;
-            }
-        }
-    }
-    return picked;
+    return mapPicksForMap(matches, player, map);
 }
 
 function getBanned(map: HitmanMap, player: string, matches: IMatch[]): number {
-    let banned = 0;
-    for (const match of matches) {
-        for (const playedMap of match.bannedMaps) {
-            if (playedMap.map !== map) continue;
-            if (playedMap.picked === ChoosingPlayer.PLAYER_ONE && match.playerOne === player || playedMap.picked === ChoosingPlayer.PLAYER_TWO && match.playerTwo === player) {
-                banned++;
-            }
-        }
-    }
-    return banned;
+    return mapBansForMap(matches, player, map);
 }
 
 function getPlayed(map: HitmanMap, player: string, matches: IMatch[]): number {
-    let played = 0;
-    for (const match of matches) {
-        for (const playedMap of match.playedMaps) {
-            if (playedMap.map !== map) continue;
-            played++;
-        }
-    }
-    return played;
+    return mapPlaysForMap(matches, map);
 }
 
 function getWon(map: HitmanMap, player: string, matches: IMatch[]): number {
-    let won = 0;
-    for (const match of matches) {
-        for (const playedMap of match.playedMaps) {
-            if (playedMap.map !== map) continue;
-            if (playedMap.winner === WinningPlayer.PLAYER_ONE && match.playerOne === player || playedMap.winner === WinningPlayer.PLAYER_TWO && match.playerTwo === player) {
-                won++;
-            } else if (playedMap.winner === WinningPlayer.DRAW) {
-                won += 0.5;
-            }
-        }
-    }
-    return won;
+    return mapWinsForMap(matches, player, map);
 }
 
 function getWinrate(map: HitmanMap, player: string, matches: IMatch[]): number {

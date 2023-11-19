@@ -84,9 +84,12 @@
 </template>
 
 <script setup lang="ts">
-import { ICompetitionPlacement } from '~/utils/interfaces/ICompetition';
-import { IMatch, WinningPlayer } from '~/utils/interfaces/IMatch';
+import { ICompetition, ICompetitionPlacement } from '~/utils/interfaces/ICompetition';
+import { IMatch } from '~/utils/interfaces/IMatch';
 import { IPlayer } from '~/utils/interfaces/IPlayer';
+import { amountRRWins, amountRRs, averageRRPlacement, bestRRPlacement } from '~/utils/statCalculators/competitionStatCalculators';
+import { mapWinrate, mapsPlayed } from '~/utils/statCalculators/mapStatCalculators';
+import { calculateWTL, calculateWinrate } from '~/utils/statCalculators/matchStatCalculators';
 
 const props = defineProps({
     'player': {
@@ -120,31 +123,19 @@ const props = defineProps({
     'reverse': {
         type: Boolean,
         default: false,
+    },
+    'competitions': {
+        type: Array<ICompetition>,
+        required: true
     }
 });
 
 function getWinrate(player: string, matches: IMatch[]): number {
-    const wins = matches.filter(m => {
-        return (m.playerOne === player && m.playerOneScore > m.playerTwoScore) || (m.playerTwo === player && m.playerTwoScore > m.playerOneScore)
-    }).length;
-    const ties = matches.filter(m => {
-        return (m.playerOneScore === m.playerTwoScore);
-    }).length / 2;
-    return (wins + ties) / matches.length;
+    return calculateWinrate(matches, player);
 }
 
 function getMapWinrate(player: string, matches: IMatch[]): number {
-    let maps = 0;
-    let wins = 0;
-    for (const match of matches) {
-        maps += match.playedMaps.length;
-        wins += match.playedMaps.filter((m) => {
-            return (match.playerOne === player && m.winner === WinningPlayer.PLAYER_ONE) ||
-            (match.playerTwo === player && m.winner === WinningPlayer.PLAYER_TWO)
-        }).length;
-        wins += match.playedMaps.filter((m) => m.winner === WinningPlayer.DRAW).length / 2;
-    }
-    return wins / maps;
+    return mapWinrate(matches, player);
 }
 
 function getMatchesPlayed(player: string, matches: IMatch[]): number {
@@ -152,66 +143,29 @@ function getMatchesPlayed(player: string, matches: IMatch[]): number {
 }
 
 function getMapsPlayed(player: string, matches: IMatch[]): number {
-    return matches.map(m => m.playedMaps.length).reduce((prev, cur) => prev + cur);
+    return mapsPlayed(matches).length;
 }
 
 function getWTL(player: string, matches: IMatch[]): string {
-    let w = 0;
-    let t = 0;
-    let l = 0;
-    for (const match of matches) {
-        if (match.playerOne === player && match.playerOneScore > match.playerTwoScore || match.playerTwo === player && match.playerTwoScore > match.playerOneScore) {
-            w++;
-        } else if (match.playerOneScore === match.playerTwoScore) {
-            t++;
-        } else {
-            l++;
-        }
-    }
-    return `${w}-${t}-${l}`
+    const wtl = calculateWTL(matches, player);
+
+    return `${wtl.w}-${wtl.t}-${wtl.l}`;
 }
 
 function getRRAmount(player: string, matches: IMatch[]): number {
-    const rrs = new Set<string>();
-    for (const match of matches) {
-        rrs.add(match.competition);
-    }
-    return rrs.size;
+    return amountRRs(matches);
 }
 
 function getRRWins(player: string, matches: IMatch[], placements: ICompetitionPlacement[]): number {
-    let wins = 0;
-    for (const placement of placements) {
-        if (placement.placement === 1) {
-            wins++;
-        }
-    }
-    return wins;
+    return amountRRWins(placements, props.competitions);
 }
 
 function getBestRRPlacement(player: string, matches: IMatch[], placements: ICompetitionPlacement[]): number {
-    let bestFinish = Number.MAX_SAFE_INTEGER;
-    for (const placement of placements) {
-        if (placement.placement != null && placement.placement < bestFinish) {
-            bestFinish = placement.placement;
-        }
-    }
-    return bestFinish;
+    return bestRRPlacement(placements, props.competitions) ?? Number.MAX_SAFE_INTEGER;
 }
 
 function getAverageRRPlacement(player: string, matches: IMatch[], placements: ICompetitionPlacement[]): number {
-    let average = 0;
-    let numOfPlacements = 0;
-    for (const placement of placements) {
-        if (placement.placement != null) {
-            average += placement.placement;
-            numOfPlacements++;
-        }
-    }
-    if (numOfPlacements === 0) {
-        return Number.MAX_SAFE_INTEGER;
-    }
-    return average / numOfPlacements;
+    return averageRRPlacement(placements, props.competitions) ?? Number.MAX_SAFE_INTEGER;
 }
 
 function isAhead(f: (player: string, matches: IMatch[], placements: ICompetitionPlacement[]) => number): boolean {

@@ -35,7 +35,8 @@
 
 <script setup lang="ts">
 import { ICompetition } from '~/utils/interfaces/ICompetition';
-import { ChoosingPlayer, IMatch, WinningPlayer } from '~/utils/interfaces/IMatch';
+import { IMatch } from '~/utils/interfaces/IMatch';
+import { mapWinratePerMap, mapsBannedPerMap, mapsPickedPerMap } from '~/utils/statCalculators/mapStatCalculators';
 
 const props = defineProps({
     'matches': {
@@ -123,88 +124,50 @@ const filteredMatches = computed(() => {
 });
 
 const pickedRows = computed(() => {
-    const maps: Record<string, number> = {};
-
-    for (const match of filteredMatches.value) {
-        for (const map of match.playedMaps) {
-            if (map.picked === ChoosingPlayer.PLAYER_ONE && match.playerOne === props.localPlayer || map.picked === ChoosingPlayer.PLAYER_TWO && match.playerTwo === props.localPlayer) {
-
-                if (maps[getMap(map.map)?.name as string] === undefined) {
-                    maps[getMap(map.map)?.name as string] = 0;
-                }
-
-                maps[getMap(map.map)?.name as string] += 1;
-            }
-        }
-    }
+    const maps = mapsPickedPerMap(filteredMatches.value, props.localPlayer);
 
     const result = [];
-    for (const map of Object.keys(maps)) {
-        result.push({
-            'Map': map,
-            'Picked': maps[map]
-        });
+    for (const map of getAllMaps()) {
+        if (maps[map] !== undefined) {
+            result.push({
+                'Map': getMap(map)!.name,
+                'Picked': maps[map]
+            });
+        }
     }
 
     return result;
 });
 
 const bannedRows = computed(() => {
-    const maps: Record<string, number> = {};
-
-    for (const match of filteredMatches.value) {
-        for (const map of match.bannedMaps) {
-            if (map.picked === ChoosingPlayer.PLAYER_ONE && match.playerOne === props.localPlayer || map.picked === ChoosingPlayer.PLAYER_TWO && match.playerTwo === props.localPlayer) {
-
-                if (maps[getMap(map.map)?.name as string] === undefined) {
-                    maps[getMap(map.map)?.name as string] = 0;
-                }
-
-                maps[getMap(map.map)?.name as string] += 1;
-            }
-        }
-    }
+    const maps = mapsBannedPerMap(filteredMatches.value, props.localPlayer);
 
     const result = [];
-    for (const map of Object.keys(maps)) {
-        result.push({
-            'Map': map,
-            'Banned': maps[map]
-        });
+    for (const map of getAllMaps()) {
+        if (maps[map] !== undefined) {
+            result.push({
+                'Map': getMap(map)!.name,
+                'Banned': maps[map]
+            });
+        }
     }
 
     return result;
 });
 
 const winrateRows = computed(() => {
-    const maps: Record<string, { played: number, won: number }> = {};
-
-    for (const match of filteredMatches.value) {
-        for (const map of match.playedMaps) {
-            const mapString = getMap(map.map)?.name as string;
-
-            if (maps[mapString] === undefined) {
-                maps[mapString] = { played: 0, won: 0 }
-            };
-
-            maps[mapString].played += 1;
-
-            if (map.winner === WinningPlayer.DRAW) {
-                maps[mapString].won += 0.5;
-            } else if (map.winner === WinningPlayer.PLAYER_ONE && match.playerOne === props.localPlayer || map.winner === WinningPlayer.PLAYER_TWO && match.playerTwo === props.localPlayer) {
-                maps[mapString].won += 1;
-            }
-        }
-    }
+    const maps = mapWinratePerMap(filteredMatches.value, props.localPlayer);
 
     const result = [];
-    for (const map of Object.keys(maps)) {
-        result.push({
-            'Map': map,
-            'Winrate': Math.round(maps[map].won / maps[map].played * 100),
-            'Won': maps[map].won,
-            'Played': maps[map].played
-        });
+    for (const map of getAllMaps()) {
+        if (maps[map] !== undefined) {
+            result.push({
+                'Map': getMap(map)!.name,
+                'Winrate': Math.round(maps[map].winrate * 100),
+                'Won': maps[map].wins,
+                'Played': maps[map].plays
+            });
+        }
     }
 
     return result;

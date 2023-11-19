@@ -15,11 +15,11 @@
         </div>
 
         <div>
-            <ComparingPlayer v-if="leftPlayerObject !== null" :player="leftPlayerObject.player" :playerMatches="leftPlayerObject.matches" :playerAvatar="leftPlayerObject.avatar" :playerPlacements="leftPlayerObject.placements" :comparingPlayer="rightPlayerObject?.player.uuid" :comparingMatches="rightPlayerObject?.matches" :comparingPlacements="rightPlayerObject?.placements" />
+            <ComparingPlayer v-if="leftPlayerObject !== null" :player="leftPlayerObject.player" :playerMatches="leftPlayerObject.matches" :playerAvatar="leftPlayerObject.avatar" :playerPlacements="leftPlayerObject.placements" :comparingPlayer="rightPlayerObject?.player.uuid" :comparingMatches="rightPlayerObject?.matches" :comparingPlacements="rightPlayerObject?.placements" :competitions="competitions!" />
         </div>
 
         <div>
-            <ComparingPlayer :reverse="true" v-if="rightPlayerObject !== null" :player="rightPlayerObject.player" :playerMatches="rightPlayerObject.matches" :playerAvatar="rightPlayerObject.avatar" :playerPlacements="rightPlayerObject.placements" :comparingPlayer="leftPlayerObject?.player.uuid" :comparingMatches="leftPlayerObject?.matches" :comparingPlacements="leftPlayerObject?.placements" />
+            <ComparingPlayer :reverse="true" v-if="rightPlayerObject !== null" :player="rightPlayerObject.player" :playerMatches="rightPlayerObject.matches" :playerAvatar="rightPlayerObject.avatar" :playerPlacements="rightPlayerObject.placements" :comparingPlayer="leftPlayerObject?.player.uuid" :comparingMatches="leftPlayerObject?.matches" :comparingPlacements="leftPlayerObject?.placements" :competitions="competitions!" />
         </div>
 
         <TabbedContainer v-if="leftPlayerObject !== null || rightPlayerObject !== null"  class="col-span-2" :tabs="['Season 1', 'Season 2', 'Season 3']" @changeTab="(val) => selectedSeason = val"/>
@@ -53,6 +53,7 @@ useHead({
 })
 
 const players = (await useFetch('/api/player/list')).data;
+const competitions = (await useFetch('/api/competitions/list')).data;
 const route = useRoute();
 
 const leftPlayer = ref("");

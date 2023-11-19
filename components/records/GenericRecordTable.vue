@@ -39,7 +39,6 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEllipsisH, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { GenericRecordType, IGenericRecord } from '~/utils/interfaces/IRecord';
 import { IMatch } from '~/utils/interfaces/IMatch';
-import { Duration } from 'luxon';
 
 library.add(faEllipsisH);
 library.add(faChartLine);
@@ -72,15 +71,6 @@ const props = defineProps({
         default: {}
     }
 });
-
-function secondsToTime(seconds: number): string {
-    const dur = Duration.fromMillis(seconds * 1000);
-    if (dur.as("hours") >= 1) {
-        return dur.toFormat("hh:mm:ss")
-    } else {
-        return dur.toFormat("mm:ss")
-    }
-}
 
 const sortedRecords = computed(() => {
     return [...props.records].sort((a, b) => Object.values(GenericRecordType).findIndex(g => a.record === g) - Object.values(GenericRecordType).findIndex(g => b.record === g));

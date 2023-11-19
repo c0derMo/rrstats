@@ -61,9 +61,11 @@
 </template>
 
 <script setup lang="ts">
-import { HitmanMap } from '#imports';
 import { DateTime } from 'luxon';
-import { ChoosingPlayer, IMatch, WinningPlayer } from '~/utils/interfaces/IMatch';
+import { IMatch } from '~/utils/interfaces/IMatch';
+import { bestRRPlacement } from '~/utils/statCalculators/competitionStatCalculators';
+import { mapsPicked, mapWinrate as getMapWinrate } from '~/utils/statCalculators/mapStatCalculators';
+import { calculateWTL, calculateWinrate, debutMatch } from '~/utils/statCalculators/matchStatCalculators';
 
 const route = useRoute();
 
@@ -77,99 +79,53 @@ const competitions = (await useFetch("/api/competitions/list")).data;
 const avatar = (await useFetch(`/api/player/avatar?player=${route.params.player}`)).data;
 
 const wtl = computed(() => {
-    const wins = player.value?.matches.filter((m) => {
-        return (m.playerOne === player.value?.uuid && m.playerOneScore > m.playerTwoScore) ||
-        (m.playerTwo === player.value?.uuid && m.playerTwoScore > m.playerOneScore)
-    }).length;
-    const ties = player.value?.matches.filter((m) => m.playerOneScore === m.playerTwoScore).length;
-    const losses = player.value?.matches.filter((m) => {
-        return (m.playerOne === player.value?.uuid && m.playerOneScore < m.playerTwoScore) ||
-        (m.playerTwo === player.value?.uuid && m.playerTwoScore < m.playerOneScore)
-    }).length;
+    const wtl = calculateWTL(player.value?.matches ?? [], player.value?.uuid ?? "");
 
-    return `${wins}-${ties}-${losses}`;
+    return `${wtl.w}-${wtl.t}-${wtl.l}`;
 });
 
 const winrate = computed(() => {
     if (player.value === null || player.value.matches.length <= 0) {
         return 0;
     }
-    let wins = player.value.matches.filter((m) => {
-        return (m.playerOne === player.value?.uuid && m.playerOneScore > m.playerTwoScore) ||
-        (m.playerTwo === player.value?.uuid && m.playerTwoScore > m.playerOneScore)
-    }).length;
-    wins += player.value.matches.filter((m) => {
-        return m.playerOneScore === m.playerTwoScore
-    }).length / 2;
 
-    return wins / player.value.matches.length;
+    return calculateWinrate(player.value.matches, player.value.uuid ?? "");
 });
 
 const mapWinrate = computed(() => {
     if (player.value === null || player.value.matches.length <= 0) {
         return 0;
     }
-    let maps = 0;
-    let wins = 0;
-    for (const match of player.value.matches) {
-        maps += match.playedMaps.length;
-        wins += match.playedMaps.filter((m) => {
-            return (match.playerOne === player.value?.uuid && m.winner === WinningPlayer.PLAYER_ONE) ||
-            (match.playerTwo === player.value?.uuid && m.winner === WinningPlayer.PLAYER_TWO)
-        }).length;
-        wins += match.playedMaps.filter((m) => m.winner === WinningPlayer.DRAW).length / 2;
-    }
-    return wins / maps;
+
+    return getMapWinrate(player.value.matches, player.value.uuid ?? "")
 });
 
 const pickedMaps = computed(() => {
-    const maps: HitmanMap[] = [];
-
     if (player.value?.matches === undefined) {
         return undefined;
     }
 
-    for (const match of player.value.matches) {
-        for (const map of match.playedMaps) {
-            if (map.picked === ChoosingPlayer.PLAYER_ONE && match.playerOne === player.value?.uuid || map.picked === ChoosingPlayer.PLAYER_TWO && match.playerTwo === player.value?.uuid) {
-                maps.push(map.map);
-            }
-        }
-    }
-
-    if (maps.length !== 0) {
-        return maps;
-    } else {
-        return undefined;
-    }
+    return mapsPicked(player.value.matches, player.value.uuid ?? "");
 });
 
 const debut = computed(() => {
     if (player.value?.matches === undefined) {
         return undefined
     }
-    return [...player.value.matches].sort((a, b) => a.timestamp - b.timestamp)[0];
+
+    return debutMatch(player.value.matches);
 })
 
 const bestPlacement = computed(() => {
-    if (player.value?.placements == null || player.value.placements.filter(m => m.placement != null).length == 0) {
+    if (player.value?.placements == null) {
         return "n/a"
     }
-    let bestPlacement = Number.MAX_SAFE_INTEGER;
-    for (const placement of player.value.placements.filter(m => m.placement != null)) {
-        if (placement.placement! < bestPlacement) {
-            bestPlacement = placement.placement!;
-        }
+
+    const placement = bestRRPlacement(player.value.placements, competitions.value!);
+    if (placement !== undefined) {
+        return formatPlacement(placement)
+    } else {
+        return "n/a"
     }
-    if (bestPlacement % 10 === 1) {
-        return `${bestPlacement}st`;
-    }
-    if (bestPlacement % 10 === 2) {
-        return `${bestPlacement}nd`
-    }
-    if (bestPlacement % 10 === 3) {
-        return `${bestPlacement}rd`
-    }
-    return `${bestPlacement}th`;
 });
 </script>

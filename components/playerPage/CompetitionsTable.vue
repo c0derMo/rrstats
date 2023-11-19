@@ -31,20 +31,4 @@ const headers = [
     { key: 'competition', title: 'Competiton' },
     { key: 'placement', title: 'Placement' }
 ];
-
-function formatPlacement(placement?: number): string {
-    if (placement == null) {
-        return "GS";
-    }
-    if (placement % 10 === 1) {
-        return `${placement}st`;
-    }
-    if (placement % 10 === 2) {
-        return `${placement}nd`;
-    }
-    if (placement % 10 === 3) {
-        return `${placement}rd`;
-    }
-    return `${placement}th`;
-}
 </script>

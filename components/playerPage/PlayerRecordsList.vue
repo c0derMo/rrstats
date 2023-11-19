@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { DateTime, Duration } from 'luxon';
+import { DateTime } from 'luxon';
 
 const props = defineProps({
     "player": {
@@ -41,13 +41,4 @@ const headers = [
 ];
 
 const records = (await useFetch('/api/records/player', { query: { player: props.player } })).data;
-
-function secondsToTime(seconds: number): string {
-    const dur = Duration.fromMillis(seconds * 1000);
-    if (dur.as("hours") >= 1) {
-        return dur.toFormat("hh:mm:ss")
-    } else {
-        return dur.toFormat("mm:ss")
-    }
-}
 </script>
