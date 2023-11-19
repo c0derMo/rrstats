@@ -7,7 +7,12 @@
                 type="checkbox"
                 class="peer absolute h-4 w-8 cursor-pointer appearance-none rounded-full bg-gray-700 transition-colors duration-300 checked:bg-blue-500"
                 :checked="modelValue"
-                @input="$emit('update:modelValue', (<HTMLInputElement>$event.target).checked)"
+                @input="
+                    $emit(
+                        'update:modelValue',
+                        (<HTMLInputElement>$event.target).checked,
+                    )
+                "
             />
             <label
                 :for="id"
@@ -23,14 +28,14 @@ defineProps({
     label: {
         type: String,
         required: false,
-        default: ""
+        default: "",
     },
     modelValue: {
-        type: Boolean
+        type: Boolean,
     },
     id: {
         type: String,
         required: true,
-    }
+    },
 });
 </script>

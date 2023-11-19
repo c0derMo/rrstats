@@ -19,16 +19,16 @@ export type ICompetition = {
 
     hitmapsStatsUrl?: string;
     hitmapsSlug?: string;
-    updateWithHitmaps?: boolean
+    updateWithHitmaps?: boolean;
 
     backgroundImage?: string;
 
     groupsConfig?: IGroupSettings;
-}
+};
 
 export type ICompetitionPlacement = {
     player: string;
     bracket: string;
     competition: string;
     placement?: number;
-}
+};

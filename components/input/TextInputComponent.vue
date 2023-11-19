@@ -1,12 +1,17 @@
 <template>
     <div class="relative h-fit">
-        <input 
+        <input
             class="rounded py-1 px-3 peer w-full outline-none bg-neutral-100 dark:bg-neutral-800"
             required
             ref="input"
             :value="modelValue"
             :type="type"
-            @input="$emit('update:model-value', (<HTMLInputElement>$event.target).value)"
+            @input="
+                $emit(
+                    'update:model-value',
+                    (<HTMLInputElement>$event.target).value,
+                )
+            "
             @focusin="isFocused = true"
             @focusout="isFocused = false"
             @keydown="(key) => $emit('keydown', key)"
@@ -18,12 +23,14 @@
             {{ placeholder }}
         </label>
 
-        <div class="absolute flex w-full h-full top-0 left-0 pointer-events-none">
+        <div
+            class="absolute flex w-full h-full top-0 left-0 pointer-events-none"
+        >
             <div
                 class="h-full w-3 inline-block border rounded-l border-r-0 dark:border-neutral-500"
                 :class="{
                     '!border-blue-700': isFocused,
-                    '!border-red-600': error
+                    '!border-red-600': error,
                 }"
             ></div>
             <div
@@ -31,14 +38,16 @@
                 :class="{
                     '!border-blue-700': isFocused,
                     'border-t-0': isFocused || modelValue !== '',
-                    '!border-red-600': error
+                    '!border-red-600': error,
                 }"
-            >{{ placeholder }}</div>
+            >
+                {{ placeholder }}
+            </div>
             <div
                 class="h-full grow inline-block border border-l-0 rounded-r dark:border-neutral-500"
                 :class="{
                     '!border-blue-700': isFocused,
-                    '!border-red-600': error
+                    '!border-red-600': error,
                 }"
             ></div>
         </div>
@@ -46,32 +55,32 @@
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(['update:model-value', 'focus-change', 'keydown']);
+const emits = defineEmits(["update:model-value", "focus-change", "keydown"]);
 
 defineProps({
-    'placeholder': {
+    placeholder: {
         type: String,
         required: false,
-        default: ''
+        default: "",
     },
-    'modelValue': {
+    modelValue: {
         type: [String, Number],
         required: false,
-        default: '',
+        default: "",
     },
-    'type': {
+    type: {
         type: String,
-        default: 'text'
+        default: "text",
     },
-    'error': {
+    error: {
         type: Boolean,
         default: false,
-    }
+    },
 });
 
 const isFocused = ref(false);
 
-watch(isFocused, newValue => {
-    emits('focus-change', newValue);
-})
+watch(isFocused, (newValue) => {
+    emits("focus-change", newValue);
+});
 </script>

@@ -6,11 +6,11 @@ export default defineEventHandler(async (event) => {
 
     if (!AuthController.isAuthenticated()) {
         throw createError({
-            statusCode: 403
+            statusCode: 403,
         });
     }
-    
+
     const competition = new Competition();
-    Object.assign(competition, body)
+    Object.assign(competition, body);
     await competition.save();
 });

@@ -14,18 +14,31 @@ import {
     LineElement,
     Tooltip,
     Tick,
-    TooltipItem
-} from 'chart.js';
+    TooltipItem,
+} from "chart.js";
 
-Chart.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
+Chart.register(
+    LineController,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Tooltip,
+);
 
 interface IProps {
-    labels: unknown[],
-    data: unknown[],
-    label?: string,
-    yTickFormatFunction?: (tickValue: string | number, index: number, ticks: Tick[]) => string,
-    color?: string,
-    tooltipLabelFunction?: (item: TooltipItem<'line'>) => string | string[] | undefined
+    labels: unknown[];
+    data: unknown[];
+    label?: string;
+    yTickFormatFunction?: (
+        tickValue: string | number,
+        index: number,
+        ticks: Tick[],
+    ) => string;
+    color?: string;
+    tooltipLabelFunction?: (
+        item: TooltipItem<"line">,
+    ) => string | string[] | undefined;
 }
 const props = defineProps<IProps>();
 
@@ -39,18 +52,20 @@ function makeChart() {
     }
     if (chart.value !== null) {
         chartObj.value = new Chart(chart.value, {
-            type: 'line',
+            type: "line",
             data: {
                 labels: props.labels,
-                datasets: [{
-                    data: props.data,
-                    label: props.label,
-                    pointRadius: 0,
-                    pointHitRadius: 8,
-                    pointHoverRadius: 6,
-                    borderColor: props.color,
-                    backgroundColor: props.color,
-                }]
+                datasets: [
+                    {
+                        data: props.data,
+                        label: props.label,
+                        pointRadius: 0,
+                        pointHitRadius: 8,
+                        pointHoverRadius: 6,
+                        borderColor: props.color,
+                        backgroundColor: props.color,
+                    },
+                ],
             },
             options: {
                 maintainAspectRatio: false,
@@ -58,17 +73,17 @@ function makeChart() {
                     y: {
                         ticks: {
                             callback: props.yTickFormatFunction,
-                        }
-                    }
+                        },
+                    },
                 },
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: props.tooltipLabelFunction
-                        }
-                    }
-                }
-            }
+                            label: props.tooltipLabelFunction,
+                        },
+                    },
+                },
+            },
         });
     }
 }

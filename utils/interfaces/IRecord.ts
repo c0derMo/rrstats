@@ -1,38 +1,41 @@
 import { HitmanMap } from "../mapUtils";
 
 export type IGenericRecord = {
-    timestamp: number,
-    record: GenericRecordType,
+    timestamp: number;
+    record: GenericRecordType;
 
-    players: string[],
-    time: number,
-    match: string,
-    maps: Record<HitmanMap, number>,
-}
+    players: string[];
+    time: number;
+    match: string;
+    maps: Record<HitmanMap, number>;
+};
 
 export type IMapRecord = {
-    timestamp: number,
-    map: HitmanMap,
+    timestamp: number;
+    map: HitmanMap;
 
-    player: string,
-    time: number,
-    match: string,
-    mapIndex: number,
-}
+    player: string;
+    time: number;
+    match: string;
+    mapIndex: number;
+};
 
 export enum GenericRecordType {
     LONGEST_REGULAR_MATCH = "Longest regular match",
     SHORTEST_MATCH_2MAPS = "Shortest match with 2+ maps",
     SHORTEST_MATCH_3MAPS = "Shortest match with 3+ maps",
     LONGEST_DECIDER = "Longest decider",
-    SHORTEST_DECIIDER = "Shortest decider"
+    SHORTEST_DECIIDER = "Shortest decider",
 }
 
-const retiredRecords = [GenericRecordType.LONGEST_DECIDER, GenericRecordType.LONGEST_REGULAR_MATCH]
+const retiredRecords = [
+    GenericRecordType.LONGEST_DECIDER,
+    GenericRecordType.LONGEST_REGULAR_MATCH,
+];
 
 export const isRetiredRecord = (type: GenericRecordType): boolean => {
     if (retiredRecords.includes(type)) {
         return true;
     }
     return false;
-}
+};

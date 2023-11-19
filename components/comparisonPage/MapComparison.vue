@@ -1,7 +1,6 @@
 <template>
     <CardComponent>
         <TableComponent :headers="headers" :rows="rows">
-
             <template v-slot:Map="{ row }">
                 {{ getMap(row.map)?.name }}
             </template>
@@ -32,49 +31,57 @@
 
             <template v-slot:Winrate="{ row }">
                 <span :class="getAheadBehindClass(row.map, getWinrate)">
-                    {{ Math.round( getWinrate(row.map, player, playerMatches) * 100 ) }}%
+                    {{
+                        Math.round(
+                            getWinrate(row.map, player, playerMatches) * 100,
+                        )
+                    }}%
                 </span>
             </template>
-
         </TableComponent>
     </CardComponent>
 </template>
 
 <script setup lang="ts">
-import { HitmanMap } from '#imports';
-import { IMatch } from '~/utils/interfaces/IMatch';
-import { mapBansForMap, mapPicksForMap, mapPlaysForMap, mapWinsForMap } from '~/utils/statCalculators/mapStatCalculators';
+import { HitmanMap } from "#imports";
+import { IMatch } from "~/utils/interfaces/IMatch";
+import {
+    mapBansForMap,
+    mapPicksForMap,
+    mapPlaysForMap,
+    mapWinsForMap,
+} from "~/utils/statCalculators/mapStatCalculators";
 
 const props = defineProps({
-    'maps': {
+    maps: {
         type: Array<HitmanMap>,
         required: true,
     },
-    'player': {
+    player: {
         type: String,
-        required: true
+        required: true,
     },
-    'playerMatches': {
+    playerMatches: {
         type: Array<IMatch>,
         required: true,
     },
-    'comparingPlayer': {
+    comparingPlayer: {
         type: String,
         required: false,
     },
-    'comparingPlayerMatches': {
+    comparingPlayerMatches: {
         type: Array<IMatch>,
-        required: false
-    }
+        required: false,
+    },
 });
 
-const headers = ['Map', 'Picked', 'Banned', 'Played', 'Won', 'Winrate'];
+const headers = ["Map", "Picked", "Banned", "Played", "Won", "Winrate"];
 const rows = computed(() => {
-    return props.maps.map(m => {
+    return props.maps.map((m) => {
         return {
-            'map': m
-        }
-    })
+            map: m,
+        };
+    });
 });
 
 function getPicked(map: HitmanMap, player: string, matches: IMatch[]): number {
@@ -97,21 +104,36 @@ function getWinrate(map: HitmanMap, player: string, matches: IMatch[]): number {
     return getWon(map, player, matches) / getPlayed(map, player, matches);
 }
 
-function isAhead(map: HitmanMap, f: (map: HitmanMap, player: string, matches: IMatch[]) => number): boolean {
+function isAhead(
+    map: HitmanMap,
+    f: (map: HitmanMap, player: string, matches: IMatch[]) => number,
+): boolean {
     if (props.comparingPlayer == null || props.comparingPlayerMatches == null) {
         return false;
     }
-    return f(map, props.player, props.playerMatches) > f(map, props.comparingPlayer, props.comparingPlayerMatches);
+    return (
+        f(map, props.player, props.playerMatches) >
+        f(map, props.comparingPlayer, props.comparingPlayerMatches)
+    );
 }
 
-function isBehind(map: HitmanMap, f: (map: HitmanMap, player: string, matches: IMatch[]) => number): boolean {
+function isBehind(
+    map: HitmanMap,
+    f: (map: HitmanMap, player: string, matches: IMatch[]) => number,
+): boolean {
     if (props.comparingPlayer == null || props.comparingPlayerMatches == null) {
         return false;
     }
-    return f(map, props.player, props.playerMatches) < f(map, props.comparingPlayer, props.comparingPlayerMatches);
+    return (
+        f(map, props.player, props.playerMatches) <
+        f(map, props.comparingPlayer, props.comparingPlayerMatches)
+    );
 }
 
-function getAheadBehindClass(map: HitmanMap, f: (map: HitmanMap, player: string, matches: IMatch[]) => number): string {
+function getAheadBehindClass(
+    map: HitmanMap,
+    f: (map: HitmanMap, player: string, matches: IMatch[]) => number,
+): string {
     if (isAhead(map, f)) {
         return "ahead";
     }

@@ -1,38 +1,41 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import { Spin } from "~/utils/interfaces/IMatch";
-import { GenericRecordType, IGenericRecord, IMapRecord } from "~/utils/interfaces/IRecord";
+import {
+    GenericRecordType,
+    IGenericRecord,
+    IMapRecord,
+} from "~/utils/interfaces/IRecord";
 import { HitmanMap } from "~/utils/mapUtils";
 
 @Entity()
 export class GenericRecord extends BaseEntity implements IGenericRecord {
-    @PrimaryColumn('integer')
+    @PrimaryColumn("integer")
     timestamp: number;
-    @PrimaryColumn('text')
-    record: GenericRecordType
+    @PrimaryColumn("text")
+    record: GenericRecordType;
 
-    @Column('simple-json')
+    @Column("simple-json")
     players: string[];
-    @Column('integer')
+    @Column("integer")
     time: number;
-    @Column('text')
+    @Column("text")
     match: string;
-    @Column('simple-json')
+    @Column("simple-json")
     maps: Record<HitmanMap, number>;
 }
 
 @Entity()
 export class MapRecord extends BaseEntity implements IMapRecord {
-    @PrimaryColumn('integer')
+    @PrimaryColumn("integer")
     timestamp: number;
-    @PrimaryColumn('integer')
+    @PrimaryColumn("integer")
     map: HitmanMap;
 
-    @Column('text')
+    @Column("text")
     player: string;
-    @Column('integer')
+    @Column("integer")
     time: number;
-    @Column('text')
+    @Column("text")
     match: string;
-    @Column('integer')
+    @Column("integer")
     mapIndex: number;
 }

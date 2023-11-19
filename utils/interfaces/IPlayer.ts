@@ -5,11 +5,11 @@ export type IPlayer = {
     alternativeNames: string[];
 
     discordId?: string;
-    
+
     title?: string;
     hasCustomTitle?: boolean;
 
     accolade: string;
 
     excludedFromSearch?: boolean;
-}
+};

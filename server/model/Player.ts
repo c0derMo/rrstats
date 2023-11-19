@@ -1,26 +1,33 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, EventSubscriber, EntitySubscriberInterface, LoadEvent } from "typeorm";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    BaseEntity,
+    EventSubscriber,
+    EntitySubscriberInterface,
+} from "typeorm";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { CompetitionPlacement } from "./Competition";
 
 @Entity()
 export class Player extends BaseEntity implements IPlayer {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn("uuid")
     uuid: string;
 
-    @Column('text')
+    @Column("text")
     primaryName: string;
-    @Column('simple-json')
+    @Column("simple-json")
     alternativeNames: string[];
 
-    @Column('text', { nullable: true })
+    @Column("text", { nullable: true })
     discordId?: string;
 
-    @Column('text', { nullable: true })
+    @Column("text", { nullable: true })
     title?: string;
-    @Column('boolean', { nullable: true })
+    @Column("boolean", { nullable: true })
     hasCustomTitle?: boolean;
 
-    @Column('boolean', { nullable: true })
+    @Column("boolean", { nullable: true })
     excludedFromSearch?: boolean;
 
     accolade: string;
@@ -29,7 +36,7 @@ export class Player extends BaseEntity implements IPlayer {
 @EventSubscriber()
 export class PlayerSubscriber implements EntitySubscriberInterface<Player> {
     listenTo() {
-        return Player
+        return Player;
     }
 
     async afterLoad(entity: Player): Promise<void> {
@@ -38,7 +45,9 @@ export class PlayerSubscriber implements EntitySubscriberInterface<Player> {
             return;
         }
 
-        const placements = await CompetitionPlacement.countBy({ player: entity.uuid });
+        const placements = await CompetitionPlacement.countBy({
+            player: entity.uuid,
+        });
         if (placements > 0) {
             entity.accolade = "Returning Rival";
         } else {

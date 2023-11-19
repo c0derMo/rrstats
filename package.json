@@ -1,34 +1,42 @@
 {
-  "name": "nuxt-app",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
-  "devDependencies": {
-    "@nuxt/devtools": "latest",
-    "@nuxtjs/tailwindcss": "^6.8.0",
-    "@types/luxon": "^3.3.3",
-    "nuxt": "^3.7.4",
-    "sass": "^1.69.4",
-    "vue": "^3.3.4",
-    "vue-router": "^4.2.5"
-  },
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/free-regular-svg-icons": "^5.15.4",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
-    "axios": "^1.6.0",
-    "chart.js": "^4.4.0",
-    "luxon": "^3.4.3",
-    "reflect-metadata": "^0.1.13",
-    "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.17"
-  }
+    "name": "nuxt-app",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "prettier": "prettier . --write",
+        "lint": "eslint ."
+    },
+    "devDependencies": {
+        "@nuxt/devtools": "latest",
+        "@nuxtjs/tailwindcss": "^6.8.0",
+        "@types/luxon": "^3.3.3",
+        "@typescript-eslint/eslint-plugin": "^6.11.0",
+        "@typescript-eslint/parser": "^6.11.0",
+        "eslint": "^8.54.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-vue": "^9.18.1",
+        "nuxt": "^3.7.4",
+        "prettier": "^3.1.0",
+        "sass": "^1.69.4",
+        "vue": "^3.3.4",
+        "vue-router": "^4.2.5"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^1.2.36",
+        "@fortawesome/free-brands-svg-icons": "^5.15.4",
+        "@fortawesome/free-regular-svg-icons": "^5.15.4",
+        "@fortawesome/free-solid-svg-icons": "^5.15.4",
+        "@fortawesome/vue-fontawesome": "^3.0.3",
+        "axios": "^1.6.0",
+        "chart.js": "^4.4.0",
+        "luxon": "^3.4.3",
+        "reflect-metadata": "^0.1.13",
+        "sqlite3": "^5.1.6",
+        "typeorm": "^0.3.17"
+    }
 }

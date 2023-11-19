@@ -1,8 +1,8 @@
-import { Match } from '~/server/model/Match';
-import { Player } from '../../model/Player';
-import { In, IsNull, Not } from 'typeorm';
-import HitmapsIntegration from '../../controller/HitmapsIntegration';
-import { Competition, CompetitionPlacement } from '~/server/model/Competition';
+import { Match } from "~/server/model/Match";
+import { Player } from "../../model/Player";
+import { In, IsNull, Not } from "typeorm";
+import HitmapsIntegration from "../../controller/HitmapsIntegration";
+import { Competition, CompetitionPlacement } from "~/server/model/Competition";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
@@ -13,36 +13,49 @@ export default defineEventHandler(async (event) => {
         playerName = "";
     }
 
-    const competitionsToUpdate = await Competition.find({ where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) }, select: ['hitmapsSlug', 'tag'] });
+    const competitionsToUpdate = await Competition.find({
+        where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) },
+        select: ["hitmapsSlug", "tag"],
+    });
     for (const competitionToUpdate of competitionsToUpdate) {
-        await HitmapsIntegration.updateHitmapsTournament(competitionToUpdate.hitmapsSlug!, competitionToUpdate.tag);
+        await HitmapsIntegration.updateHitmapsTournament(
+            competitionToUpdate.hitmapsSlug!,
+            competitionToUpdate.tag,
+        );
     }
 
     const player = await Player.findOneBy({ primaryName: playerName });
     let matches: Match[] = [];
-    let opponents: Record<string, string> = {};
+    const opponents: Record<string, string> = {};
     let placements: CompetitionPlacement[] = [];
-    let competitions: Record<string, string> = {};
+    const competitions: Record<string, string> = {};
     if (player != null) {
-        matches = await Match.find({ where: [{ playerOne: player.uuid }, { playerTwo: player.uuid }] });
-        const rawOpponentUUIDs = matches.map(m => m.playerOne)
-            .concat(matches.map(m => m.playerTwo));
-        const rawOpponents = await Player.find({ where: { uuid: In(rawOpponentUUIDs) }, select: ['primaryName', 'uuid']});
+        matches = await Match.find({
+            where: [{ playerOne: player.uuid }, { playerTwo: player.uuid }],
+        });
+        const rawOpponentUUIDs = matches
+            .map((m) => m.playerOne)
+            .concat(matches.map((m) => m.playerTwo));
+        const rawOpponents = await Player.find({
+            where: { uuid: In(rawOpponentUUIDs) },
+            select: ["primaryName", "uuid"],
+        });
         rawOpponents.forEach((op) => {
             opponents[op.uuid] = op.primaryName;
         });
         placements = await CompetitionPlacement.findBy({ player: player.uuid });
-        const rawCompetitions = await Competition.findBy({ tag: In(placements.map(p => p.competition)) });
+        const rawCompetitions = await Competition.findBy({
+            tag: In(placements.map((p) => p.competition)),
+        });
         rawCompetitions.forEach((comp) => {
-            competitions[comp.tag] = comp.name
+            competitions[comp.tag] = comp.name;
         });
         placements.sort((a, b) => {
-            const compA = rawCompetitions.find(c => c.tag === a.competition)!;
-            const compB = rawCompetitions.find(c => c.tag === b.competition)!;
+            const compA = rawCompetitions.find((c) => c.tag === a.competition)!;
+            const compB = rawCompetitions.find((c) => c.tag === b.competition)!;
             return compB.startingTimestamp - compA.startingTimestamp;
         });
     }
-
 
     return {
         ...player,

@@ -1,29 +1,40 @@
-import { BaseEntity, BeforeInsert, BeforeUpdate, Column, Entity, PrimaryColumn } from "typeorm";
-import { ICompetition, ICompetitionPlacement, IGroupSettings } from "~/utils/interfaces/ICompetition";
+import {
+    BaseEntity,
+    BeforeInsert,
+    BeforeUpdate,
+    Column,
+    Entity,
+    PrimaryColumn,
+} from "typeorm";
+import {
+    ICompetition,
+    ICompetitionPlacement,
+    IGroupSettings,
+} from "~/utils/interfaces/ICompetition";
 
 @Entity()
 export class Competition extends BaseEntity implements ICompetition {
-    @PrimaryColumn('text')
+    @PrimaryColumn("text")
     tag: string;
-    @Column('text')
+    @Column("text")
     name: string;
 
-    @Column('boolean')
+    @Column("boolean")
     officialCompetition: boolean;
-    @Column('integer')
+    @Column("integer")
     startingTimestamp: number;
-    
-    @Column('text', { nullable: true })
-    hitmapsStatsUrl?: string;
-    @Column('text', { nullable: true })
-    hitmapsSlug?: string;
-    @Column('boolean', { nullable: true })
-    updateWithHitmaps?: boolean
 
-    @Column('text', { nullable: true })
+    @Column("text", { nullable: true })
+    hitmapsStatsUrl?: string;
+    @Column("text", { nullable: true })
+    hitmapsSlug?: string;
+    @Column("boolean", { nullable: true })
+    updateWithHitmaps?: boolean;
+
+    @Column("text", { nullable: true })
     backgroundImage?: string;
 
-    @Column('simple-json', { nullable: true })
+    @Column("simple-json", { nullable: true })
     groupsConfig?: IGroupSettings;
 
     @BeforeInsert()
@@ -42,15 +53,18 @@ export class Competition extends BaseEntity implements ICompetition {
 }
 
 @Entity()
-export class CompetitionPlacement extends BaseEntity implements ICompetitionPlacement {
-    @PrimaryColumn('text')
+export class CompetitionPlacement
+    extends BaseEntity
+    implements ICompetitionPlacement
+{
+    @PrimaryColumn("text")
     player: string;
-    @PrimaryColumn('text')
+    @PrimaryColumn("text")
     competition: string;
-    @PrimaryColumn('text')
+    @PrimaryColumn("text")
     bracket: string;
 
-    @Column('integer', { nullable: true })
+    @Column("integer", { nullable: true })
     placement?: number;
 
     @BeforeInsert()

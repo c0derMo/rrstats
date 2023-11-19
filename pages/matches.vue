@@ -1,37 +1,73 @@
 <template>
-    <MatchDetailsDialog v-if="matchToShow != null" :match="matchToShow" :opponents="data?.players || {}" @clickOutside="matchToShow = null" />
-    <CompetitionBackground :competitions="[competition?.backgroundImage || tournament as string]" />
+    <MatchDetailsDialog
+        v-if="matchToShow != null"
+        :match="matchToShow"
+        :opponents="data?.players || {}"
+        @clickOutside="matchToShow = null"
+    />
+    <CompetitionBackground
+        :competitions="[competition?.backgroundImage || (tournament as string)]"
+    />
 
     <div class="flex flex-col gap-3 mx-10">
-        <h1 class="text-center text-5xl bold">{{ competition?.name }} - Matches</h1>
+        <h1 class="text-center text-5xl bold">
+            {{ competition?.name }} - Matches
+        </h1>
 
-        <GroupsTables v-if="competition?.groupsConfig !== null && competition?.groupsConfig !== undefined" :groupsInfo="competition.groupsConfig" :matches="sortedMatches" :players="data?.players ?? {}" />
+        <GroupsTables
+            v-if="
+                competition?.groupsConfig !== null &&
+                competition?.groupsConfig !== undefined
+            "
+            :groupsInfo="competition.groupsConfig"
+            :matches="sortedMatches"
+            :players="data?.players ?? {}"
+        />
 
-        <DataTableComponent :headers="headers" :rows="sortedMatches" :enable-sorting="false" :rows-per-page="[10, 25, 50, 100]" :items-per-page="25" >
-
+        <DataTableComponent
+            :headers="headers"
+            :rows="sortedMatches"
+            :enable-sorting="false"
+            :rows-per-page="[10, 25, 50, 100]"
+            :items-per-page="25"
+        >
             <template v-slot:timestamp="{ value }">
-                {{ DateTime.fromMillis(value as number).toLocaleString(DateTime.DATETIME_FULL) }}
+                {{
+                    DateTime.fromMillis(value as number).toLocaleString(
+                        DateTime.DATETIME_FULL,
+                    )
+                }}
             </template>
 
             <template v-slot:playerOne="{ value }">
-                {{ data?.players[value as string] || `Unknown player: ${value}` }}
+                {{
+                    data?.players[value as string] || `Unknown player: ${value}`
+                }}
             </template>
 
             <template v-slot:score="{ row }">
-                <span class="whitespace-nowrap">{{ row.playerOneScore }} - {{ row.playerTwoScore }}</span>
+                <span class="whitespace-nowrap"
+                    >{{ row.playerOneScore }} - {{ row.playerTwoScore }}</span
+                >
             </template>
 
             <template v-slot:playerTwo="{ value }">
-                {{ data?.players[value as string] || `Unknown player: ${value}` }}
+                {{
+                    data?.players[value as string] || `Unknown player: ${value}`
+                }}
             </template>
 
             <template v-slot:bans="{ row }">
                 <div class="flex flex-wrap">
-                    <TooltipComponent v-for="ban in (row.bannedMaps as RRBannedMap[])">
-                        <Tag :color="getMap(ban.map)?.color">{{ getMap(ban.map)?.abbreviation }}</Tag>
+                    <TooltipComponent
+                        v-for="ban in row.bannedMaps as RRBannedMap[]"
+                    >
+                        <Tag :color="getMap(ban.map)?.color">{{
+                            getMap(ban.map)?.abbreviation
+                        }}</Tag>
 
                         <template #tooltip>
-                            Map: {{ getMap(ban.map)?.name }}<br>
+                            Map: {{ getMap(ban.map)?.name }}<br />
                             Banned by: {{ getMapPicker(ban, row) }}
                         </template>
                     </TooltipComponent>
@@ -40,12 +76,14 @@
 
             <template v-slot:playedMaps="{ value, row }">
                 <div class="flex flex-wrap">
-                    <TooltipComponent v-for="play in (value as RRMap[])">
-                        <Tag :color="getMap(play.map)?.color">{{ getMap(play.map)?.abbreviation }}</Tag>
+                    <TooltipComponent v-for="play in value as RRMap[]">
+                        <Tag :color="getMap(play.map)?.color">{{
+                            getMap(play.map)?.abbreviation
+                        }}</Tag>
 
                         <template #tooltip>
-                            Map: {{ getMap(play.map)?.name }}<br>
-                            Picked by: {{ getMapPicker(play, row) }}<br>
+                            Map: {{ getMap(play.map)?.name }}<br />
+                            Picked by: {{ getMapPicker(play, row) }}<br />
                             Won by: {{ getMapWinner(play, row) }}
                         </template>
                     </TooltipComponent>
@@ -53,7 +91,9 @@
             </template>
 
             <template v-slot:shoutcasters="{ value }">
-                <span v-if="value !==null">{{ (value as string[]).join(", ") }}</span>
+                <span v-if="value !== null">{{
+                    (value as string[]).join(", ")
+                }}</span>
             </template>
 
             <template v-slot:actions="{ row }">
@@ -61,39 +101,46 @@
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
                 </ButtonComponent>
             </template>
-
         </DataTableComponent>
     </div>
 </template>
 
 <script setup lang="ts">
-import { DateTime } from 'luxon';
-import { ChoosingPlayer, IMatch, RRBannedMap, RRMap, WinningPlayer } from '~/utils/interfaces/IMatch';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { DateTime } from "luxon";
+import {
+    ChoosingPlayer,
+    IMatch,
+    RRBannedMap,
+    RRMap,
+    WinningPlayer,
+} from "~/utils/interfaces/IMatch";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faEllipsisH);
 
 const matchToShow: Ref<IMatch | null> = ref(null);
 
 const headers = [
-    { title: 'Date & Time', key: 'timestamp' },
-    { title: 'Player 1', key: 'playerOne' },
-    { title: '', key: 'score' },
-    { title: 'Player 2', key: 'playerTwo' },
-    { title: 'Bans', key: 'bans' },
-    { title: 'Maps', key: 'playedMaps' },
-    { title: 'Shoutcast', key: 'shoutcasters' },
-    { title: '', key: 'actions' },
+    { title: "Date & Time", key: "timestamp" },
+    { title: "Player 1", key: "playerOne" },
+    { title: "", key: "score" },
+    { title: "Player 2", key: "playerTwo" },
+    { title: "Bans", key: "bans" },
+    { title: "Maps", key: "playedMaps" },
+    { title: "Shoutcast", key: "shoutcasters" },
+    { title: "", key: "actions" },
 ];
 
 const tournament = useRoute().query.tournament;
 const data = (await useFetch("/api/matches", { query: { tournament } })).data;
-const competition = (await useFetch("/api/competitions", { query: { tag: tournament }})).data;
+const competition = (
+    await useFetch("/api/competitions", { query: { tag: tournament } })
+).data;
 
 useHead({
-    title: `${competition.value?.name} - RRStats v3`
+    title: `${competition.value?.name} - RRStats v3`,
 });
 
 const sortedMatches = computed(() => {
@@ -101,19 +148,23 @@ const sortedMatches = computed(() => {
         return [];
     }
     return data.value.matches.sort((a, b) => b.timestamp - a.timestamp);
-})
+});
 
 function getMapPicker(map: RRMap | RRBannedMap, match: IMatch): string {
     if (map.picked === ChoosingPlayer.RANDOM) return "Random";
-    if (map.picked === ChoosingPlayer.PLAYER_ONE) return data.value?.players[match.playerOne] ?? "Unknown";
-    if (map.picked === ChoosingPlayer.PLAYER_TWO) return data.value?.players[match.playerTwo] ?? "Unknown";
+    if (map.picked === ChoosingPlayer.PLAYER_ONE)
+        return data.value?.players[match.playerOne] ?? "Unknown";
+    if (map.picked === ChoosingPlayer.PLAYER_TWO)
+        return data.value?.players[match.playerTwo] ?? "Unknown";
     return "Unknown";
 }
 
 function getMapWinner(map: RRMap, match: IMatch): string {
     if (map.winner === WinningPlayer.DRAW) return "Draw";
-    if (map.winner === WinningPlayer.PLAYER_ONE) return data.value?.players[match.playerOne] ?? "Unknown";
-    if (map.winner === WinningPlayer.PLAYER_TWO) return data.value?.players[match.playerTwo] ?? "Unknown";
+    if (map.winner === WinningPlayer.PLAYER_ONE)
+        return data.value?.players[match.playerOne] ?? "Unknown";
+    if (map.winner === WinningPlayer.PLAYER_TWO)
+        return data.value?.players[match.playerTwo] ?? "Unknown";
     return "Unknown";
 }
 </script>

@@ -3,11 +3,32 @@
         <CardComponent class="w-full h-full">
             <div class="flex flex-col w-full h-full">
                 <h1 class="text-center text-xl bold">Record Progression</h1>
-                <LineChart :labels="labels" :data="data" :label="label" :y-tick-format-function="axisLabelFunction" :tooltip-label-function="tooltipLabelFunction" :color="getMap(map || -1)?.color || '#80D4FF'" />
+                <LineChart
+                    :labels="labels"
+                    :data="data"
+                    :label="label"
+                    :y-tick-format-function="axisLabelFunction"
+                    :tooltip-label-function="tooltipLabelFunction"
+                    :color="getMap(map || -1)?.color || '#80D4FF'"
+                />
                 <div class="flex flex-row w-full gap-2">
-                    <DropdownComponent :items="['Month', 'Year', 'All time']" v-model="selectedScale" />
-                    <DropdownComponent :items="possibleYears" v-model="selectedYear" v-if="selectedScale === 'Year' || selectedScale === 'Month'"/>
-                    <DropdownComponent :items="possibleMonths" v-model="selectedMonth" v-if="selectedScale === 'Month'" />
+                    <DropdownComponent
+                        :items="['Month', 'Year', 'All time']"
+                        v-model="selectedScale"
+                    />
+                    <DropdownComponent
+                        :items="possibleYears"
+                        v-model="selectedYear"
+                        v-if="
+                            selectedScale === 'Year' ||
+                            selectedScale === 'Month'
+                        "
+                    />
+                    <DropdownComponent
+                        :items="possibleMonths"
+                        v-model="selectedMonth"
+                        v-if="selectedScale === 'Month'"
+                    />
                 </div>
             </div>
         </CardComponent>
@@ -15,39 +36,49 @@
 </template>
 
 <script setup lang="ts">
-import { TooltipItem } from 'chart.js';
-import { Duration, DateTime } from 'luxon';
-import { IGenericRecord, IMapRecord } from '~/utils/interfaces/IRecord';
+import { TooltipItem } from "chart.js";
+import { Duration, DateTime } from "luxon";
+import { IGenericRecord, IMapRecord } from "~/utils/interfaces/IRecord";
 
 const props = defineProps({
-    'map': {
+    map: {
         type: Number,
         required: false,
     },
-    'genericRecord': {
+    genericRecord: {
         type: String,
         required: false,
-    }
+    },
 });
 
 const label = getMap(props.map ?? -1)?.name ?? props.genericRecord ?? "";
-const records = (await useFetch("/api/records/history", { query: { map: props.map, generic: props.genericRecord } })).data;
+const records = (
+    await useFetch("/api/records/history", {
+        query: { map: props.map, generic: props.genericRecord },
+    })
+).data;
 let playersToLookup: string[] = [];
 if (records.value !== undefined && props.map !== undefined) {
-    playersToLookup = (records.value as IMapRecord[]).map(p => p.player);
+    playersToLookup = (records.value as IMapRecord[]).map((p) => p.player);
 } else if (records.value !== undefined && props.genericRecord !== undefined) {
-    playersToLookup = (records.value as IGenericRecord[]).map(p => p.players).reduce((a, b) => a.concat(b));
+    playersToLookup = (records.value as IGenericRecord[])
+        .map((p) => p.players)
+        .reduce((a, b) => a.concat(b));
 }
-const players = (await useFetch("/api/player/lookup", { query: { players: playersToLookup }})).data;
+const players = (
+    await useFetch("/api/player/lookup", {
+        query: { players: playersToLookup },
+    })
+).data;
 
-const selectedScale = ref('Year');
+const selectedScale = ref("Year");
 const selectedYear = ref(DateTime.now().year);
 const selectedMonth = ref(DateTime.now().month);
 
 const labels = computed(() => {
     const startDate = timeSpan.value.start;
     const endDate = timeSpan.value.end;
-    const amountDays = endDate.diff(startDate).as('days');
+    const amountDays = endDate.diff(startDate).as("days");
 
     const labels = [];
 
@@ -63,17 +94,22 @@ const labels = computed(() => {
 const data = computed(() => {
     const startDate = timeSpan.value.start;
     const endDate = timeSpan.value.end;
-    const amountDays = endDate.diff(startDate).as('days');
+    const amountDays = endDate.diff(startDate).as("days");
 
     const data: unknown[] = [];
-    const sortedRecords = records.value?.toSorted((a, b) => a.timestamp - b.timestamp) || [];
+    const sortedRecords =
+        records.value?.toSorted((a, b) => a.timestamp - b.timestamp) || [];
 
     // Finding the first record in our timeframe
-    let currentRecordIndex = sortedRecords.findIndex(r => r.timestamp >= startDate.toMillis()) - 1;
+    let currentRecordIndex =
+        sortedRecords.findIndex((r) => r.timestamp >= startDate.toMillis()) - 1;
     if (currentRecordIndex < 0) currentRecordIndex = 0;
 
     for (let i = 0; i < amountDays; i++) {
-        if (sortedRecords[currentRecordIndex+1]?.timestamp < startDate.plus({ days: i }).toMillis()) {
+        if (
+            sortedRecords[currentRecordIndex + 1]?.timestamp <
+            startDate.plus({ days: i }).toMillis()
+        ) {
             currentRecordIndex++;
         }
 
@@ -81,44 +117,78 @@ const data = computed(() => {
         const record = sortedRecords[currentRecordIndex];
         if (players.value !== null) {
             if (isMapRecord(record)) {
-                recordHolders.push((players.value as Record<string, string>)[record.player] || `Unknown player: ${record.player}`);
+                recordHolders.push(
+                    (players.value as Record<string, string>)[record.player] ||
+                        `Unknown player: ${record.player}`,
+                );
             }
             if (isGenericRecord(record)) {
-                recordHolders.push(...record.players.map(p => (players.value as Record<string, string>)[p] || `Unknown player: ${p}`));
+                recordHolders.push(
+                    ...record.players.map(
+                        (p) =>
+                            (players.value as Record<string, string>)[p] ||
+                            `Unknown player: ${p}`,
+                    ),
+                );
             }
         }
 
-
-        data.push({y: sortedRecords[currentRecordIndex].time, x: startDate.plus({ days: i }).toMillis(), recordHolders });
+        data.push({
+            y: sortedRecords[currentRecordIndex].time,
+            x: startDate.plus({ days: i }).toMillis(),
+            recordHolders,
+        });
     }
 
     return data;
 });
 
 const timeSpan = computed(() => {
-    if (selectedScale.value === 'Year') {
+    if (selectedScale.value === "Year") {
         return {
-            start: DateTime.fromObject({ year: selectedYear.value, month: 1, day: 1 }),
-            end: DateTime.min(DateTime.fromObject({ year: selectedYear.value, month: 12, day: 31 }), DateTime.now())
+            start: DateTime.fromObject({
+                year: selectedYear.value,
+                month: 1,
+                day: 1,
+            }),
+            end: DateTime.min(
+                DateTime.fromObject({
+                    year: selectedYear.value,
+                    month: 12,
+                    day: 31,
+                }),
+                DateTime.now(),
+            ),
         };
     }
-    if (selectedScale.value === 'Month') {
+    if (selectedScale.value === "Month") {
         return {
-            start: DateTime.fromObject({ year: selectedYear.value, month: selectedMonth.value, day: 1 }),
-            end: DateTime.min(DateTime.fromObject({ year: selectedYear.value, month: selectedMonth.value + 1, day: 1 }).minus({ day: 1 }), DateTime.now())
+            start: DateTime.fromObject({
+                year: selectedYear.value,
+                month: selectedMonth.value,
+                day: 1,
+            }),
+            end: DateTime.min(
+                DateTime.fromObject({
+                    year: selectedYear.value,
+                    month: selectedMonth.value + 1,
+                    day: 1,
+                }).minus({ day: 1 }),
+                DateTime.now(),
+            ),
         };
     }
     return {
         start: earliestRecordTime.value,
-        end: DateTime.now()
-    }
+        end: DateTime.now(),
+    };
 });
 
 const possibleYears = computed(() => {
     const start = earliestRecordTime.value;
-    const end = DateTime.now().endOf('year');
-    const amountYears = end.diff(start).as('years');
-    
+    const end = DateTime.now().endOf("year");
+    const amountYears = end.diff(start).as("years");
+
     const years: number[] = [];
 
     for (let i = 0; i < amountYears; i++) {
@@ -129,12 +199,19 @@ const possibleYears = computed(() => {
 });
 
 const possibleMonths = computed(() => {
-    const start = DateTime.fromObject({ year: selectedYear.value, month: 1, day: 1 });
-    const end = DateTime.min(DateTime.fromObject({ year: selectedYear.value, month: 12, day: 31 }), DateTime.now().endOf('month'));
-    const amountMonths = end.diff(start).as('months');
+    const start = DateTime.fromObject({
+        year: selectedYear.value,
+        month: 1,
+        day: 1,
+    });
+    const end = DateTime.min(
+        DateTime.fromObject({ year: selectedYear.value, month: 12, day: 31 }),
+        DateTime.now().endOf("month"),
+    );
+    const amountMonths = end.diff(start).as("months");
 
     const months: number[] = [];
-    
+
     for (let i = 0; i < amountMonths - 1; i++) {
         months.push(start.month + i);
     }
@@ -158,19 +235,31 @@ const earliestRecordTime = computed(() => {
     return DateTime.fromMillis(earliestRecord.timestamp);
 });
 
-function axisLabelFunction(value: string | number, index: number, ticks: unknown[]): string {
-    return Duration.fromMillis(value as number * 1000).toFormat('hh:mm:ss');
+function axisLabelFunction(
+    value: string | number,
+    index: number,
+    ticks: unknown[],
+): string {
+    return Duration.fromMillis((value as number) * 1000).toFormat("hh:mm:ss");
 }
 
 function tooltipLabelFunction(item: TooltipItem<"line">): string {
-    return Duration.fromMillis(item.parsed.y * 1000).toFormat('hh:mm:ss') + " by " + (item.raw as { recordHolders: string[] }).recordHolders.join(", ");
+    return (
+        Duration.fromMillis(item.parsed.y * 1000).toFormat("hh:mm:ss") +
+        " by " +
+        (item.raw as { recordHolders: string[] }).recordHolders.join(", ")
+    );
 }
 
-function isGenericRecord(record: IGenericRecord | IMapRecord): record is IGenericRecord {
-    return 'players' in record && 'record' in record;
+function isGenericRecord(
+    record: IGenericRecord | IMapRecord,
+): record is IGenericRecord {
+    return "players" in record && "record" in record;
 }
 
-function isMapRecord(record: IGenericRecord | IMapRecord): record is IMapRecord {
-    return 'player' in record && 'map' in record;
+function isMapRecord(
+    record: IGenericRecord | IMapRecord,
+): record is IMapRecord {
+    return "player" in record && "map" in record;
 }
 </script>

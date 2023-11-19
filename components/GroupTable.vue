@@ -1,7 +1,7 @@
 <template>
     <div class="w-full mt-5">
         <h1 class="my-2 font-bold">{{ groupName }}</h1>
-    
+
         <table class="w-full">
             <thead>
                 <tr>
@@ -15,10 +15,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="player, idx of sortedPlayers" :class="{ 'dark:bg-green-800 bg-green-500': isPlayerAdvancing(idx), 'dark:bg-red-800 bg-red-400': isPlayerNotAdvancing(idx) }">
-                    <td class="text-right">{{ idx+1 }}</td>
+                <tr
+                    v-for="(player, idx) of sortedPlayers"
+                    :class="{
+                        'dark:bg-green-800 bg-green-500':
+                            isPlayerAdvancing(idx),
+                        'dark:bg-red-800 bg-red-400': isPlayerNotAdvancing(idx),
+                    }"
+                >
+                    <td class="text-right">{{ idx + 1 }}</td>
                     <td class="text-left">{{ playerNames[player.name] }}</td>
-                    <td class="text-center">{{ player.wins + player.ties + player.losses }}</td>
+                    <td class="text-center">
+                        {{ player.wins + player.ties + player.losses }}
+                    </td>
                     <td class="text-center">{{ player.wins }}</td>
                     <td class="text-center">{{ player.ties }}</td>
                     <td class="text-center">{{ player.losses }}</td>
@@ -31,41 +40,41 @@
 
 <script setup lang="ts">
 interface GroupPlayer {
-    name: string,
-    wins: number,
-    ties: number,
-    losses: number,
-    points: number,
+    name: string;
+    wins: number;
+    ties: number;
+    losses: number;
+    points: number;
 }
 
 const props = defineProps({
-    'groupName': {
+    groupName: {
         type: String,
-        required: true
+        required: true,
     },
-    'players': {
+    players: {
         type: Array<GroupPlayer>,
-        required: true
+        required: true,
     },
-    'maxPointsPerMatch': {
+    maxPointsPerMatch: {
         type: Number,
-        required: true
+        required: true,
     },
-    'matchesBetweenPlayers': {
+    matchesBetweenPlayers: {
         type: Number,
-        required: true
+        required: true,
     },
-    'advancingPlayers': {
+    advancingPlayers: {
         type: Number,
-        required: true
+        required: true,
     },
-    'positionOverrides': {
+    positionOverrides: {
         type: Object as PropType<Record<number, string>>,
     },
-    'playerNames': {
+    playerNames: {
         type: Object as PropType<Record<string, string>>,
-        required: true
-    }
+        required: true,
+    },
 });
 
 const sortedPlayers = computed(() => {
@@ -73,14 +82,17 @@ const sortedPlayers = computed(() => {
 
     if (props.positionOverrides !== undefined) {
         for (let i = 0; i < preSort.length; i++) {
-            if (props.positionOverrides[i+1] !== undefined && preSort[i].name !== props.positionOverrides[i+1]) {
+            if (
+                props.positionOverrides[i + 1] !== undefined &&
+                preSort[i].name !== props.positionOverrides[i + 1]
+            ) {
                 let tmp = preSort[i];
                 for (let j = 1; j < preSort.length - i; j++) {
-                    if (tmp.name === props.positionOverrides[i+1]) {
+                    if (tmp.name === props.positionOverrides[i + 1]) {
                         break;
                     }
-                    const tmp2 = preSort[i+j];
-                    preSort[i+j] = tmp;
+                    const tmp2 = preSort[i + j];
+                    preSort[i + j] = tmp;
                     tmp = tmp2;
                 }
                 preSort[i] = tmp;
@@ -89,36 +101,58 @@ const sortedPlayers = computed(() => {
     }
 
     return preSort;
-})
+});
 
 const maxPossiblePoints = computed(() => {
-    return sortedPlayers.value.map(p => {
-        const amountMatchesRemaining = ((props.players.length - 1) * props.matchesBetweenPlayers) - (p.wins + p.ties + p.losses);
-        const maxPossiblePoints = p.points + amountMatchesRemaining * props.maxPointsPerMatch;
+    return sortedPlayers.value.map((p) => {
+        const amountMatchesRemaining =
+            (props.players.length - 1) * props.matchesBetweenPlayers -
+            (p.wins + p.ties + p.losses);
+        const maxPossiblePoints =
+            p.points + amountMatchesRemaining * props.maxPointsPerMatch;
         return maxPossiblePoints;
     });
-})
+});
 
 function isPlayerAdvancing(index: number): boolean {
-    if (props.positionOverrides !== undefined && props.positionOverrides[index+1] !== undefined && index < props.advancingPlayers) return true;
+    if (
+        props.positionOverrides !== undefined &&
+        props.positionOverrides[index + 1] !== undefined &&
+        index < props.advancingPlayers
+    )
+        return true;
 
-    return sortedPlayers.value[index].points > [...maxPossiblePoints.value].sort((a, b) => b - a)[props.advancingPlayers];
+    return (
+        sortedPlayers.value[index].points >
+        [...maxPossiblePoints.value].sort((a, b) => b - a)[
+            props.advancingPlayers
+        ]
+    );
 }
 function isPlayerNotAdvancing(index: number): boolean {
-    if (props.positionOverrides !== undefined && props.positionOverrides[index+1] !== undefined && index >= props.advancingPlayers) return true;
+    if (
+        props.positionOverrides !== undefined &&
+        props.positionOverrides[index + 1] !== undefined &&
+        index >= props.advancingPlayers
+    )
+        return true;
 
-    return maxPossiblePoints.value[index] < sortedPlayers.value[props.advancingPlayers - 1].points;
+    return (
+        maxPossiblePoints.value[index] <
+        sortedPlayers.value[props.advancingPlayers - 1].points
+    );
 }
 </script>
 
 <style scoped lang="postcss">
-tr, td {
+tr,
+td {
     @apply border-neutral-600;
 }
 tr {
     @apply border-b;
 }
 td {
-    @apply border-x first:border-l-0 last:border-r-0 px-1
+    @apply border-x first:border-l-0 last:border-r-0 px-1;
 }
 </style>

@@ -1,10 +1,16 @@
-import axios from 'axios';
-import { Match } from '../model/Match';
-import { Player } from '../model/Player';
-import { In } from 'typeorm';
-import { DateTime } from 'luxon';
-import { HitmanMap, getMapBySlug } from '../../utils/mapUtils';
-import { Spin, RRMap, WinningPlayer, ChoosingPlayer, RRBannedMap } from '~/utils/interfaces/IMatch';
+import axios from "axios";
+import { Match } from "../model/Match";
+import { Player } from "../model/Player";
+import { In } from "typeorm";
+import { DateTime } from "luxon";
+import { HitmanMap, getMapBySlug } from "../../utils/mapUtils";
+import {
+    Spin,
+    RRMap,
+    WinningPlayer,
+    ChoosingPlayer,
+    RRBannedMap,
+} from "~/utils/interfaces/IMatch";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -50,14 +56,16 @@ export interface HitmapsMatch {
         mapStartedAt: string;
         winnerFinishedAt: string;
         resultVerifiedAt: string;
-    }[]
+    }[];
 }
 
 export default class HitmapsIntegration {
-    
     private static cache: Record<string, number> = {};
 
-    static async updateHitmapsTournament(hitmapsSlug: string, competitionSlug: string): Promise<void> {
+    static async updateHitmapsTournament(
+        hitmapsSlug: string,
+        competitionSlug: string,
+    ): Promise<void> {
         if (this.cache[hitmapsSlug] !== undefined) {
             if (Date.now() - this.cache[hitmapsSlug] < 900000) {
                 // Cache is too old
@@ -65,44 +73,67 @@ export default class HitmapsIntegration {
             }
         }
 
-        const request = await axios.get<{matches: HitmapsTournamentMatch[]}>(`https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`);
+        const request = await axios.get<{ matches: HitmapsTournamentMatch[] }>(
+            `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
+        );
         if (request.status !== 200) {
             // Error out somehow
             return;
         }
 
-        await this.parseHitmapsTournament(request.data.matches, competitionSlug);
+        await this.parseHitmapsTournament(
+            request.data.matches,
+            competitionSlug,
+        );
         this.cache[hitmapsSlug] = Date.now();
     }
 
-    private static async fetchHitmapsMatches(hitmapsMatchIds: string[]): Promise<HitmapsMatch[]> {
+    private static async fetchHitmapsMatches(
+        hitmapsMatchIds: string[],
+    ): Promise<HitmapsMatch[]> {
         if (hitmapsMatchIds.length > 200) {
             const listOne = hitmapsMatchIds.slice(0, 200);
             const listTwo = hitmapsMatchIds.slice(200);
-            return (await this.fetchHitmapsMatches(listOne)).concat(await this.fetchHitmapsMatches(listTwo))
+            return (await this.fetchHitmapsMatches(listOne)).concat(
+                await this.fetchHitmapsMatches(listTwo),
+            );
         }
         const listOfMatches = hitmapsMatchIds.join(",");
-        const req = await axios.get<{matches: HitmapsMatch[]}>(`https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`);
+        const req = await axios.get<{ matches: HitmapsMatch[] }>(
+            `https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`,
+        );
         return req.data.matches;
     }
 
-    private static async createNewPlayer(primaryName: string, discordId: string): Promise<string> {
+    private static async createNewPlayer(
+        primaryName: string,
+        discordId: string,
+    ): Promise<string> {
         const player = new Player();
         player.primaryName = primaryName;
         player.discordId = discordId;
         player.alternativeNames = [];
         await player.save();
-        console.log('Creating new player ' + primaryName);
+        console.log("Creating new player " + primaryName);
         return player.uuid;
     }
 
-    private static async createOrFindPlayer(discordId: string, name: string): Promise<string> {
-        const playerInDb = await Player.findOne({ where: { discordId }, select: ['primaryName', 'alternativeNames', 'uuid', 'discordId']});
+    private static async createOrFindPlayer(
+        discordId: string,
+        name: string,
+    ): Promise<string> {
+        const playerInDb = await Player.findOne({
+            where: { discordId },
+            select: ["primaryName", "alternativeNames", "uuid", "discordId"],
+        });
         if (playerInDb === null) {
             // Player doesn't exist - creating new
             return await this.createNewPlayer(name, discordId);
         } else {
-            if (playerInDb.primaryName != name && !playerInDb.alternativeNames.includes(name)) {
+            if (
+                playerInDb.primaryName != name &&
+                !playerInDb.alternativeNames.includes(name)
+            ) {
                 playerInDb.alternativeNames.push(name);
                 await playerInDb.save();
             }
@@ -110,12 +141,16 @@ export default class HitmapsIntegration {
         }
     }
 
-    private static async parseHitmapsTournament(matches: HitmapsTournamentMatch[], tournamentSlug: string) {
-
+    private static async parseHitmapsTournament(
+        matches: HitmapsTournamentMatch[],
+        tournamentSlug: string,
+    ) {
         // Avoid adding duplicate matches
         const existingMatches = await Match.find({
-            where: { hitmapsMatchId: In(matches.map(m => m.gameModeMatchId )) },
-            select: ['hitmapsMatchId']
+            where: {
+                hitmapsMatchId: In(matches.map((m) => m.gameModeMatchId)),
+            },
+            select: ["hitmapsMatchId"],
         });
 
         if (existingMatches.length === matches.length) {
@@ -123,31 +158,64 @@ export default class HitmapsIntegration {
             return;
         }
 
-        const matchesToQuery = matches.filter(rawMatch => rawMatch.gameModeMatchId !== "00000000-0000-0000-0000-000000000000").filter((rawMatch) => {
-            return !existingMatches.some((m) => m.hitmapsMatchId === rawMatch.gameModeMatchId);
-        });
+        const matchesToQuery = matches
+            .filter(
+                (rawMatch) =>
+                    rawMatch.gameModeMatchId !==
+                    "00000000-0000-0000-0000-000000000000",
+            )
+            .filter((rawMatch) => {
+                return !existingMatches.some(
+                    (m) => m.hitmapsMatchId === rawMatch.gameModeMatchId,
+                );
+            });
 
         if (matchesToQuery.length <= 0) {
             return;
         }
 
-        const hitmapsMatches = await this.fetchHitmapsMatches(matchesToQuery.map(m => m.gameModeMatchId));
+        const hitmapsMatches = await this.fetchHitmapsMatches(
+            matchesToQuery.map((m) => m.gameModeMatchId),
+        );
 
         for (const newMatch of matchesToQuery) {
-            const fullMatch = hitmapsMatches.find(m => m.matchupId === newMatch.gameModeMatchId);
-            if (!fullMatch) throw new Error('Got Hitmaps tournament match without detailed information');
+            const fullMatch = hitmapsMatches.find(
+                (m) => m.matchupId === newMatch.gameModeMatchId,
+            );
+            if (!fullMatch)
+                throw new Error(
+                    "Got Hitmaps tournament match without detailed information",
+                );
 
             const match = new Match();
             match.hitmapsMatchId = newMatch.gameModeMatchId;
-            match.timestamp = DateTime.fromISO(newMatch.matchScheduledAt).toMillis();
+            match.timestamp = DateTime.fromISO(
+                newMatch.matchScheduledAt,
+            ).toMillis();
 
             // Figuring out players
-            const playerOne = { name: fullMatch.participants[0].name.trim(), discordId: "" };
-            const playerTwo = { name: fullMatch.participants[1].name.trim(), discordId: "" };
-            playerOne.discordId = newMatch.competitors.find(c => c.challongeName.trim() === playerOne.name)!.discordId;
-            playerTwo.discordId = newMatch.competitors.find(c => c.challongeName.trim() === playerTwo.name)!.discordId;
-            match.playerOne = await this.createOrFindPlayer(playerOne.discordId, playerOne.name)
-            match.playerTwo = await this.createOrFindPlayer(playerTwo.discordId, playerTwo.name)
+            const playerOne = {
+                name: fullMatch.participants[0].name.trim(),
+                discordId: "",
+            };
+            const playerTwo = {
+                name: fullMatch.participants[1].name.trim(),
+                discordId: "",
+            };
+            playerOne.discordId = newMatch.competitors.find(
+                (c) => c.challongeName.trim() === playerOne.name,
+            )!.discordId;
+            playerTwo.discordId = newMatch.competitors.find(
+                (c) => c.challongeName.trim() === playerTwo.name,
+            )!.discordId;
+            match.playerOne = await this.createOrFindPlayer(
+                playerOne.discordId,
+                playerOne.name,
+            );
+            match.playerTwo = await this.createOrFindPlayer(
+                playerTwo.discordId,
+                playerTwo.name,
+            );
 
             let p1Score = 0;
             let p2Score = 0;
@@ -170,22 +238,30 @@ export default class HitmapsIntegration {
                 }
 
                 let pickedBy = ChoosingPlayer.RANDOM;
-                if (map.chosenByName === fullMatch.participants[0].name) pickedBy = ChoosingPlayer.PLAYER_ONE;
-                if (map.chosenByName === fullMatch.participants[1].name) pickedBy = ChoosingPlayer.PLAYER_TWO;
+                if (map.chosenByName === fullMatch.participants[0].name)
+                    pickedBy = ChoosingPlayer.PLAYER_ONE;
+                if (map.chosenByName === fullMatch.participants[1].name)
+                    pickedBy = ChoosingPlayer.PLAYER_TWO;
 
                 let endingTimestamp = -1;
                 if (map.winnerFinishedAt != null) {
-                    endingTimestamp = DateTime.fromISO(map.winnerFinishedAt).toMillis()
+                    endingTimestamp = DateTime.fromISO(
+                        map.winnerFinishedAt,
+                    ).toMillis();
                 } else if (map.resultVerifiedAt != null) {
-                    endingTimestamp = DateTime.fromISO(map.resultVerifiedAt).toMillis();
+                    endingTimestamp = DateTime.fromISO(
+                        map.resultVerifiedAt,
+                    ).toMillis();
                 }
-                
+
                 picks.push({
                     map: getMapBySlug(map.hitmapsSlug)?.map ?? HitmanMap.PARIS,
                     winner,
                     picked: pickedBy,
                     spin: map.spin,
-                    startedTimestamp: DateTime.fromISO(map.mapStartedAt).toMillis(),
+                    startedTimestamp: DateTime.fromISO(
+                        map.mapStartedAt,
+                    ).toMillis(),
                     endedTimestamp: endingTimestamp,
                 });
             }
@@ -194,12 +270,14 @@ export default class HitmapsIntegration {
                 if (map.selectionType !== "Ban") continue;
 
                 let picked = ChoosingPlayer.RANDOM;
-                if (map.competitorId === newMatch.competitors[0].id) picked = ChoosingPlayer.PLAYER_ONE;
-                if (map.competitorId === newMatch.competitors[1].id) picked = ChoosingPlayer.PLAYER_TWO;
+                if (map.competitorId === newMatch.competitors[0].id)
+                    picked = ChoosingPlayer.PLAYER_ONE;
+                if (map.competitorId === newMatch.competitors[1].id)
+                    picked = ChoosingPlayer.PLAYER_TWO;
 
                 bans.push({
                     map: getMapBySlug(map.mapSlug)?.map ?? HitmanMap.PARIS,
-                    picked
+                    picked,
                 });
             }
 
@@ -225,5 +303,4 @@ export default class HitmapsIntegration {
             await match.save();
         }
     }
-
 }

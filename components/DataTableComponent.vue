@@ -1,13 +1,23 @@
 <template>
     <TableComponent :headers="convertedHeaders" :rows="filteredRows">
-        <template v-for="header of convertedHeaders" :key="header.key" v-slot:[`header-${header.key}`]="{ value }">
-            <span @click="changeSorting(header)" class="group whitespace-nowrap">
+        <template
+            v-for="header of convertedHeaders"
+            :key="header.key"
+            v-slot:[`header-${header.key}`]="{ value }"
+        >
+            <span
+                @click="changeSorting(header)"
+                class="group whitespace-nowrap"
+            >
                 <FontAwesomeIcon
                     :icon="['fas', 'arrow-down']"
                     :class="{
-                        'rotate-180': sortingOrder === 'ASC' && sortingBy?.key === header.key,
+                        'rotate-180':
+                            sortingOrder === 'ASC' &&
+                            sortingBy?.key === header.key,
                         '!opacity-100': sortingBy?.key === header.key,
-                        'group-hover:opacity-40': enableSorting && !header.disableSort
+                        'group-hover:opacity-40':
+                            enableSorting && !header.disableSort,
                     }"
                     class="transition opacity-0 mr-1"
                     v-if="enableSorting"
@@ -18,7 +28,11 @@
             </span>
         </template>
 
-        <template v-for="header of convertedHeaders" :key="header.key" v-slot:[`${header.key}`]="{ value, row }">
+        <template
+            v-for="header of convertedHeaders"
+            :key="header.key"
+            v-slot:[`${header.key}`]="{ value, row }"
+        >
             <div :class="{ 'ml-4': enableSorting }">
                 <slot :name="header.key" :value="value" :row="row">
                     {{ value }}
@@ -27,11 +41,19 @@
         </template>
     </TableComponent>
 
-    <div class="flex flex-row mt-3 space-x-1 justify-end px-3 h-fit items-center">
+    <div
+        class="flex flex-row mt-3 space-x-1 justify-end px-3 h-fit items-center"
+    >
         <span>Rows per page:</span>
-        <DropdownComponent :items="rowsPerPage" v-model="selectedRowsPerPage"></DropdownComponent>
+        <DropdownComponent
+            :items="rowsPerPage"
+            v-model="selectedRowsPerPage"
+        ></DropdownComponent>
         <div class="w-3"></div>
-        <span>{{ startIndex + 1 }} - {{ endIndex }} of {{ props.rows.length }}</span>
+        <span
+            >{{ startIndex + 1 }} - {{ endIndex }} of
+            {{ props.rows.length }}</span
+        >
         <div class="w-3"></div>
         <ButtonComponent @click="previousPage">&lt;</ButtonComponent>
         <ButtonComponent @click="nextPage">&gt;</ButtonComponent>
@@ -39,15 +61,15 @@
 </template>
 
 <script setup lang="ts" generic="R extends { [key in keyof any]: unknown }">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
 
 interface ExtendedHeader {
-    key: string,
-    title: string,
-    disableSort?: boolean,
-    sort?: (a: unknown, b: unknown) => number
+    key: string;
+    title: string;
+    disableSort?: boolean;
+    sort?: (a: unknown, b: unknown) => number;
 }
 
 library.add(faArrowDown);
@@ -55,11 +77,11 @@ library.add(faArrowDown);
 const props = defineProps({
     headers: {
         type: Array as () => string[] | ExtendedHeader[],
-        required: true
+        required: true,
     },
     rows: {
         type: Array as () => R[],
-        required: true
+        required: true,
     },
     enableSorting: {
         type: Boolean,
@@ -79,21 +101,21 @@ const props = defineProps({
         type: String,
         required: false,
         default: "DESC",
-        validator: (v) => v === "ASC" || v === "DESC"
+        validator: (v) => v === "ASC" || v === "DESC",
     },
     rowsPerPage: {
         type: Array<number>,
         required: false,
-        default: [5, 10, 20]
+        default: [5, 10, 20],
     },
     itemsPerPage: {
         type: Number,
         required: false,
-        default: 5
-    }
+        default: 5,
+    },
 });
 
-const emits = defineEmits(['update:itemsPerPage']);
+const emits = defineEmits(["update:itemsPerPage"]);
 
 const selectedRowsPerPage = ref(props.itemsPerPage);
 const selectedPage = ref(1);
@@ -102,44 +124,54 @@ const sortingOrder: Ref<"ASC" | "DESC" | null> = ref(null);
 
 watch(selectedRowsPerPage, () => {
     emits("update:itemsPerPage", selectedRowsPerPage.value);
-})
-watch(() => props.itemsPerPage, () => {
-    selectedRowsPerPage.value = props.itemsPerPage;
 });
+watch(
+    () => props.itemsPerPage,
+    () => {
+        selectedRowsPerPage.value = props.itemsPerPage;
+    },
+);
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     if (props.headers.length === 0) {
         return [];
-    };
+    }
     if ((props.headers[0] as ExtendedHeader).key !== undefined) {
         return props.headers as ExtendedHeader[];
     }
-    return (props.headers as string[]).map(header => {
-        return { key: header, title: header }
+    return (props.headers as string[]).map((header) => {
+        return { key: header, title: header };
     });
 });
 
 if (props.alwaysSort) {
     if (props.defaultSortingKey) {
-        const searchedHeader = convertedHeaders.value.find(h => h.key === props.defaultSortingKey);
+        const searchedHeader = convertedHeaders.value.find(
+            (h) => h.key === props.defaultSortingKey,
+        );
         if (searchedHeader) {
             sortingBy.value = searchedHeader;
         }
     } else {
-        const firstSortable = convertedHeaders.value.find(v => !v.disableSort);
+        const firstSortable = convertedHeaders.value.find(
+            (v) => !v.disableSort,
+        );
         if (firstSortable === undefined) {
-            throw new Error("AlwaysSort enabled, but no sortable column found")
+            throw new Error("AlwaysSort enabled, but no sortable column found");
         }
         sortingBy.value = firstSortable;
     }
-    sortingOrder.value = props.defaultSortingOrder as ("ASC" | "DESC");
+    sortingOrder.value = props.defaultSortingOrder as "ASC" | "DESC";
 }
 
 const startIndex = computed(() => {
     return (selectedPage.value - 1) * selectedRowsPerPage.value;
 });
 const endIndex = computed(() => {
-    return Math.min(selectedPage.value * selectedRowsPerPage.value, props.rows.length);
+    return Math.min(
+        selectedPage.value * selectedRowsPerPage.value,
+        props.rows.length,
+    );
 });
 
 const filteredRows = computed(() => {
@@ -155,14 +187,14 @@ const filteredRows = computed(() => {
             }
 
             if (!isNaN(valA as number) && !isNaN(valB as number)) {
-                return valA as number - (valB as number);
+                return (valA as number) - (valB as number);
             }
 
-            return (valA as string).localeCompare((valB as string));
+            return (valA as string).localeCompare(valB as string);
         });
     }
 
-    if (sortingOrder.value === 'DESC') {
+    if (sortingOrder.value === "DESC") {
         result.reverse();
     }
 
@@ -172,7 +204,7 @@ const filteredRows = computed(() => {
 });
 
 function nextPage() {
-    if (selectedPage.value < (props.rows.length / selectedRowsPerPage.value)) {
+    if (selectedPage.value < props.rows.length / selectedRowsPerPage.value) {
         selectedPage.value++;
     }
 }
@@ -189,15 +221,15 @@ function changeSorting(key: ExtendedHeader) {
     }
     if (sortingBy.value?.key !== key.key) {
         sortingBy.value = key;
-        sortingOrder.value = 'DESC';
+        sortingOrder.value = "DESC";
     } else {
         switch (sortingOrder.value) {
-            case 'DESC':
-                sortingOrder.value = 'ASC';
+            case "DESC":
+                sortingOrder.value = "ASC";
                 break;
-            case 'ASC':
+            case "ASC":
                 if (props.alwaysSort) {
-                    sortingOrder.value = 'DESC';
+                    sortingOrder.value = "DESC";
                 } else {
                     sortingBy.value = null;
                     sortingOrder.value = null;
@@ -208,8 +240,10 @@ function changeSorting(key: ExtendedHeader) {
 }
 
 watch(selectedRowsPerPage, () => {
-    if (selectedPage.value > (props.rows.length / selectedRowsPerPage.value)) {
-        selectedPage.value = Math.ceil(props.rows.length / selectedRowsPerPage.value);
+    if (selectedPage.value > props.rows.length / selectedRowsPerPage.value) {
+        selectedPage.value = Math.ceil(
+            props.rows.length / selectedRowsPerPage.value,
+        );
     }
 });
 </script>

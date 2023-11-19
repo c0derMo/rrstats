@@ -1,6 +1,9 @@
 <template>
-    <DataTableComponent :headers="headers" :rows="records ?? []" :enableSorting="false">
-
+    <DataTableComponent
+        :headers="headers"
+        :rows="records ?? []"
+        :enableSorting="false"
+    >
         <template v-slot:record="{ row }">
             <span v-if="'map' in row">
                 {{ getMap(row.map)!.name }}
@@ -15,30 +18,39 @@
         </template>
 
         <template v-slot:record_duration="{ row }">
-            <span>{{ DateTime.fromMillis(row.timestamp).toLocaleString(DateTime.DATE_SHORT) }}</span>
+            <span>{{
+                DateTime.fromMillis(row.timestamp).toLocaleString(
+                    DateTime.DATE_SHORT,
+                )
+            }}</span>
             -
-            <span v-if="row.brokenAt > 0">{{ DateTime.fromMillis(row.brokenAt).toLocaleString(DateTime.DATE_SHORT) }}</span>
+            <span v-if="row.brokenAt > 0">{{
+                DateTime.fromMillis(row.brokenAt).toLocaleString(
+                    DateTime.DATE_SHORT,
+                )
+            }}</span>
             <span v-else>now</span>
         </template>
-
     </DataTableComponent>
 </template>
 
 <script setup lang="ts">
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 
 const props = defineProps({
-    "player": {
+    player: {
         type: String,
         required: true,
-    }
-})
+    },
+});
 
 const headers = [
-    { key: 'record', title: 'Record' },
-    { key: 'time', title: 'Time' },
-    { key: 'record_duration', title: 'Record duration' },
+    { key: "record", title: "Record" },
+    { key: "time", title: "Time" },
+    { key: "record_duration", title: "Record duration" },
 ];
 
-const records = (await useFetch('/api/records/player', { query: { player: props.player } })).data;
+const records = (
+    await useFetch("/api/records/player", { query: { player: props.player } })
+).data;
 </script>

@@ -19,8 +19,8 @@ export function formatPlacement(placement?: number): string {
 export function secondsToTime(seconds: number): string {
     const duration = Duration.fromObject({ seconds: seconds });
     if (duration.as("hours") >= 1) {
-        return duration.toFormat("hh:mm:ss")
+        return duration.toFormat("hh:mm:ss");
     } else {
-        return duration.toFormat("mm:ss")
+        return duration.toFormat("mm:ss");
     }
 }

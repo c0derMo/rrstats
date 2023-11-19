@@ -1,19 +1,37 @@
 <template>
     <div>
-        <span class="italic">Leave "Bracket" empty if there are no seperate brackets. Leave "Placement" empty to add Group Stage Participation.</span>
+        <span class="italic"
+            >Leave "Bracket" empty if there are no seperate brackets. Leave
+            "Placement" empty to add Group Stage Participation.</span
+        >
 
         <TableComponent :headers="placementsHeaders" :rows="placementsData">
             <template v-slot:player="{ index }">
-                <TextInputComponent v-model="placementPlayers[index]" @update:model-value="(val) => tryLookupPlayer(val, index)" :error="playersIncorrect[index]" />
+                <TextInputComponent
+                    v-model="placementPlayers[index]"
+                    @update:model-value="(val) => tryLookupPlayer(val, index)"
+                    :error="playersIncorrect[index]"
+                />
             </template>
             <template v-slot:bracket="{ index }">
-                <TextInputComponent v-model="placementsData[index].bracket" class="w-64" @update:model-value="checkAndEmit()" />
+                <TextInputComponent
+                    v-model="placementsData[index].bracket"
+                    class="w-64"
+                    @update:model-value="checkAndEmit()"
+                />
             </template>
             <template v-slot:placement="{ index }">
-                <TextInputComponent v-model="placementsData[index].placement" type="number" class="w-24" @update:model-value="checkAndEmit()" />
+                <TextInputComponent
+                    v-model="placementsData[index].placement"
+                    type="number"
+                    class="w-24"
+                    @update:model-value="checkAndEmit()"
+                />
             </template>
             <template v-slot:more="{ index }">
-                <ButtonComponent @click="removePlacement(index)">Delete</ButtonComponent>
+                <ButtonComponent @click="removePlacement(index)"
+                    >Delete</ButtonComponent
+                >
             </template>
         </TableComponent>
 
@@ -26,16 +44,16 @@
 </template>
 
 <script setup lang="ts">
-import { ICompetitionPlacement } from '~/utils/interfaces/ICompetition';
+import { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 
 const props = defineProps({
-    'placements': {
+    placements: {
         type: Array<ICompetitionPlacement>,
-        required: true
+        required: true,
     },
 });
 
-const emits = defineEmits(['update:placements']);
+const emits = defineEmits(["update:placements"]);
 
 const placementsData = toRef(props.placements);
 const playerToUUIDTable: Ref<Record<string, string>> = ref({});
@@ -43,16 +61,22 @@ const placementPlayers: Ref<string[]> = ref([]);
 const playersIncorrect: Ref<boolean[]> = ref([]);
 
 const placementsHeaders = [
-    { key: 'player', title: 'Player' },
-    { key: 'bracket', title: 'Bracket' },
-    { key: 'placement', title: 'Placement' },
-    { key: 'more', title: '' }
-]
+    { key: "player", title: "Player" },
+    { key: "bracket", title: "Bracket" },
+    { key: "placement", title: "Placement" },
+    { key: "more", title: "" },
+];
 
 onBeforeMount(async () => {
-    const playersRequest = await useFetch('/api/player/lookup');
-    if (playersRequest.data.value != null && playersRequest.status.value === 'success') {
-        const uuidsToPlayer = playersRequest.data.value as Record<string, string>;
+    const playersRequest = await useFetch("/api/player/lookup");
+    if (
+        playersRequest.data.value != null &&
+        playersRequest.status.value === "success"
+    ) {
+        const uuidsToPlayer = playersRequest.data.value as Record<
+            string,
+            string
+        >;
         for (const uuid in playersRequest.data.value) {
             playerToUUIDTable.value[uuidsToPlayer[uuid]] = uuid;
         }
@@ -66,26 +90,27 @@ onBeforeMount(async () => {
 });
 
 function checkAndEmit() {
-    if (playersIncorrect.value.some(b => b === true)) {
+    if (playersIncorrect.value.some((b) => b === true)) {
         return;
     }
 
     for (let i = 0; i < placementsData.value.length; i++) {
-        placementsData.value[i].player = playerToUUIDTable.value[placementPlayers.value[i]];
+        placementsData.value[i].player =
+            playerToUUIDTable.value[placementPlayers.value[i]];
         if (placementsData.value[i].placement?.toString() === "") {
             placementsData.value[i].placement = undefined;
         }
     }
 
-    emits('update:placements', placementsData.value);
+    emits("update:placements", placementsData.value);
 }
 
 function addPlacement() {
     placementsData.value.push({
-        player: '',
-        bracket: '',
-        competition: '',
-        placement: undefined
+        player: "",
+        bracket: "",
+        competition: "",
+        placement: undefined,
     });
     placementPlayers.value.push("");
     playersIncorrect.value.push(true);

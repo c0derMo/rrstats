@@ -1,17 +1,24 @@
 <template>
-    <div class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-40 dark:hidden" ></div>
-    <div class="fixed w-full h-full pointer-events-none -z-20 bg-cover bg-repeat dark:brightness-50 blur" :style="bgStyle" ></div>
+    <div
+        class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-40 dark:hidden"
+    ></div>
+    <div
+        class="fixed w-full h-full pointer-events-none -z-20 bg-cover bg-repeat dark:brightness-50 blur"
+        :style="bgStyle"
+    ></div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
-    'competitions': {
+    competitions: {
         type: Array<string>,
-        required: true
-    }
-})
+        required: true,
+    },
+});
 
-const chosenBackgroundIndex = Math.floor((props.competitions.length) * Math.random());
+const chosenBackgroundIndex = Math.floor(
+    props.competitions.length * Math.random(),
+);
 const chosenBackground = props.competitions[chosenBackgroundIndex];
 const bgStyle = computed(() => {
     if (chosenBackground === undefined || chosenBackground === null) return "";

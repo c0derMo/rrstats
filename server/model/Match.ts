@@ -3,37 +3,37 @@ import { IMatch, RRBannedMap, RRMap } from "~/utils/interfaces/IMatch";
 
 @Entity()
 export class Match extends BaseEntity implements IMatch {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn("uuid")
     uuid: string;
-    @Column('text', { nullable: true })
+    @Column("text", { nullable: true })
     hitmapsMatchId: string;
-    @Column('integer')
+    @Column("integer")
     timestamp: number;
 
-    @Column('text')
+    @Column("text")
     playerOne: string;
-    @Column('text')
+    @Column("text")
     playerTwo: string;
 
-    @Column('integer')
+    @Column("integer")
     playerOneScore: number;
-    @Column('integer')
+    @Column("integer")
     playerTwoScore: number;
 
-    @Column('text')
+    @Column("text")
     competition: string;
-    @Column('text')
-    round: string;    
-    @Column('text', { nullable: true })
+    @Column("text")
+    round: string;
+    @Column("text", { nullable: true })
     platform?: string;
 
-    @Column('simple-json')
+    @Column("simple-json")
     playedMaps: RRMap[];
-    @Column('simple-json')
+    @Column("simple-json")
     bannedMaps: RRBannedMap[];
 
-    @Column('simple-json', { nullable: true })
+    @Column("simple-json", { nullable: true })
     shoutcasters?: string[];
-    @Column('text', { nullable: true })
+    @Column("text", { nullable: true })
     vodLink?: string;
 }

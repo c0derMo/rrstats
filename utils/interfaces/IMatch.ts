@@ -1,4 +1,4 @@
-import { HitmanMap } from '../mapUtils';
+import { HitmanMap } from "../mapUtils";
 
 export type IMatch = {
     uuid: string;
@@ -20,7 +20,7 @@ export type IMatch = {
 
     shoutcasters?: string[];
     vodLink?: string;
-}
+};
 
 export enum ChoosingPlayer {
     RANDOM = 0,
@@ -35,19 +35,19 @@ export enum WinningPlayer {
 }
 
 export interface RRBannedMap {
-    map: HitmanMap,
-    picked: ChoosingPlayer,
+    map: HitmanMap;
+    picked: ChoosingPlayer;
 }
 
 export interface RRMap {
-    map: HitmanMap,
-    picked: ChoosingPlayer,
-    winner: WinningPlayer,
-    forfeit?: boolean,
-    spin?: Spin,
-    startedTimestamp: number,
-    endedTimestamp: number,
-    timeAccurate?: boolean,
+    map: HitmanMap;
+    picked: ChoosingPlayer;
+    winner: WinningPlayer;
+    forfeit?: boolean;
+    spin?: Spin;
+    startedTimestamp: number;
+    endedTimestamp: number;
+    timeAccurate?: boolean;
 }
 
 export interface Spin {

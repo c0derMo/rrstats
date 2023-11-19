@@ -1,23 +1,26 @@
 <template>
-    <span class="rounded-full px-3 py-1 whitespace-nowrap" :class="{ 'border': borderColor != '' }" :style="colorStyle">
+    <span
+        class="rounded-full px-3 py-1 whitespace-nowrap"
+        :class="{ border: borderColor != '' }"
+        :style="colorStyle"
+    >
         <slot />
     </span>
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
-    'color': {
+    color: {
         type: String,
         required: false,
-        default: "gray"
+        default: "gray",
     },
-    'borderColor': {
+    borderColor: {
         type: String,
         required: false,
-        default: '',
-    }
+        default: "",
+    },
 });
-
 
 const colorStyle = computed(() => {
     const styles: string[] = [];
@@ -28,5 +31,5 @@ const colorStyle = computed(() => {
         styles.push(`border-color: ${props.borderColor}`);
     }
     return styles.join("; ");
-})
+});
 </script>

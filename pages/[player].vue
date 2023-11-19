@@ -4,17 +4,48 @@
         <div class="flex flex-row gap-5 justify-center">
             <CardComponent class="md:w-3/5">
                 <div class="flex md:flex-row flex-col">
-                    <img class="rounded-full w-20 h-20 self-center" :src="avatar!" alt="Player Profile Picture"/>
+                    <img
+                        class="rounded-full w-20 h-20 self-center"
+                        :src="avatar!"
+                        alt="Player Profile Picture"
+                    />
                     <div class="flex-grow ml-5">
                         <h1 class="text-5xl">{{ route.params.player }}</h1>
-                        <h3 :class="{ 'italic': player?.hasCustomTitle }" class="mt-1">{{ player?.accolade }}</h3>
-                        <h3 v-if="player?.alternativeNames && player?.alternativeNames.length > 0">Also played as: {{ player?.alternativeNames?.join(", ") }}</h3>
+                        <h3
+                            :class="{ italic: player?.hasCustomTitle }"
+                            class="mt-1"
+                        >
+                            {{ player?.accolade }}
+                        </h3>
+                        <h3
+                            v-if="
+                                player?.alternativeNames &&
+                                player?.alternativeNames.length > 0
+                            "
+                        >
+                            Also played as:
+                            {{ player?.alternativeNames?.join(", ") }}
+                        </h3>
                     </div>
                     <div class="text-xl font-light text-right">
-                        <span class="italic opacity-75">Winrate: </span><span class="text-2xl">{{ Math.round(winrate * 100) }}%</span><br>
-                        <span class="italic opacity-75">Map-Winrate: </span><span class="text-2xl">{{ Math.round(mapWinrate * 100) }}%</span><br>
+                        <span class="italic opacity-75">Winrate: </span
+                        ><span class="text-2xl"
+                            >{{ Math.round(winrate * 100) }}%</span
+                        ><br />
+                        <span class="italic opacity-75">Map-Winrate: </span
+                        ><span class="text-2xl"
+                            >{{ Math.round(mapWinrate * 100) }}%</span
+                        ><br />
                         <template v-if="debut !== undefined">
-                            <span class="italic opacity-75">Debut: </span><span class="text-2xl">{{ DateTime.fromMillis(debut.timestamp).toLocaleString(DateTime.DATE_SHORT) }} ({{ debut.competition }})</span>
+                            <span class="italic opacity-75">Debut: </span
+                            ><span class="text-2xl"
+                                >{{
+                                    DateTime.fromMillis(
+                                        debut.timestamp,
+                                    ).toLocaleString(DateTime.DATE_SHORT)
+                                }}
+                                ({{ debut.competition }})</span
+                            >
                         </template>
                     </div>
                 </div>
@@ -22,20 +53,42 @@
         </div>
 
         <CardComponent class="flex md:flex-row w-3/5 mx-auto flex-col">
-            <div class="flex-grow md:text-left text-center md:pl-10">Best RR Placement: {{ bestPlacement }}</div>
-            <div class="flex-grow text-center md:border-x border-neutral-500">Maps played: {{ player?.matches.map(m => m.playedMaps.length).reduce((prev, cur) => prev+cur, 0) || 0 }}</div>
-            <div class="flex-grow text-center md:border-x border-neutral-500">Matches played: {{ player?.matches.length || 0 }}</div>
-            <div class="flex-grow md:text-right text-center md:pr-10">W-T-L: {{ wtl }}</div>
+            <div class="flex-grow md:text-left text-center md:pl-10">
+                Best RR Placement: {{ bestPlacement }}
+            </div>
+            <div class="flex-grow text-center md:border-x border-neutral-500">
+                Maps played:
+                {{
+                    player?.matches
+                        .map((m) => m.playedMaps.length)
+                        .reduce((prev, cur) => prev + cur, 0) || 0
+                }}
+            </div>
+            <div class="flex-grow text-center md:border-x border-neutral-500">
+                Matches played: {{ player?.matches.length || 0 }}
+            </div>
+            <div class="flex-grow md:text-right text-center md:pr-10">
+                W-T-L: {{ wtl }}
+            </div>
         </CardComponent>
 
         <div class="flex md:flex-row gap-5 flex-col">
             <CardComponent class="md:w-1/4">
-                <TabbedContainer :tabs="['Competitions', 'Opponents', 'Records']">
+                <TabbedContainer
+                    :tabs="['Competitions', 'Opponents', 'Records']"
+                >
                     <template #Competitions>
-                        <CompetitionsTable :placements="player?.placements" :competitionNames="player?.competitions" />
+                        <CompetitionsTable
+                            :placements="player?.placements"
+                            :competitionNames="player?.competitions"
+                        />
                     </template>
                     <template #Opponents>
-                        <OpponentsTable :matches="player?.matches || []" :localPlayer="player?.uuid || ''" :opponents="player?.opponents || {}" />
+                        <OpponentsTable
+                            :matches="player?.matches || []"
+                            :localPlayer="player?.uuid || ''"
+                            :opponents="player?.opponents || {}"
+                        />
                     </template>
                     <template #Records>
                         <PlayerRecordsList :player="player?.uuid || ''" />
@@ -43,14 +96,22 @@
                 </TabbedContainer>
             </CardComponent>
             <CardComponent class="flex-grow overflow-x-visible">
-                <MatchList :matches="(player?.matches as IMatch[])" :players="player?.opponents" :localPlayer="player?.uuid || ''" />
+                <MatchList
+                    :matches="player?.matches as IMatch[]"
+                    :players="player?.opponents"
+                    :localPlayer="player?.uuid || ''"
+                />
             </CardComponent>
         </div>
 
         <CardComponent>
             <TabbedContainer :tabs="['Maps', 'Time Heatmap']">
                 <template #Maps>
-                    <PlayerMapList :matches="player?.matches || []" :localPlayer="player?.uuid || ''" :competitions="competitions || []" />
+                    <PlayerMapList
+                        :matches="player?.matches || []"
+                        :localPlayer="player?.uuid || ''"
+                        :competitions="competitions || []"
+                    />
                 </template>
                 <template v-slot:[tH]>
                     <PlaytimeHeatmap :matches="player?.matches || []" />
@@ -61,25 +122,38 @@
 </template>
 
 <script setup lang="ts">
-import { DateTime } from 'luxon';
-import { IMatch } from '~/utils/interfaces/IMatch';
-import { bestRRPlacement } from '~/utils/statCalculators/competitionStatCalculators';
-import { mapsPicked, mapWinrate as getMapWinrate } from '~/utils/statCalculators/mapStatCalculators';
-import { calculateWTL, calculateWinrate, debutMatch } from '~/utils/statCalculators/matchStatCalculators';
+import { DateTime } from "luxon";
+import { IMatch } from "~/utils/interfaces/IMatch";
+import { bestRRPlacement } from "~/utils/statCalculators/competitionStatCalculators";
+import {
+    mapsPicked,
+    mapWinrate as getMapWinrate,
+} from "~/utils/statCalculators/mapStatCalculators";
+import {
+    calculateWTL,
+    calculateWinrate,
+    debutMatch,
+} from "~/utils/statCalculators/matchStatCalculators";
 
 const route = useRoute();
 
 useHead({
-    title: `${route.params.player} - RRStats v3`
+    title: `${route.params.player} - RRStats v3`,
 });
 
 const tH = "Time Heatmap";
-const player = (await useFetch(`/api/player/?player=${route.params.player}`)).data;
+const player = (await useFetch(`/api/player/?player=${route.params.player}`))
+    .data;
 const competitions = (await useFetch("/api/competitions/list")).data;
-const avatar = (await useFetch(`/api/player/avatar?player=${route.params.player}`)).data;
+const avatar = (
+    await useFetch(`/api/player/avatar?player=${route.params.player}`)
+).data;
 
 const wtl = computed(() => {
-    const wtl = calculateWTL(player.value?.matches ?? [], player.value?.uuid ?? "");
+    const wtl = calculateWTL(
+        player.value?.matches ?? [],
+        player.value?.uuid ?? "",
+    );
 
     return `${wtl.w}-${wtl.t}-${wtl.l}`;
 });
@@ -97,7 +171,7 @@ const mapWinrate = computed(() => {
         return 0;
     }
 
-    return getMapWinrate(player.value.matches, player.value.uuid ?? "")
+    return getMapWinrate(player.value.matches, player.value.uuid ?? "");
 });
 
 const pickedMaps = computed(() => {
@@ -110,22 +184,25 @@ const pickedMaps = computed(() => {
 
 const debut = computed(() => {
     if (player.value?.matches === undefined) {
-        return undefined
+        return undefined;
     }
 
     return debutMatch(player.value.matches);
-})
+});
 
 const bestPlacement = computed(() => {
     if (player.value?.placements == null) {
-        return "n/a"
+        return "n/a";
     }
 
-    const placement = bestRRPlacement(player.value.placements, competitions.value!);
+    const placement = bestRRPlacement(
+        player.value.placements,
+        competitions.value!,
+    );
     if (placement !== undefined) {
-        return formatPlacement(placement)
+        return formatPlacement(placement);
     } else {
-        return "n/a"
+        return "n/a";
     }
 });
 </script>

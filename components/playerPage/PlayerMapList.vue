@@ -1,71 +1,121 @@
 <template>
-    <DoubleEndedSlider class="w-full mb-2" v-model:minValue="selectedMinComp" v-model:maxValue="selectedMaxComp" :max="competitions.length-1" />
+    <DoubleEndedSlider
+        class="w-full mb-2"
+        v-model:minValue="selectedMinComp"
+        v-model:maxValue="selectedMaxComp"
+        :max="competitions.length - 1"
+    />
 
     <div class="flex flex-row w-full">
         <div class="flex-grow">
-            <DropdownComponent :items="dropdownCompetitions" v-model="selectedMinComp" />
+            <DropdownComponent
+                :items="dropdownCompetitions"
+                v-model="selectedMinComp"
+            />
         </div>
         <div class="flex-grow mr-3">
-            <SwitchComponent label="Only regular RRs:" class="float-right" id="only-rr" v-model="regularRROnly" />
+            <SwitchComponent
+                label="Only regular RRs:"
+                class="float-right"
+                id="only-rr"
+                v-model="regularRROnly"
+            />
         </div>
         <div class="flex-grow ml-3">
-            <SwitchComponent label="Only RRWCs:" class="float-left" id="only-rrwc" v-model="rrwcOnly" />
+            <SwitchComponent
+                label="Only RRWCs:"
+                class="float-left"
+                id="only-rrwc"
+                v-model="rrwcOnly"
+            />
         </div>
         <div class="flex-grow">
-            <DropdownComponent :items="dropdownCompetitions" v-model="selectedMaxComp" class="float-right" />
+            <DropdownComponent
+                :items="dropdownCompetitions"
+                v-model="selectedMaxComp"
+                class="float-right"
+            />
         </div>
     </div>
 
     <div class="flex md:flex-row flex-col gap-5">
         <div class="flex-grow">
-            <DataTableComponent :headers="pickedHeaders" :rows="pickedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" v-model:itemsPerPage="selectedMapsPerPage" defaultSortingKey="Picked" />
+            <DataTableComponent
+                :headers="pickedHeaders"
+                :rows="pickedRows"
+                :alwaysSort="true"
+                :rowsPerPage="[10, 20]"
+                v-model:itemsPerPage="selectedMapsPerPage"
+                defaultSortingKey="Picked"
+            />
         </div>
         <div class="flex-grow">
-            <DataTableComponent :headers="winrateHeaders" :rows="winrateRows" :alwaysSort="true" :rowsPerPage="[10, 20]" v-model:itemsPerPage="selectedMapsPerPage" defaultSortingKey="Winrate">
-                <template v-slot:Winrate="{ value }">
-                    {{ value }}%
-                </template>
+            <DataTableComponent
+                :headers="winrateHeaders"
+                :rows="winrateRows"
+                :alwaysSort="true"
+                :rowsPerPage="[10, 20]"
+                v-model:itemsPerPage="selectedMapsPerPage"
+                defaultSortingKey="Winrate"
+            >
+                <template v-slot:Winrate="{ value }"> {{ value }}% </template>
             </DataTableComponent>
         </div>
         <div class="flex-grow">
-            <DataTableComponent :headers="bannedHeaders" :rows="bannedRows" :alwaysSort="true" :rowsPerPage="[10, 20]" v-model:itemsPerPage="selectedMapsPerPage" defaultSortingKey="Banned" />
+            <DataTableComponent
+                :headers="bannedHeaders"
+                :rows="bannedRows"
+                :alwaysSort="true"
+                :rowsPerPage="[10, 20]"
+                v-model:itemsPerPage="selectedMapsPerPage"
+                defaultSortingKey="Banned"
+            />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ICompetition } from '~/utils/interfaces/ICompetition';
-import { IMatch } from '~/utils/interfaces/IMatch';
-import { mapWinratePerMap, mapsBannedPerMap, mapsPickedPerMap } from '~/utils/statCalculators/mapStatCalculators';
+import { ICompetition } from "~/utils/interfaces/ICompetition";
+import { IMatch } from "~/utils/interfaces/IMatch";
+import {
+    mapWinratePerMap,
+    mapsBannedPerMap,
+    mapsPickedPerMap,
+} from "~/utils/statCalculators/mapStatCalculators";
 
 const props = defineProps({
-    'matches': {
+    matches: {
         type: Object as PropType<IMatch[]>,
-        required: true
+        required: true,
     },
-    'localPlayer': {
+    localPlayer: {
         type: String,
-        required: true
+        required: true,
     },
-    'competitions': {
+    competitions: {
         type: Array<ICompetition>,
-        required: true
-    }
+        required: true,
+    },
 });
 
 const selectedMapsPerPage = ref(10);
 
-const mapSort = (a: unknown, b: unknown) => { return getAllMaps().findIndex(m => getMap(m)!.name === b) - getAllMaps().findIndex(m => getMap(m)!.name === a) };
+const mapSort = (a: unknown, b: unknown) => {
+    return (
+        getAllMaps().findIndex((m) => getMap(m)!.name === b) -
+        getAllMaps().findIndex((m) => getMap(m)!.name === a)
+    );
+};
 
 const pickedHeaders = [
     { key: "Map", title: "Map", sort: mapSort },
     { key: "Picked", title: "Picked" },
 ];
 const winrateHeaders = [
-    { key: 'Map', title: 'Map', sort: mapSort },
-    { key: 'Winrate', title: 'Winrate' },
-    { key: 'Won', title: 'Won' },
-    { key: 'Played', title: 'Played' },
+    { key: "Map", title: "Map", sort: mapSort },
+    { key: "Winrate", title: "Winrate" },
+    { key: "Won", title: "Won" },
+    { key: "Played", title: "Played" },
 ];
 const bannedHeaders = [
     { key: "Map", title: "Map", sort: mapSort },
@@ -73,7 +123,7 @@ const bannedHeaders = [
 ];
 
 const selectedMinComp = ref(0);
-const selectedMaxComp = ref(props.competitions.length-1);
+const selectedMaxComp = ref(props.competitions.length - 1);
 const regularRROnly = ref(false);
 const rrwcOnly = ref(false);
 
@@ -81,12 +131,12 @@ watch(selectedMaxComp, () => {
     if (selectedMaxComp.value < selectedMinComp.value) {
         selectedMaxComp.value = selectedMinComp.value;
     }
-})
+});
 watch(selectedMinComp, () => {
     if (selectedMinComp.value > selectedMaxComp.value) {
         selectedMinComp.value = selectedMaxComp.value;
     }
-})
+});
 watch(regularRROnly, () => {
     if (regularRROnly.value && rrwcOnly.value) {
         rrwcOnly.value = false;
@@ -99,27 +149,37 @@ watch(rrwcOnly, () => {
 });
 
 const sortedCompetitions = computed(() => {
-    return [...props.competitions].sort((a, b) => a.startingTimestamp - b.startingTimestamp);
+    return [...props.competitions].sort(
+        (a, b) => a.startingTimestamp - b.startingTimestamp,
+    );
 });
 
 const dropdownCompetitions = computed(() => {
     return sortedCompetitions.value.map((comp, idx) => {
         return { text: comp.tag, value: idx };
-    })
+    });
 });
 
 const filteredMatches = computed(() => {
-    return props.matches.filter(m => {
-        if (regularRROnly.value && m.competition.toLowerCase().includes("rrwc")) {
+    return props.matches.filter((m) => {
+        if (
+            regularRROnly.value &&
+            m.competition.toLowerCase().includes("rrwc")
+        ) {
             return false;
         }
         if (rrwcOnly.value && !m.competition.toLowerCase().includes("rrwc")) {
             return false;
         }
 
-        const compIndex = sortedCompetitions.value.findIndex(c => c.tag === m.competition);
-        
-        return compIndex >= selectedMinComp.value && compIndex <= selectedMaxComp.value;
+        const compIndex = sortedCompetitions.value.findIndex(
+            (c) => c.tag === m.competition,
+        );
+
+        return (
+            compIndex >= selectedMinComp.value &&
+            compIndex <= selectedMaxComp.value
+        );
     });
 });
 
@@ -130,8 +190,8 @@ const pickedRows = computed(() => {
     for (const map of getAllMaps()) {
         if (maps[map] !== undefined) {
             result.push({
-                'Map': getMap(map)!.name,
-                'Picked': maps[map]
+                Map: getMap(map)!.name,
+                Picked: maps[map],
             });
         }
     }
@@ -146,8 +206,8 @@ const bannedRows = computed(() => {
     for (const map of getAllMaps()) {
         if (maps[map] !== undefined) {
             result.push({
-                'Map': getMap(map)!.name,
-                'Banned': maps[map]
+                Map: getMap(map)!.name,
+                Banned: maps[map],
             });
         }
     }
@@ -162,10 +222,10 @@ const winrateRows = computed(() => {
     for (const map of getAllMaps()) {
         if (maps[map] !== undefined) {
             result.push({
-                'Map': getMap(map)!.name,
-                'Winrate': Math.round(maps[map].winrate * 100),
-                'Won': maps[map].wins,
-                'Played': maps[map].plays
+                Map: getMap(map)!.name,
+                Winrate: Math.round(maps[map].winrate * 100),
+                Won: maps[map].wins,
+                Played: maps[map].plays,
             });
         }
     }
