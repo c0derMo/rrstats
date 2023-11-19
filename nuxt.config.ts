@@ -23,5 +23,5 @@ export default defineNuxtConfig({
             },
         },
     },
-    session: { api: { isEnabled: false } },
+    session: { api: { isEnabled: false }, session: { rolling: true } },
 });
