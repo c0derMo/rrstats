@@ -2,10 +2,13 @@
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
     typescript: { shim: false },
-    modules: ["@nuxtjs/tailwindcss"],
+    modules: ["@nuxtjs/tailwindcss", '@sidebase/nuxt-session'],
     components: [{ path: "~/components", pathPrefix: false }],
     runtimeConfig: {
         discordToken: "",
+        discordId: "",
+        discordSecret: "",
+        publicOrigin: "http://localhost:3000"
     },
     nitro: {
         plugins: ["~/server/index.ts"],
@@ -20,4 +23,5 @@ export default defineNuxtConfig({
             },
         },
     },
+    session: { api: { isEnabled: false } },
 });

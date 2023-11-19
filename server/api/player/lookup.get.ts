@@ -6,7 +6,7 @@ import { IPlayer } from "~/utils/interfaces/IPlayer";
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
 
-    if (query.players === undefined && !AuthController.isAuthenticated()) {
+    if (query.players === undefined && !await AuthController.isAuthenticated(event.context.session.user)) {
         return createError({
             statusCode: 400,
             statusMessage: "players must be set",

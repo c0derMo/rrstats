@@ -54,6 +54,7 @@ library.add(faTrash);
 
 definePageMeta({
     layout: "backend",
+    middleware: ['auth']
 });
 
 const competitions: Ref<ICompetition[]> = ref([]);

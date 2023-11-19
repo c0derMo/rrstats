@@ -6,10 +6,14 @@
 
         <div class="flex-grow"></div>
 
-        <span> Logged in as: unknown </span>
+        <span>Logged in as: {{ user?.username ?? "unknown" }}</span>
         <div class="mb-2">
             <slot name="DarkModeToggle" />
         </div>
     </div>
     <slot />
 </template>
+
+<script setup lang="ts">
+const user = (await useFetch("/api/auth/user")).data;
+</script>

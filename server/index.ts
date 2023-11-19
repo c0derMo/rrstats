@@ -5,6 +5,7 @@ import { Player, PlayerSubscriber } from "./model/Player";
 import { useLogger } from "@nuxt/kit";
 import { GenericRecord, MapRecord } from "./model/Record";
 import { Competition, CompetitionPlacement } from "./model/Competition";
+import { User } from "./model/User";
 
 const logger = useLogger("rrstats:database");
 
@@ -21,6 +22,7 @@ export default defineNitroPlugin((nitroApp) => {
             MapRecord,
             Competition,
             CompetitionPlacement,
+            User
         ],
         subscribers: [PlayerSubscriber],
         synchronize: true,

@@ -1,10 +1,11 @@
 import { AuthController } from "~/server/controller/AuthController";
 import { Competition } from "~/server/model/Competition";
+import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
 
-    if (!AuthController.isAuthenticated()) {
+    if (!await AuthController.isAuthenticated(event.context.session.user, IPermission.EDIT_COMPETITIONS)) {
         throw createError({
             statusCode: 403,
         });
