@@ -15,9 +15,11 @@
         :headers="headers"
         :rows="competitions"
         :enableSorting="false"
+        :rows-per-page="[10, 25, 50]"
+        :items-per-page="10"
     >
         <template v-slot:header-more="">
-            <ButtonComponent>
+            <ButtonComponent @click="newCompetition()">
                 <FontAwesomeIcon
                     :icon="['fa', 'plus']"
                     class="text-green-500"
@@ -40,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { DateTime } from "luxon";
 import {
     ICompetition,
     ICompetitionPlacement,
@@ -61,6 +64,16 @@ const headers = [
     { key: "name", title: "Name" },
     { key: "more", title: "" },
 ];
+
+function newCompetition() {
+    placementsToShow.value = [];
+    competitionToShow.value = {
+        name: "",
+        tag: "",
+        officialCompetition: false,
+        startingTimestamp: DateTime.now().toMillis(),
+    };
+}
 
 async function updateList() {
     const competitionsQuery = await useFetch("/api/competitions/list");

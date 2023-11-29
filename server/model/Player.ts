@@ -5,6 +5,8 @@ import {
     BaseEntity,
     EventSubscriber,
     EntitySubscriberInterface,
+    BeforeInsert,
+    BeforeUpdate,
 } from "typeorm";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { CompetitionPlacement } from "./Competition";
@@ -31,6 +33,17 @@ export class Player extends BaseEntity implements IPlayer {
     excludedFromSearch?: boolean;
 
     accolade: string;
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    checkOptionalFields() {
+        if (this.discordId === "") {
+            this.discordId = undefined;
+        }
+        if (this.title === "") {
+            this.title = undefined;
+        }
+    }
 }
 
 @EventSubscriber()

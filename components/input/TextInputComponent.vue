@@ -2,8 +2,12 @@
     <div class="relative h-fit">
         <input
             class="rounded py-1 px-3 peer w-full outline-none bg-neutral-100 dark:bg-neutral-800"
+            :class="{
+                'bg-neutral-400 dark:bg-neutral-900': disabled,
+            }"
             required
             ref="input"
+            :disabled="disabled"
             :value="modelValue"
             :type="type"
             @input="
@@ -18,7 +22,11 @@
         />
 
         <label
-            class="absolute left-3 top-1 peer-focus:-translate-y-4 peer-focus:scale-75 origin-left pointer-events-none transition-all peer-valid:-translate-y-4 peer-valid:scale-75 dark:text-neutral-300 text-neutral-800"
+            class="absolute left-3 top-1 origin-left pointer-events-none transition-all dark:text-neutral-300 text-neutral-800"
+            :class="{
+                'dark:text-neutral-500 text-neutral-900': disabled,
+                '-translate-y-4 scale-75': nonEmptyOrFocussed,
+            }"
         >
             {{ placeholder }}
         </label>
@@ -37,7 +45,7 @@
                 class="h-full w-fit inline-block border border-l-0 border-r-0 text-transparent text-xs dark:border-neutral-500"
                 :class="{
                     '!border-blue-700': isFocused,
-                    'border-t-0': isFocused || modelValue !== '',
+                    'border-t-0': nonEmptyOrFocussed,
                     '!border-red-600': error,
                 }"
             >
@@ -57,7 +65,7 @@
 <script setup lang="ts">
 const emits = defineEmits(["update:model-value", "focus-change", "keydown"]);
 
-defineProps({
+const props = defineProps({
     placeholder: {
         type: String,
         required: false,
@@ -76,9 +84,18 @@ defineProps({
         type: Boolean,
         default: false,
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const isFocused = ref(false);
+const nonEmptyOrFocussed = computed(() => {
+    return (
+        isFocused.value || (props.modelValue !== "" && props.modelValue != null)
+    );
+});
 
 watch(isFocused, (newValue) => {
     emits("focus-change", newValue);

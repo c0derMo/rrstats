@@ -10,7 +10,7 @@
         <BackendButton
             title="Players"
             subtitle="List & edit players"
-            target="/backend/competitions"
+            target="/backend/players"
         >
             <FontAwesomeIcon
                 :icon="['fa', 'user-edit']"
