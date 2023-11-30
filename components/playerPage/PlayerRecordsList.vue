@@ -19,13 +19,13 @@
 
         <template v-slot:record_duration="{ row }">
             <span>{{
-                DateTime.fromMillis(row.timestamp).toLocaleString(
+                DateTime.fromMillis(row.timestamp).setLocale(useLocale().value).toLocaleString(
                     DateTime.DATE_SHORT,
                 )
             }}</span>
             -
             <span v-if="row.brokenAt > 0">{{
-                DateTime.fromMillis(row.brokenAt).toLocaleString(
+                DateTime.fromMillis(row.brokenAt).setLocale(useLocale().value).toLocaleString(
                     DateTime.DATE_SHORT,
                 )
             }}</span>

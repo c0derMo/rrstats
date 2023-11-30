@@ -24,7 +24,7 @@
 
                 <template #tooltip>
                     {{
-                        DateTime.fromMillis(row.timestamp).toLocaleString(
+                        DateTime.fromMillis(row.timestamp).setLocale(useLocale().value).toLocaleString(
                             DateTime.DATETIME_FULL,
                         )
                     }}

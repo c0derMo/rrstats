@@ -126,7 +126,7 @@ function getPlayerName(player: ChoosingPlayer | WinningPlayer): string {
 }
 
 function timestampToLocale(timestamp: number) {
-    return DateTime.fromMillis(timestamp).toLocaleString(
+    return DateTime.fromMillis(timestamp).setLocale(useLocale().value).toLocaleString(
         DateTime.DATETIME_FULL,
     );
 }

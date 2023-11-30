@@ -42,7 +42,7 @@
                                 >{{
                                     DateTime.fromMillis(
                                         debut.timestamp,
-                                    ).toLocaleString(DateTime.DATE_SHORT)
+                                    ).setLocale(useLocale().value).toLocaleString(DateTime.DATE_SHORT)
                                 }}
                                 ({{ debut.competition }})</span
                             >

@@ -85,7 +85,7 @@ const labels = computed(() => {
     for (let i = 0; i < amountDays; i++) {
         const currentDate = startDate.plus({ days: i });
 
-        labels.push(currentDate.toLocaleString(DateTime.DATE_SHORT));
+        labels.push(currentDate.setLocale(useLocale().value).toLocaleString(DateTime.DATE_SHORT));
     }
 
     return labels;

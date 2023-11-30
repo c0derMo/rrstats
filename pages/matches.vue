@@ -33,7 +33,7 @@
         >
             <template v-slot:timestamp="{ value }">
                 {{
-                    DateTime.fromMillis(value as number).toLocaleString(
+                    DateTime.fromMillis(value as number).setLocale(useLocale().value).toLocaleString(
                         DateTime.DATETIME_FULL,
                     )
                 }}
