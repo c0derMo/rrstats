@@ -3,17 +3,21 @@
         <thead>
             <tr class="w-full">
                 <th></th>
-                <th v-for="timeslot in timeslots">{{ timeslot }}</th>
+                <th v-for="timeslot in timeslots" :key="timeslot">
+                    {{ timeslot }}
+                </th>
             </tr>
         </thead>
         <tbody>
             <tr
                 v-for="(weekday, index) in weekdays"
+                :key="index"
                 class="text-center transition-all"
             >
                 <td>{{ weekday }}</td>
                 <td
                     v-for="(timeslot, tIndex) in timeslots"
+                    :key="tIndex"
                     :class="getDayColorClass(index, tIndex)"
                     class="text-[0px] hover:text-base transition-all"
                 >

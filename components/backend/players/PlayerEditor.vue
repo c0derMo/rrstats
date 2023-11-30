@@ -1,5 +1,5 @@
 <template>
-    <DialogComponent dialogClass="w-3/5">
+    <DialogComponent dialog-class="w-3/5">
         <CardComponent>
             <div class="flex flex-col gap-5 f-full">
                 <TextInputComponent
@@ -33,20 +33,20 @@
                 />
 
                 <SwitchComponent
-                    label="Has custom accolate:"
-                    v-model="playerData.hasCustomTitle"
                     id="customTitle"
+                    v-model="playerData.hasCustomTitle"
+                    label="Has custom accolate:"
                 />
 
                 <SwitchComponent
-                    label="Excluded from search:"
-                    v-model="playerData.excludedFromSearch"
                     id="excludedFromSearch"
+                    v-model="playerData.excludedFromSearch"
+                    label="Excluded from search:"
                 />
             </div>
 
             <div class="flex flex-row gap-3 mt-2">
-                <ButtonComponent @click="save()" :loading="isSaving"
+                <ButtonComponent :loading="isSaving" @click="save()"
                     >Save</ButtonComponent
                 >
                 <ButtonComponent @click="close()">Discard</ButtonComponent>

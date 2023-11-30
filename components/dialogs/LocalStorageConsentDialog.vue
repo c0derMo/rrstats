@@ -1,5 +1,5 @@
 <template>
-    <DialogComponent @clickOutside="$emit('decline')">
+    <DialogComponent @click-outside="$emit('decline')">
         <CardComponent class="fixed right-3 top-10 text-sm">
             <h1 class="font-bold text-base">Just one second</h1>
 
@@ -8,7 +8,7 @@
             This data stays on your system and is never shared with anyone.<br />
 
             <ButtonComponent @click="$emit('consent')">Consent</ButtonComponent>
-            <ButtonComponent @click="$emit('decline')" class="ml-3"
+            <ButtonComponent class="ml-3" @click="$emit('decline')"
                 >Decline</ButtonComponent
             >
         </CardComponent>

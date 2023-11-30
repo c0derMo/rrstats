@@ -1,38 +1,40 @@
 <template>
-    <CompetitionBackground
-        :competitions="
-            competitions
-                ?.filter(
-                    (m) =>
-                        m.backgroundImage !== undefined &&
-                        m.backgroundImage !== null,
-                )
-                .map((m) => m.backgroundImage) as string[]
-        "
-    />
-
-    <CardComponent class="overflow-x-visible">
-        <h1 class="text-lg">RRStats v3</h1>
-        <div class="flex flex-row gap-5 my-2">
-            <DropdownComponent
-                :items="competitionsDropdown"
-                v-model="selectedTournament"
-            />
-            <NuxtLink to="/records">
-                <ButtonComponent>Records</ButtonComponent>
-            </NuxtLink>
-            <NuxtLink to="/compare">
-                <ButtonComponent>Compare</ButtonComponent>
-            </NuxtLink>
-        </div>
-        <br />
-        <AutocompleteComponent
-            placeholder="Player"
-            class="w-[600px]"
-            :suggestions="players || []"
-            @confirm="(p) => navigateTo(`/${p}`)"
+    <div>
+        <CompetitionBackground
+            :competitions="
+                competitions
+                    ?.filter(
+                        (m) =>
+                            m.backgroundImage !== undefined &&
+                            m.backgroundImage !== null,
+                    )
+                    .map((m) => m.backgroundImage) as string[]
+            "
         />
-    </CardComponent>
+
+        <CardComponent class="overflow-x-visible">
+            <h1 class="text-lg">RRStats v3</h1>
+            <div class="flex flex-row gap-5 my-2">
+                <DropdownComponent
+                    v-model="selectedTournament"
+                    :items="competitionsDropdown"
+                />
+                <NuxtLink to="/records">
+                    <ButtonComponent>Records</ButtonComponent>
+                </NuxtLink>
+                <NuxtLink to="/compare">
+                    <ButtonComponent>Compare</ButtonComponent>
+                </NuxtLink>
+            </div>
+            <br />
+            <AutocompleteComponent
+                placeholder="Player"
+                class="w-[600px]"
+                :suggestions="players || []"
+                @confirm="(p) => navigateTo(`/${p}`)"
+            />
+        </CardComponent>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -43,7 +45,7 @@ useHead({
     title: "RRStats v3",
 });
 
-const players = (await useFetch("/api/player/list")).data;
+const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
 const competitions = (await useFetch("/api/competitions/list")).data;
 
 const competitionsDropdown = computed(() => {

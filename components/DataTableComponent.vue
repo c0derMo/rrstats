@@ -3,13 +3,14 @@
         <template
             v-for="header of convertedHeaders"
             :key="header.key"
-            v-slot:[`header-${header.key}`]="{ value }"
+            #[`header-${header.key}`]="{ value }"
         >
             <span
-                @click="changeSorting(header)"
                 class="group whitespace-nowrap"
+                @click="changeSorting(header)"
             >
                 <FontAwesomeIcon
+                    v-if="enableSorting"
                     :icon="['fas', 'arrow-down']"
                     :class="{
                         'rotate-180':
@@ -20,7 +21,6 @@
                             enableSorting && !header.disableSort,
                     }"
                     class="transition opacity-0 mr-1"
-                    v-if="enableSorting"
                 ></FontAwesomeIcon>
                 <slot :name="`header-${header.key}`" :value="header.title">
                     {{ value }}
@@ -31,7 +31,7 @@
         <template
             v-for="header of convertedHeaders"
             :key="header.key"
-            v-slot:[`${header.key}`]="{ value, row }"
+            #[`${header.key}`]="{ value, row }"
         >
             <div :class="{ 'ml-4': enableSorting }">
                 <slot :name="header.key" :value="value" :row="row">
@@ -46,8 +46,8 @@
     >
         <span>Rows per page:</span>
         <DropdownComponent
-            :items="rowsPerPage"
             v-model="selectedRowsPerPage"
+            :items="rowsPerPage"
         ></DropdownComponent>
         <div class="w-3"></div>
         <span
@@ -90,6 +90,7 @@ const props = defineProps({
     defaultSortingKey: {
         type: String,
         required: false,
+        default: undefined,
     },
     defaultSortingOrder: {
         type: String,

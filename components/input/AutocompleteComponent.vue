@@ -2,17 +2,17 @@
     <div class="relative">
         <TextInputComponent
             v-model="value"
-            @keydown="onKeyDown"
-            @focus-change="(value) => (isFocussed = value)"
             :placeholder="placeholder"
             class="w-full"
+            @keydown="onKeyDown"
+            @focus-change="(value) => (isFocussed = value)"
         />
         <div
-            class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm"
             v-if="
                 (isDropdownFocussed || isFocussed) &&
                 currentSuggestions.length > 0
             "
+            class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm"
             @mouseenter="isDropdownFocussed = true"
             @mouseleave="isDropdownFocussed = false"
         >

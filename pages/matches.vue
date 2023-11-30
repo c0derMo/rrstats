@@ -1,107 +1,123 @@
 <template>
-    <MatchDetailsDialog
-        v-if="matchToShow != null"
-        :match="matchToShow"
-        :opponents="data?.players || {}"
-        @clickOutside="matchToShow = null"
-    />
-    <CompetitionBackground
-        :competitions="[competition?.backgroundImage || (tournament as string)]"
-    />
-
-    <div class="flex flex-col gap-3 mx-10">
-        <h1 class="text-center text-5xl bold">
-            {{ competition?.name }} - Matches
-        </h1>
-
-        <GroupsTables
-            v-if="
-                competition?.groupsConfig !== null &&
-                competition?.groupsConfig !== undefined
-            "
-            :groupsInfo="competition.groupsConfig"
-            :matches="sortedMatches"
-            :players="data?.players ?? {}"
+    <div>
+        <MatchDetailsDialog
+            v-if="matchToShow != null"
+            :match="matchToShow"
+            :opponents="data?.players || {}"
+            @click-outside="matchToShow = null"
+        />
+        <CompetitionBackground
+            :competitions="[
+                competition?.backgroundImage || (tournament as string),
+            ]"
         />
 
-        <DataTableComponent
-            :headers="headers"
-            :rows="sortedMatches"
-            :enable-sorting="false"
-            :rows-per-page="[10, 25, 50, 100]"
-            :items-per-page="25"
-        >
-            <template v-slot:timestamp="{ value }">
-                {{
-                    DateTime.fromMillis(value as number).setLocale(useLocale().value).toLocaleString(
-                        DateTime.DATETIME_FULL,
-                    )
-                }}
-            </template>
+        <div class="flex flex-col gap-3 mx-10">
+            <h1 class="text-center text-5xl bold">
+                {{ competition?.name }} - Matches
+            </h1>
 
-            <template v-slot:playerOne="{ value }">
-                {{
-                    data?.players[value as string] || `Unknown player: ${value}`
-                }}
-            </template>
+            <GroupsTables
+                v-if="
+                    competition?.groupsConfig !== null &&
+                    competition?.groupsConfig !== undefined
+                "
+                :groups-info="competition.groupsConfig"
+                :matches="sortedMatches"
+                :players="data?.players ?? {}"
+            />
 
-            <template v-slot:score="{ row }">
-                <span class="whitespace-nowrap"
-                    >{{ row.playerOneScore }} - {{ row.playerTwoScore }}</span
-                >
-            </template>
+            <DataTableComponent
+                :headers="headers"
+                :rows="sortedMatches"
+                :enable-sorting="false"
+                :rows-per-page="[10, 25, 50, 100]"
+                :items-per-page="25"
+            >
+                <template #timestamp="{ value }">
+                    {{
+                        DateTime.fromMillis(value as number)
+                            .setLocale(useLocale().value)
+                            .toLocaleString(DateTime.DATETIME_FULL)
+                    }}
+                </template>
 
-            <template v-slot:playerTwo="{ value }">
-                {{
-                    data?.players[value as string] || `Unknown player: ${value}`
-                }}
-            </template>
+                <template #playerOne="{ value }">
+                    {{
+                        data?.players[value as string] ||
+                        `Unknown player: ${value}`
+                    }}
+                </template>
 
-            <template v-slot:bans="{ row }">
-                <div class="flex flex-wrap">
-                    <TooltipComponent
-                        v-for="ban in row.bannedMaps as RRBannedMap[]"
+                <template #score="{ row }">
+                    <span class="whitespace-nowrap"
+                        >{{ row.playerOneScore }} -
+                        {{ row.playerTwoScore }}</span
                     >
-                        <Tag :color="getMap(ban.map)?.color">{{
-                            getMap(ban.map)?.abbreviation
-                        }}</Tag>
+                </template>
 
-                        <template #tooltip>
-                            Map: {{ getMap(ban.map)?.name }}<br />
-                            Banned by: {{ getMapPicker(ban, row) }}
-                        </template>
-                    </TooltipComponent>
-                </div>
-            </template>
+                <template #playerTwo="{ value }">
+                    {{
+                        data?.players[value as string] ||
+                        `Unknown player: ${value}`
+                    }}
+                </template>
 
-            <template v-slot:playedMaps="{ value, row }">
-                <div class="flex flex-wrap">
-                    <TooltipComponent v-for="play in value as RRMap[]">
-                        <Tag :color="getMap(play.map)?.color">{{
-                            getMap(play.map)?.abbreviation
-                        }}</Tag>
+                <template #bans="{ row }">
+                    <div class="flex flex-wrap">
+                        <TooltipComponent
+                            v-for="(
+                                ban, idx
+                            ) in row.bannedMaps as RRBannedMap[]"
+                            :key="idx"
+                        >
+                            <Tag :color="getMap(ban.map)?.color">{{
+                                getMap(ban.map)?.abbreviation
+                            }}</Tag>
 
-                        <template #tooltip>
-                            Map: {{ getMap(play.map)?.name }}<br />
-                            Picked by: {{ getMapPicker(play, row) }}<br />
-                            Won by: {{ getMapWinner(play, row) }}
-                        </template>
-                    </TooltipComponent>
-                </div>
-            </template>
+                            <template #tooltip>
+                                Map: {{ getMap(ban.map)?.name }}<br />
+                                Banned by: {{ getMapPicker(ban, row) }}
+                            </template>
+                        </TooltipComponent>
+                    </div>
+                </template>
 
-            <template v-slot:shoutcasters="{ value }">
-                <span v-if="value !== null">{{
-                    (value as string[]).join(", ")
-                }}</span>
-            </template>
+                <template #playedMaps="{ value, row }">
+                    <div class="flex flex-wrap">
+                        <TooltipComponent
+                            v-for="(play, idx) in value as RRMap[]"
+                            :key="idx"
+                        >
+                            <Tag :color="getMap(play.map)?.color">{{
+                                getMap(play.map)?.abbreviation
+                            }}</Tag>
 
-            <template v-slot:actions="{ row }">
-                <ButtonComponent @click="matchToShow = row">
-                    <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
-                </ButtonComponent>
-            </template>
-        </DataTableComponent>
+                            <template #tooltip>
+                                Map: {{ getMap(play.map)?.name }}<br />
+                                Picked by: {{ getMapPicker(play, row) }}<br />
+                                Won by: {{ getMapWinner(play, row) }}
+                            </template>
+                        </TooltipComponent>
+                    </div>
+                </template>
+
+                <template #shoutcasters="{ value }">
+                    <span v-if="value !== null">{{
+                        (value as string[]).join(", ")
+                    }}</span>
+                </template>
+
+                <template #actions="{ row }">
+                    <ButtonComponent @click="matchToShow = row">
+                        <FontAwesomeIcon
+                            :icon="['fas', 'ellipsis-h']"
+                            size="xs"
+                        />
+                    </ButtonComponent>
+                </template>
+            </DataTableComponent>
+        </div>
     </div>
 </template>
 

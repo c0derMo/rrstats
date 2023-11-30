@@ -1,11 +1,11 @@
 <template>
     <TableComponent :headers="headers" :rows="placements">
-        <template v-slot:competition="{ row }">
+        <template #competition="{ row }">
             {{ competitionNames[row.competition] }}
             <span v-if="row.bracket !== ''"> - {{ row.bracket }}</span>
         </template>
 
-        <template v-slot:placement="{ row }">
+        <template #placement="{ row }">
             {{ formatPlacement(row.placement) }}
         </template>
     </TableComponent>
@@ -21,7 +21,7 @@ defineProps({
     },
     competitionNames: {
         type: Object as PropType<Record<string, string>>,
-        default: {},
+        default: () => {},
     },
 });
 

@@ -3,8 +3,8 @@
         class="relative border inline-block w-fit rounded dark:border-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-150 active:bg-neutral-300 active:dark:bg-neutral-500 cursor-pointer select-none"
     >
         <div
-            class="absolute w-full h-full bg-opacity-70 bg-gray-500 text-center"
             v-if="loading"
+            class="absolute w-full h-full bg-opacity-70 bg-gray-500 text-center"
         >
             <FontAwesomeIcon
                 :icon="['fa', 'spinner']"

@@ -1,9 +1,9 @@
 <template>
     <div
-        class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-40 dark:hidden"
+        class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-40 dark:hidden top-0 left-0"
     ></div>
     <div
-        class="fixed w-full h-full pointer-events-none -z-20 bg-cover bg-repeat dark:brightness-50 blur"
+        class="fixed w-full h-full pointer-events-none -z-20 bg-cover bg-repeat dark:brightness-50 blur top-0 left-0"
         :style="bgStyle"
     ></div>
 </template>

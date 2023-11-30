@@ -1,53 +1,53 @@
 <template>
     <MatchDetailsDialog
         v-if="matchToShow != null"
-        @clickOutside="matchToShow = null"
         :match="matchToShow"
         :opponents="players"
+        @click-outside="matchToShow = null"
     />
 
     <div class="w-4/5 mx-auto">
         <TextInputComponent
+            v-model="searchFilter"
             class="w-full mb-4"
             placeholder="Search"
-            v-model="searchFilter"
         />
     </div>
     <DataTableComponent
         :headers="headers"
         :rows="filteredSortedMatches"
-        :enableSorting="false"
+        :enable-sorting="false"
     >
-        <template v-slot:round="{ value, row }">
+        <template #round="{ value, row }">
             <TooltipComponent>
                 {{ value }}
 
                 <template #tooltip>
                     {{
-                        DateTime.fromMillis(row.timestamp).setLocale(useLocale().value).toLocaleString(
-                            DateTime.DATETIME_FULL,
-                        )
+                        DateTime.fromMillis(row.timestamp)
+                            .setLocale(useLocale().value)
+                            .toLocaleString(DateTime.DATETIME_FULL)
                     }}
                 </template>
             </TooltipComponent>
         </template>
 
-        <template v-slot:playerOne="{ value }">
+        <template #playerOne="{ value }">
             {{ players[value as string] || `Unknown player (${value})` }}
         </template>
 
-        <template v-slot:playerTwo="{ value }">
+        <template #playerTwo="{ value }">
             {{ players[value as string] || `Unknown player (${value})` }}
         </template>
 
-        <template v-slot:score="{ row }">
+        <template #score="{ row }">
             <Tag :color="getMatchColor(row)">
                 {{ row.playerOneScore }} - {{ row.playerTwoScore }}
             </Tag>
         </template>
 
-        <template v-slot:playedMaps="{ value, row }">
-            <TooltipComponent v-for="map of value">
+        <template #playedMaps="{ value, row }">
+            <TooltipComponent v-for="(map, idx) of value" :key="idx">
                 <Tag :color="getMapColor(map, row)" class="ml-2">
                     {{ getMap((map as RRMap).map)?.abbreviation }}
                 </Tag>
@@ -60,7 +60,7 @@
             </TooltipComponent>
         </template>
 
-        <template v-slot:more="{ row }">
+        <template #more="{ row }">
             <ButtonComponent @click="matchToShow = row">
                 <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
             </ButtonComponent>
@@ -93,14 +93,14 @@ const searchFilter = ref("");
 
 const props = defineProps({
     matches: {
-        type: Object as PropType<IMatch[]>,
+        type: Array<IMatch>,
         required: false,
         default: [],
     },
     players: {
         type: Object as PropType<Record<string, string>>,
         required: false,
-        default: {},
+        default: () => {},
     },
     localPlayer: {
         type: String,

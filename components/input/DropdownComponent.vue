@@ -1,6 +1,6 @@
 <template>
     <div class="p-2 border rounded w-fit inline-block dark:border-neutral-500">
-        <select class="bg-transparent" v-model="value">
+        <select v-model="value" class="bg-transparent">
             <option
                 v-for="(item, idx) of convertedItems"
                 :key="idx"
@@ -26,6 +26,7 @@ const props = defineProps({
     },
     modelValue: {
         type: [String, Number],
+        default: undefined,
     },
 });
 

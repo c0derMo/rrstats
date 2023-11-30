@@ -1,6 +1,6 @@
 <template>
-    <DataTableComponent :headers="headers" :rows="rows" :alwaysSort="true">
-        <template v-slot:wtl="{ value }">
+    <DataTableComponent :headers="headers" :rows="rows" :always-sort="true">
+        <template #wtl="{ value }">
             <span class="whitespace-nowrap">{{ value }}</span>
         </template>
     </DataTableComponent>

@@ -2,9 +2,9 @@
     <DataTableComponent
         :headers="headers"
         :rows="records ?? []"
-        :enableSorting="false"
+        :enable-sorting="false"
     >
-        <template v-slot:record="{ row }">
+        <template #record="{ row }">
             <span v-if="'map' in row">
                 {{ getMap(row.map)!.name }}
             </span>
@@ -13,21 +13,21 @@
             </span>
         </template>
 
-        <template v-slot:time="{ value }">
+        <template #time="{ value }">
             {{ secondsToTime(value as number) }}
         </template>
 
-        <template v-slot:record_duration="{ row }">
+        <template #record_duration="{ row }">
             <span>{{
-                DateTime.fromMillis(row.timestamp).setLocale(useLocale().value).toLocaleString(
-                    DateTime.DATE_SHORT,
-                )
+                DateTime.fromMillis(row.timestamp)
+                    .setLocale(useLocale().value)
+                    .toLocaleString(DateTime.DATE_SHORT)
             }}</span>
             -
             <span v-if="row.brokenAt > 0">{{
-                DateTime.fromMillis(row.brokenAt).setLocale(useLocale().value).toLocaleString(
-                    DateTime.DATE_SHORT,
-                )
+                DateTime.fromMillis(row.brokenAt)
+                    .setLocale(useLocale().value)
+                    .toLocaleString(DateTime.DATE_SHORT)
             }}</span>
             <span v-else>now</span>
         </template>

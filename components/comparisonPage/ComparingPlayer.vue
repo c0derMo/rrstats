@@ -240,14 +240,17 @@ const props = defineProps({
     comparingPlayer: {
         type: String,
         required: false,
+        default: undefined,
     },
     comparingMatches: {
         type: Array<IMatch>,
         required: false,
+        default: undefined,
     },
     comparingPlacements: {
         type: Array<ICompetitionPlacement>,
         required: false,
+        default: undefined,
     },
     reverse: {
         type: Boolean,

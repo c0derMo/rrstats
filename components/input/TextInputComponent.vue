@@ -1,19 +1,18 @@
 <template>
     <div class="relative h-fit">
         <input
+            ref="input"
             class="rounded py-1 px-3 peer w-full outline-none bg-neutral-100 dark:bg-neutral-800"
             :class="{
                 'bg-neutral-400 dark:bg-neutral-900': disabled,
             }"
-            required
-            ref="input"
             :disabled="disabled"
             :value="modelValue"
             :type="type"
             @input="
                 $emit(
                     'update:model-value',
-                    (<HTMLInputElement>$event.target).value,
+                    ($event.target as HTMLInputElement).value,
                 )
             "
             @focusin="isFocused = true"

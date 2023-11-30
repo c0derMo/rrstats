@@ -1,38 +1,38 @@
 <template>
     <DoubleEndedSlider
-        class="w-full mb-2"
         v-model:minValue="selectedMinComp"
         v-model:maxValue="selectedMaxComp"
+        class="w-full mb-2"
         :max="competitions.length - 1"
     />
 
     <div class="flex flex-row w-full">
         <div class="flex-grow">
             <DropdownComponent
-                :items="dropdownCompetitions"
                 v-model="selectedMinComp"
+                :items="dropdownCompetitions"
             />
         </div>
         <div class="flex-grow mr-3">
             <SwitchComponent
-                label="Only regular RRs:"
-                class="float-right"
                 id="only-rr"
                 v-model="regularRROnly"
+                label="Only regular RRs:"
+                class="float-right"
             />
         </div>
         <div class="flex-grow ml-3">
             <SwitchComponent
-                label="Only RRWCs:"
-                class="float-left"
                 id="only-rrwc"
                 v-model="rrwcOnly"
+                label="Only RRWCs:"
+                class="float-left"
             />
         </div>
         <div class="flex-grow">
             <DropdownComponent
-                :items="dropdownCompetitions"
                 v-model="selectedMaxComp"
+                :items="dropdownCompetitions"
                 class="float-right"
             />
         </div>
@@ -41,34 +41,34 @@
     <div class="flex md:flex-row flex-col gap-5">
         <div class="flex-grow">
             <DataTableComponent
+                v-model:itemsPerPage="selectedMapsPerPage"
                 :headers="pickedHeaders"
                 :rows="pickedRows"
-                :alwaysSort="true"
-                :rowsPerPage="[10, 20]"
-                v-model:itemsPerPage="selectedMapsPerPage"
-                defaultSortingKey="Picked"
+                :always-sort="true"
+                :rows-per-page="[10, 20]"
+                default-sorting-key="Picked"
             />
         </div>
         <div class="flex-grow">
             <DataTableComponent
+                v-model:itemsPerPage="selectedMapsPerPage"
                 :headers="winrateHeaders"
                 :rows="winrateRows"
-                :alwaysSort="true"
-                :rowsPerPage="[10, 20]"
-                v-model:itemsPerPage="selectedMapsPerPage"
-                defaultSortingKey="Winrate"
+                :always-sort="true"
+                :rows-per-page="[10, 20]"
+                default-sorting-key="Winrate"
             >
-                <template v-slot:Winrate="{ value }"> {{ value }}% </template>
+                <template #Winrate="{ value }"> {{ value }}% </template>
             </DataTableComponent>
         </div>
         <div class="flex-grow">
             <DataTableComponent
+                v-model:itemsPerPage="selectedMapsPerPage"
                 :headers="bannedHeaders"
                 :rows="bannedRows"
-                :alwaysSort="true"
-                :rowsPerPage="[10, 20]"
-                v-model:itemsPerPage="selectedMapsPerPage"
-                defaultSortingKey="Banned"
+                :always-sort="true"
+                :rows-per-page="[10, 20]"
+                default-sorting-key="Banned"
             />
         </div>
     </div>

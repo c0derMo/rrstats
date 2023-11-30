@@ -1,5 +1,5 @@
 <template>
-    <div class="relative h-5" ref="parent">
+    <div ref="parent" class="relative h-5">
         <input
             type="range"
             class="w-full absolute slider z-10"
@@ -44,18 +44,20 @@ const props = defineProps({
 const emits = defineEmits(["update:minValue", "update:maxValue"]);
 
 function updateBar(barNumber: 0 | 1, event: Event) {
-    let value = parseInt((<HTMLInputElement>event.target).value);
+    let value = parseInt((event.target as HTMLInputElement).value);
     if (barNumber === 0) {
         if (value > props.maxValue) {
             value = props.maxValue;
-            (<HTMLInputElement>event.target).value = props.maxValue.toString();
+            (event.target as HTMLInputElement).value =
+                props.maxValue.toString();
         }
         emits("update:minValue", value);
     }
     if (barNumber === 1) {
         if (value < props.minValue) {
             value = props.minValue;
-            (<HTMLInputElement>event.target).value = props.minValue.toString();
+            (event.target as HTMLInputElement).value =
+                props.minValue.toString();
         }
         emits("update:maxValue", value);
     }
@@ -64,10 +66,10 @@ function updateBar(barNumber: 0 | 1, event: Event) {
 const parent: Ref<HTMLDivElement | undefined> = ref();
 
 const barStyle = computed(() => {
-    let pixelPerInput =
+    const pixelPerInput =
         (parent.value?.clientWidth || 0) / (props.max - props.min);
-    let start = pixelPerInput * props.minValue;
-    let width = pixelPerInput * props.maxValue - start;
+    const start = pixelPerInput * props.minValue;
+    const width = pixelPerInput * props.maxValue - start;
     return `margin-left: ${start}px; width: ${width}px;`;
 });
 </script>

@@ -6,21 +6,21 @@
         >
 
         <TableComponent :headers="placementsHeaders" :rows="placementsData">
-            <template v-slot:player="{ index }">
+            <template #player="{ index }">
                 <TextInputComponent
                     v-model="placementPlayers[index]"
-                    @update:model-value="(val) => tryLookupPlayer(val, index)"
                     :error="playersIncorrect[index]"
+                    @update:model-value="(val) => tryLookupPlayer(val, index)"
                 />
             </template>
-            <template v-slot:bracket="{ index }">
+            <template #bracket="{ index }">
                 <TextInputComponent
                     v-model="placementsData[index].bracket"
                     class="w-64"
                     @update:model-value="checkAndEmit()"
                 />
             </template>
-            <template v-slot:placement="{ index }">
+            <template #placement="{ index }">
                 <TextInputComponent
                     v-model="placementsData[index].placement"
                     type="number"
@@ -28,7 +28,7 @@
                     @update:model-value="checkAndEmit()"
                 />
             </template>
-            <template v-slot:more="{ index }">
+            <template #more="{ index }">
                 <ButtonComponent @click="removePlacement(index)"
                     >Delete</ButtonComponent
                 >

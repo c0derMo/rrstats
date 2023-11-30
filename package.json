@@ -13,6 +13,7 @@
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
+        "@nuxt/eslint-config": "^0.2.0",
         "@nuxtjs/tailwindcss": "^6.8.0",
         "@sidebase/nuxt-session": "^0.2.7",
         "@types/luxon": "^3.3.3",

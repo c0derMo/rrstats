@@ -1,6 +1,6 @@
 <template>
     <ul v-if="spin">
-        <li v-for="target in spin.targetConditions">
+        <li v-for="(target, idx) in spin.targetConditions" :key="idx">
             <span class="font-bold">{{ target.target.name }}</span
             >: {{ buildKillMethod(target.killMethod) }} as
             {{ target.disguise.name }}
@@ -16,6 +16,7 @@ defineProps({
     spin: {
         type: Object as PropType<Spin>,
         required: false,
+        default: undefined,
     },
 });
 

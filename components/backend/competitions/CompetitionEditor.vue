@@ -1,5 +1,5 @@
 <template>
-    <DialogComponent dialogClass="w-3/5">
+    <DialogComponent dialog-class="w-3/5">
         <CardComponent class="overflow-y-auto flex flex-col gap-3">
             <TabbedContainer :tabs="['Basic', 'Groups', 'Placements']">
                 <template #Basic>
@@ -16,9 +16,9 @@
                         />
 
                         <SwitchComponent
-                            label="Official competition:"
-                            v-model="compData.officialCompetition"
                             id="officialCompetition"
+                            v-model="compData.officialCompetition"
+                            label="Official competition:"
                         />
 
                         <DateTimeInputComponent
@@ -37,9 +37,9 @@
                         />
 
                         <SwitchComponent
-                            label="Update with hitmaps:"
-                            v-model="compData.updateWithHitmaps"
                             id="updateWithHitmaps"
+                            v-model="compData.updateWithHitmaps"
+                            label="Update with hitmaps:"
                         />
 
                         <TextInputComponent
@@ -52,9 +52,9 @@
 
                 <template #Groups>
                     <SwitchComponent
-                        label="Enable groups:"
-                        v-model="groupsEnabled"
                         id="enableGroups"
+                        v-model="groupsEnabled"
+                        label="Enable groups:"
                         class="mb-5"
                     />
 
@@ -70,7 +70,7 @@
             </TabbedContainer>
 
             <div class="flex flex-row gap-3">
-                <ButtonComponent @click="save()" :loading="isSaving"
+                <ButtonComponent :loading="isSaving" @click="save()"
                     >Save</ButtonComponent
                 >
                 <ButtonComponent @click="close()">Discard</ButtonComponent>

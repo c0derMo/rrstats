@@ -3,36 +3,36 @@
         v-if="detailedMatch != null"
         :match="detailedMatch"
         :opponents="players"
-        @clickOutside="detailedMatch = null"
+        @click-outside="detailedMatch = null"
     />
     <RecordHistoryDialog
         v-if="historyMap != null"
         :map="historyMap"
-        @clickOutside="historyMap = null"
+        @click-outside="historyMap = null"
     />
 
     <TableComponent :headers="headers" :rows="sortedRecords">
-        <template v-slot:map="{ value }">
+        <template #map="{ value }">
             <Tag :color="getMap(value as number)?.color">{{
                 getMap(value as number)?.name
             }}</Tag>
         </template>
 
-        <template v-slot:spin="{ row }">
+        <template #spin="{ row }">
             <TextualSpin
                 :spin="matches[row.match]?.playedMaps[row.mapIndex]?.spin"
             />
         </template>
 
-        <template v-slot:time="{ value }">
+        <template #time="{ value }">
             {{ secondsToTime(value as number) }}
         </template>
 
-        <template v-slot:player="{ value }">
+        <template #player="{ value }">
             {{ players[value as string] || `Unknown player: ${value}` }}
         </template>
 
-        <template v-slot:match="{ row, value }">
+        <template #match="{ row, value }">
             {{ matches[value as string].competition }}
             {{ matches[value as string].round }}
             <span v-if="matches[value as string].playerOne === row.player"
@@ -43,7 +43,7 @@
             >
         </template>
 
-        <template v-slot:more="{ row }">
+        <template #more="{ row }">
             <ButtonComponent @click="historyMap = row.map">
                 <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
             </ButtonComponent>
@@ -78,12 +78,12 @@ const props = defineProps({
     players: {
         type: Object as PropType<Record<string, string>>,
         required: false,
-        default: {},
+        default: () => {},
     },
     matches: {
         type: Object as PropType<Record<string, IMatch>>,
         required: false,
-        default: {},
+        default: () => {},
     },
 });
 

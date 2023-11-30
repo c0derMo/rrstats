@@ -1,7 +1,7 @@
 <template>
     <TextInputComponent
-        type="datetime-local"
         v-model="input"
+        type="datetime-local"
         :placeholder="placeholder"
     />
 </template>
@@ -16,6 +16,7 @@ const props = defineProps({
     },
     modelValue: {
         type: Number,
+        default: undefined,
     },
 });
 const emits = defineEmits(["update:modelValue"]);

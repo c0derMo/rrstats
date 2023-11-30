@@ -10,7 +10,7 @@
                 @input="
                     $emit(
                         'update:modelValue',
-                        (<HTMLInputElement>$event.target).checked,
+                        ($event.target as HTMLInputElement).checked,
                     )
                 "
             />
@@ -38,4 +38,6 @@ defineProps({
         required: true,
     },
 });
+
+defineEmits(["update:modelValue"]);
 </script>

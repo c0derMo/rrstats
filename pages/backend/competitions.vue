@@ -1,44 +1,49 @@
 <template>
-    <CompetitionEditor
-        v-if="competitionToShow !== null"
-        :competition="competitionToShow"
-        :placements="placementsToShow!"
-        @close="
-            competitionToShow = null;
-            updateList();
-        "
-    />
+    <div>
+        <CompetitionEditor
+            v-if="competitionToShow !== null"
+            :competition="competitionToShow"
+            :placements="placementsToShow!"
+            @close="
+                competitionToShow = null;
+                updateList();
+            "
+        />
 
-    <div class="ml-5 text-3xl bold mt-5">Competitions</div>
+        <div class="ml-5 text-3xl bold mt-5">Competitions</div>
 
-    <DataTableComponent
-        :headers="headers"
-        :rows="competitions"
-        :enableSorting="false"
-        :rows-per-page="[10, 25, 50]"
-        :items-per-page="10"
-    >
-        <template v-slot:header-more="">
-            <ButtonComponent @click="newCompetition()">
-                <FontAwesomeIcon
-                    :icon="['fa', 'plus']"
-                    class="text-green-500"
-                />
-            </ButtonComponent>
-        </template>
+        <DataTableComponent
+            :headers="headers"
+            :rows="competitions"
+            :enable-sorting="false"
+            :rows-per-page="[10, 25, 50]"
+            :items-per-page="10"
+        >
+            <template #header-more>
+                <ButtonComponent @click="newCompetition()">
+                    <FontAwesomeIcon
+                        :icon="['fa', 'plus']"
+                        class="text-green-500"
+                    />
+                </ButtonComponent>
+            </template>
 
-        <template v-slot:more="{ row }">
-            <ButtonComponent
-                :loading="competitionToLoad === row.tag"
-                @click="loadUpdateMatch(row.tag)"
-            >
-                <FontAwesomeIcon :icon="['fa', 'pen']" />
-            </ButtonComponent>
-            <ButtonComponent>
-                <FontAwesomeIcon :icon="['fa', 'trash']" class="text-red-500" />
-            </ButtonComponent>
-        </template>
-    </DataTableComponent>
+            <template #more="{ row }">
+                <ButtonComponent
+                    :loading="competitionToLoad === row.tag"
+                    @click="loadUpdateMatch(row.tag)"
+                >
+                    <FontAwesomeIcon :icon="['fa', 'pen']" />
+                </ButtonComponent>
+                <ButtonComponent>
+                    <FontAwesomeIcon
+                        :icon="['fa', 'trash']"
+                        class="text-red-500"
+                    />
+                </ButtonComponent>
+            </template>
+        </DataTableComponent>
+    </div>
 </template>
 
 <script setup lang="ts">

@@ -17,7 +17,8 @@
                 <div v-if="match.bannedMaps.length > 0">
                     Ban:
                     <Tag
-                        v-for="ban in playerOneBans"
+                        v-for="(ban, idx) in playerOneBans"
+                        :key="idx"
                         :color="getMap(ban.map)!.color"
                         >{{ getMap(ban.map)!.name }}</Tag
                     >
@@ -25,14 +26,15 @@
                 <div v-if="match.bannedMaps.length > 0">
                     Ban:
                     <Tag
-                        v-for="ban in playerTwoBans"
+                        v-for="(ban, idx) in playerTwoBans"
+                        :key="idx"
                         :color="getMap(ban.map)!.color"
                         >{{ getMap(ban.map)!.name }}</Tag
                     >
                 </div>
             </div>
             <div class="grid grid-cols-6 gap-2">
-                <template v-for="map in match.playedMaps">
+                <template v-for="(map, idx) in match.playedMaps" :key="idx">
                     <div class="col-span-2">
                         Map:
                         <Tag :color="getMap(map.map)?.color">{{
@@ -52,7 +54,7 @@
                         }}</Tag>
                         <span v-if="map.forfeit">(Won by forfeit)</span>
                     </div>
-                    <div class="col-span-6" v-if="map.spin != null">
+                    <div v-if="map.spin != null" class="col-span-6">
                         <TextualSpin :spin="map.spin" />
                     </div>
                     <div class="col-span-3">
@@ -126,9 +128,9 @@ function getPlayerName(player: ChoosingPlayer | WinningPlayer): string {
 }
 
 function timestampToLocale(timestamp: number) {
-    return DateTime.fromMillis(timestamp).setLocale(useLocale().value).toLocaleString(
-        DateTime.DATETIME_FULL,
-    );
+    return DateTime.fromMillis(timestamp)
+        .setLocale(useLocale().value)
+        .toLocaleString(DateTime.DATETIME_FULL);
 }
 
 function durationToLocale(millis: number) {

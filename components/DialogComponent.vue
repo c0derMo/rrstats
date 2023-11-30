@@ -19,6 +19,7 @@ defineProps({
     dialogClass: {
         type: String,
         required: false,
+        default: undefined,
     },
 });
 </script>

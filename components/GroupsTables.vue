@@ -4,14 +4,15 @@
 
         <div class="grid grid-cols-3 gap-5">
             <GroupTable
-                v-for="group of groups"
-                :groupName="group.name"
-                :advancingPlayers="group.advancingPlayers"
-                :matchesBetweenPlayers="groupsInfo.matchesBetweenPlayers"
-                :maxPointsPerMatch="groupsInfo.maxPointsPerMatch"
+                v-for="(group, idx) of groups"
+                :key="idx"
+                :group-name="group.name"
+                :advancing-players="group.advancingPlayers"
+                :matches-between-players="groupsInfo.matchesBetweenPlayers"
+                :max-points-per-match="groupsInfo.maxPointsPerMatch"
                 :players="group.players"
-                :positionOverrides="group.positionOverrides"
-                :playerNames="players"
+                :position-overrides="group.positionOverrides"
+                :player-names="players"
             />
         </div>
     </AccordionComponent>

@@ -17,6 +17,7 @@
             <tbody>
                 <tr
                     v-for="(player, idx) of sortedPlayers"
+                    :key="idx"
                     :class="{
                         'dark:bg-green-800 bg-green-500':
                             isPlayerAdvancing(idx),
@@ -70,6 +71,7 @@ const props = defineProps({
     },
     positionOverrides: {
         type: Object as PropType<Record<number, string>>,
+        default: () => {},
     },
     playerNames: {
         type: Object as PropType<Record<string, string>>,

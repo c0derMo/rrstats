@@ -1,35 +1,35 @@
 <template>
     <CardComponent>
         <TableComponent :headers="headers" :rows="rows">
-            <template v-slot:Map="{ row }">
+            <template #Map="{ row }">
                 {{ getMap(row.map)?.name }}
             </template>
 
-            <template v-slot:Picked="{ row }">
+            <template #Picked="{ row }">
                 <span :class="getAheadBehindClass(row.map, getPicked)">
                     {{ getPicked(row.map, player, playerMatches) }}
                 </span>
             </template>
 
-            <template v-slot:Banned="{ row }">
+            <template #Banned="{ row }">
                 <span :class="getAheadBehindClass(row.map, getBanned)">
                     {{ getBanned(row.map, player, playerMatches) }}
                 </span>
             </template>
 
-            <template v-slot:Played="{ row }">
+            <template #Played="{ row }">
                 <span :class="getAheadBehindClass(row.map, getPlayed)">
                     {{ getPlayed(row.map, player, playerMatches) }}
                 </span>
             </template>
 
-            <template v-slot:Won="{ row }">
+            <template #Won="{ row }">
                 <span :class="getAheadBehindClass(row.map, getWon)">
                     {{ getWon(row.map, player, playerMatches) }}
                 </span>
             </template>
 
-            <template v-slot:Winrate="{ row }">
+            <template #Winrate="{ row }">
                 <span :class="getAheadBehindClass(row.map, getWinrate)">
                     {{
                         Math.round(
@@ -68,10 +68,12 @@ const props = defineProps({
     comparingPlayer: {
         type: String,
         required: false,
+        default: undefined,
     },
     comparingPlayerMatches: {
         type: Array<IMatch>,
         required: false,
+        default: undefined,
     },
 });
 

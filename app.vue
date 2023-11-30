@@ -26,8 +26,8 @@
                             class="text-white"
                         />
                         <SwitchComponent
-                            v-model="lightDarkSwitch"
                             id="light-dark"
+                            v-model="lightDarkSwitch"
                         />
                         <FontAwesomeIcon
                             :icon="['fas', 'moon']"

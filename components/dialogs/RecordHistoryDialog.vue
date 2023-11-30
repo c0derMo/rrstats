@@ -1,5 +1,5 @@
 <template>
-    <DialogComponent dialogClass="w-4/5 h-4/5">
+    <DialogComponent dialog-class="w-4/5 h-4/5">
         <CardComponent class="w-full h-full">
             <div class="flex flex-col w-full h-full">
                 <h1 class="text-center text-xl bold">Record Progression</h1>
@@ -13,21 +13,21 @@
                 />
                 <div class="flex flex-row w-full gap-2">
                     <DropdownComponent
-                        :items="['Month', 'Year', 'All time']"
                         v-model="selectedScale"
+                        :items="['Month', 'Year', 'All time']"
                     />
                     <DropdownComponent
-                        :items="possibleYears"
-                        v-model="selectedYear"
                         v-if="
                             selectedScale === 'Year' ||
                             selectedScale === 'Month'
                         "
+                        v-model="selectedYear"
+                        :items="possibleYears"
                     />
                     <DropdownComponent
-                        :items="possibleMonths"
-                        v-model="selectedMonth"
                         v-if="selectedScale === 'Month'"
+                        v-model="selectedMonth"
+                        :items="possibleMonths"
                     />
                 </div>
             </div>
@@ -44,10 +44,12 @@ const props = defineProps({
     map: {
         type: Number,
         required: false,
+        default: undefined,
     },
     genericRecord: {
         type: String,
         required: false,
+        default: undefined,
     },
 });
 
@@ -85,7 +87,11 @@ const labels = computed(() => {
     for (let i = 0; i < amountDays; i++) {
         const currentDate = startDate.plus({ days: i });
 
-        labels.push(currentDate.setLocale(useLocale().value).toLocaleString(DateTime.DATE_SHORT));
+        labels.push(
+            currentDate
+                .setLocale(useLocale().value)
+                .toLocaleString(DateTime.DATE_SHORT),
+        );
     }
 
     return labels;
@@ -235,11 +241,7 @@ const earliestRecordTime = computed(() => {
     return DateTime.fromMillis(earliestRecord.timestamp);
 });
 
-function axisLabelFunction(
-    value: string | number,
-    index: number,
-    ticks: unknown[],
-): string {
+function axisLabelFunction(value: string | number): string {
     return Duration.fromMillis((value as number) * 1000).toFormat("hh:mm:ss");
 }
 

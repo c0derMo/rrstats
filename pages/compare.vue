@@ -1,90 +1,92 @@
 <template>
-    <MapBackground />
+    <div>
+        <MapBackground />
 
-    <div class="grid grid-cols-2 gap-5 mx-10 my-5">
-        <AutocompleteComponent
-            :suggestions="players ?? []"
-            placeholder="Left player"
-            @confirm="(val) => (leftPlayer = val)"
-        />
-
-        <AutocompleteComponent
-            :suggestions="players ?? []"
-            placeholder="Right player"
-            @confirm="(val) => (rightPlayer = val)"
-        />
-
-        <div class="text-center">
-            <FontAwesomeIcon
-                v-if="leftPlayerLoading"
-                :icon="['fas', 'spinner']"
-                class="animate-spin"
-                size="2x"
+        <div class="grid grid-cols-2 gap-5 mx-10 my-5">
+            <AutocompleteComponent
+                :suggestions="players ?? []"
+                placeholder="Left player"
+                @confirm="(val) => (leftPlayer = val)"
             />
-        </div>
 
-        <div class="text-center">
-            <FontAwesomeIcon
-                v-if="rightPlayerLoading"
-                :icon="['fas', 'spinner']"
-                class="animate-spin"
-                size="2x"
+            <AutocompleteComponent
+                :suggestions="players ?? []"
+                placeholder="Right player"
+                @confirm="(val) => (rightPlayer = val)"
             />
-        </div>
 
-        <div>
-            <ComparingPlayer
+            <div class="text-center">
+                <FontAwesomeIcon
+                    v-if="leftPlayerLoading"
+                    :icon="['fas', 'spinner']"
+                    class="animate-spin"
+                    size="2x"
+                />
+            </div>
+
+            <div class="text-center">
+                <FontAwesomeIcon
+                    v-if="rightPlayerLoading"
+                    :icon="['fas', 'spinner']"
+                    class="animate-spin"
+                    size="2x"
+                />
+            </div>
+
+            <div>
+                <ComparingPlayer
+                    v-if="leftPlayerObject !== null"
+                    :player="leftPlayerObject.player"
+                    :player-matches="leftPlayerObject.matches"
+                    :player-avatar="leftPlayerObject.avatar"
+                    :player-placements="leftPlayerObject.placements"
+                    :comparing-player="rightPlayerObject?.player.uuid"
+                    :comparing-matches="rightPlayerObject?.matches"
+                    :comparing-placements="rightPlayerObject?.placements"
+                    :competitions="competitions!"
+                />
+            </div>
+
+            <div>
+                <ComparingPlayer
+                    v-if="rightPlayerObject !== null"
+                    :reverse="true"
+                    :player="rightPlayerObject.player"
+                    :player-matches="rightPlayerObject.matches"
+                    :player-avatar="rightPlayerObject.avatar"
+                    :player-placements="rightPlayerObject.placements"
+                    :comparing-player="leftPlayerObject?.player.uuid"
+                    :comparing-matches="leftPlayerObject?.matches"
+                    :comparing-placements="leftPlayerObject?.placements"
+                    :competitions="competitions!"
+                />
+            </div>
+
+            <TabbedContainer
+                v-if="leftPlayerObject !== null || rightPlayerObject !== null"
+                class="col-span-2"
+                :tabs="['Season 1', 'Season 2', 'Season 3']"
+                @change-tab="(val) => (selectedSeason = val)"
+            />
+
+            <MapComparison
                 v-if="leftPlayerObject !== null"
-                :player="leftPlayerObject.player"
-                :playerMatches="leftPlayerObject.matches"
-                :playerAvatar="leftPlayerObject.avatar"
-                :playerPlacements="leftPlayerObject.placements"
-                :comparingPlayer="rightPlayerObject?.player.uuid"
-                :comparingMatches="rightPlayerObject?.matches"
-                :comparingPlacements="rightPlayerObject?.placements"
-                :competitions="competitions!"
+                :maps="comparingMaps"
+                :player="leftPlayerObject.player.uuid"
+                :player-matches="leftPlayerObject.matches"
+                :comparing-player="rightPlayerObject?.player.uuid"
+                :comparing-player-matches="rightPlayerObject?.matches"
             />
-        </div>
 
-        <div>
-            <ComparingPlayer
-                :reverse="true"
+            <MapComparison
                 v-if="rightPlayerObject !== null"
-                :player="rightPlayerObject.player"
-                :playerMatches="rightPlayerObject.matches"
-                :playerAvatar="rightPlayerObject.avatar"
-                :playerPlacements="rightPlayerObject.placements"
-                :comparingPlayer="leftPlayerObject?.player.uuid"
-                :comparingMatches="leftPlayerObject?.matches"
-                :comparingPlacements="leftPlayerObject?.placements"
-                :competitions="competitions!"
+                :maps="comparingMaps"
+                :player="rightPlayerObject.player.uuid"
+                :player-matches="rightPlayerObject.matches"
+                :comparing-player="leftPlayerObject?.player.uuid"
+                :comparing-player-matches="leftPlayerObject?.matches"
             />
         </div>
-
-        <TabbedContainer
-            v-if="leftPlayerObject !== null || rightPlayerObject !== null"
-            class="col-span-2"
-            :tabs="['Season 1', 'Season 2', 'Season 3']"
-            @changeTab="(val) => (selectedSeason = val)"
-        />
-
-        <MapComparison
-            v-if="leftPlayerObject !== null"
-            :maps="comparingMaps"
-            :player="leftPlayerObject.player.uuid"
-            :playerMatches="leftPlayerObject.matches"
-            :comparingPlayer="rightPlayerObject?.player.uuid"
-            :comparingPlayerMatches="rightPlayerObject?.matches"
-        />
-
-        <MapComparison
-            v-if="rightPlayerObject !== null"
-            :maps="comparingMaps"
-            :player="rightPlayerObject.player.uuid"
-            :playerMatches="rightPlayerObject.matches"
-            :comparingPlayer="leftPlayerObject?.player.uuid"
-            :comparingPlayerMatches="leftPlayerObject?.matches"
-        />
     </div>
 </template>
 
@@ -104,7 +106,7 @@ useHead({
     title: "Comparison - RRStats v3",
 });
 
-const players = (await useFetch("/api/player/list")).data;
+const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
 const competitions = (await useFetch("/api/competitions/list")).data;
 const route = useRoute();
 

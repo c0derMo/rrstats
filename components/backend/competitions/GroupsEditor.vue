@@ -1,14 +1,14 @@
 <template>
     <div class="flex flex-col gap-3">
         <TextInputComponent
-            placeholder="Matches between players in groups"
             v-model="settings.matchesBetweenPlayers"
+            placeholder="Matches between players in groups"
             type="number"
             @update:model-value="checkAndEmit()"
         />
         <TextInputComponent
-            placeholder="Max points per match"
             v-model="settings.maxPointsPerMatch"
+            placeholder="Max points per match"
             type="number"
             @update:model-value="checkAndEmit()"
         />
@@ -55,6 +55,7 @@
                 <li
                     v-for="(player, idx) in settings.groups[selectedGroupIndex]
                         .players"
+                    :key="idx"
                     class="flex flex-row gap-3"
                 >
                     <TextInputComponent
@@ -79,12 +80,13 @@
                 <li
                     v-for="(_, idx) in settings.groups[selectedGroupIndex]
                         .players"
+                    :key="idx"
                     class="flex flex-row"
                 >
                     <span class="w-10 mt-2">{{ idx + 1 }}:</span>
                     <DropdownComponent
-                        :items="positionOverrideDropdown"
                         v-model="positionOverrides[selectedGroupIndex][idx]"
+                        :items="positionOverrideDropdown"
                         @update:model-value="checkAndEmit()"
                     />
                 </li>

@@ -6,6 +6,7 @@
     },
     "extends": [
         "eslint:recommended",
+        "@nuxt/eslint-config",
         "plugin:@typescript-eslint/recommended",
         "plugin:vue/vue3-essential",
         "prettier"
@@ -16,5 +17,7 @@
         "sourceType": "module"
     },
     "plugins": ["@typescript-eslint", "vue"],
-    "rules": {}
+    "rules": {
+        "vue/multi-word-component-names": "off"
+    }
 }
