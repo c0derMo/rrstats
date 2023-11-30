@@ -179,7 +179,16 @@ const pickedMaps = computed(() => {
         return undefined;
     }
 
-    return mapsPicked(player.value.matches, player.value.uuid ?? "");
+    const maps = mapsPicked(player.value.matches, player.value.uuid ?? "");
+    for (const map of getAllMaps()) {
+        const currentAmount = maps.filter(m => m === map).length;
+        const biasIncrease = Math.floor(currentAmount / 4);
+        for (let i = 0; i < biasIncrease; i++) {
+            maps.push(map)
+        }
+    }
+
+    return maps;
 });
 
 const debut = computed(() => {
