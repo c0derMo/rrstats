@@ -29,6 +29,7 @@ export type HitmanMapInfo = {
     map: HitmanMap;
     name: string;
     backgroundImage: string;
+    season: number;
 };
 
 const maps: HitmanMapInfo[] = [
@@ -40,6 +41,7 @@ const maps: HitmanMapInfo[] = [
         name: "Paris",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_paris/background.jpg",
+        season: 1,
     },
     {
         map: HitmanMap.SAPIENZA,
@@ -49,6 +51,7 @@ const maps: HitmanMapInfo[] = [
         name: "Sapienza",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_coastaltown/background.jpg",
+        season: 1,
     },
     {
         map: HitmanMap.MARRAKESH,
@@ -58,6 +61,7 @@ const maps: HitmanMapInfo[] = [
         name: "Marrakesh",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_marrakech/background.jpg",
+        season: 1,
     },
     {
         map: HitmanMap.BANGKOK,
@@ -67,6 +71,7 @@ const maps: HitmanMapInfo[] = [
         name: "Bangkok",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_bangkok/background.jpg",
+        season: 1,
     },
     {
         map: HitmanMap.COLORADO,
@@ -76,6 +81,7 @@ const maps: HitmanMapInfo[] = [
         name: "Colorado",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_colorado/background.jpg",
+        season: 1,
     },
     {
         map: HitmanMap.HOKKAIDO,
@@ -85,6 +91,7 @@ const maps: HitmanMapInfo[] = [
         name: "Hokkaido",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_hokkaido/background.jpg",
+        season: 1,
     },
 
     {
@@ -95,6 +102,7 @@ const maps: HitmanMapInfo[] = [
         name: "Miami",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_miami/background.jpg",
+        season: 2,
     },
     {
         map: HitmanMap.SANTA_FORTUNA,
@@ -104,6 +112,7 @@ const maps: HitmanMapInfo[] = [
         name: "Santa Fortuna",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_colombia/background.jpg",
+        season: 2,
     },
     {
         map: HitmanMap.MUMBAI,
@@ -113,6 +122,7 @@ const maps: HitmanMapInfo[] = [
         name: "Mumbai",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_mumbai/background.jpg",
+        season: 2,
     },
     {
         map: HitmanMap.WHITTLETON_CREEK,
@@ -122,6 +132,7 @@ const maps: HitmanMapInfo[] = [
         name: "Whittleton Creek",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_northamerica/background.jpg",
+        season: 2,
     },
     {
         map: HitmanMap.ISLE_OF_SGAIL,
@@ -131,6 +142,7 @@ const maps: HitmanMapInfo[] = [
         name: "Isle of Sgàil",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_northsea/background.jpg",
+        season: 2,
     },
     {
         map: HitmanMap.NEW_YORK,
@@ -140,6 +152,7 @@ const maps: HitmanMapInfo[] = [
         name: "New York",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_greedy_raccoon/background.jpg",
+        season: 2,
     },
     {
         map: HitmanMap.HAVEN_ISLAND,
@@ -149,6 +162,7 @@ const maps: HitmanMapInfo[] = [
         name: "Haven Island",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_opulent_stingray/background.jpg",
+        season: 2,
     },
 
     {
@@ -159,6 +173,7 @@ const maps: HitmanMapInfo[] = [
         name: "Dubai",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_golden/golden_background.jpg",
+        season: 3,
     },
     {
         map: HitmanMap.DARTMOOR,
@@ -168,6 +183,7 @@ const maps: HitmanMapInfo[] = [
         name: "Dartmoor",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_ancestral/ancestral_background.jpg",
+        season: 3,
     },
     {
         map: HitmanMap.BERLIN,
@@ -177,6 +193,7 @@ const maps: HitmanMapInfo[] = [
         name: "Berlin",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_edgy/edgy_background.jpg",
+        season: 3,
     },
     {
         map: HitmanMap.CHONGQING,
@@ -186,6 +203,7 @@ const maps: HitmanMapInfo[] = [
         name: "Chongqing",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_wet/wet_background.jpg",
+        season: 3,
     },
     {
         map: HitmanMap.MENDOZA,
@@ -195,6 +213,7 @@ const maps: HitmanMapInfo[] = [
         name: "Mendoza",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_elegant/elegant_background.jpg",
+        season: 3,
     },
     {
         map: HitmanMap.AMBROSE_ISLAND,
@@ -204,6 +223,7 @@ const maps: HitmanMapInfo[] = [
         name: "Ambrose Island",
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_rocky/rocky_background.jpg",
+        season: 3,
     },
 ];
 
@@ -228,4 +248,8 @@ export const getMapByName = (name: string): HitmanMapInfo | undefined => {
 
 export const getAllMaps = (): HitmanMap[] => {
     return maps.map((m) => m.map);
+};
+
+export const getMapsBySeason = (season: number): HitmanMap[] => {
+    return maps.filter((m) => m.season === season).map((m) => m.map);
 };

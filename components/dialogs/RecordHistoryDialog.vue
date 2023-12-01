@@ -3,13 +3,24 @@
         <CardComponent class="w-full h-full">
             <div class="flex flex-col w-full h-full">
                 <h1 class="text-center text-xl bold">Record Progression</h1>
+                <MultiSelectComponent
+                    v-model="selectedRecords"
+                    :items="selectableRecords"
+                    :column-headers="
+                        props.map != null
+                            ? ['Season 1', 'Season 2', 'Season 3']
+                            : undefined
+                    "
+                    @update:model-value="requeryEverything()"
+                />
                 <LineChart
-                    :labels="labels"
+                    v-if="showGraph"
+                    :axis-labels="axisLabels"
                     :data="data"
-                    :label="label"
+                    :labels="labels"
                     :y-tick-format-function="axisLabelFunction"
                     :tooltip-label-function="tooltipLabelFunction"
-                    :color="getMap(map || -1)?.color || '#80D4FF'"
+                    :colors="colors"
                 />
                 <div class="flex flex-row w-full gap-2">
                     <DropdownComponent
@@ -38,7 +49,12 @@
 <script setup lang="ts">
 import { TooltipItem } from "chart.js";
 import { Duration, DateTime } from "luxon";
-import { IGenericRecord, IMapRecord } from "~/utils/interfaces/IRecord";
+import {
+    GenericRecordType,
+    IGenericRecord,
+    IMapRecord,
+} from "~/utils/interfaces/IRecord";
+import { getMapsBySeason } from "~/utils/mapUtils";
 
 const props = defineProps({
     map: {
@@ -53,63 +69,156 @@ const props = defineProps({
     },
 });
 
-const label = getMap(props.map ?? -1)?.name ?? props.genericRecord ?? "";
-const records = (
-    await useFetch("/api/records/history", {
-        query: { map: props.map, generic: props.genericRecord },
-    })
-).data;
-let playersToLookup: string[] = [];
-if (records.value !== undefined && props.map !== undefined) {
-    playersToLookup = (records.value as IMapRecord[]).map((p) => p.player);
-} else if (records.value !== undefined && props.genericRecord !== undefined) {
-    playersToLookup = (records.value as IGenericRecord[])
-        .map((p) => p.players)
-        .reduce((a, b) => a.concat(b));
+const selectedRecords: Ref<(number | string)[]> = ref([]);
+
+const records: Ref<(IMapRecord | IGenericRecord)[][]> = ref([]);
+const labels: Ref<string[]> = ref([]);
+const colors: Ref<string[]> = ref([]);
+
+const players: Ref<Record<string, string>> = ref({});
+
+const showGraph = ref(false);
+
+if (props.map != null) {
+    selectedRecords.value.push(props.map);
 }
-const players = (
-    await useFetch("/api/player/lookup", {
-        query: { players: playersToLookup },
-    })
-).data;
+if (props.genericRecord != null) {
+    selectedRecords.value.push(props.genericRecord);
+}
+
+await requeryEverything();
+
+async function requeryEverything() {
+    showGraph.value = false;
+
+    // Rebuild Labels & records
+    labels.value = [];
+    records.value = [];
+    colors.value = [];
+
+    await queryRecords();
+    await queryPlayers();
+
+    showGraph.value = true;
+}
+
+async function queryRecords() {
+    for (const selectedRecord of selectedRecords.value) {
+        if (props.map != null) {
+            const record = (
+                await useFetch("/api/records/history", {
+                    query: { map: selectedRecord as number },
+                })
+            ).data.value;
+            if (record != null) {
+                records.value.push(record);
+                labels.value.push(getMap(selectedRecord as number)?.name ?? "");
+                colors.value.push(
+                    getMap(selectedRecord as number)?.color ?? "#80D4FF",
+                );
+            }
+        }
+        if (props.genericRecord != null) {
+            const record = (
+                await useFetch("/api/records/history", {
+                    query: { generic: selectedRecord as string },
+                })
+            ).data.value;
+            if (record != null) {
+                records.value.push(record);
+                labels.value.push(selectedRecord as string);
+                colors.value.push("#80D4FF");
+            }
+        }
+    }
+}
+
+async function queryPlayers() {
+    const playersToLookup: string[] = [];
+    for (const record of records.value) {
+        if (props.map != null) {
+            playersToLookup.push(
+                ...(record as IMapRecord[]).map((p) => p.player),
+            );
+        }
+        if (props.genericRecord != null) {
+            playersToLookup.push(
+                ...(record as IGenericRecord[])
+                    .map((p) => p.players)
+                    .reduce((a, b) => a.concat(b)),
+            );
+        }
+    }
+
+    players.value = (
+        await useFetch("/api/player/lookup", {
+            query: { players: playersToLookup },
+        })
+    ).data.value as Record<string, string>;
+}
 
 const selectedScale = ref("Year");
 const selectedYear = ref(DateTime.now().year);
 const selectedMonth = ref(DateTime.now().month);
 
-const labels = computed(() => {
+const axisLabels = computed(() => {
     const startDate = timeSpan.value.start;
     const endDate = timeSpan.value.end;
     const amountDays = endDate.diff(startDate).as("days");
 
-    const labels = [];
+    const axisLabels = [];
 
     for (let i = 0; i < amountDays; i++) {
         const currentDate = startDate.plus({ days: i });
 
-        labels.push(
+        axisLabels.push(
             currentDate
                 .setLocale(useLocale().value)
                 .toLocaleString(DateTime.DATE_SHORT),
         );
     }
 
-    return labels;
+    return axisLabels;
 });
 
-const data = computed(() => {
-    const startDate = timeSpan.value.start;
-    const endDate = timeSpan.value.end;
-    const amountDays = endDate.diff(startDate).as("days");
+function rebuildRecord(
+    records: (IGenericRecord | IMapRecord)[],
+    startDate: DateTime,
+    amountDays: number,
+) {
+    const sortedRecords = records.toSorted((a, b) => a.timestamp - b.timestamp);
 
-    const data: unknown[] = [];
-    const sortedRecords =
-        records.value?.toSorted((a, b) => a.timestamp - b.timestamp) || [];
-
-    // Finding the first record in our timeframe
     let currentRecordIndex =
         sortedRecords.findIndex((r) => r.timestamp >= startDate.toMillis()) - 1;
-    if (currentRecordIndex < 0) currentRecordIndex = 0;
+    let startingI = 0;
+    if (currentRecordIndex < 0) {
+        currentRecordIndex = 0;
+        startingI = Math.abs(
+            startDate
+                .diff(
+                    DateTime.fromMillis(
+                        sortedRecords[currentRecordIndex].timestamp,
+                    ),
+                )
+                .as("days"),
+        );
+    }
+    const startingRecord = sortedRecords[currentRecordIndex];
+
+    let recordHolders: string[] = [];
+    if (isMapRecord(startingRecord)) {
+        recordHolders = [
+            players.value[startingRecord.player] ||
+                `Unknown player: ${startingRecord.player}`,
+        ];
+    }
+    if (isGenericRecord(startingRecord)) {
+        recordHolders = startingRecord.players.map(
+            (p) => players.value[p] || `Unknown player: ${p}`,
+        );
+    }
+
+    const points: unknown[] = [];
 
     for (let i = 0; i < amountDays; i++) {
         if (
@@ -117,36 +226,40 @@ const data = computed(() => {
             startDate.plus({ days: i }).toMillis()
         ) {
             currentRecordIndex++;
-        }
-
-        const recordHolders: string[] = [];
-        const record = sortedRecords[currentRecordIndex];
-        if (players.value !== null) {
+            const record = sortedRecords[currentRecordIndex];
             if (isMapRecord(record)) {
-                recordHolders.push(
-                    (players.value as Record<string, string>)[record.player] ||
+                recordHolders = [
+                    players.value[record.player] ||
                         `Unknown player: ${record.player}`,
-                );
+                ];
             }
             if (isGenericRecord(record)) {
-                recordHolders.push(
-                    ...record.players.map(
-                        (p) =>
-                            (players.value as Record<string, string>)[p] ||
-                            `Unknown player: ${p}`,
-                    ),
+                recordHolders = record.players.map(
+                    (p) => players.value[p] || `Unknown player: ${p}`,
                 );
             }
         }
 
-        data.push({
-            y: sortedRecords[currentRecordIndex].time,
+        points.push({
+            y: i < startingI ? null : sortedRecords[currentRecordIndex].time,
             x: startDate.plus({ days: i }).toMillis(),
             recordHolders,
         });
     }
+    return points;
+}
 
-    return data;
+const data = computed(() => {
+    const startDate = timeSpan.value.start;
+    const endDate = timeSpan.value.end;
+    const amountDays = endDate.diff(startDate).as("days");
+
+    const dataSets: unknown[][] = [];
+    for (const record of records.value) {
+        dataSets.push(rebuildRecord(record, startDate, amountDays));
+    }
+
+    return dataSets;
 });
 
 const timeSpan = computed(() => {
@@ -226,18 +339,22 @@ const possibleMonths = computed(() => {
 });
 
 const earliestRecordTime = computed(() => {
-    if (records.value === null) {
-        return DateTime.now();
-    }
-    if (records.value.length === 0) {
-        return DateTime.now();
-    }
-    let earliestRecord = records.value[0];
-    for (const record of records.value) {
-        if (record.timestamp < earliestRecord.timestamp) {
-            earliestRecord = record;
+    let earliestRecord = undefined;
+    for (const recordType of records.value) {
+        for (const record of recordType) {
+            if (
+                earliestRecord === undefined ||
+                record.timestamp < earliestRecord.timestamp
+            ) {
+                earliestRecord = record;
+            }
         }
     }
+
+    if (earliestRecord === undefined) {
+        return DateTime.now();
+    }
+
     return DateTime.fromMillis(earliestRecord.timestamp);
 });
 
@@ -264,4 +381,27 @@ function isMapRecord(
 ): record is IMapRecord {
     return "player" in record && "map" in record;
 }
+
+const selectableRecords = computed(() => {
+    if (props.map != null) {
+        const sorted = [
+            getMapsBySeason(1),
+            getMapsBySeason(2),
+            getMapsBySeason(3),
+        ];
+
+        return sorted.map((season) =>
+            season.map((map) => {
+                return {
+                    text: getMap(map)!.name,
+                    value: map,
+                };
+            }),
+        );
+    }
+    if (props.genericRecord != null) {
+        return [Object.values(GenericRecordType)];
+    }
+    return [];
+});
 </script>

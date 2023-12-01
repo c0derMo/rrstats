@@ -18,15 +18,29 @@ export default defineEventHandler(async (event) => {
 
     let rawPlayers: IPlayer[];
     if (query.players !== undefined) {
-        rawPlayers = await Player.find({
-            where: { uuid: In(query.players as string[]) },
-            select: ["uuid", "primaryName"],
-        });
+        if (Array.isArray(query.players)) {
+            rawPlayers = await Player.find({
+                where: { uuid: In(query.players as string[]) },
+                select: ["uuid", "primaryName"],
+            });
+        } else {
+            rawPlayers = await Player.find({
+                where: { uuid: query.players as string },
+                select: ["uuid", "primaryName"],
+            });
+        }
     } else if (query.names !== undefined) {
-        rawPlayers = await Player.find({
-            where: { primaryName: In(query.names as string[]) },
-            select: ["uuid", "primaryName"],
-        });
+        if (Array.isArray(query.names)) {
+            rawPlayers = await Player.find({
+                where: { primaryName: In(query.names as string[]) },
+                select: ["uuid", "primaryName"],
+            });
+        } else {
+            rawPlayers = await Player.find({
+                where: { primaryName: query.names as string },
+                select: ["uuid", "primaryName"],
+            });
+        }
     } else {
         rawPlayers = await Player.find({ select: ["uuid", "primaryName"] });
     }

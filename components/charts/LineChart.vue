@@ -27,15 +27,15 @@ Chart.register(
 );
 
 interface IProps {
-    labels: unknown[];
+    axisLabels: unknown[];
     data: unknown[];
-    label?: string;
+    labels?: string[];
     yTickFormatFunction?: (
         tickValue: string | number,
         index: number,
         ticks: Tick[],
     ) => string;
-    color?: string;
+    colors?: string[];
     tooltipLabelFunction?: (
         item: TooltipItem<"line">,
     ) => string | string[] | undefined;
@@ -44,6 +44,29 @@ const props = defineProps<IProps>();
 
 const chart: Ref<HTMLCanvasElement | null> = ref(null);
 const chartObj: Ref<Chart<"line", unknown, unknown> | null> = ref(null);
+
+const transformedData = computed(() => {
+    return props.data.map((data, idx) => {
+        let label = undefined;
+        let color = undefined;
+        if (props.labels != null && props.labels.length >= idx) {
+            label = props.labels[idx];
+        }
+        if (props.colors != null && props.colors.length >= idx) {
+            color = props.colors[idx];
+        }
+
+        return {
+            data: data,
+            label: label,
+            pointRadius: 0,
+            pointHitRadius: 8,
+            pointHoverRaudius: 6,
+            borderColor: color,
+            backgroundColor: color,
+        };
+    });
+});
 
 function makeChart() {
     if (chartObj.value !== null) {
@@ -54,18 +77,8 @@ function makeChart() {
         chartObj.value = new Chart(chart.value, {
             type: "line",
             data: {
-                labels: props.labels,
-                datasets: [
-                    {
-                        data: props.data,
-                        label: props.label,
-                        pointRadius: 0,
-                        pointHitRadius: 8,
-                        pointHoverRadius: 6,
-                        borderColor: props.color,
-                        backgroundColor: props.color,
-                    },
-                ],
+                labels: props.axisLabels,
+                datasets: transformedData.value,
             },
             options: {
                 maintainAspectRatio: false,
