@@ -9,6 +9,7 @@
             :disabled="disabled"
             :value="modelValue"
             :type="type"
+            :step="step"
             @input="
                 $emit(
                     'update:model-value',
@@ -86,6 +87,10 @@ const props = defineProps({
     disabled: {
         type: Boolean,
         default: false,
+    },
+    step: {
+        type: [String, Number],
+        default: undefined,
     },
 });
 

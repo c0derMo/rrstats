@@ -65,7 +65,7 @@
                                 : "unknown"
                         }}
                     </div>
-                    <div class="col-span-3 mb-10">
+                    <div class="col-span-3 mb-5">
                         Finished after:
                         {{
                             map.endedTimestamp > 0
@@ -77,6 +77,16 @@
                         <span v-if="!map.timeAccurate"> (estimate)</span>
                     </div>
                 </template>
+                <div class="col-span-3">
+                    <span v-if="match.shoutcasters != null"
+                        >Shoutcast: {{ match.shoutcasters.join(", ") }}</span
+                    >
+                </div>
+                <div class="col-span-3">
+                    <span v-if="match.vodLink != null">
+                        <a :href="match.vodLink">VOD</a>
+                    </span>
+                </div>
             </div>
         </CardComponent>
     </DialogComponent>

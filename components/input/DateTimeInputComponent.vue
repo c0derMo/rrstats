@@ -3,6 +3,7 @@
         v-model="input"
         type="datetime-local"
         :placeholder="placeholder"
+        :step="seconds ? 1 : 60"
     />
 </template>
 
@@ -18,6 +19,10 @@ const props = defineProps({
         type: Number,
         default: undefined,
     },
+    seconds: {
+        type: Boolean,
+        default: false,
+    },
 });
 const emits = defineEmits(["update:modelValue"]);
 
@@ -26,8 +31,13 @@ const input = computed({
         if (props.modelValue == null) {
             return undefined;
         }
+        console.log(
+            DateTime.fromMillis(props.modelValue).toFormat(
+                "yyyy-MM-dd'T'hh:mm:ss",
+            ),
+        );
         return DateTime.fromMillis(props.modelValue).toFormat(
-            "yyyy-MM-dd'T'hh:mm",
+            "yyyy-MM-dd'T'hh:mm:ss",
         );
     },
     set(newValue) {

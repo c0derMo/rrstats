@@ -20,7 +20,7 @@
         <BackendButton
             title="Matches"
             subtitle="List & edit matches"
-            target="/backend/competitions"
+            target="/backend/matches"
         >
             <FontAwesomeIcon :icon="['fa', 'gamepad']"></FontAwesomeIcon>
         </BackendButton>
