@@ -31,11 +31,6 @@ const input = computed({
         if (props.modelValue == null) {
             return undefined;
         }
-        console.log(
-            DateTime.fromMillis(props.modelValue).toFormat(
-                "yyyy-MM-dd'T'hh:mm:ss",
-            ),
-        );
         return DateTime.fromMillis(props.modelValue).toFormat(
             "yyyy-MM-dd'T'hh:mm:ss",
         );

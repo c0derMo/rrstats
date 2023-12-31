@@ -7,7 +7,7 @@ export type IGenericRecord = {
     players: string[];
     time: number;
     match: string;
-    maps: Record<HitmanMap, number>;
+    maps: { map: HitmanMap, time: number }[];
 };
 
 export type IMapRecord = {
@@ -25,7 +25,7 @@ export enum GenericRecordType {
     SHORTEST_MATCH_2MAPS = "Shortest match with 2+ maps",
     SHORTEST_MATCH_3MAPS = "Shortest match with 3+ maps",
     LONGEST_DECIDER = "Longest decider",
-    SHORTEST_DECIIDER = "Shortest decider",
+    SHORTEST_DECIDER = "Shortest decider",
 }
 
 const retiredRecords = [

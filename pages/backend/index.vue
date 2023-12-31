@@ -27,7 +27,7 @@
         <BackendButton
             title="Records"
             subtitle="Update & add records"
-            target="/backend/competitions"
+            target="/backend/records"
         >
             <FontAwesomeIcon :icon="['fa', 'medal']"></FontAwesomeIcon>
         </BackendButton>

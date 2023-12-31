@@ -1,7 +1,7 @@
 <template>
     <DialogComponent dialog-class="w-3/5">
         <CardComponent>
-            <div class="flex flex-col gap-5 f-full">
+            <div class="flex flex-col gap-5">
                 <TextInputComponent
                     v-model="playerData.uuid"
                     placeholder="UUID"

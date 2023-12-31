@@ -1,6 +1,6 @@
 <template>
     <div class="p-2 border rounded w-fit inline-block dark:border-neutral-500">
-        <select v-model="value" class="bg-transparent">
+        <select v-model="value" class="bg-transparent w-full">
             <option
                 v-for="(item, idx) of convertedItems"
                 :key="idx"
@@ -35,7 +35,7 @@ onUpdated(() => {
 });
 const value: Ref<string> = ref(props.modelValue?.toString() || "");
 watch(value, () => {
-    if (isNaN(parseInt(value.value.toString()))) {
+    if (isNaN(parseInt(value.value)) || isNaN(value.value as unknown as number)) {
         emits("update:modelValue", value.value);
     } else {
         emits("update:modelValue", parseInt(value.value.toString()));
