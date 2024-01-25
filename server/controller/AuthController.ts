@@ -10,7 +10,7 @@ export class AuthController {
             return false;
         }
 
-        const user = await User.findOneBy({ discordId });
+        const user = await User.findOneBy({ authorizationKey: discordId, isAPIKey: false });
         if (user == null) {
             return false;
         }

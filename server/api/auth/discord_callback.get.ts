@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    event.context.session.user = user.discordId;
+    event.context.session.user = user.authorizationKey;
 
     await sendRedirect(event, "/backend");
 });

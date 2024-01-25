@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const user = await User.findOneByOrFail({
-        discordId: event.context.session.user,
+        authorizationKey: event.context.session.user,
     });
 
     return user;

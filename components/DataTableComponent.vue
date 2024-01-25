@@ -31,10 +31,10 @@
         <template
             v-for="header of convertedHeaders"
             :key="header.key"
-            #[`${header.key}`]="{ value, row }"
+            #[`${header.key}`]="{ value, row, index }"
         >
             <div :class="{ 'ml-4': enableSorting }">
-                <slot :name="header.key" :value="value" :row="row">
+                <slot :name="header.key" :value="value" :row="row" :index="index">
                     {{ value }}
                 </slot>
             </div>

@@ -89,7 +89,7 @@ export default class DiscordAuthIntegration {
             throw new Error("Error in user request");
         }
 
-        const user = await User.findOneBy({ discordId });
+        const user = await User.findOneBy({ authorizationKey: discordId, isAPIKey: false });
 
         return user;
     }

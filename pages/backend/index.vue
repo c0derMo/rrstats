@@ -34,7 +34,7 @@
         <BackendButton
             title="Users"
             subtitle="Edit backend users"
-            target="/backend/competitions"
+            target="/backend/users"
         >
             <FontAwesomeIcon :icon="['fa', 'user-cog']"></FontAwesomeIcon>
         </BackendButton>

@@ -2,7 +2,10 @@
     <div ref="select">
         <div
             class="p-2 border rounded w-96 h-10 dark:border-neutral-500 relative flex flex-row"
-            @click="showDropdown = !showDropdown"
+            :class="{
+                'bg-neutral-400 dark:bg-neutral-900': disabled,
+            }"
+            @click="showDropdown = !showDropdown && !disabled"
         >
             <div class="flex-grow truncate">
                 {{ selected.map((s) => getName(s)).join(", ") }}
@@ -72,6 +75,10 @@ const props = defineProps({
         type: Array<unknown>,
         required: true,
     },
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const emits = defineEmits(["update:modelValue"]);
@@ -113,7 +120,7 @@ const extendedItems = computed(() => {
 
 function toggleItem(item: unknown) {
     if (selected.value.includes(item)) {
-        selected.value = selected.value.filter((m) => m != item);
+        selected.value.splice(selected.value.findIndex((m) => m == item), 1);
     } else {
         selected.value.push(item);
     }
