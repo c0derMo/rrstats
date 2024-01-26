@@ -47,9 +47,10 @@
                         >
                     </NuxtLink>
                     <DropdownComponent
-                        v-model="selectedTournament"
-                        class="border-0"
+                        button-class="border-0"
+                        button-text="Tournaments"
                         :items="competitionsDropdown"
+                        @update:model-value="selectTournament"
                     />
                 </div>
                 <AutocompleteComponent
@@ -96,15 +97,12 @@ const competitions = (await useFetch("/api/competitions/list")).data;
 
 const competitionsDropdown = computed(() => {
     if (competitions.value === null) {
-        return ["Tournaments"];
+        return [];
     }
-    return ["Tournaments"].concat(competitions.value.map((c) => c.tag));
+    return competitions.value.map((c) => c.tag);
 });
 
-const selectedTournament = ref("Tournaments");
-watch(selectedTournament, () => {
-    if (selectedTournament.value !== "Tournaments") {
-        navigateTo(`/matches?tournament=${selectedTournament.value}`);
-    }
-});
+function selectTournament(tournament: string) {
+    navigateTo(`/matches?tournament=${tournament}`);
+}
 </script>

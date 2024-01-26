@@ -1,6 +1,6 @@
 <template>
     <DialogComponent dialog-class="w-3/5">
-        <CardComponent>
+        <CardComponent class="!overflow-visible">
             <TextInputComponent
                 v-model="matchData.uuid"
                 class="w-full mb-2"

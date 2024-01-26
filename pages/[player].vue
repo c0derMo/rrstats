@@ -109,7 +109,7 @@
                 </CardComponent>
             </div>
 
-            <CardComponent>
+            <CardComponent class="!overflow-visible">
                 <TabbedContainer :tabs="['Maps', 'Time Heatmap']">
                     <template #Maps>
                         <PlayerMapList

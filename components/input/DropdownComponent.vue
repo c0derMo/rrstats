@@ -1,15 +1,31 @@
 <template>
-    <div class="p-2 border rounded w-fit inline-block dark:border-neutral-500">
-        <select v-model="value" class="bg-transparent w-full">
-            <option
+    <div ref="element" v-click-outside="() => { showDropdown = false; }">
+        <ButtonComponent :class="buttonClass" @click="showDropdown = !showDropdown">
+            {{ buttonText ?? (convertedItems.find(i => i.value === modelValue)?.text || modelValue) }}
+            <FontAwesomeIcon
+                v-if="buttonText === null"
+                :icon="['fas', 'chevron-down']"
+                :class="{
+                    'rotate-180': showDropdown,
+                }"
+                class="transition float-right ml-2 mt-1"
+            />
+        </ButtonComponent>
+        <div
+            v-if="showDropdown"
+            ref="dropdown"
+            class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto max-h-full flex-col"
+            :style="'max-height: ' + dropdownHeight"
+        >
+            <div
                 v-for="(item, idx) of convertedItems"
                 :key="idx"
-                :value="item.value"
-                class="dark:bg-neutral-500"
+                class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                @click="$emit('update:modelValue', item.value); showDropdown = false;"
             >
                 {{ item.text }}
-            </option>
-        </select>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -28,24 +44,35 @@ const props = defineProps({
         type: [String, Number],
         default: undefined,
     },
-});
-
-onUpdated(() => {
-    value.value = props.modelValue?.toString() || "";
-});
-const value: Ref<string> = ref(props.modelValue?.toString() || "");
-watch(value, () => {
-    if (
-        isNaN(parseInt(value.value)) ||
-        isNaN(value.value as unknown as number)
-    ) {
-        emits("update:modelValue", value.value);
-    } else {
-        emits("update:modelValue", parseInt(value.value.toString()));
+    buttonText: {
+        type: String,
+        default: null,
+    },
+    buttonClass: {
+        type: String,
+        default: "",
     }
 });
+defineEmits(["update:modelValue"]);
 
-const emits = defineEmits(["update:modelValue"]);
+const showDropdown = ref(false);
+const element: Ref<HTMLElement | null> = ref(null);
+
+const dropdownHeight = computed(() => {
+    if (element.value == null) {
+        return;
+    }
+
+    const windowHeight = Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.clientHeight,
+        document.documentElement.scrollHeight,
+        document.documentElement.offsetHeight,
+    );
+
+    return `${windowHeight - element.value.getBoundingClientRect().bottom - 10}px`;
+});
 
 const convertedItems: ComputedRef<ExtendedOption[]> = computed(() => {
     if (props.items.length === 0) {
