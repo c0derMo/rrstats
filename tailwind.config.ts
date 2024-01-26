@@ -2,7 +2,12 @@
 export default {
     content: [],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                josefinSans: ["Josefin Sans", "sans-serif"],
+                titilliumWeb: ["Titillium Web", "sans-serif"],
+            },
+        },
     },
     plugins: [],
     darkMode: "class",

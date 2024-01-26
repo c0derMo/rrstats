@@ -35,7 +35,10 @@ onUpdated(() => {
 });
 const value: Ref<string> = ref(props.modelValue?.toString() || "");
 watch(value, () => {
-    if (isNaN(parseInt(value.value)) || isNaN(value.value as unknown as number)) {
+    if (
+        isNaN(parseInt(value.value)) ||
+        isNaN(value.value as unknown as number)
+    ) {
         emits("update:modelValue", value.value);
     } else {
         emits("update:modelValue", parseInt(value.value.toString()));

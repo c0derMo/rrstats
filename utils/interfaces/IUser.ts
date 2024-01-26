@@ -10,5 +10,5 @@ export enum IPermission {
     EDIT_PLAYERS,
     EDIT_MATCHES,
     EDIT_RECORDS,
-    EDIT_USERS
+    EDIT_USERS,
 }

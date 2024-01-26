@@ -77,8 +77,8 @@ const props = defineProps({
     },
     disabled: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 });
 
 const emits = defineEmits(["update:modelValue"]);
@@ -120,7 +120,10 @@ const extendedItems = computed(() => {
 
 function toggleItem(item: unknown) {
     if (selected.value.includes(item)) {
-        selected.value.splice(selected.value.findIndex((m) => m == item), 1);
+        selected.value.splice(
+            selected.value.findIndex((m) => m == item),
+            1,
+        );
     } else {
         selected.value.push(item);
     }

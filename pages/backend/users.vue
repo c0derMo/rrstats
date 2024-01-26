@@ -1,13 +1,11 @@
 <template>
     <div>
-
         <div class="ml-5 text-3xl bold my-5">
             Users
             <ButtonComponent class="float-right text-base mr-5" @click="save()">
                 Save
             </ButtonComponent>
         </div>
-
 
         <TabbedContainer :tabs="['Users', 'API-Keys']">
             <template #Users>
@@ -26,15 +24,27 @@
                     </template>
 
                     <template #username="{ row }">
-                        <TextInputComponent v-model="row.username" :error="row.username === ''" :disabled="row.authorizationKey === currentUserId" />
+                        <TextInputComponent
+                            v-model="row.username"
+                            :error="row.username === ''"
+                            :disabled="row.authorizationKey === currentUserId"
+                        />
                     </template>
 
                     <template #discordId="{ row }">
-                        <TextInputComponent v-model="row.authorizationKey" :error="row.authorizationKey == ''" :disabled="row.authorizationKey === currentUserId" />
+                        <TextInputComponent
+                            v-model="row.authorizationKey"
+                            :error="row.authorizationKey == ''"
+                            :disabled="row.authorizationKey === currentUserId"
+                        />
                     </template>
 
                     <template #permissions="{ row }">
-                        <MultiSelectComponent v-model="row.permissions" :items="selectablePermissions" :disabled="row.authorizationKey === currentUserId" />
+                        <MultiSelectComponent
+                            v-model="row.permissions"
+                            :items="selectablePermissions"
+                            :disabled="row.authorizationKey === currentUserId"
+                        />
                     </template>
 
                     <template #more="{ index }">
@@ -63,15 +73,24 @@
                     </template>
 
                     <template #username="{ row }">
-                        <TextInputComponent v-model="row.username" :error="row.username == ''" />
+                        <TextInputComponent
+                            v-model="row.username"
+                            :error="row.username == ''"
+                        />
                     </template>
 
                     <template #apikey="{ row }">
-                        <TextInputComponent v-model="row.authorizationKey" :error="row.authorizationKey == ''" />
+                        <TextInputComponent
+                            v-model="row.authorizationKey"
+                            :error="row.authorizationKey == ''"
+                        />
                     </template>
 
                     <template #permissions="{ row }">
-                        <MultiSelectComponent v-model="row.permissions" :items="selectablePermissions" />
+                        <MultiSelectComponent
+                            v-model="row.permissions"
+                            :items="selectablePermissions"
+                        />
                     </template>
 
                     <template #more="{ index }">
@@ -89,12 +108,11 @@
 </template>
 
 <script setup lang="ts">
-import { IPermission, IUser } from '~/utils/interfaces/IUser';
-
+import { IPermission, IUser } from "~/utils/interfaces/IUser";
 
 definePageMeta({
     layout: "backend",
-    middleware: ["auth"]
+    middleware: ["auth"],
 });
 
 const userHeaders = [
@@ -113,14 +131,28 @@ const apiHeaders = [
 const currentUserId: Ref<string> = ref("");
 const users: Ref<IUser[]> = ref([]);
 const apiKeys: Ref<IUser[]> = ref([]);
-const selectablePermissions = Object.values(IPermission).filter(perm => isNaN(perm as IPermission)).map((perm, idx) => { return { text: perm as string, value: idx } });
+const selectablePermissions = Object.values(IPermission)
+    .filter((perm) => isNaN(perm as IPermission))
+    .map((perm, idx) => {
+        return { text: perm as string, value: idx };
+    });
 
 function addUser() {
-    users.value.push({ username: "", authorizationKey: "", isAPIKey: false, permissions: [] });
+    users.value.push({
+        username: "",
+        authorizationKey: "",
+        isAPIKey: false,
+        permissions: [],
+    });
 }
 
 function addAPIKey() {
-    apiKeys.value.push({ username: "", authorizationKey: "", isAPIKey: true, permissions: [] });
+    apiKeys.value.push({
+        username: "",
+        authorizationKey: "",
+        isAPIKey: true,
+        permissions: [],
+    });
 }
 
 function removeUser(index: number) {
@@ -140,16 +172,17 @@ async function updateUserList() {
         return;
     }
 
-    users.value = (usersQuery.data.value as IUser[]).filter(user => !user.isAPIKey);
-    apiKeys.value = (usersQuery.data.value as IUser[]).filter(user => user.isAPIKey);
+    users.value = (usersQuery.data.value as IUser[]).filter(
+        (user) => !user.isAPIKey,
+    );
+    apiKeys.value = (usersQuery.data.value as IUser[]).filter(
+        (user) => user.isAPIKey,
+    );
 }
 
 async function updateLocalUser() {
     const userQuery = await useFetch("/api/auth/user");
-    if (
-        userQuery.status.value !== "success" ||
-        userQuery.data.value == null
-    ) {
+    if (userQuery.status.value !== "success" || userQuery.data.value == null) {
         return;
     }
 
@@ -166,8 +199,8 @@ async function save() {
     }
 
     await useFetch("/api/auth/users", {
-        method: 'POST',
-        body: toSave
+        method: "POST",
+        body: toSave,
     });
 }
 

@@ -34,7 +34,12 @@
             #[`${header.key}`]="{ value, row, index }"
         >
             <div :class="{ 'ml-4': enableSorting }">
-                <slot :name="header.key" :value="value" :row="row" :index="index">
+                <slot
+                    :name="header.key"
+                    :value="value"
+                    :row="row"
+                    :index="index"
+                >
                     {{ value }}
                 </slot>
             </div>

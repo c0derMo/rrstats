@@ -24,7 +24,7 @@ export default defineNuxtConfig({
         },
     },
     session: { api: { isEnabled: false }, session: { rolling: true } },
-    css: ["@fortawesome/fontawesome-svg-core/styles.css"],
+    css: ["@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
     build: {
         transpile: ["@fortawesome/vue-fontawesome"],
     },

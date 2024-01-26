@@ -12,7 +12,10 @@ export default defineEventHandler(async (event) => {
     }
 
     const matches = await Match.find({
-        where: { playerOne: In(query.players as string[] ), playerTwo: In(query.players as string[]) },
+        where: {
+            playerOne: In(query.players as string[]),
+            playerTwo: In(query.players as string[]),
+        },
         select: [
             "uuid",
             "competition",
@@ -21,8 +24,8 @@ export default defineEventHandler(async (event) => {
             "playedMaps",
             "round",
             "playerOneScore",
-            "playerTwoScore"
-        ]
+            "playerTwoScore",
+        ],
     });
 
     return matches;

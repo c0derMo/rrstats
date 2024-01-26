@@ -6,16 +6,24 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const query = getQuery(event);
 
-    if (!(await AuthController.isAuthenticated(event.context.session.user, IPermission.EDIT_RECORDS))) {
+    if (
+        !(await AuthController.isAuthenticated(
+            event.context.session.user,
+            IPermission.EDIT_RECORDS,
+        ))
+    ) {
         throw createError({
             statusCode: 403,
         });
     }
 
-    if (query.type === undefined || (query.type !== "generic" && query.type !== "map")) {
+    if (
+        query.type === undefined ||
+        (query.type !== "generic" && query.type !== "map")
+    ) {
         throw createError({
             statusCode: 400,
-            statusMessage: "Record type must be 'generic' or 'map'"
+            statusMessage: "Record type must be 'generic' or 'map'",
         });
     }
 

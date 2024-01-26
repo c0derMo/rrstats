@@ -7,7 +7,7 @@ export type IGenericRecord = {
     players: string[];
     time: number;
     match: string;
-    maps: { map: HitmanMap, time: number }[];
+    maps: { map: HitmanMap; time: number }[];
 };
 
 export type IMapRecord = {

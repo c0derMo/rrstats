@@ -2,16 +2,32 @@
     <DialogComponent dialog-class="w-3/5">
         <CardComponent>
             <div class="flex flex-col gap-5">
-                <DropdownComponent v-model="recordData.record" :items="Object.values(GenericRecordType)" class="w-full" />
+                <DropdownComponent
+                    v-model="recordData.record"
+                    :items="Object.values(GenericRecordType)"
+                    class="w-full"
+                />
 
-                <DateTimeInputComponent v-model="recordData.timestamp" :seconds="true" placeholder="Date / Time" />
+                <DateTimeInputComponent
+                    v-model="recordData.timestamp"
+                    :seconds="true"
+                    placeholder="Date / Time"
+                />
 
-                <TextInputComponent v-model="players" :error="playersInvalid" placeholder="Players (seperated by ,)" @update:model-value="checkPlayersAndUpdateMatches()" />
+                <TextInputComponent
+                    v-model="players"
+                    :error="playersInvalid"
+                    placeholder="Players (seperated by ,)"
+                    @update:model-value="checkPlayersAndUpdateMatches()"
+                />
 
-                <DropdownComponent v-model="recordData.match" :items="possibleMatches" class="w-full" />
+                <DropdownComponent
+                    v-model="recordData.match"
+                    :items="possibleMatches"
+                    class="w-full"
+                />
 
                 <TableComponent :headers="mapHeaders" :rows="recordData.maps">
-
                     <template #header-more>
                         <ButtonComponent @click="addMap()">
                             <FontAwesomeIcon
@@ -21,13 +37,16 @@
                         </ButtonComponent>
                     </template>
 
-
                     <template #map="{ row }">
                         <DropdownComponent v-model="row.map" :items="maps" />
                     </template>
 
                     <template #time="{ row, index }">
-                        <TextInputComponent v-model="row.time" :error="isTimeInvalid[index]" type="number" />
+                        <TextInputComponent
+                            v-model="row.time"
+                            :error="isTimeInvalid[index]"
+                            type="number"
+                        />
                     </template>
 
                     <template #more="{ index }">
@@ -38,7 +57,6 @@
                             />
                         </ButtonComponent>
                     </template>
-
                 </TableComponent>
 
                 <span>Total time: {{ secondsToTime(totalTime) }}</span>
@@ -55,14 +73,14 @@
 </template>
 
 <script setup lang="ts">
-import { GenericRecordType } from '~/utils/interfaces/IRecord';
+import { GenericRecordType } from "~/utils/interfaces/IRecord";
 
 const props = defineProps({
     record: {
         type: Object as PropType<IGenericRecord>,
-        required: true
-    }
-})
+        required: true,
+    },
+});
 
 const emits = defineEmits(["close"]);
 
@@ -76,17 +94,19 @@ const uuidToPlayerTable: Ref<Record<string, string>> = ref({});
 const isTimeInvalid = ref(Array(recordData.value.maps.length).fill(false));
 
 const mapHeaders = [
-    { title: 'Map', key: 'map' },
-    { title: 'Time (in seconds)', key: 'time' },
-    { title: '', key: 'more' },
+    { title: "Map", key: "map" },
+    { title: "Time (in seconds)", key: "time" },
+    { title: "", key: "more" },
 ];
 
 const maps = getAllMaps().map((map) => {
-    return { text: getMap(map)!.name, value: map }
+    return { text: getMap(map)!.name, value: map };
 });
 
 const totalTime = computed(() => {
-    return recordData.value.maps.map(m => parseInt(m.time)).reduce((prev, cur) => prev + cur, 0);
+    return recordData.value.maps
+        .map((m) => parseInt(m.time))
+        .reduce((prev, cur) => prev + cur, 0);
 });
 
 async function checkPlayersAndUpdateMatches() {
@@ -100,17 +120,29 @@ async function checkPlayersAndUpdateMatches() {
         return;
     }
 
-    recordData.value.players = players.value.split(",").map(player => playerToUUIDTable.value[player.trim()]);
+    recordData.value.players = players.value
+        .split(",")
+        .map((player) => playerToUUIDTable.value[player.trim()]);
 
     const matchRequest = await useFetch("/api/matches/versus", {
-        query: { players: recordData.value.players }
+        query: { players: recordData.value.players },
     });
-    if (matchRequest.data.value == null || matchRequest.status.value !== "success") {
+    if (
+        matchRequest.data.value == null ||
+        matchRequest.status.value !== "success"
+    ) {
         return;
     }
 
-    possibleMatches.value = matchRequest.data.value.map(match => {
-        return { text: `${match.competition} ${match.round} ${uuidToPlayerTable.value[match.playerOne]} ${match.playerOneScore} - ${match.playerTwoScore} ${uuidToPlayerTable.value[match.playerTwo]}`, value: match.uuid }
+    possibleMatches.value = matchRequest.data.value.map((match) => {
+        return {
+            text: `${match.competition} ${match.round} ${
+                uuidToPlayerTable.value[match.playerOne]
+            } ${match.playerOneScore} - ${match.playerTwoScore} ${
+                uuidToPlayerTable.value[match.playerTwo]
+            }`,
+            value: match.uuid,
+        };
     });
     if (possibleMatches.value.length > 0) {
         recordData.value.match = possibleMatches.value[0].value;
@@ -121,9 +153,10 @@ async function checkPlayersAndUpdateMatches() {
 
 function addMap() {
     recordData.value.maps.push({
-        map: 0, time: 0
+        map: 0,
+        time: 0,
     });
-    isTimeInvalid.value.push(false)
+    isTimeInvalid.value.push(false);
 }
 
 function removeMap(index: number) {
@@ -135,7 +168,9 @@ async function save() {
     isSaving.value = true;
 
     for (const mapIdx in recordData.value.maps) {
-        recordData.value.maps[mapIdx].time = parseInt(recordData.value.maps[mapIdx].time);
+        recordData.value.maps[mapIdx].time = parseInt(
+            recordData.value.maps[mapIdx].time,
+        );
         if (isNaN(recordData.value.maps[mapIdx].time)) {
             isTimeInvalid.value[mapIdx] = true;
         } else {
@@ -152,8 +187,8 @@ async function save() {
 
     await useFetch("/api/records", {
         method: "post",
-        query: { "type": "generic" },
-        body: recordData.value
+        query: { type: "generic" },
+        body: recordData.value,
     });
 
     isSaving.value = false;
@@ -166,16 +201,24 @@ function close() {
 
 async function loadPlayers() {
     const playersRequest = await useFetch("/api/player/lookup");
-    if (playersRequest.data.value == null || playersRequest.status.value !== "success") {
+    if (
+        playersRequest.data.value == null ||
+        playersRequest.status.value !== "success"
+    ) {
         return;
     }
 
-    uuidToPlayerTable.value = playersRequest.data.value as Record<string, string>;
+    uuidToPlayerTable.value = playersRequest.data.value as Record<
+        string,
+        string
+    >;
     for (const uuid in uuidToPlayerTable.value) {
         playerToUUIDTable.value[uuidToPlayerTable.value[uuid]] = uuid;
     }
 
-    players.value = recordData.value.players.map(player => uuidToPlayerTable.value[player]).join(", ");
+    players.value = recordData.value.players
+        .map((player) => uuidToPlayerTable.value[player])
+        .join(", ");
 }
 
 await loadPlayers();

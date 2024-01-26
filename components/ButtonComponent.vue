@@ -1,6 +1,10 @@
 <template>
     <div
-        class="relative border inline-block w-fit rounded dark:border-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-150 active:bg-neutral-300 active:dark:bg-neutral-500 cursor-pointer select-none"
+        class="relative border inline-block w-fit rounded dark:border-neutral-500 transition ease-in-out duration-150 cursor-pointer select-none font-titilliumWeb"
+        :class="{
+            'dark:hover:bg-neutral-600 hover:bg-neutral-100 active:bg-neutral-300 active:dark:bg-neutral-500':
+                !disableHover,
+        }"
     >
         <div
             v-if="loading"
@@ -21,6 +25,10 @@
 defineEmits(["click"]);
 defineProps({
     loading: {
+        type: Boolean,
+        default: false,
+    },
+    disableHover: {
         type: Boolean,
         default: false,
     },

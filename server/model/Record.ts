@@ -20,7 +20,7 @@ export class GenericRecord extends BaseEntity implements IGenericRecord {
     @Column("text")
     match: string;
     @Column("simple-json")
-    maps: { map: HitmanMap, time: number }[];
+    maps: { map: HitmanMap; time: number }[];
 }
 
 @Entity()

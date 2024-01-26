@@ -15,7 +15,7 @@
     <TableComponent :headers="headers" :rows="sortedRecords">
         <template #maps="{ value }">
             <Tag
-                v-for="(entry, idx) in (value as RecordMap[])"
+                v-for="(entry, idx) in value as RecordMap[]"
                 :key="idx"
                 :color="getMap(entry.map)!.color"
                 class="mr-2"
@@ -59,8 +59,8 @@ import { GenericRecordType, IGenericRecord } from "~/utils/interfaces/IRecord";
 import { IMatch } from "~/utils/interfaces/IMatch";
 
 interface RecordMap {
-    map: number,
-    time: number
+    map: number;
+    time: number;
 }
 
 const headers = [
