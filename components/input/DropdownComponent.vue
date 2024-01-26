@@ -1,7 +1,21 @@
 <template>
-    <div ref="element" v-click-outside="() => { showDropdown = false; }">
-        <ButtonComponent :class="buttonClass" @click="showDropdown = !showDropdown">
-            {{ buttonText ?? (convertedItems.find(i => i.value === modelValue)?.text || modelValue) }}
+    <div
+        ref="element"
+        v-click-outside="
+            () => {
+                showDropdown = false;
+            }
+        "
+    >
+        <ButtonComponent
+            :class="buttonClass"
+            @click="showDropdown = !showDropdown"
+        >
+            {{
+                buttonText ??
+                (convertedItems.find((i) => i.value === modelValue)?.text ||
+                    modelValue)
+            }}
             <FontAwesomeIcon
                 v-if="buttonText === null"
                 :icon="['fas', 'chevron-down']"
@@ -21,7 +35,10 @@
                 v-for="(item, idx) of convertedItems"
                 :key="idx"
                 class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600"
-                @click="$emit('update:modelValue', item.value); showDropdown = false;"
+                @click="
+                    $emit('update:modelValue', item.value);
+                    showDropdown = false;
+                "
             >
                 {{ item.text }}
             </div>
@@ -51,7 +68,7 @@ const props = defineProps({
     buttonClass: {
         type: String,
         default: "",
-    }
+    },
 });
 defineEmits(["update:modelValue"]);
 
@@ -71,7 +88,9 @@ const dropdownHeight = computed(() => {
         document.documentElement.offsetHeight,
     );
 
-    return `${windowHeight - element.value.getBoundingClientRect().bottom - 10}px`;
+    return `${
+        windowHeight - element.value.getBoundingClientRect().bottom - 10
+    }px`;
 });
 
 const convertedItems: ComputedRef<ExtendedOption[]> = computed(() => {
