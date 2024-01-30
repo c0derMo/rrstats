@@ -97,7 +97,8 @@ function checkAndEmit() {
     for (let i = 0; i < placementsData.value.length; i++) {
         placementsData.value[i].player =
             playerToUUIDTable.value[placementPlayers.value[i]];
-        if (placementsData.value[i].placement?.toString() === "") {
+        console.log(placementsData.value[i].placement);
+        if (placementsData.value[i].placement === 0) {
             placementsData.value[i].placement = undefined;
         }
     }

@@ -13,7 +13,9 @@
             @input="
                 $emit(
                     'update:model-value',
-                    ($event.target as HTMLInputElement).value,
+                    formatReturnValue(
+                        ($event.target as HTMLInputElement).value,
+                    ),
                 )
             "
             @focusin="isFocused = true"
@@ -100,6 +102,19 @@ const nonEmptyOrFocussed = computed(() => {
         isFocused.value || (props.modelValue !== "" && props.modelValue != null)
     );
 });
+
+function formatReturnValue(originalValue: string) {
+    if (props.type === "number") {
+        const parsedNumber = parseInt(originalValue);
+        if (isNaN(parsedNumber)) {
+            return 0;
+        } else {
+            return parsedNumber;
+        }
+    }
+
+    return originalValue;
+}
 
 watch(isFocused, (newValue) => {
     emits("focus-change", newValue);

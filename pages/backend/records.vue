@@ -8,6 +8,14 @@
                 updateLists();
             "
         />
+        <MapRecordEditor
+            v-if="mapRecordToEdit != null"
+            :record="mapRecordToEdit"
+            @close="
+                mapRecordToEdit = null;
+                updateLists();
+            "
+        />
 
         <div class="ml-5 text-3xl bold my-5">Records</div>
 
@@ -25,6 +33,15 @@
                     :rows-per-page="[25, 50, 100]"
                     :items-per-page="25"
                 >
+                    <template #header-more>
+                        <ButtonComponent @click="newMapRecord()">
+                            <FontAwesomeIcon
+                                :icon="['fa', 'plus']"
+                                class="text-green-500"
+                            />
+                        </ButtonComponent>
+                    </template>
+
                     <template #map="{ value }">
                         {{ getMap(value as HitmanMap)!.name }}
                     </template>
@@ -43,6 +60,20 @@
                     </template>
                     <template #time="{ value }">
                         {{ secondsToTime(value as number) }}
+                    </template>
+                    <template #more="{ row, index }">
+                        <ButtonComponent @click="mapRecordToEdit = row">
+                            <FontAwesomeIcon :icon="['fa', 'pen']" />
+                        </ButtonComponent>
+                        <ButtonComponent
+                            :loading="currentlyDeleting == index"
+                            @click="deleteRecord(row, 'map', index)"
+                        >
+                            <FontAwesomeIcon
+                                :icon="['fa', 'trash']"
+                                class="text-red-500"
+                            />
+                        </ButtonComponent>
                     </template>
                 </DataTableComponent>
             </template>
@@ -101,9 +132,18 @@
                     <template #time="{ value }">
                         {{ secondsToTime(value as number) }}
                     </template>
-                    <template #more="{ row }">
+                    <template #more="{ row, index }">
                         <ButtonComponent @click="genericRecordToEdit = row">
                             <FontAwesomeIcon :icon="['fa', 'pen']" />
+                        </ButtonComponent>
+                        <ButtonComponent
+                            :loading="currentlyDeleting == index"
+                            @click="deleteRecord(row, 'generic', index)"
+                        >
+                            <FontAwesomeIcon
+                                :icon="['fa', 'trash']"
+                                class="text-red-500"
+                            />
                         </ButtonComponent>
                     </template>
                 </DataTableComponent>
@@ -131,8 +171,10 @@ const mapRecords: Ref<IMapRecord[]> = ref([]);
 const genericRecords: Ref<IGenericRecord[]> = ref([]);
 const mapFilter = ref(-1);
 const genericFilter = ref("");
+const currentlyDeleting = ref(-1);
 const playerLookupTable: Ref<Record<string, string>> = ref({});
 const genericRecordToEdit: Ref<IGenericRecord | null> = ref(null);
+const mapRecordToEdit: Ref<IMapRecord | null> = ref(null);
 
 const mapFilterOptions = computed(() => {
     return [
@@ -197,6 +239,34 @@ function newGenericRecord() {
         match: "",
         maps: [],
     };
+}
+
+function newMapRecord() {
+    mapRecordToEdit.value = {
+        timestamp: DateTime.now().toMillis(),
+        map: HitmanMap.PARIS,
+        player: "",
+        time: 0,
+        match: "",
+        mapIndex: 0,
+    };
+}
+
+async function deleteRecord(
+    record: IMapRecord | IGenericRecord,
+    type: "generic" | "map",
+    index: number,
+) {
+    currentlyDeleting.value = index;
+
+    await useFetch("/api/records/", {
+        method: "delete",
+        body: record,
+        query: { type: type },
+    });
+    await updateLists();
+
+    currentlyDeleting.value = -1;
 }
 
 async function updatePlayerLookupTable() {

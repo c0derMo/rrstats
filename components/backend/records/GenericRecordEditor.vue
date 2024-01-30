@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { GenericRecordType } from "~/utils/interfaces/IRecord";
+import { GenericRecordType, IGenericRecord } from "~/utils/interfaces/IRecord";
 
 const props = defineProps({
     record: {
@@ -86,7 +86,7 @@ const emits = defineEmits(["close"]);
 
 const recordData: Ref<IGenericRecord> = toRef(props.record);
 const isSaving = ref(false);
-const possibleMatches = ref([]);
+const possibleMatches: Ref<{ text: string; value: string }[]> = ref([]);
 const playersInvalid = ref(false);
 const players = ref("");
 const playerToUUIDTable: Ref<Record<string, string>> = ref({});
@@ -105,7 +105,7 @@ const maps = getAllMaps().map((map) => {
 
 const totalTime = computed(() => {
     return recordData.value.maps
-        .map((m) => parseInt(m.time))
+        .map((m) => m.time)
         .reduce((prev, cur) => prev + cur, 0);
 });
 
@@ -168,13 +168,10 @@ async function save() {
     isSaving.value = true;
 
     for (const mapIdx in recordData.value.maps) {
-        recordData.value.maps[mapIdx].time = parseInt(
-            recordData.value.maps[mapIdx].time,
-        );
         if (isNaN(recordData.value.maps[mapIdx].time)) {
-            isTimeInvalid.value[mapIdx] = true;
+            isTimeInvalid.value[parseInt(mapIdx)] = true;
         } else {
-            isTimeInvalid.value[mapIdx] = false;
+            isTimeInvalid.value[parseInt(mapIdx)] = false;
         }
     }
 
@@ -183,7 +180,7 @@ async function save() {
         return;
     }
 
-    recordData.value.time = totalTime;
+    recordData.value.time = totalTime.value;
 
     await useFetch("/api/records", {
         method: "post",

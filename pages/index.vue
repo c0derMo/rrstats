@@ -21,8 +21,13 @@
             >
                 Roulette Rivals Player Statistics
             </div>
-            <div class="w-full text-sm text-center font-light font-josefinSans">
-                Currently storing 123 matches of 20 RR tournaments with 300
+            <div
+                v-if="numbers != null"
+                class="w-full text-sm text-center font-light font-josefinSans"
+            >
+                Currently storing {{ numbers.matches }} matches of
+                {{ numbers.officialCompetitions }} RR tournaments with
+                {{ numbers.players }}
                 players!
             </div>
 
@@ -94,6 +99,7 @@ useHead({
 
 const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
 const competitions = (await useFetch("/api/competitions/list")).data;
+const numbers = (await useFetch("/api/onlyNumbers")).data;
 
 const competitionsDropdown = computed(() => {
     if (competitions.value === null) {
