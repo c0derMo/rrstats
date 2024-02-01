@@ -48,7 +48,7 @@
         <BackendButton
             title="Database checks"
             subtitle="Run various checks on the database"
-            target="/backend/competitions"
+            target="/backend/databaseChecks"
         >
             <FontAwesomeIcon :icon="['fa', 'stethoscope']"></FontAwesomeIcon>
         </BackendButton>
