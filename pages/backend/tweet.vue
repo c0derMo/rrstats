@@ -73,6 +73,7 @@ const error = ref(false);
 definePageMeta({
     layout: "backend",
     middleware: ["auth"],
+    pageTitle: "Tweet",
 });
 
 const dropdownableRecords = computed(() => {

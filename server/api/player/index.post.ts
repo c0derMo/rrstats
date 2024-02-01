@@ -16,6 +16,10 @@ export default defineEventHandler(async (event) => {
         });
     }
 
+    if (body.uuid === "") {
+        delete body.uuid;
+    }
+
     const player = new Player();
     Object.assign(player, body);
     await player.save();

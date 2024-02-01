@@ -113,6 +113,7 @@ import { IPermission, IUser } from "~/utils/interfaces/IUser";
 definePageMeta({
     layout: "backend",
     middleware: ["auth"],
+    pageTitle: "Users",
 });
 
 const userHeaders = [

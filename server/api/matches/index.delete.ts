@@ -16,11 +16,17 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    if (body.uuid === "") {
-        delete body.uuid;
+    if (body.uuid == null) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: "body must contain match uuid",
+        });
     }
 
-    const match = new Match();
-    Object.assign(match, body);
-    await match.save();
+    const matchToRemove = await Match.findOneBy({
+        uuid: body.uuid as string,
+    });
+    if (matchToRemove != null) {
+        await matchToRemove.remove();
+    }
 });

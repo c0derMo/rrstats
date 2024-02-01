@@ -9,9 +9,13 @@
             "
         />
 
-        <div class="ml-5 text-3xl bold mt-5">Players</div>
+        <div class="text-3xl bold mt-5">Players</div>
 
-        <TextInputComponent v-model="search" placeholder="Search" class="m-5" />
+        <TextInputComponent
+            v-model="search"
+            placeholder="Search"
+            class="my-5"
+        />
 
         <DataTableComponent
             :headers="headers"
@@ -36,7 +40,10 @@
                 >
                     <FontAwesomeIcon :icon="['fa', 'pen']" />
                 </ButtonComponent>
-                <ButtonComponent>
+                <ButtonComponent
+                    :confirm-button="true"
+                    @click="deletePlayer(row.uuid)"
+                >
                     <FontAwesomeIcon
                         :icon="['fa', 'trash']"
                         class="text-red-500"
@@ -53,6 +60,7 @@ import { IPlayer } from "~/utils/interfaces/IPlayer";
 definePageMeta({
     layout: "backend",
     middleware: ["auth"],
+    pageTitle: "Players",
 });
 
 const players: Ref<IPlayer[]> = ref([]);
@@ -82,6 +90,15 @@ function newPlayer() {
         alternativeNames: [],
         accolade: "",
     };
+}
+
+async function deletePlayer(uuid: string) {
+    await useFetch("/api/player", {
+        method: "DELETE",
+        body: { uuid },
+    });
+
+    await updateList();
 }
 
 async function updateList() {

@@ -46,4 +46,16 @@
 <script setup lang="ts">
 const user = (await useFetch("/api/auth/user")).data;
 const numbers = (await useFetch("/api/onlyNumbers")).data;
+const route = useRoute();
+
+useRouter().afterEach((to) => {
+    updateTitle(to.meta.pageTitle);
+});
+updateTitle(route.meta.pageTitle);
+
+function updateTitle(pageTitle?: string) {
+    useHead({
+        title: (pageTitle != null ? `${pageTitle} - ` : "") + "RRStats Backend",
+    });
+}
 </script>

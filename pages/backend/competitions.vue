@@ -10,7 +10,7 @@
             "
         />
 
-        <div class="ml-5 text-3xl bold mt-5">Competitions</div>
+        <div class="text-3xl bold mt-5">Competitions</div>
 
         <DataTableComponent
             :headers="headers"
@@ -35,7 +35,10 @@
                 >
                     <FontAwesomeIcon :icon="['fa', 'pen']" />
                 </ButtonComponent>
-                <ButtonComponent>
+                <ButtonComponent
+                    :confirm-button="true"
+                    @click="deleteCompetition(row.tag)"
+                >
                     <FontAwesomeIcon
                         :icon="['fa', 'trash']"
                         class="text-red-500"
@@ -56,6 +59,7 @@ import {
 definePageMeta({
     layout: "backend",
     middleware: ["auth"],
+    pageTitle: "Competitions",
 });
 
 const competitions: Ref<ICompetition[]> = ref([]);
@@ -78,6 +82,15 @@ function newCompetition() {
         officialCompetition: false,
         startingTimestamp: DateTime.now().toMillis(),
     };
+}
+
+async function deleteCompetition(tag: string) {
+    await useFetch("/api/competitions", {
+        method: "DELETE",
+        body: { tag },
+    });
+
+    await updateList();
 }
 
 async function updateList() {

@@ -15,15 +15,18 @@
                 class="h-full animate-spin"
             />
         </div>
-        <div class="p-2" @click="$emit('click')">
-            <slot />
+        <div class="p-2" @click="click()">
+            <span v-if="cooldown > 0" class="text-red-500"
+                >Are you sure? {{ cooldown }}</span
+            >
+            <slot v-else />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-defineEmits(["click"]);
-defineProps({
+const emits = defineEmits(["click"]);
+const props = defineProps({
     loading: {
         type: Boolean,
         default: false,
@@ -32,5 +35,34 @@ defineProps({
         type: Boolean,
         default: false,
     },
+    confirmButton: {
+        type: Boolean,
+        default: false,
+    },
 });
+
+const cooldown = ref(0);
+const cooldownTimer: Ref<NodeJS.Timeout | undefined> = ref(undefined);
+
+function click() {
+    if (!props.confirmButton) {
+        emits("click");
+        return;
+    }
+    if (cooldown.value > 0) {
+        emits("click");
+        cooldown.value = 0;
+        clearInterval(cooldownTimer.value);
+        cooldownTimer.value = undefined;
+    } else {
+        cooldown.value = 3;
+        cooldownTimer.value = setInterval(() => {
+            cooldown.value -= 1;
+            if (cooldown.value <= 0) {
+                clearInterval(cooldownTimer.value);
+                cooldownTimer.value = undefined;
+            }
+        }, 1000);
+    }
+}
 </script>

@@ -1,23 +1,17 @@
 <template>
     <div>
-        <div class="ml-5 text-3xl bold my-5">Database checks</div>
+        <div class="text-3xl bold my-5">Database checks</div>
 
-        <div v-if="isLoading" class="mx-5">
+        <div v-if="isLoading">
             <span class="text-xl">Checking database...</span>
             <FontAwesomeIcon :icon="['fas', 'gear']" class="animate-spin" />
         </div>
         <CheckResults
             v-else-if="resultData.length !== 0"
             :results="resultData"
-            class="mx-5"
             @recheck="resultData = []"
         />
-        <CheckSelectors
-            v-else
-            :checks="checks"
-            class="mx-5"
-            @confirm="runChecks"
-        />
+        <CheckSelectors v-else :checks="checks" @confirm="runChecks" />
     </div>
 </template>
 
@@ -25,6 +19,7 @@
 definePageMeta({
     layout: "backend",
     middleware: ["auth"],
+    pageTitle: "Database checks",
 });
 
 const checks: Ref<{ id: string; name: string; description: string }[]> = ref(

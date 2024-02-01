@@ -151,7 +151,7 @@ const competition = (
 ).data;
 
 useHead({
-    title: `${competition.value?.name} - RRStats v3`,
+    title: `${competition.value?.name} - RRStats`,
 });
 
 const sortedMatches = computed(() => {

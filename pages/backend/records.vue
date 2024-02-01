@@ -17,7 +17,7 @@
             "
         />
 
-        <div class="ml-5 text-3xl bold my-5">Records</div>
+        <div class="text-3xl bold my-5">Records</div>
 
         <TabbedContainer :tabs="['Maps', 'Generic']">
             <template #Maps>
@@ -67,6 +67,7 @@
                         </ButtonComponent>
                         <ButtonComponent
                             :loading="currentlyDeleting == index"
+                            :confirm-button="true"
                             @click="deleteRecord(row, 'map', index)"
                         >
                             <FontAwesomeIcon
@@ -138,6 +139,7 @@
                         </ButtonComponent>
                         <ButtonComponent
                             :loading="currentlyDeleting == index"
+                            :confirm-button="true"
                             @click="deleteRecord(row, 'generic', index)"
                         >
                             <FontAwesomeIcon
@@ -165,6 +167,7 @@ import { HitmanMap } from "~/utils/mapUtils";
 definePageMeta({
     layout: "backend",
     middleware: ["auth"],
+    pageTitle: "Records",
 });
 
 const mapRecords: Ref<IMapRecord[]> = ref([]);

@@ -144,7 +144,7 @@ import {
 const route = useRoute();
 
 useHead({
-    title: `${route.params.player} - RRStats v3`,
+    title: `${route.params.player} - RRStats`,
 });
 
 const tH = "Time Heatmap";

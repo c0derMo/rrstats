@@ -94,7 +94,7 @@ definePageMeta({
     layout: "center-no-back",
 });
 useHead({
-    title: "RRStats v3",
+    title: "RRStats",
 });
 
 const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
