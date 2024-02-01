@@ -1,4 +1,3 @@
-import { HITMAPSComparison } from "./databaseChecks/HITMAPSComparison";
 import { InvalidScores } from "./databaseChecks/InvalidScores";
 import { MissingPlacements } from "./databaseChecks/MissingPlacements";
 import { MissingPlayers } from "./databaseChecks/MissingPlayers";
@@ -31,15 +30,16 @@ export default class DatabaseCheckController {
         new MissingPlacements(),
         new RecordMatches(),
         new RecordSpins(),
-        new HITMAPSComparison()
     ];
 
     static getChecks(): CheckInfo[] {
-        return this.allChecks.map(check => check.info);
+        return this.allChecks.map((check) => check.info);
     }
 
     static async runChecks(checks: string[]): Promise<CheckResult[]> {
-        const checksToRun = this.allChecks.filter(check => checks.includes(check.info.id));
+        const checksToRun = this.allChecks.filter((check) =>
+            checks.includes(check.info.id),
+        );
 
         const result: CheckResult[] = [];
         for (const check of checksToRun) {

@@ -1,5 +1,9 @@
 import { Player } from "~/server/model/Player";
-import { CheckInfo, CheckResult, DatabaseCheck } from "../DatabaseCheckController";
+import {
+    CheckInfo,
+    CheckResult,
+    DatabaseCheck,
+} from "../DatabaseCheckController";
 import { MapRecord } from "~/server/model/Record";
 import { Match } from "~/server/model/Match";
 import { getMap } from "~/utils/mapUtils";
@@ -19,7 +23,7 @@ export class RecordSpins implements DatabaseCheck {
     async execute(): Promise<CheckResult> {
         this.uuidsToPlayers = {};
         const players = await Player.find({
-            select: ['uuid', 'primaryName']
+            select: ["uuid", "primaryName"],
         });
         for (const player of players) {
             this.uuidsToPlayers[player.uuid] = player.primaryName;
@@ -29,32 +33,54 @@ export class RecordSpins implements DatabaseCheck {
         const errors: string[] = [];
 
         const mapRecords = await MapRecord.find({
-            select: ['match', 'map', 'player', 'timestamp', 'mapIndex'],
+            select: ["match", "map", "player", "timestamp", "mapIndex"],
         });
         for (const record of mapRecords) {
             const match = await Match.findOne({
-                select: ['playerOne', 'playerTwo', 'competition', 'round', 'playedMaps'],
-                where: { uuid: record.match }
+                select: [
+                    "playerOne",
+                    "playerTwo",
+                    "competition",
+                    "round",
+                    "playedMaps",
+                ],
+                where: { uuid: record.match },
             });
 
             if (match == null) {
-                issues.push(`${this.formatMapRecord(record)} has nonexistant match assigned: ${record.match}`);
+                issues.push(
+                    `${this.formatMapRecord(
+                        record,
+                    )} has nonexistant match assigned: ${record.match}`,
+                );
                 continue;
             }
 
             if (match.playedMaps[record.mapIndex]?.spin == null) {
-                errors.push(`${this.formatMapRecord(record)} has no spin in the assigned match ${this.formatMatch(match)}`)
+                errors.push(
+                    `${this.formatMapRecord(
+                        record,
+                    )} has no spin in the assigned match ${this.formatMatch(
+                        match,
+                    )}`,
+                );
             }
         }
 
         return { name: "Records without spins", issues, errors };
-    };
+    }
 
     private formatMapRecord(record: IMapRecord) {
-        return `Record ${getMap(record.map)!.name} (${DateTime.fromMillis(record.timestamp).toISO({ includeOffset: false })}) by ${this.uuidsToPlayers[record.player]}`;
+        return `Record ${getMap(record.map)!.name} (${DateTime.fromMillis(
+            record.timestamp,
+        ).toISO({ includeOffset: false })}) by ${
+            this.uuidsToPlayers[record.player]
+        }`;
     }
 
     private formatMatch(match: IMatch) {
-        return `${this.uuidsToPlayers[match.playerOne]} vs ${this.uuidsToPlayers[match.playerTwo]} (${match.competition}, ${match.round})`
+        return `${this.uuidsToPlayers[match.playerOne]} vs ${
+            this.uuidsToPlayers[match.playerTwo]
+        } (${match.competition}, ${match.round})`;
     }
 }

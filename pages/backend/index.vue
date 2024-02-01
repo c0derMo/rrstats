@@ -41,7 +41,7 @@
         <BackendButton
             title="Tweet"
             subtitle="Send tweets from the @rrstats account"
-            target="/backend/competitions"
+            target="/backend/tweet"
         >
             <FontAwesomeIcon :icon="['fab', 'twitter']"></FontAwesomeIcon>
         </BackendButton>

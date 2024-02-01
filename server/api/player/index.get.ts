@@ -1,7 +1,7 @@
 import { Match } from "~/server/model/Match";
 import { Player } from "../../model/Player";
 import { In, IsNull, Not } from "typeorm";
-import HitmapsIntegration from "../../controller/HitmapsIntegration";
+import HitmapsIntegration from "../../controller/integrations/HitmapsIntegration";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
 
 export default defineEventHandler(async (event) => {

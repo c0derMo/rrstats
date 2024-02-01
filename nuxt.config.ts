@@ -8,6 +8,10 @@ export default defineNuxtConfig({
         discordToken: "",
         discordId: "",
         discordSecret: "",
+        twitterApiKey: "",
+        twitterApiSecret: "",
+        twitterAccessToken: "",
+        twitterTokenSecret: "",
         publicOrigin: "http://localhost:3000",
     },
     nitro: {

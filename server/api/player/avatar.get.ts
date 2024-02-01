@@ -1,5 +1,5 @@
 import { Player } from "../../model/Player";
-import DiscordAvatarIntegration from "~/server/controller/DiscordAvatarIntegration";
+import DiscordAvatarIntegration from "~/server/controller/integrations/DiscordAvatarIntegration";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);

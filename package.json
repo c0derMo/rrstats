@@ -39,6 +39,7 @@
         "luxon": "^3.4.3",
         "reflect-metadata": "^0.1.13",
         "sqlite3": "^5.1.6",
+        "twitter-api-v2": "^1.16.0",
         "typeorm": "^0.3.17"
     }
 }

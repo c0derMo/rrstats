@@ -4,11 +4,7 @@ import DatabaseCheckController from "~/server/controller/DatabaseCheckController
 export default defineEventHandler(async (event) => {
     const checks = await readBody(event);
 
-    if (
-        !(await AuthController.isAuthenticated(
-            event.context.session.user
-        ))
-    ) {
+    if (!(await AuthController.isAuthenticated(event.context.session.user))) {
         throw createError({
             statusCode: 403,
         });
@@ -17,7 +13,7 @@ export default defineEventHandler(async (event) => {
     if (checks == null || !Array.isArray(checks)) {
         throw createError({
             statusCode: 400,
-            statusMessage: "body must contain checks array"
+            statusMessage: "body must contain checks array",
         });
     }
 
@@ -25,6 +21,14 @@ export default defineEventHandler(async (event) => {
         return await DatabaseCheckController.runChecks(checks as string[]);
     } catch (e) {
         console.log(e);
-        return [{name: 'Checks failed', errors: ['Checks failed with exception. See console for more info.'], issues: []}];
+        return [
+            {
+                name: "Checks failed",
+                errors: [
+                    "Checks failed with exception. See console for more info.",
+                ],
+                issues: [],
+            },
+        ];
     }
 });

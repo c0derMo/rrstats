@@ -11,4 +11,5 @@ export enum IPermission {
     EDIT_MATCHES,
     EDIT_RECORDS,
     EDIT_USERS,
+    TWEET,
 }

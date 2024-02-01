@@ -6,8 +6,18 @@
             <span class="text-xl">Checking database...</span>
             <FontAwesomeIcon :icon="['fas', 'gear']" class="animate-spin" />
         </div>
-        <CheckResults v-else-if="resultData.length !== 0" :results="resultData" class="mx-5" @recheck="resultData = []" />
-        <CheckSelectors v-else :checks="checks" class="mx-5" @confirm="runChecks" />
+        <CheckResults
+            v-else-if="resultData.length !== 0"
+            :results="resultData"
+            class="mx-5"
+            @recheck="resultData = []"
+        />
+        <CheckSelectors
+            v-else
+            :checks="checks"
+            class="mx-5"
+            @confirm="runChecks"
+        />
     </div>
 </template>
 
@@ -17,8 +27,11 @@ definePageMeta({
     middleware: ["auth"],
 });
 
-const checks: Ref<{id: string, name: string, description: string}[]> = ref([]);
-const resultData: Ref<{name: string, issues: string[], errors: string[]}[]> = ref([]);
+const checks: Ref<{ id: string; name: string; description: string }[]> = ref(
+    [],
+);
+const resultData: Ref<{ name: string; issues: string[]; errors: string[] }[]> =
+    ref([]);
 const isLoading = ref(false);
 
 async function loadChecks() {
@@ -39,7 +52,10 @@ async function runChecks(checks: string[]) {
         return;
     }
     isLoading.value = true;
-    const checkQuery = await useFetch("/api/procedures/databaseChecks", { method: "POST", body: checks });
+    const checkQuery = await useFetch("/api/procedures/databaseChecks", {
+        method: "POST",
+        body: checks,
+    });
 
     if (
         checkQuery.status.value !== "success" ||

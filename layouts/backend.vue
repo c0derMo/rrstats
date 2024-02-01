@@ -36,7 +36,10 @@
                 <slot name="DarkModeToggle" />
             </div>
         </div>
-        <slot />
+
+        <div class="mx-5">
+            <slot />
+        </div>
     </div>
 </template>
 

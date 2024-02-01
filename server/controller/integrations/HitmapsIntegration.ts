@@ -1,9 +1,9 @@
 import axios from "axios";
-import { Match } from "../model/Match";
-import { Player } from "../model/Player";
+import { Match } from "../../model/Match";
+import { Player } from "../../model/Player";
 import { In } from "typeorm";
 import { DateTime } from "luxon";
-import { HitmanMap, getMapBySlug } from "../../utils/mapUtils";
+import { HitmanMap, getMapBySlug } from "../../../utils/mapUtils";
 import {
     Spin,
     RRMap,

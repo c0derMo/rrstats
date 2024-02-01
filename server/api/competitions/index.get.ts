@@ -1,4 +1,4 @@
-import HitmapsIntegration from "~/server/controller/HitmapsIntegration";
+import HitmapsIntegration from "~/server/controller/integrations/HitmapsIntegration";
 import { Competition } from "~/server/model/Competition";
 
 export default defineEventHandler(async (event) => {
