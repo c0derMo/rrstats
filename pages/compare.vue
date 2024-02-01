@@ -136,7 +136,8 @@ watch(leftPlayer, async () => {
     const currentQuery = new URLSearchParams(window.location.search);
     currentQuery.set("leftPlayer", leftPlayer.value);
     const newPath = window.location.pathname + "?" + currentQuery.toString();
-    history.pushState(null, "", newPath);
+    await navigateTo(newPath, { replace: true });
+    // history.pushState(null, "", newPath);
 });
 watch(rightPlayer, async () => {
     rightPlayerLoading.value = true;
@@ -145,7 +146,8 @@ watch(rightPlayer, async () => {
     const currentQuery = new URLSearchParams(window.location.search);
     currentQuery.set("rightPlayer", rightPlayer.value);
     const newPath = window.location.pathname + "?" + currentQuery.toString();
-    history.pushState(null, "", newPath);
+    await navigateTo(newPath, { replace: true });
+    // history.pushState(null, "", newPath);
 });
 
 async function getComparisonData(
