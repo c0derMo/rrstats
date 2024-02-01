@@ -1,5 +1,5 @@
 <template>
-    <div :class="{ dark: isDarkMode }" class="w-full h-full">
+    <div :class="{ dark: actualIsDarkMode }" class="w-full h-full">
         <div
             class="dark:text-white min-w-screen min-h-screen w-full h-full flex flex-col"
         >
@@ -48,6 +48,11 @@ const isDarkMode = ref(true);
 const lightDarkSwitch = ref(true);
 const showForm = ref(false);
 const initialized = ref(false);
+const route = useRoute();
+
+const actualIsDarkMode = computed(() => {
+    return isDarkMode.value && route.fullPath != "/MrMike"
+});
 
 onMounted(() => {
     lightDarkSwitch.value =
