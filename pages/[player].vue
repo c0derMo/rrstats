@@ -220,4 +220,12 @@ const bestPlacement = computed(() => {
         return "n/a";
     }
 });
+
+useSeoMeta({
+    ogTitle: () => `${route.params.player} - RRStats`,
+    ogDescription: () => `${player.value?.accolade} - ${Math.round(winrate.value*100)}% - ${wtl.value}`,
+    ogImage: () => avatar.value,
+    ogType: "website",
+    twitterCard: "summary",
+});
 </script>
