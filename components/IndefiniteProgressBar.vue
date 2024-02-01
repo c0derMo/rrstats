@@ -1,5 +1,7 @@
 <template>
-    <div class="h-1 w-full bg-neutral-200 dark:bg-neutral-600 overflow-x-hidden">
+    <div
+        class="h-1 w-full bg-neutral-200 dark:bg-neutral-600 overflow-x-hidden"
+    >
         <div class="h-1 bg-red-800 dark:bg-red-700 progressbar"></div>
     </div>
 </template>
@@ -12,13 +14,13 @@
 
 @keyframes endlessLoadingBar {
     0% {
-        transform: translateX(0) scaleX(0)
+        transform: translateX(0) scaleX(0);
     }
     40% {
-        transform: translateX(0) scaleX(0.5)
+        transform: translateX(0) scaleX(0.5);
     }
     100% {
-        transform: translateX(100%) scaleX(1)
+        transform: translateX(100%) scaleX(1);
     }
 }
 </style>

@@ -101,7 +101,10 @@
                     </TabbedContainer>
                 </CardComponent>
                 <CardComponent class="flex-grow overflow-x-visible relative">
-                    <IndefiniteProgressBar v-if="stillLoading" class="mb-2 absolute top-0 left-0"/>
+                    <IndefiniteProgressBar
+                        v-if="stillLoading"
+                        class="mb-2 absolute top-0 left-0"
+                    />
                     <MatchList
                         :matches="player?.matches as IMatch[]"
                         :players="player?.opponents"
@@ -149,8 +152,13 @@ useHead({
 });
 
 const tH = "Time Heatmap";
-const player = ref((await useFetch(`/api/player/?player=${route.params.player}&initialLoad=true`))
-    .data.value);
+const player = ref(
+    (
+        await useFetch(
+            `/api/player/?player=${route.params.player}&initialLoad=true`,
+        )
+    ).data.value,
+);
 const competitions = (await useFetch("/api/competitions/list")).data;
 const avatar = (
     await useFetch(`/api/player/avatar?player=${route.params.player}`)
@@ -235,7 +243,9 @@ useSeoMeta({
 });
 
 onMounted(async () => {
-    const playerRequest = await $fetch(`/api/player/`, { query: { player: route.params.player } })
+    const playerRequest = await $fetch(`/api/player/`, {
+        query: { player: route.params.player },
+    });
 
     player.value = playerRequest;
     stillLoading.value = false;

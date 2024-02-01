@@ -67,9 +67,12 @@ export default class HitmapsIntegration {
 
     static async updateHitmapsTournament(
         hitmapsSlug: string,
-        competitionSlug: string
+        competitionSlug: string,
     ): Promise<void> {
-        if (this.cache[hitmapsSlug] !== undefined && this.promises[hitmapsSlug] === undefined) {
+        if (
+            this.cache[hitmapsSlug] !== undefined &&
+            this.promises[hitmapsSlug] === undefined
+        ) {
             if (Date.now() - this.cache[hitmapsSlug] < 90000) {
                 // Cache is too old
                 return;
@@ -78,7 +81,10 @@ export default class HitmapsIntegration {
 
         if (this.promises[hitmapsSlug] === undefined) {
             this.promises[hitmapsSlug] = new Promise((resolve) => {
-                this._updateHitmapsTournament(hitmapsSlug, competitionSlug).then(() => {
+                this._updateHitmapsTournament(
+                    hitmapsSlug,
+                    competitionSlug,
+                ).then(() => {
                     delete this.promises[hitmapsSlug];
                     resolve();
                 });
@@ -198,11 +204,13 @@ export default class HitmapsIntegration {
         );
 
         const competition = await Competition.findOneBy({
-            tag: tournamentSlug
+            tag: tournamentSlug,
         });
 
         matchesToQuery.sort((a, b) => {
-            return DateTime.fromISO(a.matchScheduledAt).diff(DateTime.fromISO(b.matchScheduledAt)).as('milliseconds');
+            return DateTime.fromISO(a.matchScheduledAt)
+                .diff(DateTime.fromISO(b.matchScheduledAt))
+                .as("milliseconds");
         });
 
         for (const newMatch of matchesToQuery) {
@@ -326,19 +334,22 @@ export default class HitmapsIntegration {
             if (competition?.groupsConfig != null) {
                 let playersGroup: IGroup | null = null;
                 for (const group of competition.groupsConfig.groups) {
-                    if (group.players.includes(match.playerOne) && group.players.includes(match.playerTwo)) {
+                    if (
+                        group.players.includes(match.playerOne) &&
+                        group.players.includes(match.playerTwo)
+                    ) {
                         playersGroup = group;
                     }
                 }
                 if (playersGroup != null) {
-                    const matchCount = await Match.countBy({ 
+                    const matchCount = await Match.countBy({
                         competition: competition.tag,
                         playerOne: match.playerOne,
-                        playerTwo: match.playerTwo
+                        playerTwo: match.playerTwo,
                     });
                     if (matchCount <= 0) {
-                        match.round = playersGroup.groupName
-                    };
+                        match.round = playersGroup.groupName;
+                    }
                 }
             }
 
