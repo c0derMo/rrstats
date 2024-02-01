@@ -100,7 +100,8 @@
                         </template>
                     </TabbedContainer>
                 </CardComponent>
-                <CardComponent class="flex-grow overflow-x-visible">
+                <CardComponent class="flex-grow overflow-x-visible relative">
+                    <IndefiniteProgressBar v-if="stillLoading" class="mb-2 absolute top-0 left-0"/>
                     <MatchList
                         :matches="player?.matches as IMatch[]"
                         :players="player?.opponents"
@@ -148,12 +149,13 @@ useHead({
 });
 
 const tH = "Time Heatmap";
-const player = (await useFetch(`/api/player/?player=${route.params.player}`))
-    .data;
+const player = ref((await useFetch(`/api/player/?player=${route.params.player}&initialLoad=true`))
+    .data.value);
 const competitions = (await useFetch("/api/competitions/list")).data;
 const avatar = (
     await useFetch(`/api/player/avatar?player=${route.params.player}`)
 ).data;
+const stillLoading = ref(true);
 
 const wtl = computed(() => {
     const wtl = calculateWTL(
@@ -230,5 +232,12 @@ useSeoMeta({
     ogImage: () => avatar.value,
     ogType: "website",
     twitterCard: "summary",
+});
+
+onMounted(async () => {
+    const playerRequest = await $fetch(`/api/player/`, { query: { player: route.params.player } })
+
+    player.value = playerRequest;
+    stillLoading.value = false;
 });
 </script>

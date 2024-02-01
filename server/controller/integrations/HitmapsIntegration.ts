@@ -11,6 +11,8 @@ import {
     ChoosingPlayer,
     RRBannedMap,
 } from "~/utils/interfaces/IMatch";
+import { Competition } from "~/server/model/Competition";
+import { IGroup } from "~/utils/interfaces/ICompetition";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -61,18 +63,35 @@ export interface HitmapsMatch {
 
 export default class HitmapsIntegration {
     private static cache: Record<string, number> = {};
+    private static promises: Record<string, Promise<void>> = {};
 
     static async updateHitmapsTournament(
         hitmapsSlug: string,
-        competitionSlug: string,
+        competitionSlug: string
     ): Promise<void> {
-        if (this.cache[hitmapsSlug] !== undefined) {
-            if (Date.now() - this.cache[hitmapsSlug] < 900000) {
+        if (this.cache[hitmapsSlug] !== undefined && this.promises[hitmapsSlug] === undefined) {
+            if (Date.now() - this.cache[hitmapsSlug] < 90000) {
                 // Cache is too old
                 return;
             }
         }
 
+        if (this.promises[hitmapsSlug] === undefined) {
+            this.promises[hitmapsSlug] = new Promise((resolve) => {
+                this._updateHitmapsTournament(hitmapsSlug, competitionSlug).then(() => {
+                    delete this.promises[hitmapsSlug];
+                    resolve();
+                });
+            });
+        }
+
+        return this.promises[hitmapsSlug];
+    }
+
+    static async _updateHitmapsTournament(
+        hitmapsSlug: string,
+        competitionSlug: string,
+    ): Promise<void> {
         const request = await axios.get<{ matches: HitmapsTournamentMatch[] }>(
             `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
         );
@@ -177,6 +196,14 @@ export default class HitmapsIntegration {
         const hitmapsMatches = await this.fetchHitmapsMatches(
             matchesToQuery.map((m) => m.gameModeMatchId),
         );
+
+        const competition = await Competition.findOneBy({
+            tag: tournamentSlug
+        });
+
+        matchesToQuery.sort((a, b) => {
+            return DateTime.fromISO(a.matchScheduledAt).diff(DateTime.fromISO(b.matchScheduledAt)).as('milliseconds');
+        });
 
         for (const newMatch of matchesToQuery) {
             const fullMatch = hitmapsMatches.find(
@@ -293,6 +320,25 @@ export default class HitmapsIntegration {
                     match.round = `LB Round ${-newMatch.round}`;
                 } else {
                     match.round = `Round ${newMatch.round}`;
+                }
+            }
+
+            if (competition?.groupsConfig != null) {
+                let playersGroup: IGroup | null = null;
+                for (const group of competition.groupsConfig.groups) {
+                    if (group.players.includes(match.playerOne) && group.players.includes(match.playerTwo)) {
+                        playersGroup = group;
+                    }
+                }
+                if (playersGroup != null) {
+                    const matchCount = await Match.countBy({ 
+                        competition: competition.tag,
+                        playerOne: match.playerOne,
+                        playerTwo: match.playerTwo
+                    });
+                    if (matchCount <= 0) {
+                        match.round = playersGroup.groupName
+                    };
                 }
             }
 

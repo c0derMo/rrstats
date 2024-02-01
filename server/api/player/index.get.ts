@@ -13,15 +13,20 @@ export default defineEventHandler(async (event) => {
         playerName = "";
     }
 
+    const initialLoad = query.initialLoad != null;
+
     const competitionsToUpdate = await Competition.find({
         where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) },
         select: ["hitmapsSlug", "tag"],
     });
     for (const competitionToUpdate of competitionsToUpdate) {
-        await HitmapsIntegration.updateHitmapsTournament(
+        const updateRequest = HitmapsIntegration.updateHitmapsTournament(
             competitionToUpdate.hitmapsSlug!,
             competitionToUpdate.tag,
         );
+        if (!initialLoad) {
+            await updateRequest;
+        }
     }
 
     const player = await Player.findOneBy({ primaryName: playerName });
