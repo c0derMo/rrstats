@@ -15,8 +15,16 @@ const props = defineProps({
     },
 });
 
-const chosenMapIndex = Math.floor(props.maps.length * Math.random());
-const chosenMap = props.maps[chosenMapIndex];
+const mapSelection = computed(() => {
+    if (props.maps.length <= 0) {
+        return getAllMaps();
+    } else {
+        return props.maps;
+    }
+});
+
+const chosenMapIndex = Math.floor(mapSelection.value.length * Math.random());
+const chosenMap = mapSelection.value[chosenMapIndex];
 const chosenBackground = getMap(chosenMap)!.backgroundImage;
 const bgStyle = computed(() => {
     return `background-image: url(${chosenBackground})`;
