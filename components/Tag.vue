@@ -1,11 +1,11 @@
 <template>
-    <span
-        class="rounded-full px-3 py-1 whitespace-nowrap"
+    <div
+        class="rounded-full px-3 py-1 whitespace-nowrap inline-block"
         :class="{ border: borderColor != '' }"
         :style="colorStyle"
     >
         <slot />
-    </span>
+    </div>
 </template>
 
 <script setup lang="ts">

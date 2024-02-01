@@ -57,17 +57,17 @@ const timeslots = [
 ];
 
 const colorMap = {
-    0: "bg-gray-900 text-white dark:text-white",
-    1: "bg-blue-950 text-white dark:text-white",
-    2: "bg-blue-900 text-white dark:text-white",
-    3: "bg-blue-800 text-white dark:text-white",
-    4: "bg-blue-700 text-white dark:text-white",
-    5: "bg-blue-600 text-white dark:text-white",
-    6: "bg-blue-500 text-white dark:text-white",
-    7: "bg-blue-400 text-black dark:text-black",
-    8: "bg-blue-300 text-black dark:text-black",
-    9: "bg-blue-200 text-black dark:text-black",
-    10: "bg-blue-100 text-black dark:text-black",
+    0: "dark:bg-gray-900 bg-gray-100 text-black dark:text-white",
+    1: "dark:bg-blue-950 bg-blue-100 text-black dark:text-white",
+    2: "dark:bg-blue-900 bg-blue-200 text-black dark:text-white",
+    3: "dark:bg-blue-800 bg-blue-300 text-black dark:text-white",
+    4: "dark:bg-blue-700 bg-blue-400 text-white dark:text-white",
+    5: "dark:bg-blue-600 bg-blue-500 text-white dark:text-white",
+    6: "dark:bg-blue-500 bg-blue-600 text-white dark:text-white",
+    7: "dark:bg-blue-400 bg-blue-700 text-white dark:text-black",
+    8: "dark:bg-blue-300 bg-blue-800 text-white dark:text-black",
+    9: "dark:bg-blue-200 bg-blue-900 text-white dark:text-black",
+    10: "dark:bg-blue-100 bg-blue-950 text-white dark:text-black",
 } as Record<number, string>;
 
 const props = defineProps({

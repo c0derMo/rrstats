@@ -1,75 +1,77 @@
 <template>
-    <DoubleEndedSlider
-        v-model:minValue="selectedMinComp"
-        v-model:maxValue="selectedMaxComp"
-        class="w-full mb-2"
-        :max="competitions.length - 1"
-    />
+    <div>
+        <DoubleEndedSlider
+            v-model:minValue="selectedMinComp"
+            v-model:maxValue="selectedMaxComp"
+            class="w-full mb-2"
+            :max="competitions.length - 1"
+        />
 
-    <div class="flex flex-row w-full">
-        <div class="flex-grow">
-            <DropdownComponent
-                v-model="selectedMinComp"
-                :items="dropdownCompetitions"
-            />
+        <div class="flex flex-row w-full">
+            <div class="flex-grow">
+                <DropdownComponent
+                    v-model="selectedMinComp"
+                    :items="dropdownCompetitions"
+                />
+            </div>
+            <div class="flex-grow mr-3">
+                <SwitchComponent
+                    id="only-rr"
+                    v-model="regularRROnly"
+                    label="Only regular RRs:"
+                    class="float-right"
+                />
+            </div>
+            <div class="flex-grow ml-3">
+                <SwitchComponent
+                    id="only-rrwc"
+                    v-model="rrwcOnly"
+                    label="Only RRWCs:"
+                    class="float-left"
+                />
+            </div>
+            <div class="flex-grow">
+                <DropdownComponent
+                    v-model="selectedMaxComp"
+                    :items="dropdownCompetitions"
+                    class="float-right"
+                />
+            </div>
         </div>
-        <div class="flex-grow mr-3">
-            <SwitchComponent
-                id="only-rr"
-                v-model="regularRROnly"
-                label="Only regular RRs:"
-                class="float-right"
-            />
-        </div>
-        <div class="flex-grow ml-3">
-            <SwitchComponent
-                id="only-rrwc"
-                v-model="rrwcOnly"
-                label="Only RRWCs:"
-                class="float-left"
-            />
-        </div>
-        <div class="flex-grow">
-            <DropdownComponent
-                v-model="selectedMaxComp"
-                :items="dropdownCompetitions"
-                class="float-right"
-            />
-        </div>
-    </div>
 
-    <div class="flex md:flex-row flex-col gap-5">
-        <div class="flex-grow">
-            <DataTableComponent
-                v-model:itemsPerPage="selectedMapsPerPage"
-                :headers="pickedHeaders"
-                :rows="pickedRows"
-                :always-sort="true"
-                :rows-per-page="[10, 20]"
-                default-sorting-key="Picked"
-            />
-        </div>
-        <div class="flex-grow">
-            <DataTableComponent
-                v-model:itemsPerPage="selectedMapsPerPage"
-                :headers="winrateHeaders"
-                :rows="winrateRows"
-                :always-sort="true"
-                :rows-per-page="[10, 20]"
-                default-sorting-key="Winrate"
-            >
-                <template #Winrate="{ value }"> {{ value }}% </template>
-            </DataTableComponent>
-        </div>
-        <div class="flex-grow">
-            <DataTableComponent
-                v-model:itemsPerPage="selectedMapsPerPage"
-                :headers="bannedHeaders"
-                :rows="bannedRows"
-                :always-sort="true"
-                :rows-per-page="[10, 20]"
-                default-sorting-key="Banned"
-            />
+        <div class="flex lg:flex-row flex-col gap-5">
+            <div class="flex-grow">
+                <DataTableComponent
+                    v-model:itemsPerPage="selectedMapsPerPage"
+                    :headers="pickedHeaders"
+                    :rows="pickedRows"
+                    :always-sort="true"
+                    :rows-per-page="[10, 20]"
+                    default-sorting-key="Picked"
+                />
+            </div>
+            <div class="flex-grow">
+                <DataTableComponent
+                    v-model:itemsPerPage="selectedMapsPerPage"
+                    :headers="winrateHeaders"
+                    :rows="winrateRows"
+                    :always-sort="true"
+                    :rows-per-page="[10, 20]"
+                    default-sorting-key="Winrate"
+                >
+                    <template #Winrate="{ value }"> {{ value }}% </template>
+                </DataTableComponent>
+            </div>
+            <div class="flex-grow">
+                <DataTableComponent
+                    v-model:itemsPerPage="selectedMapsPerPage"
+                    :headers="bannedHeaders"
+                    :rows="bannedRows"
+                    :always-sort="true"
+                    :rows-per-page="[10, 20]"
+                    default-sorting-key="Banned"
+                />
+            </div>
         </div>
     </div>
 </template>

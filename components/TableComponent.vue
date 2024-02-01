@@ -1,6 +1,6 @@
 <template>
     <table class="min-w-full text-left">
-        <thead class="border-b dark:border-neutral-500">
+        <thead class="border-b dark:border-neutral-500 border-neutral-300">
             <tr>
                 <th
                     v-for="header of convertedHeaders"
@@ -17,7 +17,7 @@
             <tr
                 v-for="(row, idx) of rows"
                 :key="idx"
-                class="border-b dark:border-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
+                class="border-b dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
             >
                 <td
                     v-for="header of convertedHeaders"

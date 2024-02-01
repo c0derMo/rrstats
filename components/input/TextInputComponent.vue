@@ -37,14 +37,14 @@
             class="absolute flex w-full h-full top-0 left-0 pointer-events-none"
         >
             <div
-                class="h-full w-3 inline-block border rounded-l border-r-0 dark:border-neutral-500"
+                class="h-full w-3 inline-block border rounded-l border-r-0 border-neutral-500"
                 :class="{
                     '!border-blue-700': isFocused,
                     '!border-red-600': error,
                 }"
             ></div>
             <div
-                class="h-full w-fit inline-block border border-l-0 border-r-0 text-transparent text-xs dark:border-neutral-500"
+                class="h-full w-fit inline-block border border-l-0 border-r-0 text-transparent text-xs border-neutral-500"
                 :class="{
                     '!border-blue-700': isFocused,
                     'border-t-0': nonEmptyOrFocussed,
@@ -54,7 +54,7 @@
                 {{ placeholder }}
             </div>
             <div
-                class="h-full grow inline-block border border-l-0 rounded-r dark:border-neutral-500"
+                class="h-full grow inline-block border border-l-0 rounded-r border-neutral-500"
                 :class="{
                     '!border-blue-700': isFocused,
                     '!border-red-600': error,

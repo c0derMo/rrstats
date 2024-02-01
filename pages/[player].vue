@@ -3,7 +3,7 @@
         <MapBackground :maps="pickedMaps" />
         <div class="flex flex-col gap-5 mt-5 mx-10">
             <div class="flex flex-row gap-5 justify-center">
-                <CardComponent class="md:w-3/5">
+                <CardComponent class="lg:w-3/5">
                     <div class="flex md:flex-row flex-col">
                         <img
                             class="rounded-full w-20 h-20 self-center"
@@ -77,8 +77,8 @@
                 </div>
             </CardComponent>
 
-            <div class="flex md:flex-row gap-5 flex-col">
-                <CardComponent class="md:w-1/4">
+            <div class="flex 2xl:flex-row gap-5 flex-col-reverse">
+                <CardComponent class="2xl:w-fit w-full">
                     <TabbedContainer
                         :tabs="['Competitions', 'Opponents', 'Records']"
                     >
@@ -113,7 +113,7 @@
                 </CardComponent>
             </div>
 
-            <CardComponent class="!overflow-visible">
+            <CardComponent class="!overflow-visible max-h-max">
                 <TabbedContainer :tabs="['Maps', 'Time Heatmap']">
                     <template #Maps>
                         <PlayerMapList
