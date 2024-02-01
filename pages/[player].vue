@@ -223,7 +223,10 @@ const bestPlacement = computed(() => {
 
 useSeoMeta({
     ogTitle: () => `${route.params.player} - RRStats`,
-    ogDescription: () => `${player.value?.accolade} - ${Math.round(winrate.value*100)}% - ${wtl.value}`,
+    ogDescription: () =>
+        `${player.value?.accolade} - ${Math.round(winrate.value * 100)}% - ${
+            wtl.value
+        }`,
     ogImage: () => avatar.value,
     ogType: "website",
     twitterCard: "summary",

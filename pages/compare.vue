@@ -137,7 +137,6 @@ watch(leftPlayer, async () => {
     currentQuery.set("leftPlayer", leftPlayer.value);
     const newPath = window.location.pathname + "?" + currentQuery.toString();
     await navigateTo(newPath, { replace: true });
-    // history.pushState(null, "", newPath);
 });
 watch(rightPlayer, async () => {
     rightPlayerLoading.value = true;
@@ -147,7 +146,6 @@ watch(rightPlayer, async () => {
     currentQuery.set("rightPlayer", rightPlayer.value);
     const newPath = window.location.pathname + "?" + currentQuery.toString();
     await navigateTo(newPath, { replace: true });
-    // history.pushState(null, "", newPath);
 });
 
 async function getComparisonData(
