@@ -6,6 +6,7 @@ import {
 } from "../DatabaseCheckController";
 import { Match } from "~/server/model/Match";
 import { WinningPlayer } from "~/utils/interfaces/IMatch";
+import { In, Not } from "typeorm";
 
 export class InvalidScores implements DatabaseCheck {
     info: CheckInfo = {
@@ -14,7 +15,7 @@ export class InvalidScores implements DatabaseCheck {
         description: "Checks for invalid scores, map- & match winners",
     };
 
-    async execute(): Promise<CheckResult> {
+    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
         const players = await Player.find({
             select: ["uuid", "primaryName"],
         });
@@ -23,7 +24,9 @@ export class InvalidScores implements DatabaseCheck {
             uuidsToPlayers[player.uuid] = player.primaryName;
         }
 
-        const matches = await Match.find();
+        const matches = await Match.find({
+            where: { competition: Not(In(ignoredCompetitions)) },
+        });
         const issues: string[] = [];
         const errors: string[] = [];
         for (const match of matches) {

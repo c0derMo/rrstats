@@ -2,7 +2,7 @@ import { AuthController } from "~/server/controller/AuthController";
 import DatabaseCheckController from "~/server/controller/DatabaseCheckController";
 
 export default defineEventHandler(async (event) => {
-    const checks = await readBody(event);
+    const body = await readBody(event);
 
     if (!(await AuthController.isAuthenticated(event.context.session.user))) {
         throw createError({
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    if (checks == null || !Array.isArray(checks)) {
+    if (body.checks == null || !Array.isArray(body.checks)) {
         throw createError({
             statusCode: 400,
             statusMessage: "body must contain checks array",
@@ -18,7 +18,10 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        return await DatabaseCheckController.runChecks(checks as string[]);
+        return await DatabaseCheckController.runChecks(
+            body.checks as string[],
+            (body.ignoredCompetitions as string[]) ?? [],
+        );
     } catch (e) {
         console.log(e);
         return [

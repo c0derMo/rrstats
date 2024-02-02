@@ -15,7 +15,7 @@ export class MissingPlacements implements DatabaseCheck {
             "Checks for players that have matches in a tournament, but no assigned placement",
     };
 
-    async execute(): Promise<CheckResult> {
+    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
         const players = await Player.find({
             select: ["uuid", "primaryName"],
         });
@@ -27,12 +27,20 @@ export class MissingPlacements implements DatabaseCheck {
         const issues: string[] = [];
 
         for (const player of players) {
-            const playedComps = await Match.createQueryBuilder("match")
+            const playedCompsRaw = await Match.createQueryBuilder("match")
                 .distinct(true)
                 .select("match.competition")
-                .where("match.playerOne = :player", { player: player.uuid })
-                .orWhere("match.playerTwo = :player", { player: player.uuid })
+                .where((qb) => {
+                    qb.where("match.playerOne = :player", {
+                        player: player.uuid,
+                    }).orWhere("match.playerTwo = :player", {
+                        player: player.uuid,
+                    });
+                })
                 .getMany();
+            const playedComps = new Set(
+                playedCompsRaw.map((comp) => comp.competition),
+            );
             const placements = (
                 await CompetitionPlacement.find({
                     select: ["competition"],
@@ -41,9 +49,12 @@ export class MissingPlacements implements DatabaseCheck {
             ).map((placement) => placement.competition);
 
             for (const competition of playedComps) {
-                if (!placements.includes(competition.competition)) {
+                if (ignoredCompetitions.includes(competition)) {
+                    continue;
+                }
+                if (!placements.includes(competition)) {
                     issues.push(
-                        `Player ${player.primaryName} is missing placement for competition ${competition.competition}`,
+                        `Player ${player.primaryName} is missing placement for competition ${competition}`,
                     );
                 }
             }

@@ -15,7 +15,20 @@
             </div>
         </div>
 
-        <ButtonComponent @click="$emit('confirm', selectedChecks)"
+        <TextInputComponent
+            v-model="ignoredCompetitions"
+            class="w-full mb-2"
+            placeholder="Ignored competitions (comma seperated)"
+        />
+
+        <ButtonComponent
+            @click="
+                $emit(
+                    'confirm',
+                    selectedChecks,
+                    ignoredCompetitions.split(',').map((c) => c.trim()),
+                )
+            "
             >Run checks</ButtonComponent
         >
     </CardComponent>
@@ -31,6 +44,7 @@ defineProps({
 });
 
 const selectedChecks: Ref<string[]> = ref([]);
+const ignoredCompetitions = ref("RR1");
 
 function toggleCheck(checkId: string, value: boolean) {
     if (value) {

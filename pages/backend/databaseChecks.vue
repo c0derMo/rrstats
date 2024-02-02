@@ -42,14 +42,14 @@ async function loadChecks() {
     checks.value = checkQuery.data.value;
 }
 
-async function runChecks(checks: string[]) {
+async function runChecks(checks: string[], ignoredCompetitions: string[]) {
     if (checks.length === 0) {
         return;
     }
     isLoading.value = true;
     const checkQuery = await useFetch("/api/procedures/databaseChecks", {
         method: "POST",
-        body: checks,
+        body: { checks, ignoredCompetitions },
     });
 
     if (

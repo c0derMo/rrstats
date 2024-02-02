@@ -5,7 +5,7 @@ import {
     DatabaseCheck,
 } from "../DatabaseCheckController";
 import { Player } from "~/server/model/Player";
-import { In } from "typeorm";
+import { In, Not } from "typeorm";
 
 export class MissingPlayers implements DatabaseCheck {
     info: CheckInfo = {
@@ -15,9 +15,10 @@ export class MissingPlayers implements DatabaseCheck {
             "Checks for matches that have players without Player-object",
     };
 
-    async execute(): Promise<CheckResult> {
+    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
         const allMatches = await Match.find({
             select: ["uuid", "playerOne", "playerTwo", "competition", "round"],
+            where: { competition: Not(In(ignoredCompetitions)) },
         });
         const allPlayers = allMatches
             .map((m) => m.playerOne)
