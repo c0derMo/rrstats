@@ -51,7 +51,7 @@ const initialized = ref(false);
 const route = useRoute();
 
 const actualIsDarkMode = computed(() => {
-    return isDarkMode.value && route.fullPath != "/MrMike"
+    return isDarkMode.value && route.fullPath != "/MrMike";
 });
 
 onMounted(() => {

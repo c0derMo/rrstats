@@ -24,4 +24,26 @@ export class AuthController {
 
         return user.permissions.includes(permission);
     }
+
+    static async isValidAPIKey(
+        apiKey?: string,
+        permission?: IPermission,
+    ): Promise<boolean> {
+        if (apiKey == null) {
+            return false;
+        }
+
+        const key = await User.findOneBy({
+            authorizationKey: apiKey,
+            isAPIKey: true,
+        });
+        if (key == null) {
+            return false;
+        }
+
+        if (permission == null) {
+            return true;
+        }
+        return key.permissions.includes(permission);
+    }
 }
