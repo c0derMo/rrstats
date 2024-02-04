@@ -99,6 +99,7 @@ const matchesToShow = computed(() => {
         if (playerLookupTable.value[match.playerTwo].includes(search.value))
             return true;
         if (match.round.includes(search.value)) return true;
+        if (match.uuid.includes(search.value)) return true;
 
         return false;
     });

@@ -14,7 +14,7 @@ export default defineNitroPlugin((nitroApp) => {
 
     const db = new DataSource({
         type: "sqlite",
-        database: "dev.db",
+        database: useRuntimeConfig().database,
         entities: [
             Match,
             Player,

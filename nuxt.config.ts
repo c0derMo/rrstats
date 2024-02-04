@@ -13,6 +13,7 @@ export default defineNuxtConfig({
         twitterAccessToken: "",
         twitterTokenSecret: "",
         publicOrigin: "http://localhost:3000",
+        database: "rrstats.db",
     },
     nitro: {
         plugins: ["~/server/index.ts"],
