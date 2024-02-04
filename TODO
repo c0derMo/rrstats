@@ -1,0 +1,11 @@
+- Record page breaks if no match assigned
+- Record editor "breaks" if match already selected
+- Record editor match dropdown dropping too low
+- Fix opponents table
+
+24s368ms: Remaining steps:
+24s368ms:  - Manually update competition start dates, background images, group configs, hitmaps slugs
+24s368ms:  - Manually update record timestamps
+24s368ms:  - Manually update generic record maps [DONE]
+24s368ms:  - Eventually add old records
+24s368ms:  - Change user auth keys to discord IDs
