@@ -1,7 +1,7 @@
 <template>
     <div>
         <MapBackground :maps="pickedMaps" />
-        <div class="flex flex-col gap-5 mt-5 mx-10">
+        <div class="flex flex-col gap-5 mt-5 lg:mx-10 mx-1">
             <div class="flex flex-row gap-5 justify-center">
                 <CardComponent class="lg:w-3/5">
                     <div class="flex md:flex-row flex-col">

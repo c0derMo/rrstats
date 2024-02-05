@@ -13,59 +13,108 @@
             placeholder="Search"
         />
     </div>
-    <DataTableComponent
-        :headers="headers"
-        :rows="filteredSortedMatches"
-        :enable-sorting="false"
-    >
-        <template #round="{ value, row }">
-            <TooltipComponent>
-                {{ value }}
 
-                <template #tooltip>
-                    {{
-                        DateTime.fromMillis(row.timestamp)
-                            .setLocale(useLocale().value)
-                            .toLocaleString(DateTime.DATETIME_FULL)
-                    }}
-                </template>
-            </TooltipComponent>
-        </template>
+    <!-- Mobile table -->
+    <div class="lg:hidden">
+        <DataTableComponent
+            :headers="mobileHeaders"
+            :rows="filteredSortedMatches"
+            :enable-sorting="false"
+        >
+            <template #competition="{ row }">
+                <TooltipComponent>
+                    {{ row.competition }}<br />
+                    {{ row.round }}
 
-        <template #playerOne="{ value }">
-            {{ players[value as string] || `Unknown player (${value})` }}
-        </template>
+                    <template #tooltip>
+                        {{
+                            DateTime.fromMillis(row.timestamp)
+                                .setLocale(useLocale().value)
+                                .toLocaleString(DateTime.DATETIME_FULL)
+                        }}
+                    </template>
+                </TooltipComponent>
+            </template>
+            
+            <template #score="{ row }">
+                {{ row.playerOneScore }}<br />
+                -<br />
+                {{ row.playerTwoScore }}<br />
+            </template>
 
-        <template #playerTwo="{ value }">
-            {{ players[value as string] || `Unknown player (${value})` }}
-        </template>
-
-        <template #score="{ row }">
-            <Tag :color="getMatchColor(row)">
-                {{ row.playerOneScore }} - {{ row.playerTwoScore }}
-            </Tag>
-        </template>
-
-        <template #playedMaps="{ value, row }">
-            <TooltipComponent v-for="(map, idx) of value" :key="idx">
-                <Tag :color="getMapColor(map, row)" class="ml-2">
+            <template #players="{ row }">
+                {{ row.playerOneScore }} - {{ players[row.playerOne] || `Unknown player (${row.playerOne})` }}<br />
+                vs<br />
+                {{ row.playerTwoScore }} - {{ players[row.playerTwo] || `Unknown player (${row.playerTwo})` }}<br />
+                <Tag v-for="(map, idx) of row.playedMaps" :key="idx" :color="getMapColor(map, row)">
                     {{ getMap((map as RRMap).map)?.abbreviation }}
                 </Tag>
+            </template>
 
-                <template #tooltip>
-                    Map: {{ getMap((map as RRMap).map)?.name }}<br />
-                    Picked by: {{ getMapPicker(map, row) }}<br />
-                    Won by: {{ getMapWinner(map, row) }}
-                </template>
-            </TooltipComponent>
-        </template>
+            <template #more="{ row }">
+                <ButtonComponent @click="matchToShow = row">
+                    <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
+                </ButtonComponent>
+            </template>
+        </DataTableComponent>
+    </div>
 
-        <template #more="{ row }">
-            <ButtonComponent @click="matchToShow = row">
-                <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
-            </ButtonComponent>
-        </template>
-    </DataTableComponent>
+    <!-- Full screen table -->
+    <div class="hidden lg:block">
+        <DataTableComponent
+            :headers="headers"
+            :rows="filteredSortedMatches"
+            :enable-sorting="false"
+        >
+            <template #round="{ value, row }">
+                <TooltipComponent>
+                    {{ value }}
+    
+                    <template #tooltip>
+                        {{
+                            DateTime.fromMillis(row.timestamp)
+                                .setLocale(useLocale().value)
+                                .toLocaleString(DateTime.DATETIME_FULL)
+                        }}
+                    </template>
+                </TooltipComponent>
+            </template>
+    
+            <template #playerOne="{ value }">
+                {{ players[value as string] || `Unknown player (${value})` }}
+            </template>
+    
+            <template #playerTwo="{ value }">
+                {{ players[value as string] || `Unknown player (${value})` }}
+            </template>
+    
+            <template #score="{ row }">
+                <Tag :color="getMatchColor(row)">
+                    {{ row.playerOneScore }} - {{ row.playerTwoScore }}
+                </Tag>
+            </template>
+    
+            <template #playedMaps="{ value, row }">
+                <TooltipComponent v-for="(map, idx) of value" :key="idx">
+                    <Tag :color="getMapColor(map, row)" class="ml-2">
+                        {{ getMap((map as RRMap).map)?.abbreviation }}
+                    </Tag>
+    
+                    <template #tooltip>
+                        Map: {{ getMap((map as RRMap).map)?.name }}<br />
+                        Picked by: {{ getMapPicker(map, row) }}<br />
+                        Won by: {{ getMapWinner(map, row) }}
+                    </template>
+                </TooltipComponent>
+            </template>
+    
+            <template #more="{ row }">
+                <ButtonComponent @click="matchToShow = row">
+                    <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
+                </ButtonComponent>
+            </template>
+        </DataTableComponent>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -85,6 +134,12 @@ const headers = [
     { title: "Score", key: "score" },
     { title: "Player 2", key: "playerTwo" },
     { title: "Maps", key: "playedMaps" },
+    { title: "", key: "more" },
+];
+
+const mobileHeaders = [
+    { title: "Competition", key: "competition" },
+    { title: "Players", key: "players" },
     { title: "", key: "more" },
 ];
 

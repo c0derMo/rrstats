@@ -1,11 +1,11 @@
 <template>
     <DialogComponent>
-        <CardComponent>
+        <CardComponent class="max-h-screen">
             <h1 class="text-3xl text-center">
                 <Tag :color="getPlayerColor(1)">
                     {{ opponents[match.playerOne] }}
                 </Tag>
-                <span class="mx-10"
+                <span class="md:mx-10 mx-1 text-xl md:text-3xl"
                     >{{ match.playerOneScore }} -
                     {{ match.playerTwoScore }}</span
                 >
@@ -88,6 +88,7 @@
                     </span>
                 </div>
             </div>
+            <ButtonComponent @click="$emit('clickOutside')">Close</ButtonComponent>
         </CardComponent>
     </DialogComponent>
 </template>
@@ -99,6 +100,8 @@ import {
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 import { DateTime, Duration } from "luxon";
+
+defineEmits(['clickOutside']);
 
 const props = defineProps({
     match: {

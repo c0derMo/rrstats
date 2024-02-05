@@ -47,19 +47,18 @@
     </TableComponent>
 
     <div
-        class="flex flex-row mt-3 space-x-1 justify-end px-3 h-fit items-center"
+        class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center"
     >
-        <span>Rows per page:</span>
+        <span class="md:text-base text-sm">Rows per page:</span>
         <DropdownComponent
             v-model="selectedRowsPerPage"
             :items="selectableRowsPerPage"
         ></DropdownComponent>
-        <div class="w-3"></div>
-        <span
-            >{{ startIndex + 1 }} - {{ endIndex }} of
-            {{ props.rows.length }}</span
-        >
-        <div class="w-3"></div>
+        <div class="md:w-3"></div>
+        <span class="md:text-base text-sm">
+            {{ startIndex + 1 }} - {{ endIndex }} of {{ props.rows.length }}
+        </span>
+        <div class="md:w-3"></div>
         <ButtonComponent @click="previousPage">&lt;</ButtonComponent>
         <ButtonComponent @click="nextPage">&gt;</ButtonComponent>
     </div>

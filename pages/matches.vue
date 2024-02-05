@@ -12,7 +12,7 @@
             ]"
         />
 
-        <div class="flex flex-col gap-3 mx-10">
+        <div class="flex flex-col gap-3 md:mx-10">
             <h1 class="text-center text-5xl bold">
                 {{ competition?.name }} - Matches
             </h1>

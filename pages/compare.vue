@@ -2,7 +2,7 @@
     <div>
         <MapBackground />
 
-        <div class="grid grid-cols-2 gap-5 mx-10 my-5">
+        <div class="grid grid-cols-2 gap-y-5 gap-x-1 md:gap-x-5 md:mx-10 my-5">
             <AutocompleteComponent
                 :suggestions="players ?? []"
                 placeholder="Left player"
@@ -71,6 +71,7 @@
 
             <MapComparison
                 v-if="leftPlayerObject !== null"
+                class="col-span-2 md:col-span-1"
                 :maps="comparingMaps"
                 :player="leftPlayerObject.player.uuid"
                 :player-matches="leftPlayerObject.matches"
@@ -80,6 +81,7 @@
 
             <MapComparison
                 v-if="rightPlayerObject !== null"
+                class="col-span-2 md:col-span-1"
                 :maps="comparingMaps"
                 :player="rightPlayerObject.player.uuid"
                 :player-matches="rightPlayerObject.matches"

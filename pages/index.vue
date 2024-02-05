@@ -35,7 +35,7 @@
                 class="overflow-x-visible mt-8 mb-2"
                 :bg-opacity="80"
             >
-                <div class="flex flex-row gap-5">
+                <div class="flex md:flex-row flex-col-reverse gap-5">
                     <ButtonComponent
                         class="border-0 text-blue-500"
                         :disable-hover="true"
@@ -60,7 +60,7 @@
                 </div>
                 <AutocompleteComponent
                     placeholder="Player"
-                    class="w-[600px] text-lg mt-3"
+                    class="w-full xl:w-[600px] text-lg mt-3"
                     :suggestions="players || []"
                     @confirm="(p) => navigateTo(`/${p}`)"
                 />

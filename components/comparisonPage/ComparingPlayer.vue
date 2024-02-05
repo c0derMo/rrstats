@@ -1,12 +1,12 @@
 <template>
     <CardComponent>
         <div
-            class="flex"
-            :class="{ 'flex-row': !reverse, 'flex-row-reverse': reverse }"
+            class="flex flex-col"
+            :class="{ 'xl:flex-row': !reverse, 'xl:flex-row-reverse': reverse }"
         >
             <div
-                class="flex-grow flex"
-                :class="{ 'flex-row': !reverse, 'flex-row-reverse': reverse }"
+                class="flex-grow flex flex-col"
+                :class="{ 'md:flex-row': !reverse, 'md:flex-row-reverse': reverse }"
             >
                 <img
                     class="rounded-full w-20 h-20"

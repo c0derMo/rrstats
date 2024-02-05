@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-3 mx-10">
+    <div class="flex flex-col gap-3 md:mx-10">
         <h1 class="text-center text-5xl bold">Roulette Rivals Records</h1>
 
         <div class="italic text-center">

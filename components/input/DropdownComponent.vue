@@ -12,19 +12,21 @@
             :class="buttonClass"
             @click="showDropdown = !showDropdown"
         >
-            {{
-                buttonText ??
-                (convertedItems.find((i) => i.value === modelValue)?.text ||
-                    modelValue)
-            }}
-            <FontAwesomeIcon
-                v-if="buttonText === null"
-                :icon="['fas', 'chevron-down']"
-                :class="{
-                    'rotate-180': showDropdown,
-                }"
-                class="transition float-right ml-2 mt-1"
-            />
+            <div class="text-nowrap">
+                {{
+                    buttonText ??
+                    (convertedItems.find((i) => i.value === modelValue)?.text ||
+                        modelValue)
+                }}
+                <FontAwesomeIcon
+                    v-if="buttonText === null"
+                    :icon="['fas', 'chevron-down']"
+                    :class="{
+                        'rotate-180': showDropdown,
+                    }"
+                    class="transition float-right ml-2 mt-1"
+                />
+            </div>
         </ButtonComponent>
         <div class="relative">
             <div

@@ -22,7 +22,7 @@
                 <td
                     v-for="header of convertedHeaders"
                     :key="header.key"
-                    class="px-6 py-2"
+                    class="md:px-6 px-2 py-2"
                 >
                     <slot
                         :name="header.key"
