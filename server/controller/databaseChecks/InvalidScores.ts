@@ -32,8 +32,8 @@ export class InvalidScores implements DatabaseCheck {
         for (const match of matches) {
             // Checking for abnormal total scores
             const totalScore = match.playerOneScore + match.playerTwoScore;
-            if (totalScore !== 1) continue;
-            
+            if (totalScore === 1) continue;
+
             if (totalScore % 2 !== 0) {
                 issues.push(
                     `Match ${this.formatMatch(

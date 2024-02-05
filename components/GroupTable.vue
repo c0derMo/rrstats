@@ -85,12 +85,12 @@ const sortedPlayers = computed(() => {
     if (props.positionOverrides !== undefined) {
         for (let i = 0; i < preSort.length; i++) {
             if (
-                props.positionOverrides[i + 1] !== undefined &&
-                preSort[i].name !== props.positionOverrides[i + 1]
+                props.positionOverrides[i] !== undefined &&
+                preSort[i].name !== props.positionOverrides[i]
             ) {
                 let tmp = preSort[i];
                 for (let j = 1; j < preSort.length - i; j++) {
-                    if (tmp.name === props.positionOverrides[i + 1]) {
+                    if (tmp.name === props.positionOverrides[i]) {
                         break;
                     }
                     const tmp2 = preSort[i + j];

@@ -32,7 +32,7 @@ const input = computed({
             return undefined;
         }
         return DateTime.fromMillis(props.modelValue).toFormat(
-            "yyyy-MM-dd'T'hh:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss",
         );
     },
     set(newValue) {
