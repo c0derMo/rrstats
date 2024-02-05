@@ -17,7 +17,7 @@ function filterPlacements(
                 `bestPlacement called with missing competition for placement for ${p.competition}`,
             );
         }
-        return p.placement !== undefined && competition.officialCompetition;
+        return p.placement != null && competition.officialCompetition;
     });
 }
 

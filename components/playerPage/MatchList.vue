@@ -121,7 +121,7 @@ const filteredSortedMatches = computed(() => {
                 ...m.playedMaps.map((map) => getMap(map.map)!.abbreviation),
             ];
 
-            return searchableValues.some((s) => s.includes(searchFilter.value));
+            return searchableValues.some((s) => s.toLowerCase().includes(searchFilter.value.toLowerCase()));
         })
         .sort((a, b) => b.timestamp - a.timestamp);
 });

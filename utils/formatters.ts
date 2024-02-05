@@ -10,7 +10,7 @@ export function formatPlacement(placement?: number): string {
     if (placement % 10 === 2) {
         return `${placement}nd`;
     }
-    if (placement % 10 === 2) {
+    if (placement % 10 === 3) {
         return `${placement}rd`;
     }
     return `${placement}th`;

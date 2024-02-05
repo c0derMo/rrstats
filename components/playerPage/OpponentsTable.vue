@@ -63,9 +63,9 @@ const rows = computed(() => {
         ) {
             opponents[opponent].w += 1;
         } else if (match.playerOneScore === match.playerTwoScore) {
-            opponents[opponent].t = 1;
+            opponents[opponent].t += 1;
         } else {
-            opponents[opponent].l = 1;
+            opponents[opponent].l += 1;
         }
     }
 
