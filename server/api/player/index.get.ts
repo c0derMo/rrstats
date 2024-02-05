@@ -3,6 +3,8 @@ import { Player } from "../../model/Player";
 import { In, IsNull, Not } from "typeorm";
 import HitmapsIntegration from "../../controller/integrations/HitmapsIntegration";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
+import { ICompetition } from "~/utils/interfaces/ICompetition";
+import MapperService from "~/server/controller/MapperService";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
@@ -33,7 +35,7 @@ export default defineEventHandler(async (event) => {
     let matches: Match[] = [];
     const opponents: Record<string, string> = {};
     let placements: CompetitionPlacement[] = [];
-    const competitions: Record<string, string> = {};
+    let competitions: Record<string, ICompetition> = {};
     if (player != null) {
         matches = await Match.find({
             where: [{ playerOne: player.uuid }, { playerTwo: player.uuid }],
@@ -49,12 +51,11 @@ export default defineEventHandler(async (event) => {
             opponents[op.uuid] = op.primaryName;
         });
         placements = await CompetitionPlacement.findBy({ player: player.uuid });
-        const rawCompetitions = await Competition.findBy({
-            tag: In(placements.map((p) => p.competition)),
+        const rawCompetitions = await Competition.find({
+            select: ['tag', 'name', 'officialCompetition', 'startingTimestamp'],
+            where: { tag: In(placements.map((p) => p.competition)) }
         });
-        rawCompetitions.forEach((comp) => {
-            competitions[comp.tag] = comp.name;
-        });
+        competitions = MapperService.createStringMapFromList(rawCompetitions, "tag") as Record<string, ICompetition>;
         placements.sort((a, b) => {
             const compA = rawCompetitions.find((c) => c.tag === a.competition)!;
             const compB = rawCompetitions.find((c) => c.tag === b.competition)!;

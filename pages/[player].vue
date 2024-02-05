@@ -85,7 +85,7 @@
                         <template #Competitions>
                             <CompetitionsTable
                                 :placements="player?.placements"
-                                :competition-names="player?.competitions"
+                                :competitions="player?.competitions"
                             />
                         </template>
                         <template #Opponents>
