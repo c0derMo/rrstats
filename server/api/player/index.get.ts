@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
     if (player != null) {
         matches = await Match.find({
             where: [{ playerOne: player.uuid }, { playerTwo: player.uuid }],
+            order: { timestamp: "DESC" },
         });
         const rawOpponentUUIDs = matches
             .map((m) => m.playerOne)

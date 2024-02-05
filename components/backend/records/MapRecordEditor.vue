@@ -1,6 +1,6 @@
 <template>
     <DialogComponent dialog-class="w-3/5">
-        <CardComponent>
+        <CardComponent class="overflow-x-visible">
             <div class="flex flex-col gap-5">
                 <DropdownComponent
                     v-model="recordData.map"
@@ -85,6 +85,9 @@ const maps = getAllMaps().map((map) => {
 });
 
 const shownMatches = computed(() => {
+    if (showAllMatches.value) {
+        return rawMatches.value;
+    }
     return rawMatches.value.filter((match) => {
         return match.playedMaps.some((map) => map.map === recordData.value.map);
     });
@@ -103,7 +106,7 @@ const possibleMatches = computed(() => {
     });
 });
 
-async function checkPlayerAndUpdateMatches() {
+async function checkPlayerAndUpdateMatches(initialLoad?: boolean) {
     playerInvalid.value = false;
     if (playerToUUIDTable.value[player.value.trim()] == null) {
         playerInvalid.value = true;
@@ -129,7 +132,9 @@ async function checkPlayerAndUpdateMatches() {
         return;
     }
 
-    recordData.value.match = rawMatches.value[0].uuid;
+    if (!initialLoad) {   
+        recordData.value.match = possibleMatches.value[0].value;
+    }
 }
 
 function updatePossibleMaps() {
@@ -190,5 +195,5 @@ async function loadPlayers() {
 }
 
 await loadPlayers();
-await checkPlayerAndUpdateMatches();
+await checkPlayerAndUpdateMatches(true);
 </script>

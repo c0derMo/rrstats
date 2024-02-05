@@ -1,7 +1,7 @@
 <template>
     <div>
         <SwitchComponent id="showUnofficialToggle" v-model="showUnofficial" label="Show unofficial competitions" />
-        <DataTableComponent :headers="headers" :rows="sortedPlacements">
+        <DataTableComponent :headers="headers" :rows="filteredCompetitions">
             <template #competition="{ row }">
                 {{ competitions[row.competition].name }}
                 <span v-if="row.bracket !== ''"> - {{ row.bracket }}</span>
@@ -37,11 +37,9 @@ const headers = [
 
 const showUnofficial = ref(true);
 
-const sortedPlacements = computed(() => {
+const filteredCompetitions = computed(() => {
     return props.placements.filter((a) => {
         return showUnofficial.value || props.competitions[a.competition].officialCompetition;
-    }).sort((a, b) => {
-        return props.competitions[b.competition].startingTimestamp - props.competitions[a.competition].startingTimestamp;
     });
 });
 

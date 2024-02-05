@@ -31,6 +31,7 @@ export default defineEventHandler(async (event) => {
             "playerOneScore",
             "playerTwoScore",
         ],
+        order: { timestamp: "DESC" }
     });
 
     return matches;

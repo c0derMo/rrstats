@@ -297,13 +297,6 @@ async function updateLists() {
     mapRecords.value = recordQuery.data.value.mapRecords as IMapRecord[];
     genericRecords.value = recordQuery.data.value
         .genericRecords as IGenericRecord[];
-
-    mapRecords.value.sort((a, b) => {
-        return b.timestamp - a.timestamp;
-    });
-    genericRecords.value.sort((a, b) => {
-        return b.timestamp - a.timestamp;
-    });
 }
 
 await updateLists();

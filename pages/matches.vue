@@ -27,6 +27,11 @@
                 :players="data?.players ?? {}"
             />
 
+            <div v-if="competition?.hitmapsStatsUrl != null" class="border-2 rounded p-3 text-center mx-auto my-4 border-blue-600 dark:border-blue-400">
+                <FontAwesomeIcon :icon="['fas', 'chart-simple']" class="mr-3" />
+                HITMAPS has tournament-specific statistics available! Check them out <a class="underline" :href="competition.hitmapsStatsUrl">here</a>!
+            </div>
+
             <DataTableComponent
                 :headers="headers"
                 :rows="sortedMatches"
@@ -122,7 +127,9 @@
 </template>
 
 <script setup lang="ts">
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { DateTime } from "luxon";
+import { ICompetition } from "~/utils/interfaces/ICompetition";
 import {
     ChoosingPlayer,
     IMatch,
@@ -148,7 +155,7 @@ const tournament = useRoute().query.tournament;
 const data = (await useFetch("/api/matches", { query: { tournament } })).data;
 const competition = (
     await useFetch("/api/competitions", { query: { tag: tournament } })
-).data;
+).data as Ref<ICompetition | null>;
 
 useHead({
     title: `${competition.value?.name} - RRStats`,

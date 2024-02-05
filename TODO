@@ -1,9 +1,4 @@
-- Record page breaks if no match assigned
-- Record editor "breaks" if match already selected
-- Record editor match dropdown dropping too low
 - Re-check mobile optimization for non-player-pages
-- Get rid of max-h-screen for card components (in general)
-- Check sorting on various tables
 
 24s368ms: Remaining steps:
 24s368ms:  - Manually update competition start dates, background images, group configs, hitmaps slugs

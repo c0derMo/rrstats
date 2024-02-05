@@ -14,7 +14,9 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const matches = await Match.find();
+    const matches = await Match.find({
+        order: { timestamp: "DESC" }
+    });
 
     return matches;
 });

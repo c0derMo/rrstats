@@ -14,8 +14,8 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const genericRecords = await GenericRecord.find();
-    const mapRecords = await MapRecord.find();
+    const genericRecords = await GenericRecord.find({ order: { timestamp: "DESC" } });
+    const mapRecords = await MapRecord.find({ order: { timestamp: "DESC" } });
 
     return {
         genericRecords,

@@ -27,6 +27,7 @@ export default defineEventHandler(async (event) => {
             "vodLink",
             "timestamp",
         ],
+        order: { timestamp: "DESC" }
     });
 
     const playerUUIDs = matches

@@ -33,14 +33,16 @@
         </template>
 
         <template #match="{ row, value }">
-            {{ matches[value as string].competition }}
-            {{ matches[value as string].round }}
-            <span v-if="matches[value as string].playerOne === row.player"
-                >vs {{ players[matches[value as string].playerTwo] }}</span
-            >
-            <span v-if="matches[value as string].playerTwo === row.player"
-                >vs {{ players[matches[value as string].playerOne] }}</span
-            >
+            <template v-if="matches[value as string] != null">
+                {{ matches[value as string].competition }}
+                {{ matches[value as string].round }}
+                <span v-if="matches[value as string].playerOne === row.player"
+                    >vs {{ players[matches[value as string].playerTwo] }}</span
+                >
+                <span v-if="matches[value as string].playerTwo === row.player"
+                    >vs {{ players[matches[value as string].playerOne] }}</span
+                >
+            </template>
         </template>
 
         <template #more="{ row }">

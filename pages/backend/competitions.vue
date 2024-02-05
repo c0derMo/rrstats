@@ -102,9 +102,6 @@ async function updateList() {
         error.value = true;
     } else {
         competitions.value = competitionsQuery.data.value;
-        competitions.value.sort(
-            (a, b) => b.startingTimestamp - a.startingTimestamp,
-        );
     }
 }
 
