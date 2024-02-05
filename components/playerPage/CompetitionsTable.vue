@@ -6,7 +6,7 @@
         </template>
 
         <template #placement="{ row }">
-            <Tag class="py-0" :color="getTagColor(row.placement)">
+            <Tag class="!py-0" :color="getTagColor(row.placement)">
                 {{ formatPlacement(row.placement) }}
             </Tag>
         </template>
