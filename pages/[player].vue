@@ -78,7 +78,7 @@
             </CardComponent>
 
             <div class="flex 2xl:flex-row gap-5 flex-col-reverse">
-                <CardComponent class="2xl:w-fit w-full">
+                <CardComponent class="2xl:w-fit w-full overflow-x-visible">
                     <TabbedContainer
                         :tabs="['Competitions', 'Opponents', 'Records']"
                     >
@@ -113,7 +113,7 @@
                 </CardComponent>
             </div>
 
-            <CardComponent class="!overflow-visible max-h-max">
+            <CardComponent class="!overflow-visible">
                 <TabbedContainer :tabs="['Maps', 'Time Heatmap']">
                     <template #Maps>
                         <PlayerMapList

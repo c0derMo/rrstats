@@ -4,7 +4,7 @@
             v-model:minValue="selectedMinComp"
             v-model:maxValue="selectedMaxComp"
             class="w-full mb-2"
-            :max="competitions.length - 1"
+            :max="dropdownCompetitions.length - 1"
         />
 
         <div class="flex flex-row w-full">
@@ -124,8 +124,22 @@ const bannedHeaders = [
     { key: "Banned", title: "Banned" },
 ];
 
+const sortedCompetitions = computed(() => {
+    return [...props.competitions].sort(
+        (a, b) => a.startingTimestamp - b.startingTimestamp,
+    );
+});
+
+const dropdownCompetitions = computed(() => {
+    return sortedCompetitions.value.filter((c) => {
+        return c.officialCompetition && c.tag.includes("RR")
+    }).map((comp, idx) => {
+        return { text: comp.tag, value: idx };
+    });
+});
+
 const selectedMinComp = ref(0);
-const selectedMaxComp = ref(props.competitions.length - 1);
+const selectedMaxComp = ref(dropdownCompetitions.value.length - 1);
 const regularRROnly = ref(false);
 const rrwcOnly = ref(false);
 
@@ -148,18 +162,6 @@ watch(rrwcOnly, () => {
     if (regularRROnly.value && rrwcOnly.value) {
         regularRROnly.value = false;
     }
-});
-
-const sortedCompetitions = computed(() => {
-    return [...props.competitions].sort(
-        (a, b) => a.startingTimestamp - b.startingTimestamp,
-    );
-});
-
-const dropdownCompetitions = computed(() => {
-    return sortedCompetitions.value.map((comp, idx) => {
-        return { text: comp.tag, value: idx };
-    });
 });
 
 const filteredMatches = computed(() => {

@@ -1,6 +1,6 @@
 <template>
     <DialogComponent dialog-class="w-3/5">
-        <CardComponent>
+        <CardComponent class="max-h-screen">
             <div class="flex flex-col gap-5">
                 <DropdownComponent
                     v-model="recordData.record"

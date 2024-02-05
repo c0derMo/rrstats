@@ -52,7 +52,7 @@
         <span>Rows per page:</span>
         <DropdownComponent
             v-model="selectedRowsPerPage"
-            :items="rowsPerPage"
+            :items="selectableRowsPerPage"
         ></DropdownComponent>
         <div class="w-3"></div>
         <span
@@ -142,6 +142,14 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     return (props.headers as string[]).map((header) => {
         return { key: header, title: header };
     });
+});
+
+const selectableRowsPerPage = computed(() => {
+    const converted = props.rowsPerPage.map((rPP) => {
+        return { text: String(rPP), value: rPP }
+    });
+    converted.push({ text: "All", value: props.rows.length });
+    return converted;
 });
 
 if (props.alwaysSort) {
