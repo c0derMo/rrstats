@@ -125,15 +125,15 @@ const bannedHeaders = [
 ];
 
 const sortedCompetitions = computed(() => {
-    return [...props.competitions].sort(
+    return props.competitions.filter((c) => {
+        return c.officialCompetition && c.tag.toLowerCase().includes("rr");
+    }).sort(
         (a, b) => a.startingTimestamp - b.startingTimestamp,
     );
 });
 
 const dropdownCompetitions = computed(() => {
-    return sortedCompetitions.value.filter((c) => {
-        return c.officialCompetition && c.tag.includes("RR")
-    }).map((comp, idx) => {
+    return sortedCompetitions.value.map((comp, idx) => {
         return { text: comp.tag, value: idx };
     });
 });

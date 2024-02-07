@@ -11,6 +11,8 @@ export type IMatch = {
     playerOneScore: number;
     playerTwoScore: number;
 
+    annulated?: boolean;
+
     competition: string;
     round: string;
     platform?: string;

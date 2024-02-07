@@ -20,6 +20,9 @@ export class Match extends BaseEntity implements IMatch {
     @Column("integer")
     playerTwoScore: number;
 
+    @Column("boolean", { nullable: true })
+    annulated?: boolean;
+
     @Column("text")
     competition: string;
     @Column("text")

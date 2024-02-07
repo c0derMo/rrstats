@@ -5,7 +5,7 @@
                 <Tag :color="getPlayerColor(1)">
                     {{ opponents[match.playerOne] }}
                 </Tag>
-                <span class="md:mx-10 mx-1 text-xl md:text-3xl"
+                <span class="md:mx-10 mx-1 text-xl md:text-3xl" :class="{'text-gray-500': match.annulated}"
                     >{{ match.playerOneScore }} -
                     {{ match.playerTwoScore }}</span
                 >
@@ -13,6 +13,9 @@
                     {{ opponents[match.playerTwo] }}
                 </Tag>
             </h1>
+            <div v-if="match.annulated" class="text-center w-full italic">
+                Match was annulated
+            </div>
             <div class="grid grid-cols-2 gap-x-32 gap-y-3 my-5">
                 <div v-if="match.bannedMaps.length > 0">
                     Ban:

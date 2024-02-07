@@ -26,6 +26,7 @@ export default defineEventHandler(async (event) => {
             "shoutcasters",
             "vodLink",
             "timestamp",
+            "annulated"
         ],
         order: { timestamp: "DESC" }
     });

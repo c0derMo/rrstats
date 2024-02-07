@@ -30,7 +30,14 @@
                             v-model="matchData.playerTwoScore"
                             placeholder="Player two score"
                         />
+                        <SwitchComponent
+                            id="annulated"
+                            v-model="matchData.annulated"
+                            label="Match annulated (doesn't count towards group stages)"
+                            :reverse="true"
+                        />
                     </div>
+
                     <div class="mt-10 grid grid-cols-6 gap-5 gap-x-10 w-full">
                         <DateTimeInputComponent
                             v-model="matchData.timestamp"

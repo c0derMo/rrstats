@@ -1,3 +1,4 @@
+import { InvalidPlacements } from "./databaseChecks/InvalidPlacements";
 import { InvalidScores } from "./databaseChecks/InvalidScores";
 import { MissingPlacements } from "./databaseChecks/MissingPlacements";
 import { MissingPlayers } from "./databaseChecks/MissingPlayers";
@@ -29,6 +30,7 @@ export default class DatabaseCheckController {
         new MissingPlayers(),
         new NoMatches(),
         new MissingPlacements(),
+        new InvalidPlacements(),
         new RecordMatches(),
         new RecordSpins(),
         new MissingVODs(),

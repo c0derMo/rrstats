@@ -39,6 +39,7 @@ const props = defineProps({
 
 const groups = computed(() => {
     const result = [];
+    const pointsNeededToWin = props.groupsInfo.maxPointsPerMatch / 2;
     for (const group of props.groupsInfo.groups) {
         const players = [];
 
@@ -54,18 +55,21 @@ const groups = computed(() => {
             for (const opponent of group.players) {
                 if (opponent === player) continue;
 
-                const pointsAgainst = getPointsAgainst(player, opponent);
-                if (pointsAgainst === undefined) continue;
-                if (pointsAgainst < 3) {
-                    playerObject.losses++;
+                for (let matchNo = 0; matchNo < props.groupsInfo.matchesBetweenPlayers; matchNo++) {
+                    const pointsAgainst = getPointsAgainst(player, opponent, matchNo);
+
+                    if (pointsAgainst === undefined) continue;
+                    if (pointsAgainst < pointsNeededToWin) {
+                        playerObject.losses++;
+                    }
+                    if (pointsAgainst === pointsNeededToWin) {
+                        playerObject.ties++;
+                    }
+                    if (pointsAgainst > pointsNeededToWin) {
+                        playerObject.wins++;
+                    }
+                    playerObject.points += pointsAgainst;
                 }
-                if (pointsAgainst === 3) {
-                    playerObject.ties++;
-                }
-                if (pointsAgainst > 3) {
-                    playerObject.wins++;
-                }
-                playerObject.points += pointsAgainst;
             }
 
             players.push(playerObject);
@@ -85,13 +89,25 @@ const groups = computed(() => {
 function getPointsAgainst(
     player: string,
     opponent: string,
+    matchNumber: number = 0
 ): number | undefined {
-    const match = props.matches.find(
+    const matches = props.matches.filter(
         (m) =>
             [player, opponent].includes(m.playerOne) &&
-            [player, opponent].includes(m.playerTwo),
-    );
-    if (match === undefined) {
+            [player, opponent].includes(m.playerTwo) &&
+            !m.annulated
+    ).sort((a, b) => {
+        return a.timestamp - b.timestamp
+    });
+
+    if (matches.length === 0) {
+        return undefined;
+    }
+
+    let match: IMatch;
+    if (matches.length > matchNumber) {
+        match = matches[matchNumber];
+    } else {
         return undefined;
     }
 

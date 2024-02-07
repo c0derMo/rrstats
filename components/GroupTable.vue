@@ -118,8 +118,7 @@ const maxPossiblePoints = computed(() => {
 
 function isPlayerAdvancing(index: number): boolean {
     if (
-        props.positionOverrides !== undefined &&
-        props.positionOverrides[index + 1] !== undefined &&
+        props.positionOverrides?.[index] !== undefined &&
         index < props.advancingPlayers
     )
         return true;
@@ -133,8 +132,7 @@ function isPlayerAdvancing(index: number): boolean {
 }
 function isPlayerNotAdvancing(index: number): boolean {
     if (
-        props.positionOverrides !== undefined &&
-        props.positionOverrides[index + 1] !== undefined &&
+        props.positionOverrides?.[index] !== undefined &&
         index >= props.advancingPlayers
     )
         return true;

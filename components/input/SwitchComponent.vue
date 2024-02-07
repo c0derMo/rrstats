@@ -1,6 +1,6 @@
 <template>
     <div class="inline-flex items-center gap-3">
-        <span>{{ label }}</span>
+        <span v-if="!reverse">{{ label }}</span>
         <div class="relative inline-block h-4 w-8 cursor-pointer rounded-full">
             <input
                 :id="id"
@@ -20,6 +20,7 @@
             >
             </label>
         </div>
+        <span v-if="reverse">{{ label }}</span>
     </div>
 </template>
 
@@ -37,6 +38,10 @@ defineProps({
         type: String,
         required: true,
     },
+    reverse: {
+        type: Boolean,
+        default: false,
+    }
 });
 
 defineEmits(["update:modelValue"]);
