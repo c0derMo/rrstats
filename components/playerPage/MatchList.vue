@@ -35,7 +35,7 @@
                     </template>
                 </TooltipComponent>
             </template>
-            
+
             <template #score="{ row }">
                 {{ row.playerOneScore }}<br />
                 -<br />
@@ -43,10 +43,22 @@
             </template>
 
             <template #players="{ row }">
-                {{ row.playerOneScore }} - {{ players[row.playerOne] || `Unknown player (${row.playerOne})` }}<br />
+                {{ row.playerOneScore }} -
+                {{
+                    players[row.playerOne] ||
+                    `Unknown player (${row.playerOne})`
+                }}<br />
                 vs<br />
-                {{ row.playerTwoScore }} - {{ players[row.playerTwo] || `Unknown player (${row.playerTwo})` }}<br />
-                <Tag v-for="(map, idx) of row.playedMaps" :key="idx" :color="getMapColor(map, row)">
+                {{ row.playerTwoScore }} -
+                {{
+                    players[row.playerTwo] ||
+                    `Unknown player (${row.playerTwo})`
+                }}<br />
+                <Tag
+                    v-for="(map, idx) of row.playedMaps"
+                    :key="idx"
+                    :color="getMapColor(map, row)"
+                >
                     {{ getMap((map as RRMap).map)?.abbreviation }}
                 </Tag>
             </template>
@@ -69,7 +81,7 @@
             <template #round="{ value, row }">
                 <TooltipComponent>
                     {{ value }}
-    
+
                     <template #tooltip>
                         {{
                             DateTime.fromMillis(row.timestamp)
@@ -79,27 +91,27 @@
                     </template>
                 </TooltipComponent>
             </template>
-    
+
             <template #playerOne="{ value }">
                 {{ players[value as string] || `Unknown player (${value})` }}
             </template>
-    
+
             <template #playerTwo="{ value }">
                 {{ players[value as string] || `Unknown player (${value})` }}
             </template>
-    
+
             <template #score="{ row }">
                 <Tag :color="getMatchColor(row)">
                     {{ row.playerOneScore }} - {{ row.playerTwoScore }}
                 </Tag>
             </template>
-    
+
             <template #playedMaps="{ value, row }">
                 <TooltipComponent v-for="(map, idx) of value" :key="idx">
                     <Tag :color="getMapColor(map, row)" class="ml-2">
                         {{ getMap((map as RRMap).map)?.abbreviation }}
                     </Tag>
-    
+
                     <template #tooltip>
                         Map: {{ getMap((map as RRMap).map)?.name }}<br />
                         Picked by: {{ getMapPicker(map, row) }}<br />
@@ -107,7 +119,7 @@
                     </template>
                 </TooltipComponent>
             </template>
-    
+
             <template #more="{ row }">
                 <ButtonComponent @click="matchToShow = row">
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
@@ -176,7 +188,9 @@ const filteredSortedMatches = computed(() => {
                 ...m.playedMaps.map((map) => getMap(map.map)!.abbreviation),
             ];
 
-            return searchableValues.some((s) => s.toLowerCase().includes(searchFilter.value.toLowerCase()));
+            return searchableValues.some((s) =>
+                s.toLowerCase().includes(searchFilter.value.toLowerCase()),
+            );
         })
         .sort((a, b) => b.timestamp - a.timestamp);
 });

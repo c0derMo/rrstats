@@ -6,7 +6,10 @@
         >
             <div
                 class="flex-grow flex flex-col"
-                :class="{ 'md:flex-row': !reverse, 'md:flex-row-reverse': reverse }"
+                :class="{
+                    'md:flex-row': !reverse,
+                    'md:flex-row-reverse': reverse,
+                }"
             >
                 <img
                     class="rounded-full w-20 h-20"

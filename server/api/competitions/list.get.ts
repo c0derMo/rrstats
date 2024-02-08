@@ -9,7 +9,7 @@ export default defineEventHandler(async () => {
             "tag",
             "startingTimestamp",
         ],
-        order: { startingTimestamp: "DESC" }
+        order: { startingTimestamp: "DESC" },
     });
 
     return rawCompetitions;

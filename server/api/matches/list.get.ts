@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const matches = await Match.find({
-        order: { timestamp: "DESC" }
+        order: { timestamp: "DESC" },
     });
 
     return matches;

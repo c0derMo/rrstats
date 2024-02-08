@@ -132,7 +132,7 @@ async function checkPlayerAndUpdateMatches(initialLoad?: boolean) {
         return;
     }
 
-    if (!initialLoad) {   
+    if (!initialLoad) {
         recordData.value.match = possibleMatches.value[0].value;
     }
 }

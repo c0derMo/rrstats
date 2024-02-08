@@ -16,7 +16,13 @@ export default defineEventHandler(async (event) => {
         return rawPlayers;
     }
 
-    const rawPlayers = await Player.find({ select: ["primaryName"], where: [{ excludedFromSearch: false }, { excludedFromSearch: IsNull() }] });
+    const rawPlayers = await Player.find({
+        select: ["primaryName"],
+        where: [
+            { excludedFromSearch: false },
+            { excludedFromSearch: IsNull() },
+        ],
+    });
 
     return rawPlayers.map((p) => p.primaryName);
 });

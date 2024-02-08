@@ -1,12 +1,16 @@
 <template>
     <div>
-        <SwitchComponent id="showUnofficialToggle" v-model="showUnofficial" label="Show unofficial competitions" />
+        <SwitchComponent
+            id="showUnofficialToggle"
+            v-model="showUnofficial"
+            label="Show unofficial competitions"
+        />
         <DataTableComponent :headers="headers" :rows="filteredCompetitions">
             <template #competition="{ row }">
                 {{ competitions[row.competition].name }}
                 <span v-if="row.bracket !== ''"> - {{ row.bracket }}</span>
             </template>
-    
+
             <template #placement="{ row }">
                 <Tag class="!py-0" :color="getTagColor(row.placement)">
                     {{ formatPlacement(row.placement) }}
@@ -17,7 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import { ICompetition, ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
+import {
+    ICompetition,
+    ICompetitionPlacement,
+} from "~/utils/interfaces/ICompetition";
 
 const props = defineProps({
     placements: {
@@ -39,7 +46,10 @@ const showUnofficial = ref(true);
 
 const filteredCompetitions = computed(() => {
     return props.placements.filter((a) => {
-        return showUnofficial.value || props.competitions[a.competition].officialCompetition;
+        return (
+            showUnofficial.value ||
+            props.competitions[a.competition].officialCompetition
+        );
     });
 });
 

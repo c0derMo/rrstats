@@ -1,13 +1,19 @@
-type ObjectType<T, V extends keyof T | undefined> = V extends keyof T ? T[V] : never;
+type ObjectType<T, V extends keyof T | undefined> = V extends keyof T
+    ? T[V]
+    : never;
 
-type MapType<T, V extends keyof T | undefined> = V extends undefined ? Record<string, T> :
-                                                 V extends keyof T ? Record<string, ObjectType<T, V>> :
-                                                 never;
-
+type MapType<T, V extends keyof T | undefined> = V extends undefined
+    ? Record<string, T>
+    : V extends keyof T
+      ? Record<string, ObjectType<T, V>>
+      : never;
 
 export default class MapperService {
-
-    static createStringMapFromList<T, K extends keyof T, V extends keyof T | undefined>(objects: T[], key: K, value?: V): MapType<T, V> {
+    static createStringMapFromList<
+        T,
+        K extends keyof T,
+        V extends keyof T | undefined,
+    >(objects: T[], key: K, value?: V): MapType<T, V> {
         if (objects.length === 0) {
             return {} as MapType<T, V>;
         }
@@ -25,5 +31,4 @@ export default class MapperService {
             return map as MapType<T, V>;
         }
     }
-
 }

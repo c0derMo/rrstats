@@ -46,9 +46,7 @@
         </template>
     </TableComponent>
 
-    <div
-        class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center"
-    >
+    <div class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center">
         <span class="md:text-base text-sm">Rows per page:</span>
         <DropdownComponent
             v-model="selectedRowsPerPage"
@@ -145,7 +143,7 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
 
 const selectableRowsPerPage = computed(() => {
     const converted = props.rowsPerPage.map((rPP) => {
-        return { text: String(rPP), value: rPP }
+        return { text: String(rPP), value: rPP };
     });
     converted.push({ text: "All", value: props.rows.length });
     return converted;

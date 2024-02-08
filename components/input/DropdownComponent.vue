@@ -83,16 +83,20 @@ const elementBottom = ref(element.value?.getBoundingClientRect().bottom ?? 0);
 const elementHeight = ref(element.value?.getBoundingClientRect().height ?? 0);
 
 const dropdownHeight = computed(() => {
-    return `max-height: ${window.innerHeight - elementBottom.value - 10}px; top: 0px;`;
+    return `max-height: ${
+        window.innerHeight - elementBottom.value - 10
+    }px; top: 0px;`;
 });
 
 const dropupHeight = computed(() => {
-    return `max-height: ${elementBottom.value - elementHeight.value - 10}px; bottom: ${elementHeight.value}px;`;
+    return `max-height: ${
+        elementBottom.value - elementHeight.value - 10
+    }px; bottom: ${elementHeight.value}px;`;
 });
 
 const shouldDropUp = computed(() => {
-    return (window.innerHeight - elementBottom.value) < 200;
-})
+    return window.innerHeight - elementBottom.value < 200;
+});
 
 const convertedItems: ComputedRef<ExtendedOption[]> = computed(() => {
     if (props.items.length === 0) {
@@ -121,5 +125,5 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     window.removeEventListener("scroll", updateElementPosition);
-})
+});
 </script>

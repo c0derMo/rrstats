@@ -26,9 +26,9 @@ export default defineEventHandler(async (event) => {
             "shoutcasters",
             "vodLink",
             "timestamp",
-            "annulated"
+            "annulated",
         ],
-        order: { timestamp: "DESC" }
+        order: { timestamp: "DESC" },
     });
 
     const playerUUIDs = matches

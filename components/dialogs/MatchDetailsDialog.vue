@@ -5,7 +5,9 @@
                 <Tag :color="getPlayerColor(1)">
                     {{ opponents[match.playerOne] }}
                 </Tag>
-                <span class="md:mx-10 mx-1 text-xl md:text-3xl" :class="{'text-gray-500': match.annulated}"
+                <span
+                    class="md:mx-10 mx-1 text-xl md:text-3xl"
+                    :class="{ 'text-gray-500': match.annulated }"
                     >{{ match.playerOneScore }} -
                     {{ match.playerTwoScore }}</span
                 >
@@ -91,7 +93,9 @@
                     </span>
                 </div>
             </div>
-            <ButtonComponent @click="$emit('clickOutside')">Close</ButtonComponent>
+            <ButtonComponent @click="$emit('clickOutside')"
+                >Close</ButtonComponent
+            >
         </CardComponent>
     </DialogComponent>
 </template>
@@ -104,7 +108,7 @@ import {
 } from "~/utils/interfaces/IMatch";
 import { DateTime, Duration } from "luxon";
 
-defineEmits(['clickOutside']);
+defineEmits(["clickOutside"]);
 
 const props = defineProps({
     match: {

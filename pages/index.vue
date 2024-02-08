@@ -105,7 +105,9 @@ const competitionsDropdown = computed(() => {
     if (competitions.value === null) {
         return [];
     }
-    return competitions.value.filter((c) => c.officialCompetition && c.tag.includes("RR")).map((c) => c.tag);
+    return competitions.value
+        .filter((c) => c.officialCompetition && c.tag.includes("RR"))
+        .map((c) => c.tag);
 });
 
 function selectTournament(tournament: string) {

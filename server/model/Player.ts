@@ -7,7 +7,7 @@ import {
     EntitySubscriberInterface,
     BeforeInsert,
     BeforeUpdate,
-In,
+    In,
 } from "typeorm";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { Competition, CompetitionPlacement } from "./Competition";
@@ -60,13 +60,13 @@ export class PlayerSubscriber implements EntitySubscriberInterface<Player> {
         }
 
         const officialCompetitions = await Competition.find({
-            select: ['tag'],
-            where: { officialCompetition: true }
+            select: ["tag"],
+            where: { officialCompetition: true },
         });
 
         const placements = await CompetitionPlacement.countBy({
             player: entity.uuid,
-            competition: In(officialCompetitions.map(c => c.tag)),
+            competition: In(officialCompetitions.map((c) => c.tag)),
         });
         if (placements > 0) {
             entity.accolade = "Returning Rival";

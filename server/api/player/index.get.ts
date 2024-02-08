@@ -53,10 +53,13 @@ export default defineEventHandler(async (event) => {
         });
         placements = await CompetitionPlacement.findBy({ player: player.uuid });
         const rawCompetitions = await Competition.find({
-            select: ['tag', 'name', 'officialCompetition', 'startingTimestamp'],
-            where: { tag: In(placements.map((p) => p.competition)) }
+            select: ["tag", "name", "officialCompetition", "startingTimestamp"],
+            where: { tag: In(placements.map((p) => p.competition)) },
         });
-        competitions = MapperService.createStringMapFromList(rawCompetitions, "tag") as Record<string, ICompetition>;
+        competitions = MapperService.createStringMapFromList(
+            rawCompetitions,
+            "tag",
+        ) as Record<string, ICompetition>;
         placements.sort((a, b) => {
             const compA = rawCompetitions.find((c) => c.tag === a.competition)!;
             const compB = rawCompetitions.find((c) => c.tag === b.competition)!;

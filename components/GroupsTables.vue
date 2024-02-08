@@ -55,8 +55,16 @@ const groups = computed(() => {
             for (const opponent of group.players) {
                 if (opponent === player) continue;
 
-                for (let matchNo = 0; matchNo < props.groupsInfo.matchesBetweenPlayers; matchNo++) {
-                    const pointsAgainst = getPointsAgainst(player, opponent, matchNo);
+                for (
+                    let matchNo = 0;
+                    matchNo < props.groupsInfo.matchesBetweenPlayers;
+                    matchNo++
+                ) {
+                    const pointsAgainst = getPointsAgainst(
+                        player,
+                        opponent,
+                        matchNo,
+                    );
 
                     if (pointsAgainst === undefined) continue;
                     if (pointsAgainst < pointsNeededToWin) {
@@ -89,16 +97,18 @@ const groups = computed(() => {
 function getPointsAgainst(
     player: string,
     opponent: string,
-    matchNumber: number = 0
+    matchNumber: number = 0,
 ): number | undefined {
-    const matches = props.matches.filter(
-        (m) =>
-            [player, opponent].includes(m.playerOne) &&
-            [player, opponent].includes(m.playerTwo) &&
-            !m.annulated
-    ).sort((a, b) => {
-        return a.timestamp - b.timestamp
-    });
+    const matches = props.matches
+        .filter(
+            (m) =>
+                [player, opponent].includes(m.playerOne) &&
+                [player, opponent].includes(m.playerTwo) &&
+                !m.annulated,
+        )
+        .sort((a, b) => {
+            return a.timestamp - b.timestamp;
+        });
 
     if (matches.length === 0) {
         return undefined;

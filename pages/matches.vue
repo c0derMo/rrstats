@@ -27,9 +27,15 @@
                 :players="data?.players ?? {}"
             />
 
-            <div v-if="competition?.hitmapsStatsUrl != null" class="border-2 rounded p-3 text-center mx-auto my-4 border-blue-600 dark:border-blue-400">
+            <div
+                v-if="competition?.hitmapsStatsUrl != null"
+                class="border-2 rounded p-3 text-center mx-auto my-4 border-blue-600 dark:border-blue-400"
+            >
                 <FontAwesomeIcon :icon="['fas', 'chart-simple']" class="mr-3" />
-                HITMAPS has tournament-specific statistics available! Check them out <a class="underline" :href="competition.hitmapsStatsUrl">here</a>!
+                HITMAPS has tournament-specific statistics available! Check them
+                out
+                <a class="underline" :href="competition.hitmapsStatsUrl">here</a
+                >!
             </div>
 
             <DataTableComponent

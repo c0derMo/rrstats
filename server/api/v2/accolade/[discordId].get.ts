@@ -1,9 +1,6 @@
-import { Entity, In } from "typeorm";
 import { AuthController } from "~/server/controller/AuthController";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
-import { Match } from "~/server/model/Match";
 import { Player } from "~/server/model/Player";
-import { IMatch } from "~/utils/interfaces/IMatch";
 
 export default defineEventHandler(async (event) => {
     const authHeader = getRequestHeader(event, "authorization");
@@ -32,17 +29,20 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    if (player.title != null && (player.hasCustomTitle === false || player.hasCustomTitle == null)) {
+    if (
+        player.title != null &&
+        (player.hasCustomTitle === false || player.hasCustomTitle == null)
+    ) {
         return player.title;
     }
 
     const officialCompetitions = await Competition.find({
-        select: ['tag'],
-        where: { officialCompetition: true }
+        select: ["tag"],
+        where: { officialCompetition: true },
     });
     const placements = await CompetitionPlacement.countBy({
         player: player.uuid,
-        competition: In(officialCompetitions.map(c => c.tag))
+        competition: In(officialCompetitions.map((c) => c.tag)),
     });
     if (placements > 0) {
         return "Returning Rival";
