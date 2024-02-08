@@ -28,14 +28,14 @@
 
                 <TextInputComponent
                     v-model="playerData.title"
-                    placeholder="Override Accolate"
+                    placeholder="Override Accolade"
                     class="w-full"
                 />
 
                 <SwitchComponent
                     id="customTitle"
                     v-model="playerData.hasCustomTitle"
-                    label="Has custom accolate:"
+                    label="Has custom accolade:"
                 />
 
                 <SwitchComponent

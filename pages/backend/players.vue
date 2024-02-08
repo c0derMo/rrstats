@@ -70,7 +70,7 @@ const playerToShow: Ref<IPlayer | null> = ref(null);
 
 const headers = [
     { key: "primaryName", title: "Name" },
-    { key: "accolade", title: "Accolate" },
+    { key: "accolade", title: "Accolade" },
     { key: "more", title: "" },
 ];
 
