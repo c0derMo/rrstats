@@ -33,7 +33,14 @@
         </template>
 
         <template #match="{ row, value }">
-            <template v-if="matches[value as string] != null">
+            <a
+                v-if="matches[value as string] != null"
+                :href="matches[value as string].vodLink"
+                :class="{
+                    'underline text-blue-500':
+                        matches[value as string].vodLink != null,
+                }"
+            >
                 {{ matches[value as string].competition }}
                 {{ matches[value as string].round }}
                 <span v-if="matches[value as string].playerOne === row.player"
@@ -42,7 +49,7 @@
                 <span v-if="matches[value as string].playerTwo === row.player"
                     >vs {{ players[matches[value as string].playerOne] }}</span
                 >
-            </template>
+            </a>
         </template>
 
         <template #more="{ row }">

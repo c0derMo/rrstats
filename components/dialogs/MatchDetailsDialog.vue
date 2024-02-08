@@ -18,6 +18,21 @@
             <div v-if="match.annulated" class="text-center w-full italic">
                 Match was annulated
             </div>
+            <div class="flex flex-row justify-items-stretch my-5 font-bold">
+                <div class="w-full text-center">
+                    <span v-if="match.shoutcasters != null"
+                        >Shoutcast: {{ match.shoutcasters.join(", ") }}</span
+                    >
+                </div>
+                <div class="w-full text-center">
+                    <span
+                        v-if="match.vodLink != null"
+                        class="underline text-blue-500"
+                    >
+                        <a :href="match.vodLink">VOD</a>
+                    </span>
+                </div>
+            </div>
             <div class="grid grid-cols-2 gap-x-32 gap-y-3 my-5">
                 <div v-if="match.bannedMaps.length > 0">
                     Ban:
@@ -82,16 +97,6 @@
                         <span v-if="!map.timeAccurate"> (estimate)</span>
                     </div>
                 </template>
-                <div class="col-span-3">
-                    <span v-if="match.shoutcasters != null"
-                        >Shoutcast: {{ match.shoutcasters.join(", ") }}</span
-                    >
-                </div>
-                <div class="col-span-3">
-                    <span v-if="match.vodLink != null">
-                        <a :href="match.vodLink">VOD</a>
-                    </span>
-                </div>
             </div>
             <ButtonComponent @click="$emit('clickOutside')"
                 >Close</ButtonComponent

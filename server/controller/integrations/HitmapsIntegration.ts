@@ -155,11 +155,12 @@ export default class HitmapsIntegration {
             // Player doesn't exist - creating new
             return await this.createNewPlayer(name, discordId);
         } else {
-            if (
-                playerInDb.primaryName != name &&
-                !playerInDb.alternativeNames.includes(name)
-            ) {
-                playerInDb.alternativeNames.push(name);
+            if (playerInDb.primaryName != name) {
+                const previousName = playerInDb.primaryName;
+                playerInDb.primaryName = name;
+                if (!playerInDb.alternativeNames.includes(previousName)) {
+                    playerInDb.alternativeNames.push(previousName);
+                }
                 await playerInDb.save();
             }
             return playerInDb.uuid;
@@ -347,7 +348,10 @@ export default class HitmapsIntegration {
                         playerOne: match.playerOne,
                         playerTwo: match.playerTwo,
                     });
-                    if (matchCount <= 0) {
+                    if (
+                        matchCount <=
+                        competition.groupsConfig.matchesBetweenPlayers - 1
+                    ) {
                         match.round = playersGroup.groupName;
                     }
                 }

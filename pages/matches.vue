@@ -113,10 +113,16 @@
                     </div>
                 </template>
 
-                <template #shoutcasters="{ value }">
-                    <span v-if="value !== null">{{
-                        (value as string[]).join(", ")
-                    }}</span>
+                <template #shoutcasters="{ value, row }">
+                    <a
+                        v-if="value !== null"
+                        :href="row.vodLink"
+                        :class="{
+                            'underline text-blue-500': row.vodLink != null,
+                        }"
+                    >
+                        {{ (value as string[]).join(", ") }}
+                    </a>
                 </template>
 
                 <template #actions="{ row }">

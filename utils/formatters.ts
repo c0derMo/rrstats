@@ -4,13 +4,13 @@ export function formatPlacement(placement?: number): string {
     if (placement == null) {
         return "GS";
     }
-    if (placement % 10 === 1) {
+    if (placement % 10 === 1 && placement !== 11) {
         return `${placement}st`;
     }
-    if (placement % 10 === 2) {
+    if (placement % 10 === 2 && placement !== 12) {
         return `${placement}nd`;
     }
-    if (placement % 10 === 3) {
+    if (placement % 10 === 3 && placement !== 13) {
         return `${placement}rd`;
     }
     return `${placement}th`;

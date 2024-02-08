@@ -37,8 +37,16 @@
         </template>
 
         <template #match="{ value }">
-            {{ matches[value as string].competition }}
-            {{ matches[value as string].round }}
+            <a
+                :href="matches[value as string].vodLink"
+                :class="{
+                    'underline text-blue-500':
+                        matches[value as string].vodLink != null,
+                }"
+            >
+                {{ matches[value as string].competition }}
+                {{ matches[value as string].round }}
+            </a>
         </template>
 
         <template #more="{ row }">
