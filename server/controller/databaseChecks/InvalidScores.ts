@@ -15,7 +15,10 @@ export class InvalidScores implements DatabaseCheck {
         description: "Checks for invalid scores, map- & match winners",
     };
 
-    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
+    async execute(
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ): Promise<CheckResult> {
         const players = await Player.find({
             select: ["uuid", "primaryName"],
         });
@@ -34,7 +37,7 @@ export class InvalidScores implements DatabaseCheck {
             const totalScore = match.playerOneScore + match.playerTwoScore;
             if (totalScore === 1) continue;
 
-            if (totalScore % 2 !== 0) {
+            if (totalScore % 2 !== 0 && !knownIssues.includes(match.uuid)) {
                 issues.push(
                     `Match ${this.formatMatch(
                         match,
@@ -58,7 +61,10 @@ export class InvalidScores implements DatabaseCheck {
                     p2MapScore += 1;
                 }
             }
-            if (p1MapScore !== match.playerOneScore) {
+            if (
+                p1MapScore !== match.playerOneScore &&
+                !knownIssues.includes(match.uuid)
+            ) {
                 errors.push(
                     `${
                         uuidsToPlayers[match.playerOne]
@@ -70,7 +76,10 @@ export class InvalidScores implements DatabaseCheck {
                     } but won ${p1MapScore} worth of maps`,
                 );
             }
-            if (p2MapScore !== match.playerTwoScore) {
+            if (
+                p2MapScore !== match.playerTwoScore &&
+                !knownIssues.includes(match.uuid)
+            ) {
                 errors.push(
                     `${
                         uuidsToPlayers[match.playerTwo]

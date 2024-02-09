@@ -25,9 +25,7 @@ export default defineEventHandler(async (event) => {
         where: { discordId: playerDiscordId },
     });
     if (player == null) {
-        throw createError({
-            statusCode: 404,
-        });
+        return "Roulette Rookie";
     }
 
     if (

@@ -16,7 +16,10 @@ export class MissingVODs implements DatabaseCheck {
 
     private uuidsToPlayers: Record<string, string> = {};
 
-    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
+    async execute(
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ): Promise<CheckResult> {
         this.uuidsToPlayers = {};
         const players = await Player.find({
             select: ["uuid", "primaryName"],
@@ -31,17 +34,45 @@ export class MissingVODs implements DatabaseCheck {
                 {
                     vodLink: IsNull(),
                     competition: Not(In(ignoredCompetitions)),
+                    uuid: Not(In(knownIssues)),
                 },
-                { vodLink: "", competition: Not(In(ignoredCompetitions)) },
+                {
+                    vodLink: "",
+                    competition: Not(In(ignoredCompetitions)),
+                    uuid: Not(In(knownIssues)),
+                },
+            ],
+        });
+        const matchesWithoutShoutcaster = await Match.find({
+            select: ["playerOne", "playerTwo", "competition", "round"],
+            where: [
+                {
+                    shoutcasters: IsNull(),
+                    competition: Not(In(ignoredCompetitions)),
+                    uuid: Not(In(knownIssues)),
+                },
+                {
+                    shoutcasters: "",
+                    competition: Not(In(ignoredCompetitions)),
+                    uuid: Not(In(knownIssues)),
+                },
             ],
         });
 
-        const errors = matchesWithoutVODs.map((match) => {
+        const errors = matchesWithoutShoutcaster.map((match) => {
+            return `Match ${this.uuidsToPlayers[match.playerOne]} vs ${
+                this.uuidsToPlayers[match.playerTwo]
+            } (${match.competition} ${
+                match.round
+            }) has no assigned shoutcasters.`;
+        });
+
+        const issues = matchesWithoutVODs.map((match) => {
             return `Match ${this.uuidsToPlayers[match.playerOne]} vs ${
                 this.uuidsToPlayers[match.playerTwo]
             } (${match.competition} ${match.round}) has no assigned VOD.`;
         });
 
-        return { name: "Missing VODs", issues: [], errors };
+        return { name: "Missing VODs", issues, errors };
     }
 }

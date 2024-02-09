@@ -19,7 +19,10 @@ export class RecordMatches implements DatabaseCheck {
 
     private uuidsToPlayers: Record<string, string> = {};
 
-    async execute(): Promise<CheckResult> {
+    async execute(
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ): Promise<CheckResult> {
         this.uuidsToPlayers = {};
         const players = await Player.find({
             select: ["uuid", "primaryName"],
@@ -35,6 +38,8 @@ export class RecordMatches implements DatabaseCheck {
             select: ["match", "map", "player", "timestamp", "mapIndex"],
         });
         for (const record of mapRecords) {
+            if (knownIssues.includes(`${record.map}:${record.timestamp}`))
+                continue;
             const match = await Match.findOne({
                 select: ["playerOne", "playerTwo", "playedMaps"],
                 where: { uuid: record.match },
@@ -89,6 +94,8 @@ export class RecordMatches implements DatabaseCheck {
             select: ["match", "record", "players", "timestamp", "maps"],
         });
         for (const record of genericRecords) {
+            if (knownIssues.includes(`${record.record}:${record.timestamp}`))
+                continue;
             const match = await Match.findOne({
                 select: ["playerOne", "playerTwo", "playedMaps"],
                 where: { uuid: record.match },

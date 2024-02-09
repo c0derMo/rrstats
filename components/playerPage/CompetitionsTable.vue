@@ -12,7 +12,7 @@
             </template>
 
             <template #placement="{ row }">
-                <Tag class="!py-0" :color="getTagColor(row.placement)">
+                <Tag :color="getTagColor(row.placement)" :narrow="true">
                     {{ formatPlacement(row.placement) }}
                 </Tag>
             </template>

@@ -1,100 +1,160 @@
 <template>
-    <DialogComponent>
-        <CardComponent class="max-h-screen">
-            <h1 class="text-3xl text-center">
-                <Tag :color="getPlayerColor(1)">
-                    {{ opponents[match.playerOne] }}
-                </Tag>
+    <DialogComponent
+        dialog-class="min-w-[45%]"
+        @click-outside="$emit('clickOutside')"
+    >
+        <CardComponent class="max-h-screen flex flex-col gap-5">
+            <h1 class="text-3xl flex flex-row md:gap-10 gap-1">
+                <div class="flex-1 text-right">
+                    <Tag :color="getPlayerColor(1)">
+                        {{ opponents[match.playerOne] }}
+                    </Tag>
+                </div>
                 <span
-                    class="md:mx-10 mx-1 text-xl md:text-3xl"
+                    class="text-xl md:text-3xl"
                     :class="{ 'text-gray-500': match.annulated }"
                     >{{ match.playerOneScore }} -
                     {{ match.playerTwoScore }}</span
                 >
-                <Tag :color="getPlayerColor(2)">
-                    {{ opponents[match.playerTwo] }}
-                </Tag>
+                <div class="flex-1 text-left">
+                    <Tag :color="getPlayerColor(2)">
+                        {{ opponents[match.playerTwo] }}
+                    </Tag>
+                </div>
             </h1>
             <div v-if="match.annulated" class="text-center w-full italic">
                 Match was annulated
             </div>
-            <div class="flex flex-row justify-items-stretch my-5 font-bold">
-                <div class="w-full text-center">
-                    <span v-if="match.shoutcasters != null"
-                        >Shoutcast: {{ match.shoutcasters.join(", ") }}</span
-                    >
-                </div>
-                <div class="w-full text-center">
-                    <span
-                        v-if="match.vodLink != null"
-                        class="underline text-blue-500"
-                    >
-                        <a :href="match.vodLink">VOD</a>
+            <div class="flex flex-row font-bold text-center">
+                <div class="w-full">
+                    {{ match.competition }}
+                    <span v-if="match.platform != null">
+                        ({{ match.platform }})
                     </span>
+                    -
+                    {{ match.round }}
+                </div>
+                <div class="w-full">
+                    {{
+                        DateTime.fromMillis(match.timestamp)
+                            .setLocale(useLocale().value)
+                            .toLocaleString(DateTime.DATETIME_FULL)
+                    }}
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-x-32 gap-y-3 my-5">
-                <div v-if="match.bannedMaps.length > 0">
-                    Ban:
-                    <Tag
-                        v-for="(ban, idx) in playerOneBans"
-                        :key="idx"
-                        :color="getMap(ban.map)!.color"
-                        >{{ getMap(ban.map)!.name }}</Tag
-                    >
+            <div
+                v-if="match.shoutcasters != null"
+                class="flex flex-row font-bold text-center"
+            >
+                <div class="w-full text-center">
+                    Shoutcasted by {{ match.shoutcasters.join(", ") }}
                 </div>
-                <div v-if="match.bannedMaps.length > 0">
-                    Ban:
-                    <Tag
-                        v-for="(ban, idx) in playerTwoBans"
-                        :key="idx"
-                        :color="getMap(ban.map)!.color"
-                        >{{ getMap(ban.map)!.name }}</Tag
-                    >
+                <div class="w-full text-center">
+                    <span v-if="match.vodLink != null">
+                        Shoutcast available:
+                        <a class="underline text-blue-500" :href="match.vodLink"
+                            >VOD</a
+                        >
+                    </span>
+                    <span v-else> Shoutcast not available </span>
                 </div>
             </div>
-            <div class="grid grid-cols-6 gap-2">
+
+            <div
+                v-if="match.bannedMaps.length > 0"
+                class="text-center font-bold"
+            >
+                Bans
+            </div>
+
+            <div v-if="match.bannedMaps.length > 0" class="grid grid-cols-3">
+                <div class="flex flex-col gap-2 text-center">
+                    <Tag
+                        v-for="(ban, idx) of playerOneBans"
+                        :key="idx"
+                        :color="getMap(ban.map)!.color"
+                        :narrow="true"
+                        class="w-fit mx-auto"
+                    >
+                        {{ getMap(ban.map)!.name }}
+                    </Tag>
+                </div>
+                <div></div>
+                <div class="flex flex-col gap-2 text-center">
+                    <Tag
+                        v-for="(ban, idx) of playerTwoBans"
+                        :key="idx"
+                        :color="getMap(ban.map)!.color"
+                        :narrow="true"
+                        class="w-fit mx-auto"
+                    >
+                        {{ getMap(ban.map)!.name }}
+                    </Tag>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-y-1 gap-x-20">
+                <div class="font-bold">Map</div>
+                <div class="font-bold">Picked by</div>
+                <div class="font-bold">Won by</div>
                 <template v-for="(map, idx) in match.playedMaps" :key="idx">
-                    <div class="col-span-2">
-                        Map:
-                        <Tag :color="getMap(map.map)?.color">{{
-                            getMap(map.map)?.name
-                        }}</Tag>
+                    <div>
+                        <Tag :color="getMap(map.map)!.color">
+                            {{ getMap(map.map)!.name }}
+                        </Tag>
                     </div>
-                    <div class="col-span-2">
-                        Picked by:
-                        <Tag :color="getPlayerColor(map.picked)">{{
-                            getPlayerName(map.picked)
-                        }}</Tag>
+                    <div>
+                        <Tag :color="getPlayerColor(map.picked)">
+                            {{ getPlayerName(map.picked, "Random") }}
+                        </Tag>
                     </div>
-                    <div class="col-span-2">
-                        Won by:
-                        <Tag :color="getPlayerColor(map.winner)">{{
-                            getPlayerName(map.winner as WinningPlayer)
-                        }}</Tag>
+                    <div>
+                        <Tag :color="getPlayerColor(map.winner)">
+                            {{ getPlayerName(map.winner, "Draw") }}
+                        </Tag>
                         <span v-if="map.forfeit">(Won by forfeit)</span>
                     </div>
-                    <div v-if="map.spin != null" class="col-span-6">
+                    <div v-if="map.spin != null" class="col-span-3">
                         <TextualSpin :spin="map.spin" />
                     </div>
-                    <div class="col-span-3">
-                        Spin started at:
-                        {{
-                            map.startedTimestamp > 0
-                                ? timestampToLocale(map.startedTimestamp)
-                                : "unknown"
-                        }}
-                    </div>
-                    <div class="col-span-3 mb-5">
-                        Finished after:
-                        {{
-                            map.endedTimestamp > 0
-                                ? durationToLocale(
-                                      map.endedTimestamp - map.startedTimestamp,
-                                  )
-                                : "unknown"
-                        }}
-                        <span v-if="!map.timeAccurate"> (estimate)</span>
+                    <div
+                        class="col-span-3 border-b border-gray-500 pb-3 mb-3 text-center"
+                    >
+                        <TooltipComponent>
+                            RTA:
+                            {{
+                                map.endedTimestamp > 0
+                                    ? durationToLocale(
+                                          map.endedTimestamp -
+                                              map.startedTimestamp,
+                                      )
+                                    : "unknown"
+                            }}
+                            <span
+                                v-if="
+                                    map.endedTimestamp > 0 && !map.timeAccurate
+                                "
+                            >
+                                (estimate)</span
+                            >
+
+                            <template #tooltip>
+                                Spin started at:
+                                {{
+                                    map.startedTimestamp > 0
+                                        ? timestampToLocale(
+                                              map.startedTimestamp,
+                                          )
+                                        : "unknown"
+                                }}<br />
+                                Spin ended at:
+                                {{
+                                    map.endedTimestamp > 0
+                                        ? timestampToLocale(map.endedTimestamp)
+                                        : "unknown"
+                                }}
+                            </template>
+                        </TooltipComponent>
                     </div>
                 </template>
             </div>
@@ -137,7 +197,10 @@ const playerTwoBans = computed(() => {
     );
 });
 
-function getPlayerName(player: ChoosingPlayer | WinningPlayer): string {
+function getPlayerName(
+    player: ChoosingPlayer | WinningPlayer,
+    randomDrawOption: string,
+): string {
     switch (player) {
         case ChoosingPlayer.PLAYER_ONE:
         case WinningPlayer.PLAYER_ONE:
@@ -146,9 +209,8 @@ function getPlayerName(player: ChoosingPlayer | WinningPlayer): string {
         case WinningPlayer.PLAYER_TWO:
             return props.opponents[props.match.playerTwo] || "unknown";
         case ChoosingPlayer.RANDOM:
-            return "Random";
         case WinningPlayer.DRAW:
-            return "Draw";
+            return randomDrawOption;
     }
 }
 

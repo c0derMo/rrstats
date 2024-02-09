@@ -20,7 +20,10 @@ export interface CheckInfo {
 }
 
 export interface DatabaseCheck {
-    execute: (ignoredCompetitions: string[]) => Promise<CheckResult>;
+    execute: (
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ) => Promise<CheckResult>;
     info: CheckInfo;
 }
 
@@ -43,14 +46,25 @@ export default class DatabaseCheckController {
     static async runChecks(
         checks: string[],
         ignoredCompetitions: string[],
+        knownIssues: string,
     ): Promise<CheckResult[]> {
         const checksToRun = this.allChecks.filter((check) =>
             checks.includes(check.info.id),
         );
 
+        const knownIssuesArray = knownIssues.split(";");
+
         const result: CheckResult[] = [];
         for (const check of checksToRun) {
-            result.push(await check.execute(ignoredCompetitions));
+            const knownIssuesForThisCheck = knownIssuesArray
+                .filter((issue) => issue.startsWith(check.info.id))
+                .map((issue) => issue.substring(check.info.id.length + 1));
+            result.push(
+                await check.execute(
+                    ignoredCompetitions,
+                    knownIssuesForThisCheck,
+                ),
+            );
         }
 
         return result;

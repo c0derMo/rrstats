@@ -14,7 +14,10 @@ export class InvalidPlacements implements DatabaseCheck {
         description: "Checks for placements to nonexistant players",
     };
 
-    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
+    async execute(
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ): Promise<CheckResult> {
         const placements = await CompetitionPlacement.find({
             where: { competition: Not(In(ignoredCompetitions)) },
         });
@@ -26,7 +29,12 @@ export class InvalidPlacements implements DatabaseCheck {
 
         const errors: string[] = [];
         for (const placement of placements) {
-            if (!players.includes(placement.player)) {
+            if (
+                !players.includes(placement.player) &&
+                !knownIssues.includes(
+                    `${placement.player}:${placement.competition}`,
+                )
+            ) {
                 errors.push(
                     `${placement.competition} has placement for ${
                         placement.player

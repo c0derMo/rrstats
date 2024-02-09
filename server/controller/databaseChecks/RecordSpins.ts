@@ -6,7 +6,7 @@ import {
 } from "../DatabaseCheckController";
 import { MapRecord } from "~/server/model/Record";
 import { Match } from "~/server/model/Match";
-import { getMap } from "~/utils/mapUtils";
+import { getAllMaps, getMap } from "~/utils/mapUtils";
 import { DateTime } from "luxon";
 import { IMapRecord } from "~/utils/interfaces/IRecord";
 import { IMatch } from "~/utils/interfaces/IMatch";
@@ -20,7 +20,10 @@ export class RecordSpins implements DatabaseCheck {
 
     private uuidsToPlayers: Record<string, string> = {};
 
-    async execute(): Promise<CheckResult> {
+    async execute(
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ): Promise<CheckResult> {
         this.uuidsToPlayers = {};
         const players = await Player.find({
             select: ["uuid", "primaryName"],
@@ -32,10 +35,24 @@ export class RecordSpins implements DatabaseCheck {
         const issues: string[] = [];
         const errors: string[] = [];
 
-        const mapRecords = await MapRecord.find({
-            select: ["match", "map", "player", "timestamp", "mapIndex"],
-        });
+        // We only want to check top map records, so finding them is a bit... weird
+        const mapRecords: IMapRecord[] = [];
+        for (const map of getAllMaps()) {
+            const topRecord = await MapRecord.findOne({
+                where: { map: map },
+                order: { timestamp: "DESC" },
+                select: ["time"],
+            });
+            if (topRecord == null) continue;
+            const mapRecords = await MapRecord.find({
+                where: { map: map, time: topRecord.time },
+            });
+            mapRecords.push(...mapRecords);
+        }
+
         for (const record of mapRecords) {
+            if (knownIssues.includes(`${record.map}:${record.timestamp}`))
+                continue;
             const match = await Match.findOne({
                 select: [
                     "playerOne",

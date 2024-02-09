@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
         return await DatabaseCheckController.runChecks(
             body.checks as string[],
             (body.ignoredCompetitions as string[]) ?? [],
+            (body.knownIssues as string) ?? "",
         );
     } catch (e) {
         console.log(e);

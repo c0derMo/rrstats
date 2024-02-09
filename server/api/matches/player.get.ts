@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
             "playerTwo",
             "playedMaps",
             "round",
+            "platform",
             "playerOneScore",
             "playerTwoScore",
         ],

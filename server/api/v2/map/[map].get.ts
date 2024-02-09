@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const mapName = getRouterParam(event, "map");
+    const mapName = decodeURIComponent(getRouterParam(event, "map") as string);
 
     const map = getMapByName(mapName ?? "");
     if (map == null) {

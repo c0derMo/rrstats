@@ -15,7 +15,10 @@ export class MissingPlacements implements DatabaseCheck {
             "Checks for players that have matches in a tournament, but no assigned placement",
     };
 
-    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
+    async execute(
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ): Promise<CheckResult> {
         const players = await Player.find({
             select: ["uuid", "primaryName"],
         });
@@ -52,7 +55,10 @@ export class MissingPlacements implements DatabaseCheck {
                 if (ignoredCompetitions.includes(competition)) {
                     continue;
                 }
-                if (!placements.includes(competition)) {
+                if (
+                    !placements.includes(competition) &&
+                    !knownIssues.includes(`${player.uuid}:${competition}`)
+                ) {
                     issues.push(
                         `Player ${player.primaryName} is missing placement for competition ${competition}`,
                     );

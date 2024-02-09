@@ -42,7 +42,7 @@
 import { isRetiredRecord } from "~/utils/interfaces/IRecord";
 
 useHead({
-    title: "Records - RRStats v3",
+    title: "Records - RRStats",
 });
 
 const records = (await useFetch("/api/records")).data;

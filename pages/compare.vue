@@ -105,7 +105,7 @@ interface ComparisonData {
 }
 
 useHead({
-    title: "Comparison - RRStats v3",
+    title: "Comparison - RRStats",
 });
 
 const players = (await useFetch("/api/player/list")).data as Ref<string[]>;

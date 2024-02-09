@@ -15,7 +15,10 @@ export class MissingPlayers implements DatabaseCheck {
             "Checks for matches that have players without Player-object",
     };
 
-    async execute(ignoredCompetitions: string[]): Promise<CheckResult> {
+    async execute(
+        ignoredCompetitions: string[],
+        knownIssues: string[],
+    ): Promise<CheckResult> {
         const allMatches = await Match.find({
             select: ["uuid", "playerOne", "playerTwo", "competition", "round"],
             where: { competition: Not(In(ignoredCompetitions)) },
@@ -40,6 +43,7 @@ export class MissingPlayers implements DatabaseCheck {
             const match = allMatches.find(
                 (match) => match.playerOne === uuid || match.playerTwo === uuid,
             )!;
+            if (knownIssues.includes(uuid)) continue;
             errors.push(
                 `Player ${uuid} has no player object but plays in ${match.uuid} (${match.competition}, ${match.round})`,
             );

@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
             "bannedMaps",
             "competition",
             "platform",
+            "round",
             "playedMaps",
             "playerOne",
             "playerTwo",

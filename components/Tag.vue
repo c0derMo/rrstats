@@ -1,7 +1,7 @@
 <template>
     <div
-        class="rounded-full px-3 py-1 whitespace-nowrap inline-block"
-        :class="{ border: borderColor != '' }"
+        class="rounded-full px-3 whitespace-nowrap inline-block"
+        :class="{ border: borderColor != '', 'py-1': !narrow }"
         :style="colorStyle"
     >
         <slot />
@@ -19,6 +19,10 @@ const props = defineProps({
         type: String,
         required: false,
         default: "",
+    },
+    narrow: {
+        type: Boolean,
+        default: false,
     },
 });
 
