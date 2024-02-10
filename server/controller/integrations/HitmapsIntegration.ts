@@ -84,7 +84,9 @@ export default class HitmapsIntegration {
                 this._updateHitmapsTournament(
                     hitmapsSlug,
                     competitionSlug,
-                ).then(() => {
+                ).catch((e: Error) => {
+                    console.log(`Error trying to fetch data from hitmaps: ${e.message}`);
+                }).finally(() => {
                     delete this.promises[hitmapsSlug];
                     resolve();
                 });
