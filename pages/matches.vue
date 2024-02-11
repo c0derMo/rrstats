@@ -49,7 +49,7 @@
                     {{
                         DateTime.fromMillis(value as number)
                             .setLocale(useLocale().value)
-                            .toLocaleString(DateTime.DATETIME_FULL)
+                            .toLocaleString(DateTime.DATETIME_MED)
                     }}
                 </template>
 
@@ -118,7 +118,7 @@
                         v-if="value !== null"
                         :href="row.vodLink"
                         :class="{
-                            'underline text-blue-500': row.vodLink != null,
+                            'underline text-blue-600 dark:text-blue-400': row.vodLink != null,
                         }"
                     >
                         {{ (value as string[]).join(", ") }}
@@ -154,6 +154,7 @@ const matchToShow: Ref<IMatch | null> = ref(null);
 
 const headers = [
     { title: "Date & Time", key: "timestamp" },
+    { title: "Round", key: "round" },
     { title: "Player 1", key: "playerOne" },
     { title: "", key: "score" },
     { title: "Player 2", key: "playerTwo" },
