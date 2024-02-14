@@ -17,10 +17,14 @@
                 {{ competition?.name }} - Matches
             </h1>
 
+            <UpcomingMatches 
+                v-if="competition?.hitmapsSlug != null && competition?.updateWithHitmaps"
+                :tournament-slug="competition.hitmapsSlug"
+            />
+
             <GroupsTables
                 v-if="
-                    competition?.groupsConfig !== null &&
-                    competition?.groupsConfig !== undefined
+                    competition?.groupsConfig != null
                 "
                 :groups-info="competition.groupsConfig"
                 :matches="sortedMatches"

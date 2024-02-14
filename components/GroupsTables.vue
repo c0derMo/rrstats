@@ -1,5 +1,5 @@
 <template>
-    <AccordionComponent>
+    <AccordionComponent class="!bg-opacity-50">
         <template #title> Groups </template>
 
         <div class="grid grid-cols-3 gap-5">

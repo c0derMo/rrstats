@@ -1,6 +1,6 @@
 <template>
     <CardComponent>
-        <div class="border-b" @click="showContent = !showContent">
+        <div class="border-b border-gray-500" @click="showContent = !showContent">
             <slot name="title" />
 
             <FontAwesomeIcon
@@ -12,12 +12,19 @@
             />
         </div>
 
-        <div class="overflow-hidden" :class="{ 'h-0': !showContent }">
+        <div class="overflow-hidden transition-[max-height] duration-200" :class="{ 'max-h-0': !showContent, 'max-h-[2000px]': showContent }">
             <slot />
         </div>
     </CardComponent>
 </template>
 
 <script setup lang="ts">
-const showContent = ref(false);
+const props = defineProps({
+    expanded: {
+        type: Boolean,
+        default: false
+    }
+});
+
+const showContent = ref(props.expanded);
 </script>
