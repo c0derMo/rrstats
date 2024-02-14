@@ -42,6 +42,7 @@
                 >!
             </div>
 
+            <IndefiniteProgressBar v-if="stillLoading" />
             <DataTableComponent
                 :headers="headers"
                 :rows="sortedMatches"
@@ -155,6 +156,7 @@ import {
 } from "~/utils/interfaces/IMatch";
 
 const matchToShow: Ref<IMatch | null> = ref(null);
+const stillLoading = ref(true);
 
 const headers = [
     { title: "Date & Time", key: "timestamp" },
@@ -169,9 +171,9 @@ const headers = [
 ];
 
 const tournament = useRoute().query.tournament;
-const data = (await useFetch("/api/matches", { query: { tournament } })).data;
+const data = ref((await useFetch("/api/matches", { query: { tournament } })).data);
 const competition = (
-    await useFetch("/api/competitions", { query: { tag: tournament } })
+    await useFetch("/api/competitions", { query: { tag: tournament, initialLoad: true } })
 ).data as Ref<ICompetition | null>;
 
 useHead({
@@ -202,4 +204,12 @@ function getMapWinner(map: RRMap, match: IMatch): string {
         return data.value?.players[match.playerTwo] ?? "Unknown";
     return "Unknown";
 }
+
+onMounted(async () => {
+    await $fetch("/api/competitions", { query: { tag: tournament } });
+    const matchRequest = await $fetch("/api/matches", { query: { tournament } });
+
+    data.value = matchRequest;
+    stillLoading.value = false;
+})
 </script>

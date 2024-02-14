@@ -18,10 +18,13 @@ export default defineEventHandler(async (event) => {
         competition?.updateWithHitmaps &&
         competition.hitmapsSlug !== undefined
     ) {
-        await HitmapsIntegration.updateHitmapsTournament(
+        const promise = HitmapsIntegration.updateHitmapsTournament(
             competition.hitmapsSlug,
             competition.tag,
         );
+        if (query.initialLoad == null) {
+            await promise;
+        }
     }
 
     return competition;
