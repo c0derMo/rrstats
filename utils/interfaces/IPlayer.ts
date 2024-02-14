@@ -5,6 +5,7 @@ export type IPlayer = {
     alternativeNames: string[];
 
     discordId?: string;
+    nationality?: string;
 
     title?: string;
     hasCustomTitle?: boolean;

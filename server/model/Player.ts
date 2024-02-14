@@ -24,6 +24,8 @@ export class Player extends BaseEntity implements IPlayer {
 
     @Column("text", { nullable: true })
     discordId?: string;
+    @Column("text", { nullable: true })
+    nationality?: string;
 
     @Column("text", { nullable: true })
     title?: string;
@@ -44,6 +46,10 @@ export class Player extends BaseEntity implements IPlayer {
         if (this.title === "") {
             this.title = undefined;
         }
+        if (this.nationality === "") {
+            this.nationality = undefined;
+        }
+        this.nationality = this.nationality?.toLowerCase();
     }
 }
 

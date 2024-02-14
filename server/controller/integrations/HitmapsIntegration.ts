@@ -135,11 +135,13 @@ export default class HitmapsIntegration {
     private static async createNewPlayer(
         primaryName: string,
         discordId: string,
+        nationality?: string
     ): Promise<string> {
         const player = new Player();
         player.primaryName = primaryName;
         player.discordId = discordId;
         player.alternativeNames = [];
+        player.nationality = nationality?.toLowerCase();
         await player.save();
         console.log("Creating new player " + primaryName);
         return player.uuid;
@@ -148,6 +150,7 @@ export default class HitmapsIntegration {
     private static async createOrFindPlayer(
         discordId: string,
         name: string,
+        nationality?: string
     ): Promise<string> {
         const playerInDb = await Player.findOne({
             where: { discordId },
@@ -155,7 +158,7 @@ export default class HitmapsIntegration {
         });
         if (playerInDb === null) {
             // Player doesn't exist - creating new
-            return await this.createNewPlayer(name, discordId);
+            return await this.createNewPlayer(name, discordId, nationality);
         } else {
             if (playerInDb.primaryName != name) {
                 const previousName = playerInDb.primaryName;

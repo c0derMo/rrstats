@@ -27,6 +27,12 @@
                 />
 
                 <TextInputComponent
+                    v-model="playerData.nationality"
+                    placeholder="Nationality"
+                    class="w-full"
+                />
+
+                <TextInputComponent
                     v-model="playerData.title"
                     placeholder="Override Accolade"
                     class="w-full"

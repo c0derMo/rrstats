@@ -5,11 +5,19 @@
             <div class="flex flex-row gap-5 justify-center">
                 <CardComponent class="lg:w-3/5">
                     <div class="flex md:flex-row flex-col">
-                        <img
-                            class="rounded-full w-20 h-20 self-center"
-                            :src="avatar!"
-                            alt="Player Profile Picture"
-                        />
+                        <div class="w-20 h-20 self-center relative">
+                            <img
+                                class="rounded-full self-center"
+                                :src="avatar!"
+                                alt="Player Profile Picture"
+                            />
+                            <img
+                                v-if="player != null && player.nationality != null"
+                                class="absolute bottom-1 right-1 w-5 h-5"
+                                :src="`https://flagicons.lipis.dev/flags/4x3/${player.nationality}.svg`"
+                                alt="Player nationaltiy"
+                            />
+                        </div>
                         <div class="flex-grow ml-5">
                             <h1 class="text-5xl">{{ route.params.player }}</h1>
                             <h3
