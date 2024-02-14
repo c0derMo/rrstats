@@ -1,5 +1,6 @@
 import HitmapsIntegration from "~/server/controller/integrations/HitmapsIntegration";
 import { Competition } from "~/server/model/Competition";
+import { ICompetition } from "~/utils/interfaces/ICompetition";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
@@ -14,6 +15,13 @@ export default defineEventHandler(async (event) => {
     const competition = await Competition.findOneBy({
         tag: query.tag as string,
     });
+
+    if (competition == null) {
+        return null;
+    }
+
+    let shouldRetry = false;
+
     if (
         competition?.updateWithHitmaps &&
         competition.hitmapsSlug !== undefined
@@ -24,8 +32,13 @@ export default defineEventHandler(async (event) => {
         );
         if (query.initialLoad == null) {
             await promise;
+        } else {
+            shouldRetry = true;
         }
     }
 
-    return competition;
+    return {
+        ...competition,
+        shouldRetry: shouldRetry
+    } as ICompetition & { shouldRetry: boolean };
 });

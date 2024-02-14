@@ -171,7 +171,7 @@ const competitions = (await useFetch("/api/competitions/list")).data;
 const avatar = (
     await useFetch(`/api/player/avatar?player=${route.params.player}`)
 ).data;
-const stillLoading = ref(true);
+const stillLoading = ref(player.value?.shouldRetry ?? false);
 
 const wtl = computed(() => {
     const wtl = calculateWTL(
@@ -251,11 +251,13 @@ useSeoMeta({
 });
 
 onMounted(async () => {
-    const playerRequest = await $fetch(`/api/player/`, {
-        query: { player: route.params.player },
-    });
-
-    player.value = playerRequest;
-    stillLoading.value = false;
+    if (player.value?.shouldRetry) {
+        const playerRequest = await $fetch(`/api/player/`, {
+            query: { player: route.params.player },
+        });
+    
+        player.value = playerRequest;
+        stillLoading.value = false;
+    }
 });
 </script>

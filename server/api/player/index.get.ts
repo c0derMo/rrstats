@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const initialLoad = query.initialLoad != null;
+    let shouldRetry = false;
 
     const competitionsToUpdate = await Competition.find({
         where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) },
@@ -28,6 +29,8 @@ export default defineEventHandler(async (event) => {
         );
         if (!initialLoad) {
             await updateRequest;
+        } else {
+            shouldRetry = true;
         }
     }
 
@@ -73,5 +76,6 @@ export default defineEventHandler(async (event) => {
         opponents,
         placements,
         competitions,
+        shouldRetry,
     };
 });
