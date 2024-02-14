@@ -81,15 +81,16 @@ export default class HitmapsIntegration {
 
         if (this.promises[hitmapsSlug] === undefined) {
             this.promises[hitmapsSlug] = new Promise((resolve) => {
-                this._updateHitmapsTournament(
-                    hitmapsSlug,
-                    competitionSlug,
-                ).catch((e: Error) => {
-                    console.log(`Error trying to fetch data from hitmaps: ${e.message}`);
-                }).finally(() => {
-                    delete this.promises[hitmapsSlug];
-                    resolve();
-                });
+                this._updateHitmapsTournament(hitmapsSlug, competitionSlug)
+                    .catch((e: Error) => {
+                        console.log(
+                            `Error trying to fetch data from hitmaps: ${e.message}`,
+                        );
+                    })
+                    .finally(() => {
+                        delete this.promises[hitmapsSlug];
+                        resolve();
+                    });
             });
         }
 
@@ -135,7 +136,7 @@ export default class HitmapsIntegration {
     private static async createNewPlayer(
         primaryName: string,
         discordId: string,
-        nationality?: string
+        nationality?: string,
     ): Promise<string> {
         const player = new Player();
         player.primaryName = primaryName;
@@ -150,7 +151,7 @@ export default class HitmapsIntegration {
     private static async createOrFindPlayer(
         discordId: string,
         name: string,
-        nationality?: string
+        nationality?: string,
     ): Promise<string> {
         const playerInDb = await Player.findOne({
             where: { discordId },

@@ -12,7 +12,9 @@
                                 alt="Player Profile Picture"
                             />
                             <img
-                                v-if="player != null && player.nationality != null"
+                                v-if="
+                                    player != null && player.nationality != null
+                                "
                                 class="absolute bottom-1 right-1 w-5 h-5"
                                 :src="`https://flagicons.lipis.dev/flags/4x3/${player.nationality}.svg`"
                                 alt="Player nationaltiy"
@@ -255,7 +257,7 @@ onMounted(async () => {
         const playerRequest = await $fetch(`/api/player/`, {
             query: { player: route.params.player },
         });
-    
+
         player.value = playerRequest;
         stillLoading.value = false;
     }

@@ -17,15 +17,16 @@
                 {{ competition?.name }} - Matches
             </h1>
 
-            <UpcomingMatches 
-                v-if="competition?.hitmapsSlug != null && competition?.updateWithHitmaps"
+            <UpcomingMatches
+                v-if="
+                    competition?.hitmapsSlug != null &&
+                    competition?.updateWithHitmaps
+                "
                 :tournament-slug="competition.hitmapsSlug"
             />
 
             <GroupsTables
-                v-if="
-                    competition?.groupsConfig != null
-                "
+                v-if="competition?.groupsConfig != null"
                 :groups-info="competition.groupsConfig"
                 :matches="sortedMatches"
                 :players="data?.players ?? {}"
@@ -123,7 +124,8 @@
                         v-if="value !== null"
                         :href="row.vodLink"
                         :class="{
-                            'underline text-blue-600 dark:text-blue-400': row.vodLink != null,
+                            'underline text-blue-600 dark:text-blue-400':
+                                row.vodLink != null,
                         }"
                     >
                         {{ (value as string[]).join(", ") }}
@@ -170,10 +172,14 @@ const headers = [
 ];
 
 const tournament = useRoute().query.tournament;
-const data = ref((await useFetch("/api/matches", { query: { tournament } })).data);
+const data = ref(
+    (await useFetch("/api/matches", { query: { tournament } })).data,
+);
 const competition = (
-    await useFetch("/api/competitions", { query: { tag: tournament, initialLoad: true } })
-).data as Ref<ICompetition & {shouldRetry: boolean} | null>;
+    await useFetch("/api/competitions", {
+        query: { tag: tournament, initialLoad: true },
+    })
+).data as Ref<(ICompetition & { shouldRetry: boolean }) | null>;
 
 const stillLoading = ref(competition.value?.shouldRetry ?? false);
 
@@ -209,10 +215,12 @@ function getMapWinner(map: RRMap, match: IMatch): string {
 onMounted(async () => {
     if (competition.value?.shouldRetry) {
         await $fetch("/api/competitions", { query: { tag: tournament } });
-        const matchRequest = await $fetch("/api/matches", { query: { tournament } });
-    
+        const matchRequest = await $fetch("/api/matches", {
+            query: { tournament },
+        });
+
         data.value = matchRequest;
         stillLoading.value = false;
     }
-})
+});
 </script>

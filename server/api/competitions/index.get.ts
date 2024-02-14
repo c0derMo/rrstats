@@ -39,6 +39,6 @@ export default defineEventHandler(async (event) => {
 
     return {
         ...competition,
-        shouldRetry: shouldRetry
+        shouldRetry: shouldRetry,
     } as ICompetition & { shouldRetry: boolean };
 });
