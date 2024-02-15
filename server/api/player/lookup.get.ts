@@ -1,20 +1,9 @@
 import { In } from "typeorm";
-import { AuthController } from "~/server/controller/AuthController";
 import { Player } from "~/server/model/Player";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
-
-    if (
-        query.players === undefined &&
-        !(await AuthController.isAuthenticated(event.context.session.user))
-    ) {
-        return createError({
-            statusCode: 400,
-            statusMessage: "players must be set",
-        });
-    }
 
     let rawPlayers: IPlayer[];
     if (query.players !== undefined) {

@@ -8,7 +8,11 @@
             @click="showDropdown = !showDropdown && !disabled"
         >
             <div class="flex-grow truncate">
-                {{ selected.length > 0 ? selected.map((s) => getName(s)).join(", ") : emptyText }}
+                {{
+                    selected.length > 0
+                        ? selected.map((s) => getName(s)).join(", ")
+                        : emptyText
+                }}
             </div>
             <FontAwesomeIcon
                 :icon="['fas', 'chevron-down']"
@@ -81,8 +85,8 @@ const props = defineProps({
     },
     emptyText: {
         type: String,
-        default: ""
-    }
+        default: "",
+    },
 });
 
 const emits = defineEmits(["update:modelValue"]);

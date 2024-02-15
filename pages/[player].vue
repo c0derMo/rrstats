@@ -17,7 +17,7 @@
                                 "
                                 class="absolute bottom-1 right-1 w-5 h-5"
                                 :src="`https://flagicons.lipis.dev/flags/4x3/${player.nationality}.svg`"
-                                alt="Player nationaltiy"
+                                alt="Player nationality"
                             />
                         </div>
                         <div class="flex-grow ml-5">

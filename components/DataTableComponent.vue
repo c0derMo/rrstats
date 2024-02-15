@@ -38,7 +38,7 @@
                     :name="header.key"
                     :value="value"
                     :row="row"
-                    :index="index"
+                    :index="startIndex + index"
                 >
                     {{ value }}
                 </slot>

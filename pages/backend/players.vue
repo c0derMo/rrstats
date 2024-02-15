@@ -12,7 +12,11 @@
         <div class="text-3xl bold mt-5">Players</div>
 
         <div class="flex flex-row gap-3 my-5">
-            <MultiSelectComponent v-model="filter" empty-text="Filters:" :items="['No nationality']" />
+            <MultiSelectComponent
+                v-model="filter"
+                empty-text="Filters:"
+                :items="['No nationality']"
+            />
             <TextInputComponent
                 v-model="search"
                 placeholder="Search"
@@ -84,15 +88,17 @@ const filteredPlayers = computed(() => {
     if (search.value !== "") {
         result = result.filter((p) => {
             p.primaryName.includes(search.value) ||
-            p.accolade.includes(search.value)
+                p.accolade.includes(search.value);
         });
     }
 
     if (filter.value.includes("No nationality")) {
-        console.log('Filter nat');
-        console.log(result.map(p => p.nationality));
         result = result.filter((p) => {
-            return p.nationality == null || p.nationality == undefined || p.nationality == "";
+            return (
+                p.nationality == null ||
+                p.nationality == undefined ||
+                p.nationality == ""
+            );
         });
     }
 
