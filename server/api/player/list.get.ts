@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
         (await AuthController.isAuthenticated(event.context.session.user))
     ) {
         const rawPlayers = await Player.find({
-            select: ["uuid", "primaryName", "title"],
+            select: ["uuid", "primaryName", "title", "nationality"],
         });
 
         return rawPlayers;

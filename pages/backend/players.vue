@@ -11,11 +11,14 @@
 
         <div class="text-3xl bold mt-5">Players</div>
 
-        <TextInputComponent
-            v-model="search"
-            placeholder="Search"
-            class="my-5"
-        />
+        <div class="flex flex-row gap-3 my-5">
+            <MultiSelectComponent v-model="filter" empty-text="Filters:" :items="['No nationality']" />
+            <TextInputComponent
+                v-model="search"
+                placeholder="Search"
+                class="flex-grow"
+            />
+        </div>
 
         <DataTableComponent
             :headers="headers"
@@ -67,6 +70,7 @@ const players: Ref<IPlayer[]> = ref([]);
 const playerLoading = ref("");
 const search = ref("");
 const playerToShow: Ref<IPlayer | null> = ref(null);
+const filter: Ref<string[]> = ref([]);
 
 const headers = [
     { key: "primaryName", title: "Name" },
@@ -75,12 +79,24 @@ const headers = [
 ];
 
 const filteredPlayers = computed(() => {
-    if (search.value === "") return players.value;
-    return players.value.filter(
-        (p) =>
+    let result = players.value;
+
+    if (search.value !== "") {
+        result = result.filter((p) => {
             p.primaryName.includes(search.value) ||
-            p.accolade.includes(search.value),
-    );
+            p.accolade.includes(search.value)
+        });
+    }
+
+    if (filter.value.includes("No nationality")) {
+        console.log('Filter nat');
+        console.log(result.map(p => p.nationality));
+        result = result.filter((p) => {
+            return p.nationality == null || p.nationality == undefined || p.nationality == "";
+        });
+    }
+
+    return result;
 });
 
 function newPlayer() {
