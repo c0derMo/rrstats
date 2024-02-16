@@ -12,6 +12,8 @@ import { HitmanMap } from "~/utils/mapUtils";
 import { PlayerWinrate } from "./leaderboardStatistics/PlayerWinrate";
 import { PlayerMapWinrate } from "./leaderboardStatistics/PlayerMapWinrate";
 import { CountryPlayers } from "./leaderboardStatistics/CountryPlayers";
+import { EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from "typeorm";
+import { DateTime } from "luxon";
 
 export interface LeaderboardPlayerStatistic {
     name: string;
@@ -129,9 +131,6 @@ export default class LeaderboardController {
         category: string,
         map?: HitmanMap,
     ): Promise<LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]> {
-        if (Object.keys(LeaderboardController.cache).length <= 0) {
-            await LeaderboardController.recalculate(); // TODO: Remove this again reee
-        }
         if (LeaderboardController.calculationPromise != null) {
             await LeaderboardController.calculationPromise;
         }
@@ -157,6 +156,44 @@ export default class LeaderboardController {
             return LeaderboardController.cache[category] as
                 | LeaderboardCountryEntry[]
                 | LeaderboardPlayerEntry[];
+        }
+    }
+}
+
+@EventSubscriber()
+export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
+    private lastDatabaseWrite: DateTime;
+    private timerStart: DateTime;
+    private invalidationTimer: NodeJS.Timeout | null = null;
+
+    afterInsert(event: InsertEvent<unknown>): void {
+        console.log("Insert event");
+        this.invalidateLeaderboard(event.entity);
+    }
+
+    afterUpdate(event: UpdateEvent<unknown>): void {
+        console.log("Update event");
+        this.invalidateLeaderboard(event.entity);
+    }
+
+    private invalidateLeaderboard(entity: unknown) {
+        if (!(entity instanceof Player || entity instanceof Match || entity instanceof CompetitionPlacement)) {
+            console.log("Update cancelled because of entity check");
+            return;
+        }
+
+        this.lastDatabaseWrite = DateTime.now();
+        if (this.invalidationTimer === null) {
+            this.timerStart = DateTime.now();
+            this.invalidationTimer = setInterval(() => {
+                const startDiff = Math.abs(this.timerStart.diffNow().toMillis());
+                const lastWriteDiff = Math.abs(this.lastDatabaseWrite.diffNow().toMillis());
+                if (startDiff > 1000 || lastWriteDiff > 100) {
+                    void LeaderboardController.recalculate();
+                    clearInterval(this.invalidationTimer as NodeJS.Timeout);
+                    this.invalidationTimer = null;
+                }
+            }, 50);
         }
     }
 }
