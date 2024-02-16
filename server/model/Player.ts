@@ -23,12 +23,12 @@ export class Player extends BaseEntity implements IPlayer {
     alternativeNames: string[];
 
     @Column("text", { nullable: true })
-    discordId?: string;
+    discordId?: string | null;
     @Column("text", { nullable: true })
-    nationality?: string;
+    nationality?: string | null;
 
     @Column("text", { nullable: true })
-    title?: string;
+    title?: string | null;
     @Column("boolean", { nullable: true })
     hasCustomTitle?: boolean;
 
@@ -41,20 +41,21 @@ export class Player extends BaseEntity implements IPlayer {
     @BeforeUpdate()
     checkOptionalFields() {
         if (this.discordId === "") {
-            this.discordId = undefined;
+            this.discordId = null;
         }
         if (this.title === "") {
-            this.title = undefined;
+            this.title = null;
         }
         if (this.nationality === "") {
-            this.nationality = undefined;
+            this.nationality = null;
+        } else {
+            this.nationality = this.nationality?.toLowerCase();
         }
-        this.nationality = this.nationality?.toLowerCase();
     }
 }
 
 @EventSubscriber()
-export class PlayerSubscriber implements EntitySubscriberInterface<Player> {
+export class PlayerAccoladeSubscriber implements EntitySubscriberInterface<Player> {
     listenTo() {
         return Player;
     }

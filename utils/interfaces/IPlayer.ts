@@ -4,10 +4,10 @@ export type IPlayer = {
     primaryName: string;
     alternativeNames: string[];
 
-    discordId?: string;
-    nationality?: string;
+    discordId?: string | null;
+    nationality?: string | null;
 
-    title?: string;
+    title?: string | null;
     hasCustomTitle?: boolean;
 
     accolade: string;

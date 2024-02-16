@@ -21,19 +21,19 @@
                 />
 
                 <TextInputComponent
-                    v-model="playerData.discordId"
+                    v-model="discordId"
                     placeholder="Discord id"
                     class="w-full"
                 />
 
                 <TextInputComponent
-                    v-model="playerData.nationality"
+                    v-model="nationality"
                     placeholder="Nationality"
                     class="w-full"
                 />
 
                 <TextInputComponent
-                    v-model="playerData.title"
+                    v-model="title"
                     placeholder="Override Accolade"
                     class="w-full"
                 />
@@ -85,6 +85,33 @@ const alternativeNames = computed({
             .split(",")
             .map((name) => name.trim());
     },
+});
+
+const discordId = computed({
+    get() {
+        return playerData.value.discordId ?? ""
+    },
+    set(newValue: string) {
+        playerData.value.discordId = newValue;
+    }
+});
+
+const title = computed({
+    get() {
+        return playerData.value.title ?? ""
+    },
+    set(newValue: string) {
+        playerData.value.title = newValue;
+    }
+});
+
+const nationality = computed({
+    get() {
+        return playerData.value.nationality ?? ""
+    },
+    set(newValue: string) {
+        playerData.value.nationality = newValue;
+    }
 });
 
 async function save() {

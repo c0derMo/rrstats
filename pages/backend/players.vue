@@ -87,8 +87,8 @@ const filteredPlayers = computed(() => {
 
     if (search.value !== "") {
         result = result.filter((p) => {
-            p.primaryName.includes(search.value) ||
-                p.accolade.includes(search.value);
+            return p.primaryName.toLowerCase().includes(search.value.toLowerCase()) ||
+                p.accolade.toLowerCase().includes(search.value.toLowerCase());
         });
     }
 
