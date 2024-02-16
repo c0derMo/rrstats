@@ -1,6 +1,6 @@
 import { Match } from "~/server/model/Match";
 import { Player } from "../../model/Player";
-import { In, IsNull, Not } from "typeorm";
+import { In, IsNull, Not, Raw } from "typeorm";
 import HitmapsIntegration from "../../controller/integrations/HitmapsIntegration";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
 import { ICompetition } from "~/utils/interfaces/ICompetition";
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    const player = await Player.findOneBy({ primaryName: playerName });
+    const player = await Player.findOneBy({ primaryName: Raw((player) => `LOWER(${player}) = :name`, { name: playerName.toLowerCase() }) });
     let matches: Match[] = [];
     const opponents: Record<string, string> = {};
     let placements: CompetitionPlacement[] = [];

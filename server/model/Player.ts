@@ -8,6 +8,7 @@ import {
     BeforeInsert,
     BeforeUpdate,
     In,
+    Index,
 } from "typeorm";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { Competition, CompetitionPlacement } from "./Competition";
@@ -17,6 +18,7 @@ export class Player extends BaseEntity implements IPlayer {
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
 
+    @Index()
     @Column("text")
     primaryName: string;
     @Column("simple-json")

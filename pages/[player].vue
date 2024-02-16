@@ -21,7 +21,7 @@
                             />
                         </div>
                         <div class="flex-grow ml-5">
-                            <h1 class="text-5xl">{{ route.params.player }}</h1>
+                            <h1 class="text-5xl">{{ player?.primaryName ?? route.params.player }}</h1>
                             <h3
                                 :class="{ italic: player?.hasCustomTitle }"
                                 class="mt-1"
