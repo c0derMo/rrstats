@@ -12,7 +12,12 @@ import { HitmanMap } from "~/utils/mapUtils";
 import { PlayerWinrate } from "./leaderboardStatistics/PlayerWinrate";
 import { PlayerMapWinrate } from "./leaderboardStatistics/PlayerMapWinrate";
 import { CountryPlayers } from "./leaderboardStatistics/CountryPlayers";
-import { EntitySubscriberInterface, EventSubscriber, InsertEvent, UpdateEvent } from "typeorm";
+import {
+    EntitySubscriberInterface,
+    EventSubscriber,
+    InsertEvent,
+    UpdateEvent,
+} from "typeorm";
 import { DateTime } from "luxon";
 
 export interface LeaderboardPlayerStatistic {
@@ -177,7 +182,13 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
     }
 
     private invalidateLeaderboard(entity: unknown) {
-        if (!(entity instanceof Player || entity instanceof Match || entity instanceof CompetitionPlacement)) {
+        if (
+            !(
+                entity instanceof Player ||
+                entity instanceof Match ||
+                entity instanceof CompetitionPlacement
+            )
+        ) {
             console.log("Update cancelled because of entity check");
             return;
         }
@@ -186,8 +197,12 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
         if (this.invalidationTimer === null) {
             this.timerStart = DateTime.now();
             this.invalidationTimer = setInterval(() => {
-                const startDiff = Math.abs(this.timerStart.diffNow().toMillis());
-                const lastWriteDiff = Math.abs(this.lastDatabaseWrite.diffNow().toMillis());
+                const startDiff = Math.abs(
+                    this.timerStart.diffNow().toMillis(),
+                );
+                const lastWriteDiff = Math.abs(
+                    this.lastDatabaseWrite.diffNow().toMillis(),
+                );
                 if (startDiff > 1000 || lastWriteDiff > 100) {
                     void LeaderboardController.recalculate();
                     clearInterval(this.invalidationTimer as NodeJS.Timeout);

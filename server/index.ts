@@ -6,7 +6,9 @@ import { useLogger } from "@nuxt/kit";
 import { GenericRecord, MapRecord } from "./model/Record";
 import { Competition, CompetitionPlacement } from "./model/Competition";
 import { User } from "./model/User";
-import LeaderboardController, { LeaderboardDatabaseListener } from "./controller/LeaderboardController";
+import LeaderboardController, {
+    LeaderboardDatabaseListener,
+} from "./controller/LeaderboardController";
 
 const logger = useLogger("rrstats:database");
 

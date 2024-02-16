@@ -34,7 +34,11 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    const player = await Player.findOneBy({ primaryName: Raw((player) => `LOWER(${player}) = :name`, { name: playerName.toLowerCase() }) });
+    const player = await Player.findOneBy({
+        primaryName: Raw((player) => `LOWER(${player}) = :name`, {
+            name: playerName.toLowerCase(),
+        }),
+    });
     let matches: Match[] = [];
     const opponents: Record<string, string> = {};
     let placements: CompetitionPlacement[] = [];

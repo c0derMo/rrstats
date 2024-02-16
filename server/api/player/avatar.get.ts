@@ -11,10 +11,16 @@ export default defineEventHandler(async (event) => {
         playerName = "";
     }
 
-    const player = await Player.findOneBy({ primaryName: Raw((player) => `LOWER(${player}) = :name`, { name: playerName.toLowerCase() }) });
+    const player = await Player.findOneBy({
+        primaryName: Raw((player) => `LOWER(${player}) = :name`, {
+            name: playerName.toLowerCase(),
+        }),
+    });
 
     if (player === null) {
         return await DiscordAvatarIntegration.getProfilePicture("");
     }
-    return await DiscordAvatarIntegration.getProfilePicture(player.discordId ?? "");
+    return await DiscordAvatarIntegration.getProfilePicture(
+        player.discordId ?? "",
+    );
 });

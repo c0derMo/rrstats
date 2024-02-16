@@ -89,29 +89,29 @@ const alternativeNames = computed({
 
 const discordId = computed({
     get() {
-        return playerData.value.discordId ?? ""
+        return playerData.value.discordId ?? "";
     },
     set(newValue: string) {
         playerData.value.discordId = newValue;
-    }
+    },
 });
 
 const title = computed({
     get() {
-        return playerData.value.title ?? ""
+        return playerData.value.title ?? "";
     },
     set(newValue: string) {
         playerData.value.title = newValue;
-    }
+    },
 });
 
 const nationality = computed({
     get() {
-        return playerData.value.nationality ?? ""
+        return playerData.value.nationality ?? "";
     },
     set(newValue: string) {
         playerData.value.nationality = newValue;
-    }
+    },
 });
 
 async function save() {

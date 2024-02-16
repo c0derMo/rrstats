@@ -87,8 +87,12 @@ const filteredPlayers = computed(() => {
 
     if (search.value !== "") {
         result = result.filter((p) => {
-            return p.primaryName.toLowerCase().includes(search.value.toLowerCase()) ||
-                p.accolade.toLowerCase().includes(search.value.toLowerCase());
+            return (
+                p.primaryName
+                    .toLowerCase()
+                    .includes(search.value.toLowerCase()) ||
+                p.accolade.toLowerCase().includes(search.value.toLowerCase())
+            );
         });
     }
 
