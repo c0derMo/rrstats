@@ -53,4 +53,14 @@ const headers = [
 const records = (
     await useFetch("/api/records/player", { query: { player: props.player } })
 ).data;
+
+records.value?.sort((a, b) => {
+    if (a.brokenAt === -1 && b.brokenAt !== -1) {
+        return -1;
+    }
+    if (b.brokenAt === -1 && a.brokenAt !== -1) {
+        return 1;
+    }
+    return b.timestamp - a.timestamp;
+});
 </script>

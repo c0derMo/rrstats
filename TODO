@@ -1,6 +1,0 @@
-24s368ms: Remaining steps:
-24s368ms:  - Manually update competition start dates, background images, group configs, hitmaps slugs [images, groups, slugs DONE]
-24s368ms:  - Manually update record timestamps [DONE]
-24s368ms:  - Manually update generic record maps [DONE]
-24s368ms:  - Eventually add old records
-24s368ms:  - Change user auth keys to discord IDs
