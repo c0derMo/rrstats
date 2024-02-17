@@ -8,7 +8,7 @@ export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
     name = "Reverse sweeps";
     hasMaps = false;
     explanatoryText =
-        "Winning the match after losing the first half of the maps.";
+        "Winning the match with 6 or more points after losing the first half of the maps.";
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
         const playerMap: Record<string, number> = {};
@@ -18,6 +18,7 @@ export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
                 match.playerOneScore - match.playerTwoScore,
             );
             if (scoreDelta !== 2) continue;
+            if (match.playerOneScore < 6 && match.playerTwoScore < 6) continue;
 
             const winner =
                 match.playerOneScore > match.playerTwoScore

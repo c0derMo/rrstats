@@ -9,12 +9,16 @@ export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
     hasMaps = false;
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
+        const sortedMatches = [...matches].sort(
+            (a, b) => a.timestamp - b.timestamp,
+        );
+
         const streakInfo: Record<
             string,
             { currentStreak: number; longestStreak: number }
         > = {};
 
-        for (const match of matches) {
+        for (const match of sortedMatches) {
             if (streakInfo[match.playerOne] == null)
                 streakInfo[match.playerOne] = {
                     currentStreak: 0,

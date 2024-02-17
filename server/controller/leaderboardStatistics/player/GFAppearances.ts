@@ -17,7 +17,8 @@ export class PlayerGFAppearances implements LeaderboardPlayerStatistic {
         const appearances: Record<string, Set<string>> = {};
 
         for (const placement of placements) {
-            if ((placement.placement ?? 0) > 2) continue;
+            if (placement.placement == null || placement.placement > 2)
+                continue;
             if (appearances[placement.player] == null)
                 appearances[placement.player] = new Set();
             appearances[placement.player].add(placement.competition);

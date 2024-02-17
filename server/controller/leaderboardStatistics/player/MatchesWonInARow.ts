@@ -9,12 +9,16 @@ export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
     hasMaps = false;
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
+        const sortedMatches = [...matches].sort(
+            (a, b) => a.timestamp - b.timestamp,
+        );
+
         const streakInfo: Record<
             string,
             { currentStreak: number; longestStreak: number }
         > = {};
 
-        for (const match of matches) {
+        for (const match of sortedMatches) {
             if (streakInfo[match.playerOne] == null)
                 streakInfo[match.playerOne] = {
                     currentStreak: 0,
@@ -38,6 +42,23 @@ export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
                 streakInfo[match.playerTwo].currentStreak = 0;
             } else if (match.playerTwoScore > match.playerOneScore) {
                 streakInfo[match.playerTwo].currentStreak += 1;
+                if (
+                    streakInfo[match.playerOne].currentStreak >
+                    streakInfo[match.playerOne].longestStreak
+                ) {
+                    streakInfo[match.playerOne].longestStreak =
+                        streakInfo[match.playerOne].currentStreak;
+                }
+                streakInfo[match.playerOne].currentStreak = 0;
+            } else {
+                if (
+                    streakInfo[match.playerTwo].currentStreak >
+                    streakInfo[match.playerTwo].longestStreak
+                ) {
+                    streakInfo[match.playerTwo].longestStreak =
+                        streakInfo[match.playerTwo].currentStreak;
+                }
+                streakInfo[match.playerTwo].currentStreak = 0;
                 if (
                     streakInfo[match.playerOne].currentStreak >
                     streakInfo[match.playerOne].longestStreak

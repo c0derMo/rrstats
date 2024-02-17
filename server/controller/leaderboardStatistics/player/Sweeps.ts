@@ -7,6 +7,7 @@ export class PlayerSweeps implements LeaderboardPlayerStatistic {
     type = "player" as const;
     name = "Sweeps";
     hasMaps = false;
+    explanatoryText = "Winning a match while the opponent has 0 points.";
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
         const playerMap: Record<string, number> = {};
