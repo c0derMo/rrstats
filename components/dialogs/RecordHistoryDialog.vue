@@ -157,7 +157,7 @@ async function queryPlayers() {
     ).data.value as Record<string, string>;
 }
 
-const selectedScale = ref("Year");
+const selectedScale = ref("All time");
 const selectedYear = ref(DateTime.now().year);
 const selectedMonth = ref(DateTime.now().month);
 

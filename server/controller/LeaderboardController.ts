@@ -7,44 +7,63 @@ import {
 } from "~/utils/interfaces/LeaderboardEntry";
 import { Player } from "../model/Player";
 import { Match } from "../model/Match";
-import { CompetitionPlacement } from "../model/Competition";
+import { Competition, CompetitionPlacement } from "../model/Competition";
 import { HitmanMap } from "~/utils/mapUtils";
-import { PlayerWinrate } from "./leaderboardStatistics/PlayerWinrate";
-import { PlayerMapWinrate } from "./leaderboardStatistics/PlayerMapWinrate";
-import { CountryPlayers } from "./leaderboardStatistics/CountryPlayers";
 import {
     EntitySubscriberInterface,
     EventSubscriber,
+    In,
     InsertEvent,
     UpdateEvent,
 } from "typeorm";
 import { DateTime } from "luxon";
+import { PlayerWinrate } from "./leaderboardStatistics/player/Winrate";
+import { PlayerMapWinrate } from "./leaderboardStatistics/player/MapWinrate";
+import { CountryPlayers } from "./leaderboardStatistics/country/Players";
+import { PlayerSweeps } from "./leaderboardStatistics/player/Sweeps";
+import { PlayerSweeps6 } from "./leaderboardStatistics/player/Sweeps6";
+import { PlayerReverseSweeps } from "./leaderboardStatistics/player/ReverseSweeps";
+import { PlayerRRAppearances } from "./leaderboardStatistics/player/RRAppearances";
+import { PlayerRRWCAppearances } from "./leaderboardStatistics/player/RRWCAppearances";
+import { PlayerGFAppearances } from "./leaderboardStatistics/player/GFAppearances";
+import { PlayerMatchesPlayed } from "./leaderboardStatistics/player/MatchesPlayed";
+import { PlayerMatchesWon } from "./leaderboardStatistics/player/MatchesWon";
+import { PlayerMapsPlayed } from "./leaderboardStatistics/player/MapsPlayed";
+import { PlayerMapsWon } from "./leaderboardStatistics/player/MapsWon";
+import { PlayerWROwnMaps } from "./leaderboardStatistics/player/WROwnMaps";
+import { PlayerWROpponentMaps } from "./leaderboardStatistics/player/WROpponentMaps";
+import { PlayerMatchesWonInARow } from "./leaderboardStatistics/player/MatchesWonInARow";
+import { PlayerMapsWonInARow } from "./leaderboardStatistics/player/MapsWonInARow";
+import { PlayerSpecificMapPlayed } from "./leaderboardStatistics/player/SpecificMapPlayed";
+import { PlayerSpecificMapWinrate } from "./leaderboardStatistics/player/SpecificMapWinrate";
+import { CountryMatches } from "./leaderboardStatistics/country/Matches";
+import { CountryWins } from "./leaderboardStatistics/country/Wins";
+import { CountryWinrate } from "./leaderboardStatistics/country/Winrate";
+import { CountryTitles } from "./leaderboardStatistics/country/Titles";
+import { PlayerAveragePlacement } from "./leaderboardStatistics/player/AveragePlacement";
+import { PlayerElo } from "./leaderboardStatistics/player/Elo";
 
-export interface LeaderboardPlayerStatistic {
+interface StatisticData<T extends string> {
     name: string;
-    type: "player";
+    type: T;
     hasMaps: boolean;
     secondaryFilter?: string;
+    explanatoryText?: string;
+}
+
+interface GenericLeaderboardStatistic<T extends string, R>
+    extends StatisticData<T> {
     calculate: (
         players: IPlayer[],
         matches: IMatch[],
         placements: ICompetitionPlacement[],
-    ) => LeaderboardPlayerEntry[] | Record<HitmanMap, LeaderboardPlayerEntry[]>;
+    ) => R[] | Record<HitmanMap, R[]>;
 }
 
-export interface LeaderboardCountryStatistic {
-    name: string;
-    type: "country";
-    hasMaps: boolean;
-    secondaryFilter?: string;
-    calculate: (
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ) =>
-        | LeaderboardCountryEntry[]
-        | Record<HitmanMap, LeaderboardCountryEntry[]>;
-}
+export interface LeaderboardPlayerStatistic
+    extends GenericLeaderboardStatistic<"player", LeaderboardPlayerEntry> {}
+export interface LeaderboardCountryStatistic
+    extends GenericLeaderboardStatistic<"country", LeaderboardCountryEntry> {}
 
 type LeaderboardStatistic =
     | LeaderboardPlayerStatistic
@@ -65,8 +84,30 @@ export default class LeaderboardController {
     private static readonly statistics: LeaderboardStatistic[] = [
         new PlayerWinrate(),
         new PlayerMapWinrate(),
+        new PlayerRRAppearances(),
+        new PlayerRRWCAppearances(),
+        new PlayerAveragePlacement(),
+        new PlayerGFAppearances(),
+        new PlayerMatchesPlayed(),
+        new PlayerMatchesWon(),
+        new PlayerMapsPlayed(),
+        new PlayerMapsWon(),
+        new PlayerWROwnMaps(),
+        new PlayerWROpponentMaps(),
+        new PlayerMatchesWonInARow(),
+        new PlayerMapsWonInARow(),
+        new PlayerSweeps6(),
+        new PlayerSweeps(),
+        new PlayerReverseSweeps(),
+        new PlayerSpecificMapPlayed(),
+        new PlayerSpecificMapWinrate(),
+        new PlayerElo(),
 
         new CountryPlayers(),
+        new CountryMatches(),
+        new CountryWins(),
+        new CountryWinrate(),
+        new CountryTitles(),
     ];
 
     public static async recalculate(): Promise<void> {
@@ -86,7 +127,12 @@ export default class LeaderboardController {
         // Query ALL THE THINGS
         const players = await Player.find();
         const matches = await Match.find();
-        const placements = await CompetitionPlacement.find();
+        const competitions = await Competition.find({
+            where: { officialCompetition: true },
+        });
+        const placements = await CompetitionPlacement.find({
+            where: { competition: In(competitions.map((comp) => comp.tag)) },
+        });
 
         for (const statistic of LeaderboardController.statistics) {
             const result = statistic.calculate(players, matches, placements);
@@ -95,18 +141,8 @@ export default class LeaderboardController {
     }
 
     public static async getCategories(): Promise<{
-        player: {
-            name: string;
-            hasMaps: boolean;
-            type: "player";
-            secondaryFilter?: string;
-        }[];
-        country: {
-            name: string;
-            hasMaps: boolean;
-            type: "country";
-            secondaryFilter?: string;
-        }[];
+        player: StatisticData<"player">[];
+        country: StatisticData<"country">[];
     }> {
         return {
             player: LeaderboardController.statistics
@@ -117,6 +153,7 @@ export default class LeaderboardController {
                         hasMaps: stat.hasMaps,
                         secondaryFilter: stat.secondaryFilter,
                         type: "player",
+                        explanatoryText: stat.explanatoryText,
                     };
                 }),
             country: LeaderboardController.statistics
@@ -127,6 +164,7 @@ export default class LeaderboardController {
                         hasMaps: stat.hasMaps,
                         secondaryFilter: stat.secondaryFilter,
                         type: "country",
+                        explanatoryText: stat.explanatoryText,
                     };
                 }),
         };
@@ -172,12 +210,10 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
     private invalidationTimer: NodeJS.Timeout | null = null;
 
     afterInsert(event: InsertEvent<unknown>): void {
-        console.log("Insert event");
         this.invalidateLeaderboard(event.entity);
     }
 
     afterUpdate(event: UpdateEvent<unknown>): void {
-        console.log("Update event");
         this.invalidateLeaderboard(event.entity);
     }
 
@@ -189,7 +225,6 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
                 entity instanceof CompetitionPlacement
             )
         ) {
-            console.log("Update cancelled because of entity check");
             return;
         }
 

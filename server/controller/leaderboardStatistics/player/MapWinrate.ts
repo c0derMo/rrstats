@@ -1,4 +1,4 @@
-import { LeaderboardPlayerStatistic } from "../LeaderboardController";
+import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
@@ -7,7 +7,7 @@ export class PlayerMapWinrate implements LeaderboardPlayerStatistic {
     type = "player" as const;
     name = "Map Winrate";
     hasMaps = false;
-    secondaryFilter = "Minimum maps played";
+    secondaryFilter = "Maps played";
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
         // Calculating wins and matches

@@ -29,7 +29,19 @@
                     class="absolute top-0 left-0"
                 />
 
-                <div class="flex flex-col gap-2 md:flex-row">
+                <div class="text-center font-bold text-2xl">
+                    {{ selectedCategory.name }}
+                </div>
+                <div
+                    v-if="selectedCategory.explanatoryText != null"
+                    class="text-center italic"
+                >
+                    {{ selectedCategory.explanatoryText }}
+                </div>
+
+                <div
+                    class="flex flex-col gap-2 md:flex-row mt-4 justify-stretch items-center"
+                >
                     <TextInputComponent
                         v-if="
                             selectedCategory.secondaryFilter != null &&
@@ -37,14 +49,21 @@
                         "
                         v-model="secondaryFilter"
                         type="number"
-                        :placeholder="selectedCategory.secondaryFilter"
+                        class="w-full"
+                        :placeholder="`Minimum ${selectedCategory.secondaryFilter.toLowerCase()}`"
                     />
                     <TextInputComponent
                         v-model="search"
-                        class="flex-grow"
+                        class="w-full"
                         :placeholder="`Search for ${
                             isCountryCategory ? 'country' : 'player'
                         }...`"
+                    />
+                    <DropdownComponent
+                        v-if="selectedCategory.hasMaps"
+                        v-model="selectedMap"
+                        class="w-full"
+                        :items="selectableMaps"
                     />
                 </div>
 
@@ -74,14 +93,14 @@
                                 )
                             }}</Tag
                         >
-                        <!-- <Tag v-if="index > 0 && filteredLeaderboardData[index-1].sortingScore == row.sortingScore" :color="getTagColor(filteredLeaderboardData.findIndex((p) => p.sortingScore === row.sortingScore) + 1)">{{ formatPlacement(filteredLeaderboardData.findIndex((p) => p.sortingScore === row.sortingScore) + 1) }}</Tag>
-                        <Tag v-else :color="getTagColor(index + 1)">{{ formatPlacement(index + 1) }}</Tag> -->
                     </template>
                     <template #player="{ value }">
-                        {{
-                            playerLookupTable[value as string] ??
-                            `Unknown player: ${value}`
-                        }}
+                        <a :href="`/${playerLookupTable[value as string]}`"
+                            >{{
+                                playerLookupTable[value as string] ??
+                                `Unknown player: ${value}`
+                            }}
+                        </a>
                     </template>
                 </DataTableComponent>
 
@@ -102,16 +121,16 @@
                                     ) + 1,
                                 )
                             "
-                            >{{
+                        >
+                            {{
                                 formatPlacement(
                                     filteredLeaderboardData.findIndex(
                                         (p) =>
                                             p.sortingScore === row.sortingScore,
                                     ) + 1,
                                 )
-                            }}</Tag
-                        >
-                        <!-- <Tag v-else :color="getTagColor(index + 1)">{{ formatPlacement(index + 1) }}</Tag> -->
+                            }}
+                        </Tag>
                     </template>
 
                     <template #country="{ row }">
@@ -147,31 +166,55 @@ const playerLookupTable =
         Record<string, string>
     >) ?? ref({});
 
-const playerTableHeaders = [
-    { title: "", key: "placement" },
-    { title: "Player", key: "player" },
-    { title: "Score", key: "displayScore" },
-];
-
-const countryTableHeaders = [
-    { title: "", key: "placement" },
-    { title: "Country", key: "country" },
-    { title: "Score", key: "displayScore" },
-];
-
 const selectedTab = ref("Players");
 const selectedCategory: Ref<{
     name: string;
     hasMaps: boolean;
     type: string;
     secondaryFilter?: string;
+    explanatoryText?: string;
 }> = ref(playerCategories[0]);
 const leaderboardData: Ref<
     LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]
 > = ref([]);
 const leaderboardLoading = ref(true);
 const secondaryFilter = ref(0);
+const selectedMap = ref(HitmanMap.PARIS);
 const search = ref("");
+
+const selectableMaps = getAllMaps().map((map) => {
+    return { value: map, text: getMap(map)!.name };
+});
+
+const playerTableHeaders = computed(() => {
+    const headers = [
+        { title: "", key: "placement" },
+        { title: "Player", key: "player" },
+        { title: "Score", key: "displayScore" },
+    ];
+    if (selectedCategory.value.secondaryFilter != null) {
+        headers.push({
+            title: selectedCategory.value.secondaryFilter,
+            key: "secondaryScore",
+        });
+    }
+    return headers;
+});
+
+const countryTableHeaders = computed(() => {
+    const headers = [
+        { title: "", key: "placement" },
+        { title: "Country", key: "country" },
+        { title: "Score", key: "displayScore" },
+    ];
+    if (selectedCategory.value.secondaryFilter != null) {
+        headers.push({
+            title: selectedCategory.value.secondaryFilter,
+            key: "secondaryScore",
+        });
+    }
+    return headers;
+});
 
 const shownCategories = computed(() => {
     if (selectedTab.value === "Players") {
@@ -192,7 +235,7 @@ const filteredLeaderboardData = computed(() => {
         selectedCategory.value.secondaryFilter != ""
     ) {
         return leaderboardData.value.filter(
-            (data) => (data.secondaryScore ?? 0) > secondaryFilter.value,
+            (data) => (data.secondaryScore ?? 0) >= secondaryFilter.value,
         );
     }
     return leaderboardData.value;
@@ -234,7 +277,10 @@ async function loadLeaderboardData() {
     leaderboardLoading.value = true;
 
     const leaderboardRequest = await useFetch(`/api/leaderboards/category`, {
-        query: { category: selectedCategory.value.name },
+        query: {
+            category: selectedCategory.value.name,
+            map: selectedCategory.value.hasMaps ? selectedMap.value : undefined,
+        },
     });
     if (
         leaderboardRequest.data.value == null ||
@@ -250,6 +296,9 @@ async function loadLeaderboardData() {
 }
 
 watch(selectedCategory, async () => {
+    await loadLeaderboardData();
+});
+watch(selectedMap, async () => {
     await loadLeaderboardData();
 });
 

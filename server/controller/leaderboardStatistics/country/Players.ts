@@ -1,4 +1,4 @@
-import { LeaderboardCountryStatistic } from "../LeaderboardController";
+import { LeaderboardCountryStatistic } from "../../LeaderboardController";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardCountryEntry } from "~/utils/interfaces/LeaderboardEntry";
 
@@ -9,7 +9,6 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
 
     calculate(players: IPlayer[]): LeaderboardCountryEntry[] {
         const countryMap: Record<string, number> = {};
-        // Calculating wins and matches
         for (const player of players) {
             if (player.nationality == null) continue;
             if (countryMap[player.nationality] == null)
