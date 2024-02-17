@@ -2,8 +2,8 @@
     <div class="flex flex-col gap-5">
         <h1 class="text-center text-5xl bold">Leaderboards</h1>
 
-        <div class="flex flex-col md:flex-row gap-5 mx-20">
-            <CardComponent class="w-72">
+        <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">
+            <CardComponent class="md:w-72">
                 <TabbedContainer
                     :tabs="['Players', 'Countries']"
                     @change-tab="(tab) => (selectedTab = tab)"
@@ -16,7 +16,7 @@
                         'bg-neutral-200 dark:bg-neutral-500':
                             selectedCategory === category,
                     }"
-                    class="p-2 w-full border-b last:border-0 dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
+                    class="p-1 w-full border-b last:border-0 dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
                     @click="selectedCategory = category"
                 >
                     {{ category.name }}

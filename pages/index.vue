@@ -42,14 +42,19 @@
                         >Player search</ButtonComponent
                     >
                     <NuxtLink to="/records">
-                        <ButtonComponent class="border-0"
-                            >Records</ButtonComponent
-                        >
+                        <ButtonComponent class="border-0">
+                            Records
+                        </ButtonComponent>
                     </NuxtLink>
                     <NuxtLink to="/compare">
-                        <ButtonComponent class="border-0"
-                            >Compare players</ButtonComponent
-                        >
+                        <ButtonComponent class="border-0">
+                            Compare players
+                        </ButtonComponent>
+                    </NuxtLink>
+                    <NuxtLink to="/leaderboards">
+                        <ButtonComponent class="border-0">
+                            Leaderboards
+                        </ButtonComponent>
                     </NuxtLink>
                     <DropdownComponent
                         button-class="border-0"
