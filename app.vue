@@ -19,6 +19,14 @@
                     />
                 </template>
 
+                <template #HomeButton>
+                    <FontAwesomeIcon
+                        :icon="['fas', 'home']"
+                        class="cursor-pointer text-white"
+                        @click="$router.push('/')"
+                    />
+                </template>
+
                 <template #DarkModeToggle>
                     <div class="flex flex-row mt-2">
                         <FontAwesomeIcon
