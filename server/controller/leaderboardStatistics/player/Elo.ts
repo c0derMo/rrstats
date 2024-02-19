@@ -11,7 +11,7 @@ interface EloPlayerInfo {
 
 export class PlayerElo implements LeaderboardPlayerStatistic {
     type = "player" as const;
-    name = "Elo";
+    name = "Elo rating";
     hasMaps = false;
     explanatoryText =
         "Elo score based on In4Fun's formula. Note: Players playing on multiple platforms are combined here, which may cause inconsistencies with In4Fun's Elo sheet.";

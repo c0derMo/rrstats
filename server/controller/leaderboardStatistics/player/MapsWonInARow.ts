@@ -51,6 +51,23 @@ export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
                             streakInfo[match.playerOne].currentStreak;
                     }
                     streakInfo[match.playerOne].currentStreak = 0;
+                } else if (map.winner === WinningPlayer.DRAW) {
+                    if (
+                        streakInfo[match.playerTwo].currentStreak >
+                        streakInfo[match.playerTwo].longestStreak
+                    ) {
+                        streakInfo[match.playerTwo].longestStreak =
+                            streakInfo[match.playerTwo].currentStreak;
+                    }
+                    streakInfo[match.playerTwo].currentStreak = 0;
+                    if (
+                        streakInfo[match.playerOne].currentStreak >
+                        streakInfo[match.playerOne].longestStreak
+                    ) {
+                        streakInfo[match.playerOne].longestStreak =
+                            streakInfo[match.playerOne].currentStreak;
+                    }
+                    streakInfo[match.playerOne].currentStreak = 0;
                 }
             }
         }
