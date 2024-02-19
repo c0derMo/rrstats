@@ -36,24 +36,24 @@
                 </TooltipComponent>
             </template>
 
-            <template #score="{ row }">
-                {{ row.playerOneScore }}<br />
-                -<br />
-                {{ row.playerTwoScore }}<br />
-            </template>
-
             <template #players="{ row }">
+                <a :href="`/${players[row.playerOne]}`">
                 {{ row.playerOneScore }} -
                 {{
                     players[row.playerOne] ||
                     `Unknown player (${row.playerOne})`
-                }}<br />
+                }}</a><br />
                 vs<br />
+                <a :href="`/${players[row.playerOne]}`">
                 {{ row.playerTwoScore }} -
                 {{
                     players[row.playerTwo] ||
                     `Unknown player (${row.playerTwo})`
-                }}<br />
+                }}
+                </a>
+            </template>
+
+            <template #after-row="{ row }">
                 <Tag
                     v-for="(map, idx) of row.playedMaps"
                     :key="idx"
@@ -93,11 +93,15 @@
             </template>
 
             <template #playerOne="{ value }">
-                {{ players[value as string] || `Unknown player (${value})` }}
+                <a :href="`/${players[value as string]}`">
+                    {{ players[value as string] || `Unknown player (${value})` }}
+                </a>
             </template>
 
             <template #playerTwo="{ value }">
-                {{ players[value as string] || `Unknown player (${value})` }}
+                <a :href="`/${players[value as string]}`">
+                    {{ players[value as string] || `Unknown player (${value})` }}
+                </a>
             </template>
 
             <template #score="{ row }">

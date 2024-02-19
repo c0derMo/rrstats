@@ -13,6 +13,18 @@
                     )
                 }}
             </template>
+
+            <template #playerOne="{ value }">
+                <a :href="`${value as string}`">
+                    {{ value }}
+                </a>
+            </template>
+            <template #playerTwo="{ value }">
+                <a :href="`${value as string}`">
+                    {{ value }}
+                </a>
+            </template>
+
             <template #bans="{ row }">
                 <TooltipComponent v-for="(ban, idx) in row.bans" :key="idx">
                     <Tag :color="getMapBySlug(ban.map)!.color">{{
