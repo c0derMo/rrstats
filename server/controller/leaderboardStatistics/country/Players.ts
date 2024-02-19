@@ -26,9 +26,9 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
                     return {
                         player,
                         displayScore: "",
-                        sortingScore: 0
-                    }
-                })
+                        sortingScore: 0,
+                    };
+                }),
             });
         }
         result.sort((a, b) => b.sortingScore - a.sortingScore);

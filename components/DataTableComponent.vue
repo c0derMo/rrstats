@@ -1,5 +1,9 @@
 <template>
-    <TableComponent :headers="convertedHeaders" :rows="filteredRows" @click-row="(row, idx) => $emit('click-row', row, idx)">
+    <TableComponent
+        :headers="convertedHeaders"
+        :rows="filteredRows"
+        @click-row="(row, idx) => $emit('click-row', row, idx)"
+    >
         <template
             v-for="header of convertedHeaders"
             :key="header.key"

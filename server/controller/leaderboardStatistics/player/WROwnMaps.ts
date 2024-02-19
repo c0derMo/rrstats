@@ -19,15 +19,17 @@ export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
         for (const match of matches) {
             for (const map of match.playedMaps) {
                 if (map.picked === ChoosingPlayer.RANDOM) continue;
-                
+
                 if (map.picked === ChoosingPlayer.PLAYER_ONE) {
-                    if (playedMaps[match.playerOne] == null) playedMaps[match.playerOne] = { played: 0, won: 0 };
+                    if (playedMaps[match.playerOne] == null)
+                        playedMaps[match.playerOne] = { played: 0, won: 0 };
                     playedMaps[match.playerOne].played += 1;
                     if (map.winner === WinningPlayer.PLAYER_ONE) {
                         playedMaps[match.playerOne].won += 1;
                     }
                 } else if (map.picked === ChoosingPlayer.PLAYER_TWO) {
-                    if (playedMaps[match.playerTwo] == null) playedMaps[match.playerTwo] = { played: 0, won: 0 };
+                    if (playedMaps[match.playerTwo] == null)
+                        playedMaps[match.playerTwo] = { played: 0, won: 0 };
                     playedMaps[match.playerTwo].played += 1;
                     if (map.winner === WinningPlayer.PLAYER_TWO) {
                         playedMaps[match.playerTwo].won += 1;
@@ -40,9 +42,14 @@ export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
         for (const player in playedMaps) {
             result.push({
                 player: player,
-                displayScore: ((playedMaps[player].won / playedMaps[player].played) * 100).toFixed(2) + "%",
-                sortingScore: playedMaps[player].won / playedMaps[player].played,
-                secondaryScore: playedMaps[player].played
+                displayScore:
+                    (
+                        (playedMaps[player].won / playedMaps[player].played) *
+                        100
+                    ).toFixed(2) + "%",
+                sortingScore:
+                    playedMaps[player].won / playedMaps[player].played,
+                secondaryScore: playedMaps[player].played,
             });
         }
         result.sort((a, b) => b.sortingScore - a.sortingScore);

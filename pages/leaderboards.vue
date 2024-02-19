@@ -70,7 +70,7 @@
                 <DataTableComponent
                     v-if="!isCountryCategory"
                     :headers="playerTableHeaders"
-                    :rows="(searchedLeaderboardData as LeaderboardPlayerEntry[])"
+                    :rows="searchedLeaderboardData as LeaderboardPlayerEntry[]"
                     :rows-per-page="[10, 25, 50]"
                     :items-per-page="10"
                     :enable-sorting="false"
@@ -104,11 +104,11 @@
                         </a>
                     </template>
                 </DataTableComponent>
-                
+
                 <DataTableComponent
                     v-else
                     :headers="countryTableHeaders"
-                    :rows="(searchedLeaderboardData as LeaderboardCountryEntry[])"
+                    :rows="searchedLeaderboardData as LeaderboardCountryEntry[]"
                     :rows-per-page="[10, 25, 50]"
                     :items-per-page="10"
                     :enable-sorting="false"
@@ -148,15 +148,33 @@
 
                     <template #expand="{ row }">
                         <div class="text-right">
-                            <FontAwesomeIcon :icon="['fas', 'chevron-down']" class="transition" :class="{'rotate-180': expandedCountry === row.country}" />
+                            <FontAwesomeIcon
+                                :icon="['fas', 'chevron-down']"
+                                class="transition"
+                                :class="{
+                                    'rotate-180':
+                                        expandedCountry === row.country,
+                                }"
+                            />
                         </div>
                     </template>
 
                     <template #after-row="{ row }">
-                        <div v-if="expandedCountry === row.country" class="flex flex-col">
-                            <div v-for="(player, idx) in row.players" :key="idx" class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300">
-                                <div class="flex-grow">{{ playerLookupTable[player.player] }}</div>
-                                <div class="flex-grow text-right">{{ player.displayScore }}</div>
+                        <div
+                            v-if="expandedCountry === row.country"
+                            class="flex flex-col"
+                        >
+                            <div
+                                v-for="(player, idx) in row.players"
+                                :key="idx"
+                                class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300"
+                            >
+                                <div class="flex-grow">
+                                    {{ playerLookupTable[player.player] }}
+                                </div>
+                                <div class="flex-grow text-right">
+                                    {{ player.displayScore }}
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -234,7 +252,7 @@ const countryTableHeaders = computed(() => {
     }
     headers.push({
         title: "",
-        key: "expand"
+        key: "expand",
     });
     return headers;
 });

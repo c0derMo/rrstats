@@ -20,7 +20,8 @@ export class CountryWins implements LeaderboardCountryStatistic {
             "nationality",
         ) as Record<string, string>;
 
-        const winsPerCountry: DefaultedMap<DefaultedMap<number>> = new DefaultedMap(() => new DefaultedMap(() => 0));
+        const winsPerCountry: DefaultedMap<DefaultedMap<number>> =
+            new DefaultedMap(() => new DefaultedMap(() => 0));
         for (const match of matches) {
             const nationalityOne = countryMap[match.playerOne];
             const nationalityTwo = countryMap[match.playerTwo];
@@ -28,21 +29,33 @@ export class CountryWins implements LeaderboardCountryStatistic {
             if (match.playerOneScore > match.playerTwoScore) {
                 if (nationalityOne != null) {
                     const countryOne = winsPerCountry.get(nationalityOne);
-                    countryOne.set(match.playerOne, countryOne.get(match.playerOne) + 1);
+                    countryOne.set(
+                        match.playerOne,
+                        countryOne.get(match.playerOne) + 1,
+                    );
                 }
             } else if (match.playerTwoScore > match.playerOneScore) {
                 if (nationalityTwo != null) {
                     const countryTwo = winsPerCountry.get(nationalityTwo);
-                    countryTwo.set(match.playerTwo, countryTwo.get(match.playerTwo) + 1);
+                    countryTwo.set(
+                        match.playerTwo,
+                        countryTwo.get(match.playerTwo) + 1,
+                    );
                 }
             } else {
                 if (nationalityOne != null) {
                     const countryOne = winsPerCountry.get(nationalityOne);
-                    countryOne.set(match.playerOne, countryOne.get(match.playerOne) + 0.5);
+                    countryOne.set(
+                        match.playerOne,
+                        countryOne.get(match.playerOne) + 0.5,
+                    );
                 }
                 if (nationalityTwo != null) {
                     const countryTwo = winsPerCountry.get(nationalityTwo);
-                    countryTwo.set(match.playerTwo, countryTwo.get(match.playerTwo) + 0.5);
+                    countryTwo.set(
+                        match.playerTwo,
+                        countryTwo.get(match.playerTwo) + 0.5,
+                    );
                 }
             }
         }
@@ -52,15 +65,20 @@ export class CountryWins implements LeaderboardCountryStatistic {
             result.push({
                 countryCode: country,
                 country: this.getCountryName(country),
-                displayScore: getSumOfValues(winsPerCountry.get(country)).toString(),
+                displayScore: getSumOfValues(
+                    winsPerCountry.get(country),
+                ).toString(),
                 sortingScore: getSumOfValues(winsPerCountry.get(country)),
-                players: winsPerCountry.get(country).mapAll((player, wins) => {
-                    return {
-                        player: player,
-                        sortingScore: wins,
-                        displayScore: wins.toString()
-                    }
-                }).sort((a, b) => b.sortingScore - a.sortingScore)
+                players: winsPerCountry
+                    .get(country)
+                    .mapAll((player, wins) => {
+                        return {
+                            player: player,
+                            sortingScore: wins,
+                            displayScore: wins.toString(),
+                        };
+                    })
+                    .sort((a, b) => b.sortingScore - a.sortingScore),
             });
         }
         result.sort((a, b) => b.sortingScore - a.sortingScore);

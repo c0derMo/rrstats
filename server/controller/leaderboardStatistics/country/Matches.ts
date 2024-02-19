@@ -20,18 +20,25 @@ export class CountryMatches implements LeaderboardCountryStatistic {
             "nationality",
         ) as Record<string, string>;
 
-        const matchesPerCountry: DefaultedMap<DefaultedMap<number>> = new DefaultedMap(() => new DefaultedMap(() => 0));
+        const matchesPerCountry: DefaultedMap<DefaultedMap<number>> =
+            new DefaultedMap(() => new DefaultedMap(() => 0));
         for (const match of matches) {
             const nationalityOne = countryMap[match.playerOne];
             const nationalityTwo = countryMap[match.playerTwo];
 
             if (nationalityOne != null) {
-                const countryOneMap = matchesPerCountry.get(nationalityOne)
-                countryOneMap.set(match.playerOne, countryOneMap.get(match.playerOne) + 1);
+                const countryOneMap = matchesPerCountry.get(nationalityOne);
+                countryOneMap.set(
+                    match.playerOne,
+                    countryOneMap.get(match.playerOne) + 1,
+                );
             }
             if (nationalityTwo != null && nationalityOne !== nationalityTwo) {
-                const countryTwoMap = matchesPerCountry.get(nationalityTwo)
-                countryTwoMap.set(match.playerTwo, countryTwoMap.get(match.playerTwo) + 1);
+                const countryTwoMap = matchesPerCountry.get(nationalityTwo);
+                countryTwoMap.set(
+                    match.playerTwo,
+                    countryTwoMap.get(match.playerTwo) + 1,
+                );
             }
         }
 
@@ -40,16 +47,21 @@ export class CountryMatches implements LeaderboardCountryStatistic {
             result.push({
                 countryCode: country,
                 country: this.getCountryName(country),
-                displayScore: getSumOfValues(matchesPerCountry.get(country)).toString(),
+                displayScore: getSumOfValues(
+                    matchesPerCountry.get(country),
+                ).toString(),
                 sortingScore: getSumOfValues(matchesPerCountry.get(country)),
-                players: matchesPerCountry.get(country).mapAll((player, matches) => {
-                    return {
-                        player: player,
-                        displayScore: matches.toString(),
-                        sortingScore: matches
-                    }
-                }).sort((a, b) => b.sortingScore - a.sortingScore)
-            })
+                players: matchesPerCountry
+                    .get(country)
+                    .mapAll((player, matches) => {
+                        return {
+                            player: player,
+                            displayScore: matches.toString(),
+                            sortingScore: matches,
+                        };
+                    })
+                    .sort((a, b) => b.sortingScore - a.sortingScore),
+            });
         }
         result.sort((a, b) => b.sortingScore - a.sortingScore);
 

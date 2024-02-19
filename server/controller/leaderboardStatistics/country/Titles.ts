@@ -22,13 +22,17 @@ export class CountryTitles implements LeaderboardCountryStatistic {
             "nationality",
         ) as Record<string, string>;
 
-        const titlesPerCountry: DefaultedMap<DefaultedMap<number>> = new DefaultedMap(() => new DefaultedMap(() => 0));
+        const titlesPerCountry: DefaultedMap<DefaultedMap<number>> =
+            new DefaultedMap(() => new DefaultedMap(() => 0));
         for (const placement of placements) {
             if (placement.placement !== 1) continue;
             const nationality = countryMap[placement.player];
             if (nationality != null) {
                 const countryMap = titlesPerCountry.get(nationality);
-                countryMap.set(placement.player, countryMap.get(placement.player) + 1);
+                countryMap.set(
+                    placement.player,
+                    countryMap.get(placement.player) + 1,
+                );
             }
         }
 
@@ -37,15 +41,20 @@ export class CountryTitles implements LeaderboardCountryStatistic {
             result.push({
                 countryCode: country,
                 country: this.getCountryName(country),
-                displayScore: getSumOfValues(titlesPerCountry.get(country)).toString(),
+                displayScore: getSumOfValues(
+                    titlesPerCountry.get(country),
+                ).toString(),
                 sortingScore: getSumOfValues(titlesPerCountry.get(country)),
-                players: titlesPerCountry.get(country).mapAll((key, value) => {
-                    return {
-                        player: key,
-                        sortingScore: value,
-                        displayScore: value.toString()
-                    }
-                }).sort((a, b) => b.sortingScore - a.sortingScore)
+                players: titlesPerCountry
+                    .get(country)
+                    .mapAll((key, value) => {
+                        return {
+                            player: key,
+                            sortingScore: value,
+                            displayScore: value.toString(),
+                        };
+                    })
+                    .sort((a, b) => b.sortingScore - a.sortingScore),
             });
         }
         result.sort((a, b) => b.sortingScore - a.sortingScore);

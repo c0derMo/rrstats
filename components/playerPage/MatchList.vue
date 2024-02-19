@@ -38,18 +38,19 @@
 
             <template #players="{ row }">
                 <a :href="`/${players[row.playerOne]}`">
-                {{ row.playerOneScore }} -
-                {{
-                    players[row.playerOne] ||
-                    `Unknown player (${row.playerOne})`
-                }}</a><br />
+                    {{ row.playerOneScore }} -
+                    {{
+                        players[row.playerOne] ||
+                        `Unknown player (${row.playerOne})`
+                    }}</a
+                ><br />
                 vs<br />
                 <a :href="`/${players[row.playerOne]}`">
-                {{ row.playerTwoScore }} -
-                {{
-                    players[row.playerTwo] ||
-                    `Unknown player (${row.playerTwo})`
-                }}
+                    {{ row.playerTwoScore }} -
+                    {{
+                        players[row.playerTwo] ||
+                        `Unknown player (${row.playerTwo})`
+                    }}
                 </a>
             </template>
 
@@ -94,13 +95,17 @@
 
             <template #playerOne="{ value }">
                 <a :href="`/${players[value as string]}`">
-                    {{ players[value as string] || `Unknown player (${value})` }}
+                    {{
+                        players[value as string] || `Unknown player (${value})`
+                    }}
                 </a>
             </template>
 
             <template #playerTwo="{ value }">
                 <a :href="`/${players[value as string]}`">
-                    {{ players[value as string] || `Unknown player (${value})` }}
+                    {{
+                        players[value as string] || `Unknown player (${value})`
+                    }}
                 </a>
             </template>
 
