@@ -70,9 +70,10 @@
                 <DataTableComponent
                     v-if="!isCountryCategory"
                     :headers="playerTableHeaders"
-                    :rows="searchedLeaderboardData as LeaderboardPlayerEntry[]"
+                    :rows="(searchedLeaderboardData as LeaderboardPlayerEntry[])"
                     :rows-per-page="[10, 25, 50]"
                     :items-per-page="10"
+                    :enable-sorting="false"
                 >
                     <template #placement="{ row }">
                         <Tag
@@ -95,21 +96,23 @@
                         >
                     </template>
                     <template #player="{ value }">
-                        <a :href="`/${playerLookupTable[value as string]}`"
-                            >{{
+                        <a :href="`/${playerLookupTable[value as string]}`">
+                            {{
                                 playerLookupTable[value as string] ??
                                 `Unknown player: ${value}`
                             }}
                         </a>
                     </template>
                 </DataTableComponent>
-
+                
                 <DataTableComponent
                     v-else
                     :headers="countryTableHeaders"
-                    :rows="searchedLeaderboardData as LeaderboardCountryEntry[]"
+                    :rows="(searchedLeaderboardData as LeaderboardCountryEntry[])"
                     :rows-per-page="[10, 25, 50]"
                     :items-per-page="10"
+                    :enable-sorting="false"
+                    @click-row="expandCountry"
                 >
                     <template #placement="{ row }">
                         <Tag
@@ -141,6 +144,21 @@
                             alt="Country flag"
                         />
                         {{ row.country }}
+                    </template>
+
+                    <template #expand="{ row }">
+                        <div class="text-right">
+                            <FontAwesomeIcon :icon="['fas', 'chevron-down']" class="transition" :class="{'rotate-180': expandedCountry === row.country}" />
+                        </div>
+                    </template>
+
+                    <template #after-row="{ row }">
+                        <div v-if="expandedCountry === row.country" class="flex flex-col">
+                            <div v-for="(player, idx) in row.players" :key="idx" class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300">
+                                <div class="flex-grow">{{ playerLookupTable[player.player] }}</div>
+                                <div class="flex-grow text-right">{{ player.displayScore }}</div>
+                            </div>
+                        </div>
                     </template>
                 </DataTableComponent>
             </CardComponent>
@@ -181,6 +199,7 @@ const leaderboardLoading = ref(true);
 const secondaryFilter = ref(0);
 const selectedMap = ref(HitmanMap.PARIS);
 const search = ref("");
+const expandedCountry = ref("");
 
 const selectableMaps = getAllMaps().map((map) => {
     return { value: map, text: getMap(map)!.name };
@@ -213,6 +232,10 @@ const countryTableHeaders = computed(() => {
             key: "secondaryScore",
         });
     }
+    headers.push({
+        title: "",
+        key: "expand"
+    });
     return headers;
 });
 
@@ -259,6 +282,14 @@ const searchedLeaderboardData = computed(() => {
         );
     });
 });
+
+function expandCountry(row: LeaderboardCountryEntry) {
+    if (expandedCountry.value === row.country) {
+        expandedCountry.value = "";
+    } else {
+        expandedCountry.value = row.country;
+    }
+}
 
 function getTagColor(placement: number) {
     if (placement === 1) {

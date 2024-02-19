@@ -10,5 +10,6 @@ export type LeaderboardCountryEntry = {
     countryCode: string;
     sortingScore: number;
     displayScore: string;
+    players: LeaderboardPlayerEntry[];
     secondaryScore?: number;
 };

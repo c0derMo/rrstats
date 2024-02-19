@@ -13,12 +13,13 @@
                 </th>
             </tr>
         </thead>
-        <tbody>
-            <tr
-                v-for="(row, idx) of rows"
-                :key="idx"
-                class="border-b dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
-            >
+        <tbody v-for="(row, idx) of rows" :key="idx" class="border-b dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600" @click="$emit('click-row', row, idx)">
+            <tr v-if="$slots['before-row']">
+                <td :colspan="convertedHeaders.length" class="text-center">
+                    <slot name="before-row" :row="row" :index="idx" />
+                </td>
+            </tr>
+            <tr>
                 <td
                     v-for="header of convertedHeaders"
                     :key="header.key"
@@ -32,6 +33,11 @@
                     >
                         {{ row[header.key] }}
                     </slot>
+                </td>
+            </tr>
+            <tr v-if="$slots['after-row']">
+                <td :colspan="convertedHeaders.length" class="text-center">
+                    <slot name="after-row" :row="row" :index="idx" />
                 </td>
             </tr>
         </tbody>
@@ -54,6 +60,8 @@ const props = defineProps({
         required: true,
     },
 });
+
+defineEmits(['click-row']);
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     if (props.headers.length === 0) {

@@ -1,5 +1,5 @@
 <template>
-    <TableComponent :headers="convertedHeaders" :rows="filteredRows">
+    <TableComponent :headers="convertedHeaders" :rows="filteredRows" @click-row="(row, idx) => $emit('click-row', row, idx)">
         <template
             v-for="header of convertedHeaders"
             :key="header.key"
@@ -28,6 +28,10 @@
             </span>
         </template>
 
+        <template v-if="$slots['before-row']" #before-row="{ row, index }">
+            <slot name="before-row" :row="row" :index="index" />
+        </template>
+
         <template
             v-for="header of convertedHeaders"
             :key="header.key"
@@ -43,6 +47,10 @@
                     {{ value }}
                 </slot>
             </div>
+        </template>
+
+        <template v-if="$slots['after-row']" #after-row="{ row, index }">
+            <slot name="after-row" :row="row" :index="index" />
         </template>
     </TableComponent>
 
@@ -112,7 +120,7 @@ const props = defineProps({
     },
 });
 
-const emits = defineEmits(["update:itemsPerPage"]);
+const emits = defineEmits(["update:itemsPerPage", "click-row"]);
 
 const selectedRowsPerPage = ref(props.itemsPerPage);
 const selectedPage = ref(1);

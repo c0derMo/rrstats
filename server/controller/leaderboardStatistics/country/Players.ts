@@ -1,3 +1,4 @@
+import { DefaultedMap } from "~/utils/DefaultedMap";
 import { LeaderboardCountryStatistic } from "../../LeaderboardController";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardCountryEntry } from "~/utils/interfaces/LeaderboardEntry";
@@ -8,21 +9,26 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
     hasMaps = false;
 
     calculate(players: IPlayer[]): LeaderboardCountryEntry[] {
-        const countryMap: Record<string, number> = {};
+        const countryMap: DefaultedMap<string[]> = new DefaultedMap(() => []);
         for (const player of players) {
             if (player.nationality == null) continue;
-            if (countryMap[player.nationality] == null)
-                countryMap[player.nationality] = 0;
-            countryMap[player.nationality] += 1;
+            countryMap.get(player.nationality).push(player.uuid);
         }
 
         const result: LeaderboardCountryEntry[] = [];
-        for (const country in countryMap) {
+        for (const country in countryMap.getAll()) {
             result.push({
                 countryCode: country,
                 country: this.getCountryName(country),
-                displayScore: countryMap[country].toString(),
-                sortingScore: countryMap[country],
+                displayScore: countryMap.get(country).length.toString(),
+                sortingScore: countryMap.get(country).length,
+                players: countryMap.get(country).map((player) => {
+                    return {
+                        player,
+                        displayScore: "",
+                        sortingScore: 0
+                    }
+                })
             });
         }
         result.sort((a, b) => b.sortingScore - a.sortingScore);
