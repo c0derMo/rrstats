@@ -135,7 +135,11 @@ export class PlayerElo implements LeaderboardPlayerStatistic {
             decayingValue = this.bankersRoundingToInteger(decayingValue);
             decayingValue = Math.max(decayingValue, 5);
             decayingValue = Math.min(decayingValue, 25);
-            playerInfo[player].elo -= decayingValue;
+            if (playerInfo[player].elo > 1000) {
+                playerInfo[player].elo -= decayingValue;
+            } else if (playerInfo[player].elo < 1000) {
+                playerInfo[player].elo += decayingValue;
+            }
         }
         return playerInfo;
     }

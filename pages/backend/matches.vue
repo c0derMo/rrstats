@@ -9,12 +9,18 @@
             "
         />
 
-        <div class="flex flex-row gap-96 my-5">
-            <div class="text-3xl bold">Matches</div>
+        <div class="text-3xl bold my-5">Matches</div>
+        <div class="flex flex-row gap-3 my-5">
+            <MultiSelectComponent
+                v-model="filter"
+                empty-text="Filters:"
+                :items="['No VOD', 'No Shoutcasters', 'No Spin']"
+            />
+
             <TextInputComponent
                 v-model="search"
                 placeholder="Search for player, competition, round..."
-                class="w-96"
+                class="flex-grow"
             />
         </div>
 
@@ -79,6 +85,7 @@ const matches: Ref<IMatch[]> = ref([]);
 const playerLookupTable: Ref<Record<string, string>> = ref({});
 const matchToShow: Ref<IMatch | null> = ref(null);
 const search = ref("");
+const filter: Ref<string[]> = ref([]);
 
 const headers = [
     { key: "competition", title: "Competition" },
@@ -90,19 +97,40 @@ const headers = [
 ];
 
 const matchesToShow = computed(() => {
-    if (search.value === "") return matches.value;
+    let result = matches.value;
 
-    return matches.value.filter((match) => {
-        if (match.competition.includes(search.value)) return true;
-        if (playerLookupTable.value[match.playerOne].includes(search.value))
-            return true;
-        if (playerLookupTable.value[match.playerTwo].includes(search.value))
-            return true;
-        if (match.round.includes(search.value)) return true;
-        if (match.uuid.includes(search.value)) return true;
+    if (search.value !== "") {
+        result = result.filter((match) => {
+            if (match.competition.includes(search.value)) return true;
+            if (playerLookupTable.value[match.playerOne].includes(search.value))
+                return true;
+            if (playerLookupTable.value[match.playerTwo].includes(search.value))
+                return true;
+            if (match.round.includes(search.value)) return true;
+            if (match.uuid.includes(search.value)) return true;
+    
+            return false;
+        });
+    }
 
-        return false;
-    });
+    if (filter.value.includes('No VOD')) {
+        result = result.filter((match) => {
+            return match.vodLink == null;
+        });
+    }
+    if (filter.value.includes('No Shoutcasters')) {
+        result = result.filter((match) => {
+            return match.shoutcasters == null || match.shoutcasters.length > 0;
+        });
+    }
+    if (filter.value.includes('No Spin')) {
+        result = result.filter((match) => {
+            return match.playedMaps.some((map) => map.spin == null);
+        });
+    }
+
+
+    return result;
 });
 
 function newMatch() {
