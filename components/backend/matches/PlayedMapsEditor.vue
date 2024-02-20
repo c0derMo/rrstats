@@ -71,7 +71,16 @@
             />
 
             <div>
-                Spin:<br />
+                <div class="flex flex-row gap-3 mb-3">
+                    <span class="w-1/3">Spin:</span>
+                    <TextInputComponent
+                        :model-value="hitmapsOverlayUrl"
+                        placeholder="Hitmaps Overlay URL"
+                        class="flex-grow"
+                        @update:model-value="(v) => $emit('update:hitmapsOverlayUrl', v)"
+                    />
+                    <ButtonComponent :loading="importingSpin" @click="importSpin()" >Import from HITMAPS</ButtonComponent>
+                </div>
                 <TextareaComponent v-model="spin" />
             </div>
         </div>
@@ -82,6 +91,7 @@
 import {
     ChoosingPlayer,
     RRMap,
+    Spin,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 
@@ -94,12 +104,17 @@ const props = defineProps({
         type: Array<string>,
         required: true,
     },
+    hitmapsOverlayUrl: {
+        type: String,
+        default: ""
+    }
 });
 
-const emits = defineEmits(["update:playedMaps"]);
+const emits = defineEmits(["update:playedMaps", "update:hitmapsOverlayUrl"]);
 
 const playedMapData = toRef(props.playedMaps);
 const selectedMap = ref(0);
+const importingSpin = ref(false);
 
 const allMaps = computed(() => {
     return getAllMaps().map((map) => {
@@ -158,5 +173,17 @@ function addMap() {
         timeTaken: -1
     });
     emits("update:playedMaps", playedMapData);
+}
+
+async function importSpin() {
+    importingSpin.value = true;
+
+    const id = props.hitmapsOverlayUrl.split("/").pop();
+    const request = await useFetch<{ currentSpin: Spin }>(`https://rouletteapi.hitmaps.com/api/matchups/${id}`);
+    if (request.data?.value != null && request.status.value === "success") {
+        spin.value = JSON.stringify(request.data.value.currentSpin);
+    }
+
+    importingSpin.value = false;
 }
 </script>

@@ -2,6 +2,7 @@
     <div>
         <MatchEditor
             v-if="matchToShow != null"
+            v-model:hitmaps-overlay-url="hitmapsOverlayUrl"
             :match="matchToShow"
             @close="
                 matchToShow = null;
@@ -86,6 +87,7 @@ const playerLookupTable: Ref<Record<string, string>> = ref({});
 const matchToShow: Ref<IMatch | null> = ref(null);
 const search = ref("");
 const filter: Ref<string[]> = ref([]);
+const hitmapsOverlayUrl = ref("");
 
 const headers = [
     { key: "competition", title: "Competition" },

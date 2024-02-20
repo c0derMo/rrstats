@@ -92,6 +92,8 @@
                     <PlayedMapsEditor
                         v-model:played-maps="matchData.playedMaps"
                         :players="players"
+                        :hitmaps-overlay-url="hitmapsOverlayUrl"
+                        @update:hitmaps-overlay-url="(v) => $emit('update:hitmapsOverlayUrl', v)"
                     />
                 </template>
             </TabbedContainer>
@@ -114,9 +116,13 @@ const props = defineProps({
         type: Object as PropType<IMatch>,
         required: true,
     },
+    hitmapsOverlayUrl: {
+        type: String,
+        default: ""
+    }
 });
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["close", "update:hitmapsOverlayUrl"]);
 
 const matchData: Ref<IMatch> = ref(props.match);
 const playerToUUIDTable: Ref<Record<string, string>> = ref({});
