@@ -47,9 +47,7 @@ export interface RRMap {
     winner: WinningPlayer;
     forfeit?: boolean;
     spin?: Spin;
-    startedTimestamp: number;
-    endedTimestamp: number;
-    timeAccurate?: boolean;
+    timeTaken: number;
 }
 
 export interface Spin {

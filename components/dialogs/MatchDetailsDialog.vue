@@ -120,41 +120,10 @@
                     <div
                         class="col-span-3 border-b border-gray-500 pb-3 mb-3 text-center"
                     >
-                        <TooltipComponent>
-                            RTA:
-                            {{
-                                map.endedTimestamp > 0
-                                    ? durationToLocale(
-                                          map.endedTimestamp -
-                                              map.startedTimestamp,
-                                      )
-                                    : "unknown"
-                            }}
-                            <span
-                                v-if="
-                                    map.endedTimestamp > 0 && !map.timeAccurate
-                                "
-                            >
-                                (estimate)</span
-                            >
-
-                            <template #tooltip>
-                                Spin started at:
-                                {{
-                                    map.startedTimestamp > 0
-                                        ? timestampToLocale(
-                                              map.startedTimestamp,
-                                          )
-                                        : "unknown"
-                                }}<br />
-                                Spin ended at:
-                                {{
-                                    map.endedTimestamp > 0
-                                        ? timestampToLocale(map.endedTimestamp)
-                                        : "unknown"
-                                }}
-                            </template>
-                        </TooltipComponent>
+                        RTA:
+                        {{ 
+                            map.timeTaken > 0 ? durationToLocale(map.timeTaken * 1000) : "unknown"
+                        }}
                     </div>
                 </template>
             </div>
@@ -212,12 +181,6 @@ function getPlayerName(
         case WinningPlayer.DRAW:
             return randomDrawOption;
     }
-}
-
-function timestampToLocale(timestamp: number) {
-    return DateTime.fromMillis(timestamp)
-        .setLocale(useLocale().value)
-        .toLocaleString(DateTime.DATETIME_FULL);
 }
 
 function durationToLocale(millis: number) {

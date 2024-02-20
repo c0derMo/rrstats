@@ -63,24 +63,10 @@
                 @update:model-value="$emit('update:playedMaps', playedMapData)"
             />
 
-            <DateTimeInputComponent
-                v-model="playedMapData[selectedMap].startedTimestamp"
-                placeholder="Started at"
-                :seconds="true"
-                @update:model-value="$emit('update:playedMaps', playedMapData)"
-            />
-
-            <DateTimeInputComponent
-                v-model="playedMapData[selectedMap].endedTimestamp"
-                placeholder="Ended at"
-                :seconds="true"
-                @update:model-value="$emit('update:playedMaps', playedMapData)"
-            />
-
-            <SwitchComponent
-                id="timeAccurate"
-                v-model="playedMapData[selectedMap].timeAccurate"
-                label="Time accurate?"
+            <TextInputComponent
+                v-model="playedMapData[selectedMap].timeTaken"
+                type="number"
+                placeholder="RTA (in seconds)"
                 @update:model-value="$emit('update:playedMaps', playedMapData)"
             />
 
@@ -93,7 +79,6 @@
 </template>
 
 <script setup lang="ts">
-import { DateTime } from "luxon";
 import {
     ChoosingPlayer,
     RRMap,
@@ -170,8 +155,7 @@ function addMap() {
         map: 0,
         picked: 0,
         winner: 0,
-        startedTimestamp: DateTime.now().toMillis(),
-        endedTimestamp: DateTime.now().toMillis(),
+        timeTaken: -1
     });
     emits("update:playedMaps", playedMapData);
 }

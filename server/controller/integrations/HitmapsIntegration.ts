@@ -285,15 +285,17 @@ export default class HitmapsIntegration {
                 if (map.chosenByName === fullMatch.participants[1].name)
                     pickedBy = ChoosingPlayer.PLAYER_TWO;
 
-                let endingTimestamp = -1;
-                if (map.winnerFinishedAt != null) {
-                    endingTimestamp = DateTime.fromISO(
-                        map.winnerFinishedAt,
-                    ).toMillis();
-                } else if (map.resultVerifiedAt != null) {
-                    endingTimestamp = DateTime.fromISO(
-                        map.resultVerifiedAt,
-                    ).toMillis();
+
+                let spinTime = -1;
+                if (map.mapStartedAt != null) {
+                    const startingTime = DateTime.fromISO(map.mapStartedAt);
+                    if (map.winnerFinishedAt != null) {
+                        const endingTime = DateTime.fromISO(map.winnerFinishedAt);
+                        spinTime = Math.abs(startingTime.diff(endingTime).as('seconds'));
+                    } else if (map.resultVerifiedAt != null) {
+                        const endingTime = DateTime.fromISO(map.resultVerifiedAt);
+                        spinTime = Math.abs(startingTime.diff(endingTime).as('seconds'));
+                    }
                 }
 
                 picks.push({
@@ -301,10 +303,7 @@ export default class HitmapsIntegration {
                     winner,
                     picked: pickedBy,
                     spin: map.spin,
-                    startedTimestamp: DateTime.fromISO(
-                        map.mapStartedAt,
-                    ).toMillis(),
-                    endedTimestamp: endingTimestamp,
+                    timeTaken: spinTime
                 });
             }
 
