@@ -121,8 +121,10 @@
                         class="col-span-3 border-b border-gray-500 pb-3 mb-3 text-center"
                     >
                         RTA:
-                        {{ 
-                            map.timeTaken > 0 ? durationToLocale(map.timeTaken * 1000) : "unknown"
+                        {{
+                            map.timeTaken > 0
+                                ? durationToLocale(map.timeTaken * 1000)
+                                : "unknown"
                         }}
                     </div>
                 </template>

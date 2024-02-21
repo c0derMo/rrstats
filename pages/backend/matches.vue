@@ -110,27 +110,26 @@ const matchesToShow = computed(() => {
                 return true;
             if (match.round.includes(search.value)) return true;
             if (match.uuid.includes(search.value)) return true;
-    
+
             return false;
         });
     }
 
-    if (filter.value.includes('No VOD')) {
+    if (filter.value.includes("No VOD")) {
         result = result.filter((match) => {
             return match.vodLink == null;
         });
     }
-    if (filter.value.includes('No Shoutcasters')) {
+    if (filter.value.includes("No Shoutcasters")) {
         result = result.filter((match) => {
             return match.shoutcasters == null || match.shoutcasters.length > 0;
         });
     }
-    if (filter.value.includes('No Spin')) {
+    if (filter.value.includes("No Spin")) {
         result = result.filter((match) => {
             return match.playedMaps.some((map) => map.spin == null);
         });
     }
-
 
     return result;
 });

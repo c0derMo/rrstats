@@ -26,19 +26,29 @@ async function run() {
 
     for (const match of matches) {
         for (const map of match.playedMaps as OldRRMap[]) {
-            delete map['timeAccurate'];
+            delete map["timeAccurate"];
             map.timeTaken = -1;
             if (map.startedTimestamp != null && map.startedTimestamp > 0) {
-                const startingDateTime = DateTime.fromMillis(map.startedTimestamp);
-                if (map.endedTimestamp != null && map.endedTimestamp > 0 && map.endedTimestamp > map.startedTimestamp) {
-                    const endingDateTime = DateTime.fromMillis(map.endedTimestamp);
-                    const spinTime = Math.abs(startingDateTime.diff(endingDateTime).as('seconds'));
+                const startingDateTime = DateTime.fromMillis(
+                    map.startedTimestamp,
+                );
+                if (
+                    map.endedTimestamp != null &&
+                    map.endedTimestamp > 0 &&
+                    map.endedTimestamp > map.startedTimestamp
+                ) {
+                    const endingDateTime = DateTime.fromMillis(
+                        map.endedTimestamp,
+                    );
+                    const spinTime = Math.abs(
+                        startingDateTime.diff(endingDateTime).as("seconds"),
+                    );
                     map.timeTaken = spinTime;
                     console.log(`Converted timestamps to ${spinTime}`);
                 }
             }
-            delete map['startedTimestamp'];
-            delete map['endedTimestamp'];
+            delete map["startedTimestamp"];
+            delete map["endedTimestamp"];
         }
 
         if (show) {

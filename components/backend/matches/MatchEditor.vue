@@ -93,7 +93,9 @@
                         v-model:played-maps="matchData.playedMaps"
                         :players="players"
                         :hitmaps-overlay-url="hitmapsOverlayUrl"
-                        @update:hitmaps-overlay-url="(v) => $emit('update:hitmapsOverlayUrl', v)"
+                        @update:hitmaps-overlay-url="
+                            (v) => $emit('update:hitmapsOverlayUrl', v)
+                        "
                     />
                 </template>
             </TabbedContainer>
@@ -118,8 +120,8 @@ const props = defineProps({
     },
     hitmapsOverlayUrl: {
         type: String,
-        default: ""
-    }
+        default: "",
+    },
 });
 
 const emits = defineEmits(["close", "update:hitmapsOverlayUrl"]);
