@@ -132,6 +132,8 @@ const players = ref([matchData.value.playerOne, matchData.value.playerTwo]);
 const playersInvalid = ref([false, false]);
 const isSaving = ref(false);
 
+const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
+
 const shoutcasters = computed({
     get() {
         return matchData.value.shoutcasters?.join(", ") ?? "";
@@ -181,10 +183,15 @@ async function save() {
     matchData.value.playerTwo =
         playerToUUIDTable.value[players.value[1]] ?? matchData.value.playerTwo;
 
-    await useFetch("/api/matches", {
-        method: "post",
-        body: matchData.value,
-    });
+    try {
+        await $fetch("/api/matches", {
+            method: "post",
+            body: matchData.value,
+        });
+        addAlert("Match saved successfully.", "success");
+    } catch(e) {
+        addAlert("Error upon saving match.", "error")
+    }
 
     isSaving.value = false;
     emits("close");

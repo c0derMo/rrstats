@@ -98,6 +98,7 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close"]);
+const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const compData = toRef(props.competition);
 const placementsData = toRef(props.placements);
@@ -123,14 +124,19 @@ async function save() {
         placement.competition = compData.value.tag;
     }
 
-    await useFetch("/api/competitions", {
-        method: "post",
-        body: compData.value,
-    });
-    await useFetch("/api/competitions/placements", {
-        method: "post",
-        body: placementsData.value,
-    });
+    try {
+        await $fetch("/api/competitions", {
+            method: "post",
+            body: compData.value,
+        });
+        await $fetch("/api/competitions/placements", {
+            method: "post",
+            body: placementsData.value,
+        });
+        addAlert("Competition saved successfully.", "success");
+    } catch {
+        addAlert("Error upon saving competition.", "error");
+    }
 
     isSaving.value = false;
     emits("close");

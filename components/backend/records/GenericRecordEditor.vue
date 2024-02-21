@@ -83,6 +83,7 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close"]);
+const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const recordData: Ref<IGenericRecord> = toRef(props.record);
 const isSaving = ref(false);
@@ -182,11 +183,16 @@ async function save() {
 
     recordData.value.time = totalTime.value;
 
-    await useFetch("/api/records", {
-        method: "post",
-        query: { type: "generic" },
-        body: recordData.value,
-    });
+    try {
+        await $fetch("/api/records", {
+            method: "post",
+            query: { type: "generic" },
+            body: recordData.value,
+        });
+        addAlert("Record saved successfully.", "success");
+    } catch {
+        addAlert("Error upon saving record.", "error");
+    }
 
     isSaving.value = false;
     emits("close");

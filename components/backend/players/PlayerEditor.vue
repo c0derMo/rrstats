@@ -72,6 +72,7 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close"]);
+const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const playerData = toRef(props.player);
 const isSaving = ref(false);
@@ -117,10 +118,15 @@ const nationality = computed({
 async function save() {
     isSaving.value = true;
 
-    await useFetch("/api/player", {
-        method: "post",
-        body: playerData.value,
-    });
+    try {
+        await $fetch("/api/player", {
+            method: "post",
+            body: playerData.value,
+        });
+        addAlert("Player saved successfully.", "success");
+    } catch {
+        addAlert("Error upon saving player.", "error");
+    }
 
     isSaving.value = false;
     emits("close");

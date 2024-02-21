@@ -129,6 +129,8 @@ const apiHeaders = [
     { key: "more", title: "" },
 ];
 
+const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
+
 const currentUserId: Ref<string> = ref("");
 const users: Ref<IUser[]> = ref([]);
 const apiKeys: Ref<IUser[]> = ref([]);
@@ -199,10 +201,15 @@ async function save() {
         }
     }
 
-    await useFetch("/api/auth/users", {
-        method: "POST",
-        body: toSave,
-    });
+    try {
+        await $fetch("/api/auth/users", {
+            method: "POST",
+            body: toSave,
+        });
+        addAlert("Users saved successfully.", "success");
+    } catch {
+        addAlert("Error upon saving users.", "error");
+    }
 }
 
 await updateUserList();

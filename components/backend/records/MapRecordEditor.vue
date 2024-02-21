@@ -69,6 +69,7 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close"]);
+const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const recordData: Ref<IMapRecord> = toRef(props.record);
 const isSaving = ref(false);
@@ -160,11 +161,16 @@ function updatePossibleMaps() {
 async function save() {
     isSaving.value = true;
 
-    await useFetch("/api/records", {
-        method: "post",
-        query: { type: "map" },
-        body: recordData.value,
-    });
+    try {
+        await $fetch("/api/records", {
+            method: "post",
+            query: { type: "map" },
+            body: recordData.value,
+        });
+        addAlert("Record saved successfully.", "success");
+    } catch {
+        addAlert("Error upon saving record.", "error");
+    }
 
     isSaving.value = false;
     emits("close");
