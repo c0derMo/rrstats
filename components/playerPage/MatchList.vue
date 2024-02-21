@@ -68,6 +68,9 @@
                 <ButtonComponent @click="matchToShow = row">
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
                 </ButtonComponent>
+                <ButtonComponent v-if="row.vodLink != null && row.vodLink !== ''" @click="redirectTo(row.vodLink)">
+                    <FontAwesomeIcon :icon="['fas', 'video']" size="xs" />
+                </ButtonComponent>
             </template>
         </DataTableComponent>
     </div>
@@ -133,13 +136,15 @@
                 <ButtonComponent @click="matchToShow = row">
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
                 </ButtonComponent>
+                <ButtonComponent v-if="row.vodLink != null && row.vodLink !== ''" @click="redirectTo(row.vodLink)">
+                    <FontAwesomeIcon :icon="['fas', 'video']" size="xs" />
+                </ButtonComponent>
             </template>
         </DataTableComponent>
     </div>
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
 import {
     ChoosingPlayer,
     IMatch,
@@ -250,5 +255,9 @@ function getMapWinner(map: RRMap, match: IMatch): string {
     if (map.winner === WinningPlayer.PLAYER_TWO)
         return props.players[match.playerTwo];
     return "Unknown";
+}
+
+function redirectTo(link: string) {
+    window.location.href = link;
 }
 </script>
