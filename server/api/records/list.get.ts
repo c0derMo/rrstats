@@ -3,9 +3,11 @@ import { GenericRecord, MapRecord } from "~/server/model/Record";
 import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
+    const session = await AuthController.useSession(event);
+
     if (
         !(await AuthController.isAuthenticated(
-            event.context.session.user,
+            session.data.discordId,
             IPermission.EDIT_RECORDS,
         ))
     ) {

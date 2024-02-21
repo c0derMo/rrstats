@@ -1,7 +1,26 @@
 import { IPermission } from "~/utils/interfaces/IUser";
 import { User } from "../model/User";
+import { H3Event } from "h3";
+import { randomBytes } from "crypto";
+
+interface SessionData {
+    discordId?: string;
+}
 
 export class AuthController {
+    private static sessionKey: string = "";
+
+    static async useSession(event: H3Event) {
+        if (AuthController.sessionKey === "") {
+            AuthController.sessionKey = randomBytes(32).toString("hex");
+        }
+
+        return await useSession<SessionData>(event, {
+            password: AuthController.sessionKey,
+            name: "rrstats",
+        })
+    }
+
     static async isAuthenticated(
         discordId?: string,
         permission?: IPermission,

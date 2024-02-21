@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
     typescript: { shim: false },
-    modules: ["@nuxtjs/tailwindcss", "@sidebase/nuxt-session"],
+    modules: ["@nuxtjs/tailwindcss"],
     components: [{ path: "~/components", pathPrefix: false }],
     runtimeConfig: {
         discordToken: "",
@@ -28,7 +28,6 @@ export default defineNuxtConfig({
             },
         },
     },
-    session: { api: { isEnabled: false }, session: { rolling: true } },
     css: ["@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
     build: {
         transpile: ["@fortawesome/vue-fontawesome"],

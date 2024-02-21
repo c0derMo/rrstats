@@ -1,10 +1,12 @@
+import { AuthController } from "~/server/controller/AuthController";
 import DiscordAuthIntegration from "~/server/controller/integrations/DiscordAuthIntegration";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
+    const session = await AuthController.useSession(event);
 
     const user = await DiscordAuthIntegration.handleLogin(
-        event.context.session.id,
+        session.id ?? "",
         query.code as string,
         query.state as string,
     );
@@ -15,7 +17,9 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    event.context.session.user = user.authorizationKey;
+    await session.update({
+        discordId: user.authorizationKey
+    });
 
     await sendRedirect(event, "/backend");
 });

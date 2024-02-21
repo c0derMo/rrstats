@@ -4,10 +4,11 @@ import { Player } from "~/server/model/Player";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
+    const session = await AuthController.useSession(event);
 
     if (
         query.full !== undefined &&
-        (await AuthController.isAuthenticated(event.context.session.user))
+        (await AuthController.isAuthenticated(session.data.discordId))
     ) {
         const rawPlayers = await Player.find({
             select: ["uuid", "primaryName", "title", "nationality"],

@@ -3,8 +3,9 @@ import { Match } from "~/server/model/Match";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
+    const session = await AuthController.useSession(event);
 
-    if (!(await AuthController.isAuthenticated(event.context.session.user))) {
+    if (!(await AuthController.isAuthenticated(session.data.discordId))) {
         throw createError({
             statusCode: 403,
         });
