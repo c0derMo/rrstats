@@ -86,8 +86,11 @@
                         @click="importSpin()"
                         >Import from HITMAPS</ButtonComponent
                     >
+                    <SwitchComponent id="rawSpinEditToggle" v-model="rawSpinEdit" label="Raw spin editor" />
                 </div>
-                <TextareaComponent v-model="spin" />
+
+                <TextareaComponent v-if="rawSpinEdit" v-model="spin" />
+                <TextualSpin v-else :spin="playedMapData[selectedMap].spin" />
             </div>
         </div>
     </div>
@@ -121,6 +124,7 @@ const emits = defineEmits(["update:playedMaps", "update:hitmapsOverlayUrl"]);
 const playedMapData = toRef(props.playedMaps);
 const selectedMap = ref(0);
 const importingSpin = ref(false);
+const rawSpinEdit = ref(false);
 
 const allMaps = computed(() => {
     return getAllMaps().map((map) => {
