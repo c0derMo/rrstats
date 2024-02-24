@@ -1,0 +1,11 @@
+/.git
+/.nuxt
+/.output
+/.vscode
+/node_modules
+.env
+.eslintrc.json
+.gitignore
+.prettierrc
+*.db
+readme.md

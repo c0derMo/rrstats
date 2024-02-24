@@ -17,6 +17,10 @@ export class PlayerElo implements LeaderboardPlayerStatistic {
         "Elo score based on In4Fun's formula. Note: Players playing on multiple platforms are combined here, which may cause inconsistencies with In4Fun's Elo sheet.";
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
+        if (matches.length <= 0) {
+            return [];
+        }
+
         const sortedMatches = [...matches].sort(
             (a, b) => a.timestamp - b.timestamp,
         );
