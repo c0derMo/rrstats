@@ -247,9 +247,7 @@ async function getDisguises(): Promise<{ name: string; image: string }[]> {
     });
 }
 
-async function getTargetEliminations(
-    targets: string[],
-): Promise<
+async function getTargetEliminations(targets: string[]): Promise<
     {
         name: string;
         image: string;

@@ -44,8 +44,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_paris/background.jpg",
         season: 1,
         targets: [
-            { name: "Viktor Novikov", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/showstopper_viktor_novikov.jpg" },
-            { name: "Dalia Margolis", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/showstopper_dahlia_margolis.jpg" },
+            {
+                name: "Viktor Novikov",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/showstopper_viktor_novikov.jpg",
+            },
+            {
+                name: "Dalia Margolis",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/showstopper_dahlia_margolis.jpg",
+            },
         ],
     },
     {
@@ -58,8 +66,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_coastaltown/background.jpg",
         season: 1,
         targets: [
-            { name: "Silvio Caruso", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_silvio_caruso_briefing.jpg" },
-            { name: "Francesca de Santis", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_francesca_de_santis.jpg" },
+            {
+                name: "Silvio Caruso",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_silvio_caruso_briefing.jpg",
+            },
+            {
+                name: "Francesca de Santis",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_francesca_de_santis.jpg",
+            },
         ],
     },
     {
@@ -72,8 +88,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_marrakech/background.jpg",
         season: 1,
         targets: [
-            { name: "Reza Zaydan", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/tobigforjail_general_zaydan.jpg" },
-            { name: "Claus Hugo Strandberg", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/tobigforjail_claus_hugo_stranberg.jpg" },
+            {
+                name: "Reza Zaydan",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/tobigforjail_general_zaydan.jpg",
+            },
+            {
+                name: "Claus Hugo Strandberg",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/tobigforjail_claus_hugo_stranberg.jpg",
+            },
         ],
     },
     {
@@ -86,8 +110,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_bangkok/background.jpg",
         season: 1,
         targets: [
-            { name: "Jordan Cross", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/club27_jordan_cross.jpg" },
-            { name: "Ken Morgan", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/club27_ken_morgan.jpg" },
+            {
+                name: "Jordan Cross",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/club27_jordan_cross.jpg",
+            },
+            {
+                name: "Ken Morgan",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/club27_ken_morgan.jpg",
+            },
         ],
     },
     {
@@ -100,10 +132,26 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_colorado/background.jpg",
         season: 1,
         targets: [
-            { name: "Sean Rose", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_sean_rose.jpg" },
-            { name: "Penelope Graves", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_penelope_graves.jpg" },
-            { name: "Ezra Berg", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_ezra_berg.jpg" },
-            { name: "Maya Parvati", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_maya_parvati.jpg" },
+            {
+                name: "Sean Rose",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_sean_rose.jpg",
+            },
+            {
+                name: "Penelope Graves",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_penelope_graves.jpg",
+            },
+            {
+                name: "Ezra Berg",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_ezra_berg.jpg",
+            },
+            {
+                name: "Maya Parvati",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/freedom_fighters_maya_parvati.jpg",
+            },
         ],
     },
     {
@@ -116,8 +164,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_hokkaido/background.jpg",
         season: 1,
         targets: [
-            { name: "Erich Soders", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/snowcrane_erich_soders_briefing.jpg" },
-            { name: "Yuki Yamazaki", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/snowcrane_yuki_yamazaki_briefing.jpg" },
+            {
+                name: "Erich Soders",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/snowcrane_erich_soders_briefing.jpg",
+            },
+            {
+                name: "Yuki Yamazaki",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/snowcrane_yuki_yamazaki_briefing.jpg",
+            },
         ],
     },
 
@@ -131,8 +187,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_miami/background.jpg",
         season: 2,
         targets: [
-            { name: "Sierra Knox", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/flamingo_sierra_knox.jpg" },
-            { name: "Robert Knox", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/flamingo_robert_knox.jpg" },
+            {
+                name: "Sierra Knox",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/flamingo_sierra_knox.jpg",
+            },
+            {
+                name: "Robert Knox",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/flamingo_robert_knox.jpg",
+            },
         ],
     },
     {
@@ -145,9 +209,21 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_colombia/background.jpg",
         season: 2,
         targets: [
-            { name: "Rico Delgado", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/hippo_rico_delgado.jpg" },
-            { name: "Jorge Franco", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/hippo_jorge_franco.jpg" },
-            { name: "Andrea Martínez", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/hippo_andrea_martinez.jpg" },
+            {
+                name: "Rico Delgado",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/hippo_rico_delgado.jpg",
+            },
+            {
+                name: "Jorge Franco",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/hippo_jorge_franco.jpg",
+            },
+            {
+                name: "Andrea Martínez",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/hippo_andrea_martinez.jpg",
+            },
         ],
     },
     {
@@ -160,9 +236,21 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_mumbai/background.jpg",
         season: 2,
         targets: [
-            { name: "Wazir Kale", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/mongoose_wazir_kale_identified.jpg" },
-            { name: "Vanya Shah", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/mongoose_vanya_shah.jpg" },
-            { name: "Dawood Rangan", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/mongoose_dawood_rangan.jpg" },
+            {
+                name: "Wazir Kale",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/mongoose_wazir_kale_identified.jpg",
+            },
+            {
+                name: "Vanya Shah",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/mongoose_vanya_shah.jpg",
+            },
+            {
+                name: "Dawood Rangan",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/mongoose_dawood_rangan.jpg",
+            },
         ],
     },
     {
@@ -175,8 +263,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_northamerica/background.jpg",
         season: 2,
         targets: [
-            { name: "Janus", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/skunk_janus.jpg" },
-            { name: "Nolan Cassidy", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/skunk_nolan_cassidy.jpg" },
+            {
+                name: "Janus",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/skunk_janus.jpg",
+            },
+            {
+                name: "Nolan Cassidy",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/skunk_nolan_cassidy.jpg",
+            },
         ],
     },
     {
@@ -189,8 +285,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_northsea/background.jpg",
         season: 2,
         targets: [
-            { name: "Zoe Washington", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/magpie_zoe_washington.jpg" },
-            { name: "Sophia Washington", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/magpie_serena_washington.jpg" },
+            {
+                name: "Zoe Washington",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/magpie_zoe_washington.jpg",
+            },
+            {
+                name: "Sophia Washington",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/magpie_serena_washington.jpg",
+            },
         ],
     },
     {
@@ -202,7 +306,13 @@ const maps: HitmanMapInfo[] = [
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_greedy_raccoon/background.jpg",
         season: 2,
-        targets: [{ name: "Athena Savalas", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/racoon_athena_savalas.jpg" }],
+        targets: [
+            {
+                name: "Athena Savalas",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/racoon_athena_savalas.jpg",
+            },
+        ],
     },
     {
         map: HitmanMap.HAVEN_ISLAND,
@@ -214,9 +324,21 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_opulent_stingray/background.jpg",
         season: 2,
         targets: [
-            { name: "Tyson Williams", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/stingray_tyson_williams.jpg" },
-            { name: "Steven Bradley", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/stingray_steven_bradley.jpg" },
-            { name: "Ljudmila Vetrova", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/stingray_ljudmila_vetrova.jpg" },
+            {
+                name: "Tyson Williams",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/stingray_tyson_williams.jpg",
+            },
+            {
+                name: "Steven Bradley",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/stingray_steven_bradley.jpg",
+            },
+            {
+                name: "Ljudmila Vetrova",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/stingray_ljudmila_vetrova.jpg",
+            },
         ],
     },
 
@@ -230,8 +352,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_golden/golden_background.jpg",
         season: 3,
         targets: [
-            { name: "Carl Ingram", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/golden_carl_ingram.jpg" },
-            { name: "Marcus Stuyvesant", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/golden_marcus_stuyvesant.jpg" },
+            {
+                name: "Carl Ingram",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/golden_carl_ingram.jpg",
+            },
+            {
+                name: "Marcus Stuyvesant",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/golden_marcus_stuyvesant.jpg",
+            },
         ],
     },
     {
@@ -243,7 +373,13 @@ const maps: HitmanMapInfo[] = [
         backgroundImage:
             "https://media.hitmaps.com/img/hitman3/locations/location_ancestral/ancestral_background.jpg",
         season: 3,
-        targets: [{ name: "Alexa Carlisle", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/ancestral_alexa_carlisle.jpg" }],
+        targets: [
+            {
+                name: "Alexa Carlisle",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/ancestral_alexa_carlisle.jpg",
+            },
+        ],
     },
     {
         map: HitmanMap.BERLIN,
@@ -255,11 +391,31 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_edgy/edgy_background.jpg",
         season: 3,
         targets: [
-            { name: "ICA Agent #1", tileUrl: "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png" },
-            { name: "ICA Agent #2", tileUrl: "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png" },
-            { name: "ICA Agent #3", tileUrl: "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png" },
-            { name: "ICA Agent #4", tileUrl: "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png" },
-            { name: "ICA Agent #5", tileUrl: "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png" },
+            {
+                name: "ICA Agent #1",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png",
+            },
+            {
+                name: "ICA Agent #2",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png",
+            },
+            {
+                name: "ICA Agent #3",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png",
+            },
+            {
+                name: "ICA Agent #4",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png",
+            },
+            {
+                name: "ICA Agent #5",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitmaps-roulette/berlin-target.png",
+            },
         ],
     },
     {
@@ -272,8 +428,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_wet/wet_background.jpg",
         season: 3,
         targets: [
-            { name: "Hush", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/wet_hush.jpg" },
-            { name: "Imogen Royce", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/wet_imogen_royce.jpg" },
+            {
+                name: "Hush",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/wet_hush.jpg",
+            },
+            {
+                name: "Imogen Royce",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/wet_imogen_royce.jpg",
+            },
         ],
     },
     {
@@ -286,8 +450,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_elegant/elegant_background.jpg",
         season: 3,
         targets: [
-            { name: "Don Archibald Yates", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/elegant_yates.jpg" },
-            { name: "Tamara Vidal", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/elegant_vidal.jpg" },
+            {
+                name: "Don Archibald Yates",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/elegant_yates.jpg",
+            },
+            {
+                name: "Tamara Vidal",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/elegant_vidal.jpg",
+            },
         ],
     },
     {
@@ -300,8 +472,16 @@ const maps: HitmanMapInfo[] = [
             "https://media.hitmaps.com/img/hitman3/locations/location_rocky/rocky_background.jpg",
         season: 3,
         targets: [
-            { name: "Noel Crest", tileUrl: "https://media.hitmaps.com/img/hitman3/actors/rocky_noel_crest.jpg" },
-            { name: 'Sinhi "Akka" Venthan', tileUrl: "https://media.hitmaps.com/img/hitman3/actors/rocky_sinhi_akka_venthan.jpg" },
+            {
+                name: "Noel Crest",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/rocky_noel_crest.jpg",
+            },
+            {
+                name: 'Sinhi "Akka" Venthan',
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/rocky_sinhi_akka_venthan.jpg",
+            },
         ],
     },
 ];

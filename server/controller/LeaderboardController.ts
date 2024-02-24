@@ -42,6 +42,7 @@ import { CountryWinrate } from "./leaderboardStatistics/country/Winrate";
 import { CountryTitles } from "./leaderboardStatistics/country/Titles";
 import { PlayerAveragePlacement } from "./leaderboardStatistics/player/AveragePlacement";
 import { PlayerElo } from "./leaderboardStatistics/player/Elo";
+import { PlayerMatchesCasted } from "./leaderboardStatistics/player/MatchesCasted";
 
 interface StatisticData<T extends string> {
     name: string;
@@ -102,6 +103,7 @@ export default class LeaderboardController {
         new PlayerSpecificMapPlayed(),
         new PlayerSpecificMapWinrate(),
         new PlayerElo(),
+        new PlayerMatchesCasted(),
 
         new CountryPlayers(),
         new CountryMatches(),

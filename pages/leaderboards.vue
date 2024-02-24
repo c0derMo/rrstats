@@ -97,10 +97,7 @@
                     </template>
                     <template #player="{ value }">
                         <a :href="`/${playerLookupTable[value as string]}`">
-                            {{
-                                playerLookupTable[value as string] ??
-                                `Unknown player: ${value}`
-                            }}
+                            {{ playerLookupTable[value as string] ?? value }}
                         </a>
                     </template>
                 </DataTableComponent>
