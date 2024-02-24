@@ -32,7 +32,7 @@
             <div
                 v-if="showDropdown"
                 ref="dropdown"
-                class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-full"
+                class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full"
                 :style="shouldDropUp ? dropupHeight : dropdownHeight"
             >
                 <div
