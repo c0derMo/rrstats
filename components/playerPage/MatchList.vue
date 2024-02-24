@@ -69,8 +69,8 @@
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
                 </ButtonComponent>
                 <ButtonComponent
-                    v-if="row.vodLink != null && row.vodLink !== ''"
-                    @click="redirectTo(row.vodLink)"
+                    v-if="row.vodLink != null && row.vodLink.length > 0"
+                    @click="redirectTo(row.vodLink[0])"
                 >
                     <FontAwesomeIcon :icon="['fas', 'video']" size="xs" />
                 </ButtonComponent>
@@ -140,8 +140,8 @@
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
                 </ButtonComponent>
                 <ButtonComponent
-                    v-if="row.vodLink != null && row.vodLink !== ''"
-                    @click="redirectTo(row.vodLink)"
+                    v-if="row.vodLink != null && row.vodLink.length > 0"
+                    @click="redirectTo(row.vodLink[0])"
                 >
                     <FontAwesomeIcon :icon="['fas', 'video']" size="xs" />
                 </ButtonComponent>

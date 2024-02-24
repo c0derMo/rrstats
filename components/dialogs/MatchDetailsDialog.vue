@@ -52,8 +52,12 @@
                 <div class="w-full text-center">
                     <span v-if="match.vodLink != null">
                         Shoutcast available:
-                        <a class="underline text-blue-500" :href="match.vodLink"
-                            >VOD</a
+                        <a
+                            v-for="(vod, idx) in match.vodLink"
+                            :key="idx"
+                            class="underline text-blue-500 ml-2"
+                            :href="vod"
+                            >VOD{{ idx > 0 ? ` (Part ${idx + 1})` : "" }}</a
                         >
                     </span>
                     <span v-else> Shoutcast not available </span>

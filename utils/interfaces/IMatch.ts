@@ -21,7 +21,7 @@ export type IMatch = {
     bannedMaps: RRBannedMap[];
 
     shoutcasters?: string[];
-    vodLink?: string;
+    vodLink?: string[];
 };
 
 export enum ChoosingPlayer {

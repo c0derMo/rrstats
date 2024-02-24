@@ -126,14 +126,27 @@
                 <template #shoutcasters="{ value, row }">
                     <a
                         v-if="value !== null"
-                        :href="row.vodLink"
+                        :href="
+                            row.vodLink != null && row.vodLink.length > 0
+                                ? row.vodLink[0]
+                                : ''
+                        "
                         :class="{
                             'underline text-blue-600 dark:text-blue-400':
-                                row.vodLink != null,
+                                row.vodLink != null && row.vodLink.length > 0,
                         }"
                     >
                         {{ (value as string[]).join(", ") }}
                     </a>
+
+                    <template v-for="(vod, idx) of row.vodLink" :key="idx">
+                        <a
+                            v-if="idx > 0"
+                            class="underline text-blue-600 dark:text-blue-400 ml-1"
+                            :href="vod"
+                            >(Part {{ idx + 1 }})</a
+                        >
+                    </template>
                 </template>
 
                 <template #actions="{ row }">

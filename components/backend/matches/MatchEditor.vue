@@ -74,7 +74,7 @@
                             placeholder="Shoutcasters"
                         />
                         <TextInputComponent
-                            v-model="matchData.vodLink"
+                            v-model="vodLink"
                             class="grow"
                             placeholder="VOD Link"
                         />
@@ -141,7 +141,17 @@ const shoutcasters = computed({
     },
     set(newValue: string) {
         matchData.value.shoutcasters = newValue
-            .split(", ")
+            .split(",")
+            .map((name) => name.trim());
+    },
+});
+const vodLink = computed({
+    get() {
+        return matchData.value.vodLink?.join(", ") ?? "";
+    },
+    set(newValue: string) {
+        matchData.value.vodLink = newValue
+            .split(",")
             .map((name) => name.trim());
     },
 });

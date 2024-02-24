@@ -37,6 +37,6 @@ export class Match extends BaseEntity implements IMatch {
 
     @Column("simple-json", { nullable: true })
     shoutcasters?: string[];
-    @Column("text", { nullable: true })
-    vodLink?: string;
+    @Column("simple-json", { nullable: true })
+    vodLink?: string[];
 }
