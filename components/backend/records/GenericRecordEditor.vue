@@ -83,7 +83,8 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close"]);
-const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
+const addAlert =
+    inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const recordData: Ref<IGenericRecord> = toRef(props.record);
 const isSaving = ref(false);

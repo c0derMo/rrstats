@@ -29,7 +29,8 @@
                     v-model="playedMapData[selectedMap].map"
                     :items="allMaps"
                     @update:model-value="
-                        $emit('update:playedMaps', playedMapData)
+                        $emit('update:playedMaps', playedMapData);
+                        spinRefresher += 1;
                     "
                 />
             </div>
@@ -86,11 +87,30 @@
                         @click="importSpin()"
                         >Import from HITMAPS</ButtonComponent
                     >
-                    <SwitchComponent id="rawSpinEditToggle" v-model="rawSpinEdit" label="Raw spin editor" />
+                    <SwitchComponent
+                        id="rawSpinEditToggle"
+                        v-model="rawSpinEdit"
+                        label="Raw spin editor"
+                    />
                 </div>
 
                 <TextareaComponent v-if="rawSpinEdit" v-model="spin" />
-                <TextualSpin v-else :spin="playedMapData[selectedMap].spin" />
+                <SpinEditor
+                    v-else
+                    :key="selectedMap + spinRefresher"
+                    :map="playedMapData[selectedMap].map"
+                    :spin="playedMapData[selectedMap].spin"
+                    @update-spin="
+                        (v) => {
+                            playedMapData[selectedMap].spin = v;
+                            $emit('update:playedMaps', playedMapData);
+                        }
+                    "
+                />
+
+                <div class="border-b w-full my-2"></div>
+
+                <TextualSpin :spin="playedMapData[selectedMap].spin" />
             </div>
         </div>
     </div>
@@ -125,6 +145,7 @@ const playedMapData = toRef(props.playedMaps);
 const selectedMap = ref(0);
 const importingSpin = ref(false);
 const rawSpinEdit = ref(false);
+const spinRefresher = ref(0);
 
 const allMaps = computed(() => {
     return getAllMaps().map((map) => {
@@ -172,7 +193,7 @@ function deleteMap() {
     }
 
     playedMapData.value.splice(index, 1);
-    emits("update:playedMaps", playedMapData);
+    emits("update:playedMaps", playedMapData.value);
 }
 
 function addMap() {
@@ -182,7 +203,7 @@ function addMap() {
         winner: 0,
         timeTaken: -1,
     });
-    emits("update:playedMaps", playedMapData);
+    emits("update:playedMaps", playedMapData.value);
 }
 
 async function importSpin() {
@@ -193,9 +214,12 @@ async function importSpin() {
         `https://rouletteapi.hitmaps.com/api/matchups/${id}`,
     );
     if (request.data?.value != null && request.status.value === "success") {
-        spin.value = JSON.stringify(request.data.value.currentSpin);
+        playedMapData.value[selectedMap.value].spin =
+            request.data.value.currentSpin;
     }
 
+    spinRefresher.value += 1;
     importingSpin.value = false;
+    emits("update:playedMaps", playedMapData.value);
 }
 </script>

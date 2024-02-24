@@ -68,7 +68,10 @@
                 <ButtonComponent @click="matchToShow = row">
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
                 </ButtonComponent>
-                <ButtonComponent v-if="row.vodLink != null && row.vodLink !== ''" @click="redirectTo(row.vodLink)">
+                <ButtonComponent
+                    v-if="row.vodLink != null && row.vodLink !== ''"
+                    @click="redirectTo(row.vodLink)"
+                >
                     <FontAwesomeIcon :icon="['fas', 'video']" size="xs" />
                 </ButtonComponent>
             </template>
@@ -136,7 +139,10 @@
                 <ButtonComponent @click="matchToShow = row">
                     <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
                 </ButtonComponent>
-                <ButtonComponent v-if="row.vodLink != null && row.vodLink !== ''" @click="redirectTo(row.vodLink)">
+                <ButtonComponent
+                    v-if="row.vodLink != null && row.vodLink !== ''"
+                    @click="redirectTo(row.vodLink)"
+                >
                     <FontAwesomeIcon :icon="['fas', 'video']" size="xs" />
                 </ButtonComponent>
             </template>

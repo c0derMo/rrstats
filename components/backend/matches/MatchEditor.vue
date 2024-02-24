@@ -1,6 +1,6 @@
 <template>
     <DialogComponent dialog-class="w-3/5">
-        <CardComponent class="max-h-screen">
+        <CardComponent class="max-h-screen !overflow-visible">
             <TextInputComponent
                 v-model="matchData.uuid"
                 class="w-full mb-2"
@@ -132,7 +132,8 @@ const players = ref([matchData.value.playerOne, matchData.value.playerTwo]);
 const playersInvalid = ref([false, false]);
 const isSaving = ref(false);
 
-const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
+const addAlert =
+    inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const shoutcasters = computed({
     get() {
@@ -189,8 +190,8 @@ async function save() {
             body: matchData.value,
         });
         addAlert("Match saved successfully.", "success");
-    } catch(e) {
-        addAlert("Error upon saving match.", "error")
+    } catch (e) {
+        addAlert("Error upon saving match.", "error");
     }
 
     isSaving.value = false;

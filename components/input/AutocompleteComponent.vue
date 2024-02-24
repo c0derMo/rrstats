@@ -33,11 +33,6 @@
 </template>
 
 <script setup lang="ts">
-const value = ref("");
-const selectedSuggestion = ref(0);
-const isFocussed = ref(false);
-const isDropdownFocussed = ref(false);
-
 const emits = defineEmits(["confirm"]);
 const props = defineProps({
     suggestions: {
@@ -50,7 +45,17 @@ const props = defineProps({
         required: false,
         default: "",
     },
+    defaultText: {
+        type: String,
+        required: false,
+        default: "",
+    },
 });
+
+const value = ref(props.defaultText);
+const selectedSuggestion = ref(0);
+const isFocussed = ref(false);
+const isDropdownFocussed = ref(false);
 
 const currentSuggestions = computed(() => {
     if (value.value === "") {

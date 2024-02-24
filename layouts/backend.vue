@@ -40,9 +40,14 @@
         <div class="mx-5">
             <slot />
         </div>
-        
+
         <div class="z-10 sticky bottom-3 left-3 w-72 flex flex-col gap-3">
-            <AlertBoxComponent v-for="(alert, idx) of alerts" :key="alert.alertId" :type="alert.type" @close="() => removeAlert(idx)">
+            <AlertBoxComponent
+                v-for="(alert, idx) of alerts"
+                :key="alert.alertId"
+                :type="alert.type"
+                @close="() => removeAlert(idx)"
+            >
                 {{ alert.text }}
             </AlertBoxComponent>
         </div>
@@ -55,7 +60,7 @@ const numbers = (await useFetch("/api/onlyNumbers")).data;
 const route = useRoute();
 
 const nextAlertId = ref(0);
-const alerts: Ref<{text: string, type?: string, alertId: number}[]> = ref([]);
+const alerts: Ref<{ text: string; type?: string; alertId: number }[]> = ref([]);
 
 useRouter().afterEach((to) => {
     updateTitle(to.meta.pageTitle);

@@ -129,7 +129,8 @@ const apiHeaders = [
     { key: "more", title: "" },
 ];
 
-const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
+const addAlert =
+    inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const currentUserId: Ref<string> = ref("");
 const users: Ref<IUser[]> = ref([]);

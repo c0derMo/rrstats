@@ -98,7 +98,8 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close"]);
-const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
+const addAlert =
+    inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const compData = toRef(props.competition);
 const placementsData = toRef(props.placements);

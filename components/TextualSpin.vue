@@ -6,6 +6,11 @@
             {{ target.disguise.name }}
             {{ buildComplications(target.complications) }}
         </li>
+        <li v-for="(additional, idx) in spin.additionalObjectives" :key="idx">
+            <span class="font-bold">{{ additional.objective.name }}</span
+            >: {{ additional.completionMethod.name }} as
+            {{ additional.disguise.name }}
+        </li>
     </ul>
 </template>
 
@@ -21,10 +26,10 @@ defineProps({
 });
 
 function buildKillMethod(method: {
-    selectedVariant: string;
+    selectedVariant: string | null;
     name: string;
 }): string {
-    if (method.selectedVariant !== null) {
+    if (method.selectedVariant != null) {
         return `${method.selectedVariant} ${method.name}`;
     } else {
         return method.name;

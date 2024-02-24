@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     }
 
     await session.update({
-        discordId: user.authorizationKey
+        discordId: user.authorizationKey,
     });
 
     await sendRedirect(event, "/backend");

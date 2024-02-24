@@ -72,7 +72,8 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["close"]);
-const addAlert = inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
+const addAlert =
+    inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
 const playerData = toRef(props.player);
 const isSaving = ref(false);

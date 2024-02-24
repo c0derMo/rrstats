@@ -67,7 +67,7 @@ export interface Spin {
         killMethod: {
             name: string;
             tileUrl: string;
-            selectedVariant: string;
+            selectedVariant: string | null;
         };
         disguise: {
             name: string;
@@ -75,6 +75,7 @@ export interface Spin {
         };
         complications: {
             name: string;
+            description: string;
             tileUrl: string;
         }[];
     }[];

@@ -240,7 +240,7 @@ async function fetchPreviousRecord(
     records.pop(); // Remove new record
     const previousRecords: PreviousRecord[] = [];
     do {
-        const nextRecord = records.pop() as (IMapRecord | IGenericRecord);
+        const nextRecord = records.pop() as IMapRecord | IGenericRecord;
         let players: string[];
         if (Object.hasOwn(nextRecord, "player")) {
             players = await fetchPlayerNames([
@@ -255,7 +255,10 @@ async function fetchPreviousRecord(
             players: players.join(" and "),
             time: nextRecord.time,
         });
-    } while (records.length > 0 && records[records.length - 1].time === previousRecords[0].time);
+    } while (
+        records.length > 0 &&
+        records[records.length - 1].time === previousRecords[0].time
+    );
 
     return previousRecords;
 }
