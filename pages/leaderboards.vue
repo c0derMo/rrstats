@@ -96,7 +96,11 @@
                         >
                     </template>
                     <template #player="{ value }">
-                        <a :href="`/${playerLookupTable[value as string]}`">
+                        <a
+                            :href="`/${
+                                playerLookupTable[value as string] ?? value
+                            }`"
+                        >
                             {{ playerLookupTable[value as string] ?? value }}
                         </a>
                     </template>

@@ -21,7 +21,7 @@
 
         <div
             v-if="selectableMaps.length > 0"
-            class="flex flex-col w-full gap-5 mt-5"
+            class="grid grid-cols-3 w-full gap-5 mt-2"
         >
             <div>
                 Map:
@@ -71,7 +71,7 @@
                 @update:model-value="$emit('update:playedMaps', playedMapData)"
             />
 
-            <div>
+            <div class="col-span-3 mt-5 border-t pt-2">
                 <div class="flex flex-row gap-3 mb-3">
                     <span class="w-1/3">Spin:</span>
                     <TextInputComponent

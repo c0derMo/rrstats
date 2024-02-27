@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="grid grid-cols-5 gap-2">
+        <div v-if="finishedLoading" class="grid grid-cols-5 gap-2">
             <template v-for="(target, idx) of targets" :key="idx">
                 <span class="font-bold">{{ target.name }}</span>
                 <SwitchComponent
@@ -26,6 +26,9 @@
                 />
             </template>
         </div>
+        <div v-else class="grid place-items-center">
+            <FontAwesomeIcon :icon="['fas', 'spinner']" class="animate-spin" />
+        </div>
     </div>
 </template>
 
@@ -45,17 +48,18 @@ const props = defineProps({
 });
 const emits = defineEmits(["updateSpin"]);
 
-const targets = getMap(props.map)!.targets;
-const killConditions = await getTargetEliminations(
-    targets.map((target) => target.name),
-);
-const disguises = await getDisguises();
-const spin = ref(props.spin != null ? props.spin : buildEmptySpin());
-const hasNTKO = ref(
-    spin.value.targetConditions.map((target) => {
-        return target.complications.length > 0;
-    }),
-);
+const finishedLoading = ref(false);
+const targets: Ref<{ name: string; tileUrl: string }[]> = ref([]);
+const killConditions: Ref<
+    {
+        name: string;
+        image: string;
+        variants: { name: string; image?: string }[];
+    }[][]
+> = ref([]);
+const disguises: Ref<{ name: string; image: string }[]> = ref([]);
+const spin: Ref<Spin> = ref(props.spin ?? buildEmptySpin());
+const hasNTKO: Ref<boolean[]> = ref([]);
 
 const selectedConditions = computed(() => {
     return spin.value.targetConditions.map((condition) => {
@@ -74,19 +78,19 @@ const selectedVariant = computed(() => {
 });
 
 const suggestableConditions = computed(() => {
-    return killConditions.map((target) => {
+    return killConditions.value.map((target) => {
         return target.map((condition) => {
             return condition.name;
         });
     });
 });
 const suggestableDisguises = computed(() => {
-    return disguises.map((disguise) => {
+    return disguises.value.map((disguise) => {
         return disguise.name;
     });
 });
 const selectableVariants = computed(() => {
-    return killConditions.map((target, idx) => {
+    return killConditions.value.map((target, idx) => {
         const selectedCondition = target.find(
             (condition) => condition.name === selectedConditions.value[idx],
         );
@@ -98,7 +102,7 @@ const selectableVariants = computed(() => {
 });
 
 function selectDisguise(targetIdx: number, disguiseName: string) {
-    const actualDisguise = disguises.find((disguise) => {
+    const actualDisguise = disguises.value.find((disguise) => {
         return disguise.name === disguiseName;
     });
     if (actualDisguise == null) return;
@@ -111,9 +115,11 @@ function selectDisguise(targetIdx: number, disguiseName: string) {
 }
 
 function selectCondition(targetIdx: number, conditionName: string) {
-    const actualCondition = killConditions[targetIdx].find((condition) => {
-        return condition.name === conditionName;
-    });
+    const actualCondition = killConditions.value[targetIdx].find(
+        (condition) => {
+            return condition.name === conditionName;
+        },
+    );
     if (actualCondition == null) return;
 
     spin.value.targetConditions[targetIdx].killMethod = {
@@ -125,7 +131,7 @@ function selectCondition(targetIdx: number, conditionName: string) {
 }
 
 function selectVariant(targetIdx: number, variantName: string) {
-    const condition = killConditions[targetIdx].find((condition) => {
+    const condition = killConditions.value[targetIdx].find((condition) => {
         return condition.name === selectedConditions.value[targetIdx];
     });
     if (condition == null) return;
@@ -174,9 +180,9 @@ function buildEmptySpin(): Spin {
         mission: {
             publicIdPrefix: -1,
             slug: getMap(props.map)!.slug,
-            targets: targets,
+            targets: targets.value,
         },
-        targetConditions: targets.map((target) => {
+        targetConditions: targets.value.map((target) => {
             return {
                 target,
                 complications: [] as {
@@ -234,7 +240,9 @@ async function getDisguises(): Promise<{ name: string; image: string }[]> {
     const request = await useFetch<{ disguises: HitmapsDisguise[] }>(
         `https://legacyapi.hitmaps.com/api/v2/games/hitman${
             map.season > 1 ? map.season : ""
-        }/locations/${map.name.toLowerCase()}/missions/${map.slug}/disguises`,
+        }/locations/${map.name.toLowerCase().replace(/\s/g, "-")}/missions/${
+            map.slug
+        }/disguises`,
     );
     if (request.data.value == null || request.status.value !== "success") {
         return [];
@@ -261,7 +269,9 @@ async function getTargetEliminations(targets: string[]): Promise<
         const request = await useFetch<HitmapsKillCondition[]>(
             `https://rouletteapi.hitmaps.com/api/spins/kill-conditions?missionGame=hitman${
                 map.season > 1 ? map.season : ""
-            }&missionLocation=${map.name.toLowerCase()}&missionSlug=${
+            }&missionLocation=${map.name
+                .toLowerCase()
+                .replace(/\s/g, "-")}&missionSlug=${
                 map.slug
             }&specificDisguises=true&specificMelee=true&specificFirearms=true&specificAccidents=true&impossibleOrDifficultKills=true&targetName=${encodedTarget}`,
         );
@@ -278,10 +288,7 @@ async function getTargetEliminations(targets: string[]): Promise<
                             ? condition.variants.map((variant) => {
                                   return {
                                       name: variant.name,
-                                      image:
-                                          variant.imageOverride != null
-                                              ? variant.imageOverride
-                                              : undefined,
+                                      image: variant.imageOverride ?? undefined,
                                   };
                               })
                             : [{ name: "Thrown" }, { name: "Melee" }],
@@ -291,4 +298,17 @@ async function getTargetEliminations(targets: string[]): Promise<
     }
     return result;
 }
+
+onMounted(async () => {
+    targets.value = getMap(props.map)!.targets;
+    spin.value = props.spin ?? buildEmptySpin();
+    killConditions.value = await getTargetEliminations(
+        targets.value.map((target) => target.name),
+    );
+    disguises.value = await getDisguises();
+    hasNTKO.value = spin.value.targetConditions.map((target) => {
+        return target.complications.length > 0;
+    });
+    finishedLoading.value = true;
+});
 </script>

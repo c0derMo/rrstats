@@ -5,6 +5,7 @@
             'dark:hover:bg-neutral-600 hover:bg-neutral-100 active:bg-neutral-300 active:dark:bg-neutral-500':
                 !disableHover,
         }"
+        @click="click()"
     >
         <div
             v-if="loading"
@@ -15,7 +16,7 @@
                 class="h-full animate-spin"
             />
         </div>
-        <div class="p-2" @click="click()">
+        <div class="p-2">
             <span v-if="cooldown > 0" class="text-red-500"
                 >Are you sure? {{ cooldown }}</span
             >
@@ -45,6 +46,9 @@ const cooldown = ref(0);
 const cooldownTimer: Ref<NodeJS.Timeout | undefined> = ref(undefined);
 
 function click() {
+    if (props.loading) {
+        return;
+    }
     if (!props.confirmButton) {
         emits("click");
         return;

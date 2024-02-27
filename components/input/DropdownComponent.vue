@@ -12,7 +12,7 @@
             class="w-full"
             @click="showDropdown = !showDropdown"
         >
-            <div class="text-nowrap">
+            <div class="text-nowrap min-h-6">
                 {{
                     buttonText ??
                     (convertedItems.find((i) => i.value === modelValue)?.text ||
@@ -38,7 +38,7 @@
                 <div
                     v-for="(item, idx) of convertedItems"
                     :key="idx"
-                    class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                    class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600 min-h-4"
                     @click="
                         $emit('update:modelValue', item.value);
                         showDropdown = false;
