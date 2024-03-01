@@ -1,8 +1,12 @@
-import { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
+import {
+    ICompetition,
+    ICompetitionPlacement,
+} from "~/utils/interfaces/ICompetition";
 import { IMatch } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import {
     LeaderboardCountryEntry,
+    LeaderboardMapEntry,
     LeaderboardPlayerEntry,
 } from "~/utils/interfaces/LeaderboardEntry";
 import { Player } from "../model/Player";
@@ -43,11 +47,16 @@ import { CountryTitles } from "./leaderboardStatistics/country/Titles";
 import { PlayerAveragePlacement } from "./leaderboardStatistics/player/AveragePlacement";
 import { PlayerElo } from "./leaderboardStatistics/player/Elo";
 import { PlayerMatchesCasted } from "./leaderboardStatistics/player/MatchesCasted";
+import { MapPicked } from "./leaderboardStatistics/map/Picked";
+import { MapBanned } from "./leaderboardStatistics/map/Banned";
+import { MapPlayed } from "./leaderboardStatistics/map/Played";
+import { MapRNG } from "./leaderboardStatistics/map/RNG";
+import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
 
 interface StatisticData<T extends string> {
     name: string;
     type: T;
-    hasMaps: boolean;
+    hasMaps?: boolean;
     secondaryFilter?: string;
     explanatoryText?: string;
 }
@@ -58,6 +67,7 @@ interface GenericLeaderboardStatistic<T extends string, R>
         players: IPlayer[],
         matches: IMatch[],
         placements: ICompetitionPlacement[],
+        officialCompetitions: ICompetition[],
     ) => R[] | Record<HitmanMap, R[]>;
 }
 
@@ -65,19 +75,25 @@ export interface LeaderboardPlayerStatistic
     extends GenericLeaderboardStatistic<"player", LeaderboardPlayerEntry> {}
 export interface LeaderboardCountryStatistic
     extends GenericLeaderboardStatistic<"country", LeaderboardCountryEntry> {}
+export interface LeaderboardMapStatistic
+    extends GenericLeaderboardStatistic<"map", LeaderboardMapEntry> {}
 
 type LeaderboardStatistic =
     | LeaderboardPlayerStatistic
-    | LeaderboardCountryStatistic;
+    | LeaderboardCountryStatistic
+    | LeaderboardMapStatistic;
 
 export default class LeaderboardController {
     private static cache: Record<
         string,
         | LeaderboardPlayerEntry[]
         | LeaderboardCountryEntry[]
+        | LeaderboardMapEntry[]
         | Record<
               HitmanMap,
-              LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]
+              | LeaderboardPlayerEntry[]
+              | LeaderboardCountryEntry[]
+              | LeaderboardMapEntry[]
           >
     > = {};
     private static calculationPromise: Promise<void> | null = null;
@@ -110,6 +126,12 @@ export default class LeaderboardController {
         new CountryWins(),
         new CountryWinrate(),
         new CountryTitles(),
+
+        new MapPicked(),
+        new MapBanned(),
+        new MapPlayed(),
+        new MapRNG(),
+        new MapAppearance(),
     ];
 
     public static async recalculate(): Promise<void> {
@@ -131,13 +153,19 @@ export default class LeaderboardController {
         const matches = await Match.find();
         const competitions = await Competition.find({
             where: { officialCompetition: true },
+            order: { startingTimestamp: "DESC" },
         });
         const placements = await CompetitionPlacement.find({
             where: { competition: In(competitions.map((comp) => comp.tag)) },
         });
 
         for (const statistic of LeaderboardController.statistics) {
-            const result = statistic.calculate(players, matches, placements);
+            const result = statistic.calculate(
+                players,
+                matches,
+                placements,
+                competitions,
+            );
             LeaderboardController.cache[statistic.name] = result;
         }
     }
@@ -145,6 +173,7 @@ export default class LeaderboardController {
     public static async getCategories(): Promise<{
         player: StatisticData<"player">[];
         country: StatisticData<"country">[];
+        map: StatisticData<"map">[];
     }> {
         return {
             player: LeaderboardController.statistics
@@ -152,7 +181,7 @@ export default class LeaderboardController {
                 .map((stat) => {
                     return {
                         name: stat.name,
-                        hasMaps: stat.hasMaps,
+                        hasMaps: stat.hasMaps ?? false,
                         secondaryFilter: stat.secondaryFilter,
                         type: "player",
                         explanatoryText: stat.explanatoryText,
@@ -163,9 +192,20 @@ export default class LeaderboardController {
                 .map((stat) => {
                     return {
                         name: stat.name,
-                        hasMaps: stat.hasMaps,
+                        hasMaps: stat.hasMaps ?? false,
                         secondaryFilter: stat.secondaryFilter,
                         type: "country",
+                        explanatoryText: stat.explanatoryText,
+                    };
+                }),
+            map: LeaderboardController.statistics
+                .filter((stat) => stat.type === "map")
+                .map((stat) => {
+                    return {
+                        name: stat.name,
+                        hasMaps: false,
+                        secondaryFilter: stat.secondaryFilter,
+                        type: "map",
                         explanatoryText: stat.explanatoryText,
                     };
                 }),
@@ -224,7 +264,8 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
             !(
                 entity instanceof Player ||
                 entity instanceof Match ||
-                entity instanceof CompetitionPlacement
+                entity instanceof CompetitionPlacement ||
+                entity instanceof Competition
             )
         ) {
             return;

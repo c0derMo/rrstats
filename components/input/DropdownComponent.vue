@@ -6,6 +6,7 @@
                 showDropdown = false;
             }
         "
+        class="w-fit"
     >
         <ButtonComponent
             :class="buttonClass"

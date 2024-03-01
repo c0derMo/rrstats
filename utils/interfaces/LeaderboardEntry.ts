@@ -13,3 +13,10 @@ export type LeaderboardCountryEntry = {
     players: LeaderboardPlayerEntry[];
     secondaryScore?: number;
 };
+
+export type LeaderboardMapEntry = {
+    map: string;
+    sortingScore: number;
+    tournamentBreakdown: number[];
+    secondaryScore?: number;
+};

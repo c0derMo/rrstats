@@ -5,7 +5,7 @@
         <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">
             <CardComponent class="md:w-72">
                 <TabbedContainer
-                    :tabs="['Players', 'Countries']"
+                    :tabs="['Players', 'Countries', 'Maps']"
                     @change-tab="(tab) => (selectedTab = tab)"
                 />
 
@@ -53,11 +53,10 @@
                         :placeholder="`Minimum ${selectedCategory.secondaryFilter.toLowerCase()}`"
                     />
                     <TextInputComponent
+                        v-if="selectedCategoryType !== 'map'"
                         v-model="search"
                         class="w-full"
-                        :placeholder="`Search for ${
-                            isCountryCategory ? 'country' : 'player'
-                        }...`"
+                        :placeholder="`Search for ${selectedCategoryType}...`"
                     />
                     <DropdownComponent
                         v-if="selectedCategory.hasMaps"
@@ -68,7 +67,7 @@
                 </div>
 
                 <DataTableComponent
-                    v-if="!isCountryCategory"
+                    v-if="selectedCategoryType === 'player'"
                     :headers="playerTableHeaders"
                     :rows="searchedLeaderboardData as LeaderboardPlayerEntry[]"
                     :rows-per-page="[10, 25, 50]"
@@ -78,7 +77,7 @@
                     <template #placement="{ row }">
                         <Tag
                             :color="
-                                getTagColor(
+                                getPlacementTagColor(
                                     filteredLeaderboardData.findIndex(
                                         (p) =>
                                             p.sortingScore === row.sortingScore,
@@ -107,7 +106,7 @@
                 </DataTableComponent>
 
                 <DataTableComponent
-                    v-else
+                    v-else-if="selectedCategoryType === 'country'"
                     :headers="countryTableHeaders"
                     :rows="searchedLeaderboardData as LeaderboardCountryEntry[]"
                     :rows-per-page="[10, 25, 50]"
@@ -118,7 +117,7 @@
                     <template #placement="{ row }">
                         <Tag
                             :color="
-                                getTagColor(
+                                getPlacementTagColor(
                                     filteredLeaderboardData.findIndex(
                                         (p) =>
                                             p.sortingScore === row.sortingScore,
@@ -180,6 +179,11 @@
                         </div>
                     </template>
                 </DataTableComponent>
+
+                <MapLeaderboard
+                    v-if="selectedCategoryType === 'map'"
+                    :leaderboard-data="leaderboardData"
+                />
             </CardComponent>
         </div>
     </div>
@@ -188,8 +192,10 @@
 <script setup lang="ts">
 import {
     LeaderboardCountryEntry,
+    LeaderboardMapEntry,
     LeaderboardPlayerEntry,
 } from "~/utils/interfaces/LeaderboardEntry";
+import { getPlacementTagColor } from "~/utils/formatters";
 
 useHead({
     title: `Leaderboards - RRStats`,
@@ -198,6 +204,7 @@ useHead({
 const categoryRequest = await useFetch("/api/leaderboards/list");
 const playerCategories = categoryRequest.data.value?.player ?? [];
 const countryCategories = categoryRequest.data.value?.country ?? [];
+const mapCategories = categoryRequest.data.value?.map ?? [];
 const playerLookupTable =
     ((await useFetch(`/api/player/lookup`)).data as Ref<
         Record<string, string>
@@ -206,13 +213,13 @@ const playerLookupTable =
 const selectedTab = ref("Players");
 const selectedCategory: Ref<{
     name: string;
-    hasMaps: boolean;
+    hasMaps?: boolean;
     type: string;
     secondaryFilter?: string;
     explanatoryText?: string;
 }> = ref(playerCategories[0]);
 const leaderboardData: Ref<
-    LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]
+    LeaderboardPlayerEntry[] | LeaderboardCountryEntry[] | LeaderboardMapEntry[]
 > = ref([]);
 const leaderboardLoading = ref(true);
 const secondaryFilter = ref(0);
@@ -265,10 +272,13 @@ const shownCategories = computed(() => {
     if (selectedTab.value === "Countries") {
         return countryCategories;
     }
+    if (selectedTab.value === "Maps") {
+        return mapCategories;
+    }
 });
 
-const isCountryCategory = computed(() => {
-    return selectedCategory.value.type === "country";
+const selectedCategoryType = computed(() => {
+    return selectedCategory.value.type;
 });
 
 const filteredLeaderboardData = computed(() => {
@@ -308,19 +318,6 @@ function expandCountry(row: LeaderboardCountryEntry) {
     } else {
         expandedCountry.value = row.country;
     }
-}
-
-function getTagColor(placement: number) {
-    if (placement === 1) {
-        return "rgb(214, 175, 54)";
-    }
-    if (placement === 2) {
-        return "rgb(167, 167, 167)";
-    }
-    if (placement === 3) {
-        return "rgb(167, 112, 68)";
-    }
-    return "rgb(85, 85, 85)";
 }
 
 async function loadLeaderboardData() {

@@ -24,3 +24,16 @@ export function secondsToTime(seconds: number): string {
         return duration.toFormat("mm:ss");
     }
 }
+
+export function getPlacementTagColor(placement: number) {
+    if (placement === 1) {
+        return "rgb(214, 175, 54)";
+    }
+    if (placement === 2) {
+        return "rgb(167, 167, 167)";
+    }
+    if (placement === 3) {
+        return "rgb(167, 112, 68)";
+    }
+    return "rgb(85, 85, 85)";
+}
