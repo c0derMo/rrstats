@@ -108,6 +108,8 @@
 </template>
 
 <script setup lang="ts">
+import { LeaderboardMapEntry } from "~/utils/interfaces/LeaderboardEntry";
+
 const props = defineProps({
     leaderboardData: {
         type: Array<LeaderboardMapEntry>,
@@ -115,10 +117,10 @@ const props = defineProps({
     },
 });
 
+const competitionsQuery = await useFetch("/api/competitions/list");
 const competitions =
-    (await useFetch("/api/competitions/list")).data.value?.filter(
-        (comp) => comp.officialCompetition,
-    ) ?? [];
+    competitionsQuery.data.value?.filter((comp) => comp.officialCompetition) ??
+    [];
 
 const expandedMap = ref("");
 const selectedMinComp = ref(0);
@@ -143,20 +145,17 @@ const headers = [
 ];
 
 const filteredMapData = computed(() => {
-    console.log(invertedMinComp.value);
-    console.log(invertedMaxComp.value);
-
     return props.leaderboardData
         .map((map) => {
             return {
                 map: map.map,
-                tournamentBreakdown: map.tournamentBreakdown.slice(
+                tournamentBreakdown: (map.tournamentBreakdown ?? []).slice(
                     invertedMinComp.value,
                     invertedMaxComp.value,
                 ),
-                sortingScore: map.tournamentBreakdown
+                sortingScore: (map.tournamentBreakdown ?? [])
                     .slice(invertedMinComp.value, invertedMaxComp.value)
-                    .reduce((prev, cur) => prev + cur),
+                    .reduce((prev, cur) => prev + cur, 0),
             };
         })
         .sort((a, b) => b.sortingScore - a.sortingScore);
