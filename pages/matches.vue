@@ -60,7 +60,12 @@
                 </template>
 
                 <template #playerOne="{ value }">
-                    <PlayerLinkTag :player="data?.players[value as string] ?? `Unknown player: ${value}`" />
+                    <PlayerLinkTag
+                        :player="
+                            data?.players[value as string] ??
+                            `Unknown player: ${value}`
+                        "
+                    />
                 </template>
 
                 <template #score="{ row }">
@@ -71,7 +76,12 @@
                 </template>
 
                 <template #playerTwo="{ value }">
-                    <PlayerLinkTag :player="data?.players[value as string] ?? `Unknown player: ${value}`" />
+                    <PlayerLinkTag
+                        :player="
+                            data?.players[value as string] ??
+                            `Unknown player: ${value}`
+                        "
+                    />
                 </template>
 
                 <template #bans="{ row }">

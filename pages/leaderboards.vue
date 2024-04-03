@@ -69,7 +69,7 @@
                 <DataTableComponent
                     v-if="selectedCategoryType === 'player'"
                     :headers="playerTableHeaders"
-                    :rows="(searchedLeaderboardData as LeaderboardPlayerEntry[])"
+                    :rows="searchedLeaderboardData as LeaderboardPlayerEntry[]"
                     :rows-per-page="[10, 25, 50]"
                     :items-per-page="10"
                     :enable-sorting="false"
@@ -95,7 +95,11 @@
                         >
                     </template>
                     <template #player="{ value }">
-                        <PlayerLinkTag :player="playerLookupTable[value as string] ?? value"/>
+                        <PlayerLinkTag
+                            :player="
+                                playerLookupTable[value as string] ?? value
+                            "
+                        />
                         <!-- <a
                             :href="`/${
                                 playerLookupTable[value as string] ?? value
@@ -109,7 +113,7 @@
                 <DataTableComponent
                     v-else-if="selectedCategoryType === 'country'"
                     :headers="countryTableHeaders"
-                    :rows="(searchedLeaderboardData as LeaderboardCountryEntry[])"
+                    :rows="searchedLeaderboardData as LeaderboardCountryEntry[]"
                     :rows-per-page="[10, 25, 50]"
                     :items-per-page="10"
                     :enable-sorting="false"
@@ -183,7 +187,7 @@
 
                 <MapLeaderboard
                     v-if="selectedCategoryType === 'map'"
-                    :leaderboard-data="(leaderboardData as LeaderboardMapEntry[])"
+                    :leaderboard-data="leaderboardData as LeaderboardMapEntry[]"
                 />
             </CardComponent>
         </div>

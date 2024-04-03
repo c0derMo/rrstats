@@ -29,7 +29,9 @@
         </template>
 
         <template #player="{ value }">
-            <PlayerLinkTag :player="players[value as string] ?? `Unknown player: ${value}`" />
+            <PlayerLinkTag
+                :player="players[value as string] ?? `Unknown player: ${value}`"
+            />
         </template>
 
         <template #match="{ row, value }">

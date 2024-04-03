@@ -1,4 +1,7 @@
-import { ICompetition, ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
+import {
+    ICompetition,
+    ICompetitionPlacement,
+} from "~/utils/interfaces/ICompetition";
 import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { IMatch } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
@@ -17,7 +20,12 @@ export class PlayerElo implements LeaderboardPlayerStatistic {
     explanatoryText =
         "Elo score based on In4Fun's formula. Note: Players playing on multiple platforms are combined here, which may cause inconsistencies with In4Fun's Elo sheet.";
 
-    calculate(players: IPlayer[], matches: IMatch[], placements: ICompetitionPlacement[], comps: ICompetition[]): LeaderboardPlayerEntry[] {
+    calculate(
+        players: IPlayer[],
+        matches: IMatch[],
+        placements: ICompetitionPlacement[],
+        comps: ICompetition[],
+    ): LeaderboardPlayerEntry[] {
         if (matches.length <= 0) {
             return [];
         }
@@ -84,7 +92,10 @@ export class PlayerElo implements LeaderboardPlayerStatistic {
             playerInfo[match.playerTwo].playedRRs.add(match.competition);
         }
 
-        if (comps.find((c) => c.tag === lastCompetition)?.updateWithHitmaps === false) {
+        if (
+            comps.find((c) => c.tag === lastCompetition)?.updateWithHitmaps ===
+            false
+        ) {
             playerInfo = this.decayElo(playerInfo, lastCompetition);
         }
 

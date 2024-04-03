@@ -11,7 +11,7 @@
 defineProps({
     player: {
         type: String,
-        required: true
-    }
-})
+        required: true,
+    },
+});
 </script>
