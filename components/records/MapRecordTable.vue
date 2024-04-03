@@ -29,13 +29,13 @@
         </template>
 
         <template #player="{ value }">
-            {{ players[value as string] || `Unknown player: ${value}` }}
+            <PlayerLinkTag :player="players[value as string] ?? `Unknown player: ${value}`" />
         </template>
 
         <template #match="{ row, value }">
             <a
                 v-if="matches[value as string] != null"
-                :href="matches[value as string].vodLink"
+                :href="matches[value as string].vodLink[0]"
                 :class="{
                     'underline text-blue-500':
                         matches[value as string].vodLink != null,

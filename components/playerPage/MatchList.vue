@@ -100,19 +100,11 @@
             </template>
 
             <template #playerOne="{ value }">
-                <a :href="`/${players[value as string]}`">
-                    {{
-                        players[value as string] || `Unknown player (${value})`
-                    }}
-                </a>
+                <PlayerLinkTag :player="players[value as string] ?? `Unknown player: ${value}`" />
             </template>
 
             <template #playerTwo="{ value }">
-                <a :href="`/${players[value as string]}`">
-                    {{
-                        players[value as string] || `Unknown player (${value})`
-                    }}
-                </a>
+                <PlayerLinkTag :player="players[value as string] ?? `Unknown player: ${value}`" />
             </template>
 
             <template #score="{ row }">

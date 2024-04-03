@@ -60,12 +60,7 @@
                 </template>
 
                 <template #playerOne="{ value }">
-                    <a :href="`/${data?.players[value as string]}`">
-                        {{
-                            data?.players[value as string] ||
-                            `Unknown player: ${value}`
-                        }}
-                    </a>
+                    <PlayerLinkTag :player="data?.players[value as string] ?? `Unknown player: ${value}`" />
                 </template>
 
                 <template #score="{ row }">
@@ -76,12 +71,7 @@
                 </template>
 
                 <template #playerTwo="{ value }">
-                    <a :href="`/${data?.players[value as string]}`">
-                        {{
-                            data?.players[value as string] ||
-                            `Unknown player: ${value}`
-                        }}
-                    </a>
+                    <PlayerLinkTag :player="data?.players[value as string] ?? `Unknown player: ${value}`" />
                 </template>
 
                 <template #bans="{ row }">
