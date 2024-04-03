@@ -11,7 +11,7 @@
                 :key="idx"
                 class="flex flex-col gap-1 max-h-96 overflow-y-auto"
             >
-                <span class="text-lg">{{ result.name }}</span>
+                <span class="text-lg">{{ result.name }} ({{ result.issues.length }} warnings, {{ result.errors.length }} errors)</span>
 
                 <div
                     v-for="(error, errorId) in result.errors"

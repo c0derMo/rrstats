@@ -238,7 +238,7 @@ interface HitmapsDisguise {
 async function getDisguises(): Promise<{ name: string; image: string }[]> {
     const map = getMap(props.map)!;
     const request = await useFetch<{ disguises: HitmapsDisguise[] }>(
-        `https://legacyapi.hitmaps.com/api/v2/games/hitman${
+        `https://api.hitmaps.com/api/games/hitman${
             map.season > 1 ? map.season : ""
         }/locations/${map.name.toLowerCase().replace(/\s/g, "-")}/missions/${
             map.slug
