@@ -77,14 +77,10 @@ const props = defineProps({
     },
 });
 
-const ignoredCompetitions = ["RR1", "RR2", "RR3"];
-
 const matchesInSlots = computed(() => {
     const timeslots: number[] = Array(7 * 12).fill(0);
 
     for (const match of props.matches) {
-        if (ignoredCompetitions.includes(match.competition)) continue;
-
         const dt = DateTime.fromMillis(match.timestamp);
         const index = (dt.weekday - 1) * 12 + Math.floor(dt.hour / 2);
         timeslots[index]++;
