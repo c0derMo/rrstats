@@ -37,7 +37,11 @@
         <template #match="{ row, value }">
             <a
                 v-if="matches[value as string] != null"
-                :href="matches[value as string].vodLink[0]"
+                :href="
+                    matches[value as string].vodLink != null
+                        ? matches[value as string].vodLink![0]
+                        : ''
+                "
                 :class="{
                     'underline text-blue-500':
                         matches[value as string].vodLink != null,
