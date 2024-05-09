@@ -92,9 +92,7 @@
                             ) in row.bannedMaps as RRBannedMap[]"
                             :key="idx"
                         >
-                            <Tag :color="getMap(ban.map)?.color">{{
-                                getMap(ban.map)?.abbreviation
-                            }}</Tag>
+                            <MapTag :map="getMap(ban.map)!" />
 
                             <template #tooltip>
                                 Map: {{ getMap(ban.map)?.name }}<br />
@@ -110,9 +108,7 @@
                             v-for="(play, idx) in value as RRMap[]"
                             :key="idx"
                         >
-                            <Tag :color="getMap(play.map)?.color">{{
-                                getMap(play.map)?.abbreviation
-                            }}</Tag>
+                            <MapTag :map="getMap(play.map)!" />
 
                             <template #tooltip>
                                 Map: {{ getMap(play.map)?.name }}<br />

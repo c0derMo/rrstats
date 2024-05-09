@@ -32,7 +32,7 @@ export function mapWinrate(matches: IMatch[], player: string): number {
     let wins = 0;
     let ties = 0;
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         const playedMaps = match.playedMaps.filter((m) => m.forfeit !== true);
         maps += playedMaps.length;
         wins += playedMaps.filter((m) => {
@@ -54,7 +54,7 @@ export function mapWinrate(matches: IMatch[], player: string): number {
 export function mapsPicked(matches: IMatch[], player: string): HitmanMap[] {
     const maps: HitmanMap[] = [];
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const map of match.playedMaps) {
             if (map.forfeit === true) continue;
             if (wasPickedByPlayer(match, map, player)) {
@@ -69,7 +69,7 @@ export function mapsPicked(matches: IMatch[], player: string): HitmanMap[] {
 export function mapsPlayed(matches: IMatch[]): HitmanMap[] {
     const maps: HitmanMap[] = [];
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const map of match.playedMaps) {
             if (map.forfeit === true) continue;
             maps.push(map.map);
@@ -85,7 +85,7 @@ export function mapsPickedPerMap(
 ): Record<HitmanMap, number> {
     const maps: Record<number, number> = {};
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const map of match.playedMaps) {
             if (map.forfeit === true) continue;
 
@@ -108,7 +108,7 @@ export function mapsBannedPerMap(
 ): Record<HitmanMap, number> {
     const maps: Record<number, number> = {};
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const map of match.bannedMaps) {
             if (wasPickedByPlayer(match, map, player)) {
                 if (maps[map.map] == undefined) {
@@ -132,7 +132,7 @@ export function mapWinratePerMap(
         { winrate: number; wins: number; plays: number }
     > = {};
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const map of match.playedMaps) {
             if (map.forfeit === true) continue;
 
@@ -164,7 +164,7 @@ export function mapPicksForMap(
 ): number {
     let amount = 0;
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const playedMap of match.playedMaps) {
             if (playedMap.forfeit === true) continue;
             if (playedMap.map !== map) continue;
@@ -184,7 +184,7 @@ export function mapBansForMap(
 ): number {
     let amount = 0;
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const bannedMaps of match.bannedMaps) {
             if (bannedMaps.map !== map) continue;
             if (wasPickedByPlayer(match, bannedMaps, player)) {
@@ -199,7 +199,7 @@ export function mapBansForMap(
 export function mapPlaysForMap(matches: IMatch[], map: HitmanMap): number {
     let amount = 0;
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const playedMap of match.playedMaps) {
             if (playedMap.forfeit === true) continue;
             if (playedMap.map !== map) continue;
@@ -217,7 +217,7 @@ export function mapWinsForMap(
 ): number {
     let amount = 0;
 
-    for (const match of matches) {
+    for (const match of filterForfeitMatches(matches)) {
         for (const playedMap of match.playedMaps) {
             if (playedMap.forfeit === true) continue;
             if (playedMap.map !== map) continue;

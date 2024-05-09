@@ -2,6 +2,7 @@ import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
+import { filterForfeitMatches } from "~/utils/matchUtils";
 
 export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
     type = "player" as const;
@@ -9,7 +10,7 @@ export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
     hasMaps = false;
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
-        const sortedMatches = [...matches].sort(
+        const sortedMatches = [...filterForfeitMatches(matches)].sort(
             (a, b) => a.timestamp - b.timestamp,
         );
 

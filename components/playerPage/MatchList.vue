@@ -55,13 +55,13 @@
             </template>
 
             <template #after-row="{ row }">
-                <Tag
+                <MapTag
                     v-for="(map, idx) of row.playedMaps"
                     :key="idx"
-                    :color="getMapColor(map, row)"
-                >
-                    {{ getMap((map as RRMap).map)?.abbreviation }}
-                </Tag>
+                    :map="getMap(map.map)!"
+                    :draw="map.winner === WinningPlayer.DRAW"
+                    :won="getLocalWinningPlayer(row) === map.winner"
+                />
             </template>
 
             <template #more="{ row }">
@@ -116,16 +116,23 @@
             </template>
 
             <template #score="{ row }">
-                <Tag :color="getMatchColor(row)">
-                    {{ row.playerOneScore }} - {{ row.playerTwoScore }}
-                </Tag>
+                <MatchScoreTag
+                    :left="row.playerOneScore"
+                    :right="row.playerTwoScore"
+                    :player-index="getLocalWinningPlayer(row)"
+                />
             </template>
 
             <template #playedMaps="{ value, row }">
                 <TooltipComponent v-for="(map, idx) of value" :key="idx">
-                    <Tag :color="getMapColor(map, row)" class="ml-2">
-                        {{ getMap((map as RRMap).map)?.abbreviation }}
-                    </Tag>
+                    <MapTag
+                        :map="getMap((map as RRMap).map)!"
+                        :draw="(map as RRMap).winner === WinningPlayer.DRAW"
+                        :won="
+                            getLocalWinningPlayer(row) === (map as RRMap).winner
+                        "
+                        class="ml-2"
+                    />
 
                     <template #tooltip>
                         Map: {{ getMap((map as RRMap).map)?.name }}<br />
@@ -215,34 +222,10 @@ const filteredSortedMatches = computed(() => {
         .sort((a, b) => b.timestamp - a.timestamp);
 });
 
-function getMapColor(map: RRMap, match: IMatch): string {
-    if (map.winner === WinningPlayer.DRAW) {
-        return "#d0c033";
-    } else if (
-        (match.playerOne === props.localPlayer &&
-            map.winner === WinningPlayer.PLAYER_ONE) ||
-        (match.playerTwo === props.localPlayer &&
-            map.winner === WinningPlayer.PLAYER_TWO)
-    ) {
-        return "#4caf50";
-    } else {
-        return "#f44336";
-    }
-}
-
-function getMatchColor(match: IMatch): string {
-    if (match.playerOneScore === match.playerTwoScore) {
-        return "#d0c033";
-    } else if (
-        (match.playerOneScore > match.playerTwoScore &&
-            match.playerOne === props.localPlayer) ||
-        (match.playerTwoScore > match.playerOneScore &&
-            match.playerTwo === props.localPlayer)
-    ) {
-        return "#4caf50";
-    } else {
-        return "#f44336";
-    }
+function getLocalWinningPlayer(match: IMatch): WinningPlayer {
+    if (match.playerOne === props.localPlayer) return WinningPlayer.PLAYER_ONE;
+    if (match.playerTwo === props.localPlayer) return WinningPlayer.PLAYER_TWO;
+    return WinningPlayer.DRAW;
 }
 
 function getMapPicker(map: RRMap, match: IMatch): string {

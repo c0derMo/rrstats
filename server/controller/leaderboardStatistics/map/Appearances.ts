@@ -8,6 +8,7 @@ import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardMapEntry } from "~/utils/interfaces/LeaderboardEntry";
 import { DefaultedMap } from "~/utils/DefaultedMap";
 import { getMap } from "~/utils/mapUtils";
+import { filterForfeitMatches } from "~/utils/matchUtils";
 
 export class MapAppearance implements LeaderboardMapStatistic {
     type = "map" as const;
@@ -25,7 +26,7 @@ export class MapAppearance implements LeaderboardMapStatistic {
             Array(officialCompetitions.length).fill(0),
         );
 
-        for (const match of matches) {
+        for (const match of filterForfeitMatches(matches)) {
             const compIndex = officialCompetitions.findIndex(
                 (comp) => comp.tag === match.competition,
             );
@@ -47,7 +48,10 @@ export class MapAppearance implements LeaderboardMapStatistic {
             (map, compPicks) => {
                 return {
                     map: map,
-                    sortingScore: compPicks.reduce((prev, cur) => prev + cur),
+                    sortingScore: compPicks.reduce(
+                        (prev, cur) => prev + cur,
+                        0,
+                    ),
                     tournamentBreakdown: compPicks,
                 };
             },

@@ -14,14 +14,14 @@
 
     <TableComponent :headers="headers" :rows="sortedRecords">
         <template #maps="{ value }">
-            <Tag
+            <MapTag
                 v-for="(entry, idx) in value as RecordMap[]"
                 :key="idx"
-                :color="getMap(entry.map)!.color"
+                :map="getMap(entry.map)!"
                 class="mr-2"
             >
                 {{ getMap(entry.map)?.name }} ({{ secondsToTime(entry.time) }})
-            </Tag>
+            </MapTag>
         </template>
 
         <template #time="{ value }">

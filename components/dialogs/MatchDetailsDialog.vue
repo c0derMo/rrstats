@@ -73,27 +73,25 @@
 
             <div v-if="match.bannedMaps.length > 0" class="grid grid-cols-3">
                 <div class="flex flex-col gap-2 text-center">
-                    <Tag
+                    <MapTag
                         v-for="(ban, idx) of playerOneBans"
                         :key="idx"
-                        :color="getMap(ban.map)!.color"
+                        :map="getMap(ban.map)!"
+                        full-name
                         :narrow="true"
                         class="w-fit mx-auto"
-                    >
-                        {{ getMap(ban.map)!.name }}
-                    </Tag>
+                    />
                 </div>
                 <div></div>
                 <div class="flex flex-col gap-2 text-center">
-                    <Tag
+                    <MapTag
                         v-for="(ban, idx) of playerTwoBans"
                         :key="idx"
-                        :color="getMap(ban.map)!.color"
+                        :map="getMap(ban.map)!"
+                        full-name
                         :narrow="true"
                         class="w-fit mx-auto"
-                    >
-                        {{ getMap(ban.map)!.name }}
-                    </Tag>
+                    />
                 </div>
             </div>
 
@@ -103,9 +101,7 @@
                 <div class="font-bold">Won by</div>
                 <template v-for="(map, idx) in match.playedMaps" :key="idx">
                     <div>
-                        <Tag :color="getMap(map.map)!.color">
-                            {{ getMap(map.map)!.name }}
-                        </Tag>
+                        <MapTag :map="getMap(map.map)!" full-name />
                     </div>
                     <div>
                         <Tag :color="getPlayerColor(map.picked)">

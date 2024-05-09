@@ -28,6 +28,7 @@ export class PlayerAveragePlacement implements LeaderboardPlayerStatistic {
         for (const player in placementsOfPlayers) {
             const allPlacements = placementsOfPlayers[player].reduce(
                 (prev, cur) => prev + cur,
+                0,
             );
             const average = allPlacements / placementsOfPlayers[player].length;
             result.push({

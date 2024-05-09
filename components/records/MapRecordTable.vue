@@ -13,9 +13,7 @@
 
     <TableComponent :headers="headers" :rows="sortedRecords">
         <template #map="{ value }">
-            <Tag :color="getMap(value as number)?.color">{{
-                getMap(value as number)?.name
-            }}</Tag>
+            <MapTag :map="getMap(value as number)!" full-name />
         </template>
 
         <template #spin="{ row }">

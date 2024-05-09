@@ -27,9 +27,7 @@
 
             <template #bans="{ row }">
                 <TooltipComponent v-for="(ban, idx) in row.bans" :key="idx">
-                    <Tag :color="getMapBySlug(ban.map)!.color">{{
-                        getMapBySlug(ban.map)!.abbreviation
-                    }}</Tag>
+                    <MapTag :map="getMapBySlug(ban.map)!" />
 
                     <template #tooltip>
                         Map: {{ getMapBySlug(ban.map)!.name }}<br />
@@ -47,9 +45,7 @@
 
             <template #maps="{ row }">
                 <TooltipComponent v-for="(map, idx) in row.maps" :key="idx">
-                    <Tag :color="getMapBySlug(map.map)!.color">{{
-                        getMapBySlug(map.map)!.abbreviation
-                    }}</Tag>
+                    <MapTag :map="getMapBySlug(map.map)!" />
 
                     <template #tooltip>
                         Map: {{ getMapBySlug(map.map)!.name }}<br />

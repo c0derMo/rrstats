@@ -1,14 +1,14 @@
 import { IMatch } from "../interfaces/IMatch";
 
 export function calculateWinrate(matches: IMatch[], player: string): number {
-    const wins = matches.filter((m) => {
+    const wins = filterForfeitMatches(matches).filter((m) => {
         return (
             (m.playerOne === player && m.playerOneScore > m.playerTwoScore) ||
             (m.playerTwo === player && m.playerTwoScore > m.playerOneScore)
         );
     }).length;
 
-    const ties = matches.filter((m) => {
+    const ties = filterForfeitMatches(matches).filter((m) => {
         return m.playerOneScore === m.playerTwoScore;
     }).length;
 
@@ -19,18 +19,18 @@ export function calculateWTL(
     matches: IMatch[],
     player: string,
 ): { w: number; t: number; l: number } {
-    const wins = matches.filter((m) => {
+    const wins = filterForfeitMatches(matches).filter((m) => {
         return (
             (m.playerOne === player && m.playerOneScore > m.playerTwoScore) ||
             (m.playerTwo === player && m.playerTwoScore > m.playerOneScore)
         );
     }).length;
 
-    const ties = matches.filter((m) => {
+    const ties = filterForfeitMatches(matches).filter((m) => {
         return m.playerOneScore === m.playerTwoScore;
     }).length;
 
-    const losses = matches.filter((m) => {
+    const losses = filterForfeitMatches(matches).filter((m) => {
         return (
             (m.playerOne === player && m.playerOneScore < m.playerTwoScore) ||
             (m.playerTwo === player && m.playerTwoScore < m.playerOneScore)
@@ -41,7 +41,7 @@ export function calculateWTL(
 }
 
 export function debutMatch(matches: IMatch[]): IMatch | undefined {
-    const sortedMatches = [...matches].sort(
+    const sortedMatches = [...filterForfeitMatches(matches)].sort(
         (a, b) => a.timestamp - b.timestamp,
     );
 
