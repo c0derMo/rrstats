@@ -24,6 +24,9 @@ export enum GenericRecordType {
     LONGEST_REGULAR_MATCH = "Longest regular match",
     SHORTEST_MATCH_2MAPS = "Shortest match with 2+ maps",
     SHORTEST_MATCH_3MAPS = "Shortest match with 3+ maps",
+    SHORTEST_MATCH_4MAPS = "Shortest match with 4+ maps",
+    SHORTEST_MATCH_5MAPS = "Shortest match with 5+ maps",
+    SHORTEST_MATCH_6MAPS = "Shortest match with 6+ maps",
     LONGEST_DECIDER = "Longest decider",
     SHORTEST_DECIDER = "Shortest decider",
 }
