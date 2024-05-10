@@ -1,8 +1,0 @@
-src/scripts
-out
-deploy
-node_modules
-.eslintrc.js
-html
-deploy.ts
-jest.config.js

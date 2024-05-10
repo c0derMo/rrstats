@@ -1,3 +1,0 @@
-interface RRStatsSession {
-    loggedInAs: string;
-}
