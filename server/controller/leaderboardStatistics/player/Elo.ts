@@ -6,6 +6,7 @@ import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { IMatch } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
+import { filterForfeitMatches } from "~/utils/matchUtils";
 
 interface EloPlayerInfo {
     elo: number;
@@ -30,7 +31,7 @@ export class PlayerElo implements LeaderboardPlayerStatistic {
             return [];
         }
 
-        const sortedMatches = [...matches].sort(
+        const sortedMatches = [...filterForfeitMatches(matches)].sort(
             (a, b) => a.timestamp - b.timestamp,
         );
 

@@ -2,7 +2,6 @@ import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { IMatch } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
-import { filterForfeitMatches } from "~/utils/matchUtils";
 
 export class PlayerMapsPlayed implements LeaderboardPlayerStatistic {
     type = "player" as const;
@@ -11,7 +10,7 @@ export class PlayerMapsPlayed implements LeaderboardPlayerStatistic {
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
         const result: LeaderboardPlayerEntry[] = players.map((player) => {
-            const amountMatches = filterForfeitMatches(matches)
+            const amountMatches = matches
                 .filter((match) => {
                     return (
                         match.playerOne === player.uuid ||

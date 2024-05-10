@@ -2,7 +2,6 @@ import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
-import { filterForfeitMatches } from "~/utils/matchUtils";
 
 export class PlayerMapWinrate implements LeaderboardPlayerStatistic {
     type = "player" as const;
@@ -20,7 +19,7 @@ export class PlayerMapWinrate implements LeaderboardPlayerStatistic {
             };
         });
 
-        for (const match of filterForfeitMatches(matches)) {
+        for (const match of matches) {
             mapsAndWins.find((m) => m.player === match.playerOne)!.maps +=
                 match.playedMaps.length;
             mapsAndWins.find((m) => m.player === match.playerTwo)!.maps +=

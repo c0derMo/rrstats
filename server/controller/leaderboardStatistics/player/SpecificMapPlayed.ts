@@ -3,7 +3,6 @@ import { IMatch } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
 import { HitmanMap, getAllMaps } from "~/utils/mapUtils";
-import { filterForfeitMatches } from "~/utils/matchUtils";
 
 export class PlayerSpecificMapPlayed implements LeaderboardPlayerStatistic {
     type = "player" as const;
@@ -16,7 +15,7 @@ export class PlayerSpecificMapPlayed implements LeaderboardPlayerStatistic {
     ): Record<HitmanMap, LeaderboardPlayerEntry[]> {
         const mapCount: Record<string, Record<HitmanMap, number>> = {};
 
-        for (const match of filterForfeitMatches(matches)) {
+        for (const match of matches) {
             if (mapCount[match.playerOne] == null)
                 mapCount[match.playerOne] = this.getDefaultMapRecord(0);
             if (mapCount[match.playerTwo] == null)

@@ -6,7 +6,6 @@ import {
 } from "~/utils/interfaces/IMatch";
 import { IPlayer } from "~/utils/interfaces/IPlayer";
 import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
-import { filterForfeitMatches } from "~/utils/matchUtils";
 
 export class PlayerWROpponentMaps implements LeaderboardPlayerStatistic {
     type = "player" as const;
@@ -17,7 +16,7 @@ export class PlayerWROpponentMaps implements LeaderboardPlayerStatistic {
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
         const playedMaps: Record<string, { played: number; won: number }> = {};
 
-        for (const match of filterForfeitMatches(matches)) {
+        for (const match of matches) {
             for (const map of match.playedMaps) {
                 if (map.picked === ChoosingPlayer.RANDOM) continue;
 

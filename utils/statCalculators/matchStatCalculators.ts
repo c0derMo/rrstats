@@ -41,7 +41,7 @@ export function calculateWTL(
 }
 
 export function debutMatch(matches: IMatch[]): IMatch | undefined {
-    const sortedMatches = [...filterForfeitMatches(matches)].sort(
+    const sortedMatches = [...matches].sort(
         (a, b) => a.timestamp - b.timestamp,
     );
 
