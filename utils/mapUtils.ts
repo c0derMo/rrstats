@@ -22,6 +22,10 @@ export enum HitmanMap {
     AMBROSE_ISLAND = 18,
 }
 
+export enum OptionalMap {
+    NO_MAP = -1,
+}
+
 export type HitmanMapInfo = {
     abbreviation: string;
     color: string;

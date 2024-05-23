@@ -22,7 +22,8 @@ export class CountryWinrate implements LeaderboardCountryStatistic {
         ) as Record<string, string>;
 
         const winratePerCountry: DefaultedMap<
-            DefaultedMap<{ wins: number; matches: number }>
+            string,
+            DefaultedMap<string, { wins: number; matches: number }>
         > = new DefaultedMap(
             () =>
                 new DefaultedMap(() => {

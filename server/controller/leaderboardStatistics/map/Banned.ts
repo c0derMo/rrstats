@@ -19,7 +19,7 @@ export class MapBanned implements LeaderboardMapStatistic {
         placements: ICompetitionPlacement[],
         officialCompetitions: ICompetition[],
     ): LeaderboardMapEntry[] {
-        const bannedMap: DefaultedMap<number[]> = new DefaultedMap(() =>
+        const bannedMap: DefaultedMap<string, number[]> = new DefaultedMap(() =>
             Array(officialCompetitions.length).fill(0),
         );
 

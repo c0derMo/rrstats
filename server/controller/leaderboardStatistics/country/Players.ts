@@ -9,7 +9,9 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
     hasMaps = false;
 
     calculate(players: IPlayer[]): LeaderboardCountryEntry[] {
-        const countryMap: DefaultedMap<string[]> = new DefaultedMap(() => []);
+        const countryMap: DefaultedMap<string, string[]> = new DefaultedMap(
+            () => [],
+        );
         for (const player of players) {
             if (player.nationality == null) continue;
             countryMap.get(player.nationality).push(player.uuid);

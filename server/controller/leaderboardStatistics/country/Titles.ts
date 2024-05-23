@@ -22,8 +22,10 @@ export class CountryTitles implements LeaderboardCountryStatistic {
             "nationality",
         ) as Record<string, string>;
 
-        const titlesPerCountry: DefaultedMap<DefaultedMap<number>> =
-            new DefaultedMap(() => new DefaultedMap(() => 0));
+        const titlesPerCountry: DefaultedMap<
+            string,
+            DefaultedMap<string, number>
+        > = new DefaultedMap(() => new DefaultedMap(() => 0));
         for (const placement of placements) {
             if (placement.placement !== 1) continue;
             const nationality = countryMap[placement.player];

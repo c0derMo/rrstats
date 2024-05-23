@@ -16,7 +16,9 @@ export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
             (a, b) => a.timestamp - b.timestamp,
         );
 
-        const streakInfo = new DefaultedMap(() => new StreakCounter());
+        const streakInfo = new DefaultedMap<string, StreakCounter>(
+            () => new StreakCounter(),
+        );
 
         for (const match of sortedMatches) {
             if (match.playerOneScore > match.playerTwoScore) {

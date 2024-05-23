@@ -12,7 +12,7 @@ import {
 import { Player } from "../model/Player";
 import { Match } from "../model/Match";
 import { Competition, CompetitionPlacement } from "../model/Competition";
-import { HitmanMap } from "~/utils/mapUtils";
+import { HitmanMap, OptionalMap } from "~/utils/mapUtils";
 import {
     EntitySubscriberInterface,
     EventSubscriber,
@@ -52,11 +52,13 @@ import { MapBanned } from "./leaderboardStatistics/map/Banned";
 import { MapPlayed } from "./leaderboardStatistics/map/Played";
 import { MapRNG } from "./leaderboardStatistics/map/RNG";
 import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
+import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
 
 interface StatisticData<T extends string> {
     name: string;
     type: T;
     hasMaps?: boolean;
+    mapOptional?: boolean;
     secondaryFilter?: string;
     explanatoryText?: string;
 }
@@ -68,7 +70,7 @@ interface GenericLeaderboardStatistic<T extends string, R>
         matches: IMatch[],
         placements: ICompetitionPlacement[],
         officialCompetitions: ICompetition[],
-    ) => R[] | Record<HitmanMap, R[]>;
+    ) => R[] | Record<HitmanMap, R[]> | Record<HitmanMap | OptionalMap, R[]>;
 }
 
 export interface LeaderboardPlayerStatistic
@@ -95,6 +97,12 @@ export default class LeaderboardController {
               | LeaderboardCountryEntry[]
               | LeaderboardMapEntry[]
           >
+        | Record<
+              HitmanMap | OptionalMap,
+              | LeaderboardPlayerEntry[]
+              | LeaderboardCountryEntry[]
+              | LeaderboardMapEntry[]
+          >
     > = {};
     private static calculationPromise: Promise<void> | null = null;
 
@@ -113,6 +121,7 @@ export default class LeaderboardController {
         new PlayerWROpponentMaps(),
         new PlayerMatchesWonInARow(),
         new PlayerMapsWonInARow(),
+        new PlayerSameMapWonInARow(),
         new PlayerSweeps6(),
         new PlayerSweeps(),
         new PlayerReverseSweeps(),
@@ -182,6 +191,7 @@ export default class LeaderboardController {
                     return {
                         name: stat.name,
                         hasMaps: stat.hasMaps ?? false,
+                        mapOptional: stat.mapOptional ?? false,
                         secondaryFilter: stat.secondaryFilter,
                         type: "player",
                         explanatoryText: stat.explanatoryText,
@@ -193,6 +203,7 @@ export default class LeaderboardController {
                     return {
                         name: stat.name,
                         hasMaps: stat.hasMaps ?? false,
+                        mapOptional: stat.mapOptional ?? false,
                         secondaryFilter: stat.secondaryFilter,
                         type: "country",
                         explanatoryText: stat.explanatoryText,
@@ -204,6 +215,7 @@ export default class LeaderboardController {
                     return {
                         name: stat.name,
                         hasMaps: false,
+                        mapOptional: false,
                         secondaryFilter: stat.secondaryFilter,
                         type: "map",
                         explanatoryText: stat.explanatoryText,
@@ -214,7 +226,7 @@ export default class LeaderboardController {
 
     public static async getEntries(
         category: string,
-        map?: HitmanMap,
+        map?: HitmanMap | OptionalMap,
     ): Promise<LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]> {
         if (LeaderboardController.calculationPromise != null) {
             await LeaderboardController.calculationPromise;
@@ -229,6 +241,11 @@ export default class LeaderboardController {
         if (statistic.hasMaps) {
             if (map == null) {
                 return [];
+            } else if (map === OptionalMap.NO_MAP) {
+                return LeaderboardController.cache[category] as Record<
+                    HitmanMap | OptionalMap,
+                    LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]
+                >[OptionalMap.NO_MAP];
             } else {
                 return (
                     LeaderboardController.cache[category] as Record<

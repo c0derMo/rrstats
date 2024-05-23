@@ -38,7 +38,7 @@ async function run() {
     });
     console.log(`${matches.length} matches loaded.`);
 
-    const finishDurations = new DefaultedMap<number[]>(() => []);
+    const finishDurations = new DefaultedMap<string, number[]>(() => []);
     for (const match of matches) {
         for (const map of match.playedMaps) {
             if (map.forfeit) continue;

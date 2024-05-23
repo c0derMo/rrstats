@@ -1,9 +1,9 @@
-export class DefaultedMap<T> {
-    private map: Record<string, T>;
+export class DefaultedMap<K, T> {
+    private map: Map<K, T>;
     private readonly defaultValue: () => T;
 
     constructor(defaultValue: () => T) {
-        this.map = {};
+        this.map = new Map();
         this.defaultValue = defaultValue;
     }
 
@@ -11,30 +11,32 @@ export class DefaultedMap<T> {
         return this.defaultValue();
     }
 
-    public get(key: string): T {
-        if (this.map[key] == null) {
-            this.map[key] = this.getDefaultValue();
+    public get(key: K): T {
+        if (!this.map.has(key)) {
+            this.map.set(key, this.getDefaultValue());
         }
-        return this.map[key];
+        return this.map.get(key)!;
     }
 
-    public set(key: string, value: T) {
-        this.map[key] = value;
+    public set(key: K, value: T) {
+        this.map.set(key, value);
     }
 
-    public getAll(): Record<string, T> {
-        return this.map;
+    public getAll(): Map<K, T> {
+        return new Map(this.map);
     }
 
-    public mapAll<X>(mapper: (key: string, value: T) => X): X[] {
+    public mapAll<X>(mapper: (key: K, value: T) => X): X[] {
         const result: X[] = [];
-        for (const key in this.map) {
-            result.push(mapper(key, this.map[key]));
+        for (const [key, value] of this.map.entries()) {
+            result.push(mapper(key, value));
         }
         return result;
     }
 }
 
-export function getSumOfValues(map: DefaultedMap<number>): number {
-    return Object.values(map.getAll()).reduce((cur, next) => cur + next);
+export function getSumOfValues<K extends string | number | symbol>(
+    map: DefaultedMap<K, number>,
+): number {
+    return Object.values(map.getAll()).reduce((cur, next) => cur + next, 0);
 }

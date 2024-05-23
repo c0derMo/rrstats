@@ -10,7 +10,9 @@ export class PlayerMatchesCasted implements LeaderboardPlayerStatistic {
     hasMaps = false;
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
-        const matchesCasted: DefaultedMap<number> = new DefaultedMap(() => 0);
+        const matchesCasted: DefaultedMap<string, number> = new DefaultedMap(
+            () => 0,
+        );
 
         for (const match of matches) {
             if (match.shoutcasters == null || match.shoutcasters.length <= 0)

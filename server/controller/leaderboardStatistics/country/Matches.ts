@@ -20,8 +20,10 @@ export class CountryMatches implements LeaderboardCountryStatistic {
             "nationality",
         ) as Record<string, string>;
 
-        const matchesPerCountry: DefaultedMap<DefaultedMap<number>> =
-            new DefaultedMap(() => new DefaultedMap(() => 0));
+        const matchesPerCountry: DefaultedMap<
+            string,
+            DefaultedMap<string, number>
+        > = new DefaultedMap(() => new DefaultedMap(() => 0));
         for (const match of matches) {
             const nationalityOne = countryMap[match.playerOne];
             const nationalityTwo = countryMap[match.playerTwo];

@@ -21,8 +21,8 @@ export class MapAppearance implements LeaderboardMapStatistic {
         placements: ICompetitionPlacement[],
         officialCompetitions: ICompetition[],
     ): LeaderboardMapEntry[] {
-        const appearanceMap: DefaultedMap<number[]> = new DefaultedMap(() =>
-            Array(officialCompetitions.length).fill(0),
+        const appearanceMap: DefaultedMap<string, number[]> = new DefaultedMap(
+            () => Array(officialCompetitions.length).fill(0),
         );
 
         for (const match of matches) {

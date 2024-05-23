@@ -100,13 +100,6 @@
                                 playerLookupTable[value as string] ?? value
                             "
                         />
-                        <!-- <a
-                            :href="`/${
-                                playerLookupTable[value as string] ?? value
-                            }`"
-                        >
-                            {{ playerLookupTable[value as string] ?? value }}
-                        </a> -->
                     </template>
                 </DataTableComponent>
 
@@ -201,6 +194,7 @@ import {
     LeaderboardPlayerEntry,
 } from "~/utils/interfaces/LeaderboardEntry";
 import { getPlacementTagColor } from "~/utils/formatters";
+import { OptionalMap } from "~/utils/mapUtils";
 
 useHead({
     title: `Leaderboards - RRStats`,
@@ -219,6 +213,7 @@ const selectedTab = ref("Players");
 const selectedCategory: Ref<{
     name: string;
     hasMaps?: boolean;
+    mapOptional?: boolean;
     type: string;
     secondaryFilter?: string;
     explanatoryText?: string;
@@ -226,14 +221,20 @@ const selectedCategory: Ref<{
 const leaderboardData: Ref<
     LeaderboardPlayerEntry[] | LeaderboardCountryEntry[] | LeaderboardMapEntry[]
 > = ref([]);
-const leaderboardLoading = ref(true);
+const leaderboardLoading = ref(false);
 const secondaryFilter = ref(0);
-const selectedMap = ref(HitmanMap.PARIS);
+const selectedMap: Ref<number> = ref(HitmanMap.PARIS);
 const search = ref("");
 const expandedCountry = ref("");
 
-const selectableMaps = getAllMaps().map((map) => {
-    return { value: map, text: getMap(map)!.name };
+const selectableMaps = computed(() => {
+    const maps = getAllMaps().map((map) => {
+        return { value: map, text: getMap(map)!.name };
+    });
+    if (selectedCategory.value.mapOptional) {
+        return [{ value: -1, text: "All maps" }, ...maps];
+    }
+    return maps;
 });
 
 const playerTableHeaders = computed(() => {
@@ -325,8 +326,20 @@ function expandCountry(row: LeaderboardCountryEntry) {
     }
 }
 
-async function loadLeaderboardData() {
+async function loadLeaderboardData(updateMap: boolean) {
+    if (leaderboardLoading.value) {
+        return;
+    }
+
     leaderboardLoading.value = true;
+
+    if (selectedCategory.value.hasMaps && updateMap) {
+        if (selectedCategory.value.mapOptional) {
+            selectedMap.value = OptionalMap.NO_MAP;
+        } else {
+            selectedMap.value = HitmanMap.PARIS;
+        }
+    }
 
     const leaderboardRequest = await useFetch(`/api/leaderboards/category`, {
         query: {
@@ -348,11 +361,11 @@ async function loadLeaderboardData() {
 }
 
 watch(selectedCategory, async () => {
-    await loadLeaderboardData();
+    await loadLeaderboardData(true);
 });
 watch(selectedMap, async () => {
-    await loadLeaderboardData();
+    await loadLeaderboardData(false);
 });
 
-await loadLeaderboardData();
+await loadLeaderboardData(true);
 </script>

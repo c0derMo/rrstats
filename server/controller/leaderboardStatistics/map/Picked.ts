@@ -19,7 +19,7 @@ export class MapPicked implements LeaderboardMapStatistic {
         placements: ICompetitionPlacement[],
         officialCompetitions: ICompetition[],
     ): LeaderboardMapEntry[] {
-        const pickedMap: DefaultedMap<number[]> = new DefaultedMap(() =>
+        const pickedMap: DefaultedMap<string, number[]> = new DefaultedMap(() =>
             Array(officialCompetitions.length).fill(0),
         );
 

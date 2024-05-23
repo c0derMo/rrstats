@@ -19,7 +19,7 @@ export class MapRNG implements LeaderboardMapStatistic {
         placements: ICompetitionPlacement[],
         officialCompetitions: ICompetition[],
     ): LeaderboardMapEntry[] {
-        const randomMap: DefaultedMap<number[]> = new DefaultedMap(() =>
+        const randomMap: DefaultedMap<string, number[]> = new DefaultedMap(() =>
             Array(officialCompetitions.length).fill(0),
         );
 
