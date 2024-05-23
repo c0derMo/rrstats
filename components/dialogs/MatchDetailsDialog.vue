@@ -57,6 +57,7 @@
                             :key="idx"
                             class="underline text-blue-500 ml-2"
                             :href="vod"
+                            target="_blank"
                             >VOD{{ idx > 0 ? ` (Part ${idx + 1})` : "" }}</a
                         >
                     </span>
