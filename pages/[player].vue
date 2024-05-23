@@ -129,7 +129,9 @@
             </div>
 
             <CardComponent class="!overflow-visible">
-                <TabbedContainer :tabs="['Maps', 'Time Heatmap']">
+                <TabbedContainer
+                    :tabs="['Maps', 'Time Heatmap', 'Personal Bests']"
+                >
                     <template #Maps>
                         <PlayerMapList
                             :matches="player?.matches || []"
@@ -139,6 +141,13 @@
                     </template>
                     <template #[tH]>
                         <PlaytimeHeatmap :matches="player?.matches || []" />
+                    </template>
+                    <template #[pB]>
+                        <PersonalBestTable
+                            :matches="player?.matches || []"
+                            :local-player="player?.uuid || ''"
+                            :players="player?.opponents"
+                        />
                     </template>
                 </TabbedContainer>
             </CardComponent>
@@ -167,6 +176,7 @@ useHead({
 });
 
 const tH = "Time Heatmap";
+const pB = "Personal Bests";
 const player = ref(
     (
         await useFetch(
