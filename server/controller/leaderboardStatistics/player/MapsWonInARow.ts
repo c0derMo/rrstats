@@ -32,13 +32,15 @@ export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = streakInfo.mapAll((player, streak) => {
-            return {
-                player: player,
-                sortingScore: streak.getLongestStreak(),
-                displayScore: streak.getLongestStreak().toString()
-            }
-        });
+        const result: LeaderboardPlayerEntry[] = streakInfo.mapAll(
+            (player, streak) => {
+                return {
+                    player: player,
+                    sortingScore: streak.getLongestStreak(),
+                    displayScore: streak.getLongestStreak().toString(),
+                };
+            },
+        );
         result.sort((a, b) => b.sortingScore - a.sortingScore);
 
         return result;

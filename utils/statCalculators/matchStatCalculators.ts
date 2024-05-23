@@ -1,36 +1,38 @@
 import { IMatch } from "../interfaces/IMatch";
 
 export function calculateWinrate(matches: IMatch[], player: string): number {
-    const wins = filterForfeitMatches(matches).filter((m) => {
+    const filteredMatches = filterForfeitMatches(matches);
+    const wins = filteredMatches.filter((m) => {
         return (
             (m.playerOne === player && m.playerOneScore > m.playerTwoScore) ||
             (m.playerTwo === player && m.playerTwoScore > m.playerOneScore)
         );
     }).length;
 
-    const ties = filterForfeitMatches(matches).filter((m) => {
+    const ties = filteredMatches.filter((m) => {
         return m.playerOneScore === m.playerTwoScore;
     }).length;
 
-    return (wins + 0.5 * ties) / matches.length;
+    return (wins + 0.5 * ties) / filteredMatches.length;
 }
 
 export function calculateWTL(
     matches: IMatch[],
     player: string,
 ): { w: number; t: number; l: number } {
-    const wins = filterForfeitMatches(matches).filter((m) => {
+    const filteredMatches = filterForfeitMatches(matches);
+    const wins = filteredMatches.filter((m) => {
         return (
             (m.playerOne === player && m.playerOneScore > m.playerTwoScore) ||
             (m.playerTwo === player && m.playerTwoScore > m.playerOneScore)
         );
     }).length;
 
-    const ties = filterForfeitMatches(matches).filter((m) => {
+    const ties = filteredMatches.filter((m) => {
         return m.playerOneScore === m.playerTwoScore;
     }).length;
 
-    const losses = filterForfeitMatches(matches).filter((m) => {
+    const losses = filteredMatches.filter((m) => {
         return (
             (m.playerOne === player && m.playerOneScore < m.playerTwoScore) ||
             (m.playerTwo === player && m.playerTwoScore < m.playerOneScore)

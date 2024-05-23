@@ -247,6 +247,6 @@ function getMapWinner(map: RRMap, match: IMatch): string {
 }
 
 async function redirectTo(link: string) {
-    await navigateTo(link, { open: { target: '_blank' } });
+    await navigateTo(link, { open: { target: "_blank" } });
 }
 </script>

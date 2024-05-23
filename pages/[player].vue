@@ -41,14 +41,16 @@
                             </h3>
                         </div>
                         <div class="text-xl font-light text-right">
-                            <span class="italic opacity-75">Winrate: </span
-                            ><span class="text-2xl"
-                                >{{ Math.round(winrate * 100) }}%</span
-                            ><br />
-                            <span class="italic opacity-75">Map-Winrate: </span
-                            ><span class="text-2xl"
-                                >{{ Math.round(mapWinrate * 100) }}%</span
-                            ><br />
+                            <span class="italic opacity-75">Winrate: </span>
+                            <span class="text-2xl">
+                                {{ Math.round(winrate * 100) }}%
+                            </span>
+                            <br />
+                            <span class="italic opacity-75">Map-Winrate: </span>
+                            <span class="text-2xl">
+                                {{ Math.round(mapWinrate * 100) }}%
+                            </span>
+                            <br />
                             <template v-if="debut !== undefined">
                                 <span class="italic opacity-75">Debut: </span
                                 ><span class="text-2xl"
@@ -82,7 +84,8 @@
                 <div
                     class="flex-grow text-center md:border-x border-neutral-500"
                 >
-                    Matches played: {{ player?.matches.length || 0 }}
+                    Matches played:
+                    {{ filterForfeitMatches(player?.matches || []).length }}
                 </div>
                 <div class="flex-grow md:text-right text-center md:pr-10">
                     W-T-L: {{ wtl }}
