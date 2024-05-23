@@ -72,7 +72,7 @@ const maps: HitmanMapInfo[] = [
                     "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_silvio_caruso_briefing.jpg",
             },
             {
-                name: "Francesca de Santis",
+                name: "Francesca De Santis",
                 tileUrl:
                     "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_francesca_de_santis.jpg",
             },

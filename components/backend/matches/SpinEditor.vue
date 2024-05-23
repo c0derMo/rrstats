@@ -240,9 +240,10 @@ async function getDisguises(): Promise<{ name: string; image: string }[]> {
     const request = await useFetch<{ disguises: HitmapsDisguise[] }>(
         `https://api.hitmaps.com/api/games/hitman${
             map.season > 1 ? map.season : ""
-        }/locations/${map.name.toLowerCase().replace(/\s/g, "-")}/missions/${
-            map.slug
-        }/disguises`,
+        }/locations/${map.name
+            .toLowerCase()
+            .replace(/\s/g, "-")
+            .replace(/à/g, "a")}/missions/${map.slug}/disguises`,
     );
     if (request.data.value == null || request.status.value !== "success") {
         return [];
@@ -271,7 +272,8 @@ async function getTargetEliminations(targets: string[]): Promise<
                 map.season > 1 ? map.season : ""
             }&missionLocation=${map.name
                 .toLowerCase()
-                .replace(/\s/g, "-")}&missionSlug=${
+                .replace(/\s/g, "-")
+                .replace(/à/g, "a")}&missionSlug=${
                 map.slug
             }&specificDisguises=true&specificMelee=true&specificFirearms=true&specificAccidents=true&impossibleOrDifficultKills=true&targetName=${encodedTarget}`,
         );
