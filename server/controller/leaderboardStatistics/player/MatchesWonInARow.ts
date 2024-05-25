@@ -12,15 +12,11 @@ export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
     hasMaps = false;
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
-        const sortedMatches = [...filterForfeitMatches(matches)].sort(
-            (a, b) => a.timestamp - b.timestamp,
-        );
-
         const streakInfo = new DefaultedMap<string, StreakCounter>(
             () => new StreakCounter(),
         );
 
-        for (const match of sortedMatches) {
+        for (const match of filterForfeitMatches(matches)) {
             if (match.playerOneScore > match.playerTwoScore) {
                 streakInfo.get(match.playerOne).increaseStreak();
                 streakInfo.get(match.playerTwo).resetStreak();
@@ -33,15 +29,15 @@ export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = streakInfo.mapAll(
-            (player, streak) => {
+        const result: LeaderboardPlayerEntry[] = streakInfo
+            .mapAll((player, streak) => {
                 return {
                     player: player,
                     sortingScore: streak.getLongestStreak(),
                     displayScore: streak.getLongestStreak().toString(),
                 };
-            },
-        );
+            })
+            .filter((s) => s.sortingScore > 1);
         result.sort((a, b) => b.sortingScore - a.sortingScore);
 
         return result;

@@ -49,18 +49,20 @@ export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
 
         streaks.mapAll((player, playerStreaks) => {
             playerStreaks.mapAll((map, streak) => {
-                result[-1].push({
-                    player: player,
-                    displayScore: `${streak.getLongestStreak().toString()} (${
-                        getMap(map)!.abbreviation
-                    })`,
-                    sortingScore: streak.getLongestStreak(),
-                });
-                result[map as HitmanMap].push({
-                    player: player,
-                    displayScore: streak.getLongestStreak().toString(),
-                    sortingScore: streak.getLongestStreak(),
-                });
+                if (streak.getLongestStreak() > 1) {
+                    result[-1].push({
+                        player: player,
+                        displayScore: `${streak
+                            .getLongestStreak()
+                            .toString()} (${getMap(map)!.abbreviation})`,
+                        sortingScore: streak.getLongestStreak(),
+                    });
+                    result[map as HitmanMap].push({
+                        player: player,
+                        displayScore: streak.getLongestStreak().toString(),
+                        sortingScore: streak.getLongestStreak(),
+                    });
+                }
             });
         });
 

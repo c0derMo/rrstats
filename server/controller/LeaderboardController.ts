@@ -154,7 +154,9 @@ export default class LeaderboardController {
 
         // Query ALL THE THINGS
         const players = await Player.find();
-        const matches = await Match.find();
+        const matches = await Match.find({
+            order: { timestamp: "ASC" },
+        });
         const competitions = await Competition.find({
             where: { officialCompetition: true },
             order: { startingTimestamp: "DESC" },

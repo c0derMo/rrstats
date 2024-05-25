@@ -31,9 +31,7 @@ export class PlayerElo implements LeaderboardPlayerStatistic {
             return [];
         }
 
-        const sortedMatches = [...filterForfeitMatches(matches)].sort(
-            (a, b) => a.timestamp - b.timestamp,
-        );
+        const sortedMatches = filterForfeitMatches(matches);
 
         let playerInfo: Record<string, EloPlayerInfo> = {};
         let lastCompetition = sortedMatches[0].competition;
