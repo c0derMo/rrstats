@@ -38,5 +38,8 @@ export class DefaultedMap<K, T> {
 export function getSumOfValues<K extends string | number | symbol>(
     map: DefaultedMap<K, number>,
 ): number {
-    return Object.values(map.getAll()).reduce((cur, next) => cur + next, 0);
+    return Array.from(map.getAll().values()).reduce(
+        (cur, next) => cur + next,
+        0,
+    );
 }

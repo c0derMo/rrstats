@@ -38,27 +38,25 @@ export class CountryTitles implements LeaderboardCountryStatistic {
             }
         }
 
-        const result: LeaderboardCountryEntry[] = [];
-        for (const country in titlesPerCountry.getAll()) {
-            result.push({
-                countryCode: country,
-                country: this.getCountryName(country),
-                displayScore: getSumOfValues(
-                    titlesPerCountry.get(country),
-                ).toString(),
-                sortingScore: getSumOfValues(titlesPerCountry.get(country)),
-                players: titlesPerCountry
-                    .get(country)
-                    .mapAll((key, value) => {
-                        return {
-                            player: key,
-                            sortingScore: value,
-                            displayScore: value.toString(),
-                        };
-                    })
-                    .sort((a, b) => b.sortingScore - a.sortingScore),
-            });
-        }
+        const result: LeaderboardCountryEntry[] = titlesPerCountry.mapAll(
+            (country, players) => {
+                return {
+                    countryCode: country,
+                    country: this.getCountryName(country),
+                    displayScore: getSumOfValues(players).toString(),
+                    sortingScore: getSumOfValues(players),
+                    players: players
+                        .mapAll((key, value) => {
+                            return {
+                                player: key,
+                                sortingScore: value,
+                                displayScore: value.toString(),
+                            };
+                        })
+                        .sort((a, b) => b.sortingScore - a.sortingScore),
+                };
+            },
+        );
         result.sort((a, b) => b.sortingScore - a.sortingScore);
 
         return result;

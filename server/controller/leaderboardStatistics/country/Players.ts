@@ -17,22 +17,23 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
             countryMap.get(player.nationality).push(player.uuid);
         }
 
-        const result: LeaderboardCountryEntry[] = [];
-        for (const country in countryMap.getAll()) {
-            result.push({
-                countryCode: country,
-                country: this.getCountryName(country),
-                displayScore: countryMap.get(country).length.toString(),
-                sortingScore: countryMap.get(country).length,
-                players: countryMap.get(country).map((player) => {
-                    return {
-                        player,
-                        displayScore: "",
-                        sortingScore: 0,
-                    };
-                }),
-            });
-        }
+        const result: LeaderboardCountryEntry[] = countryMap.mapAll(
+            (key, value) => {
+                return {
+                    countryCode: key,
+                    country: this.getCountryName(key),
+                    displayScore: value.length.toString(),
+                    sortingScore: value.length,
+                    players: value.map((player) => {
+                        return {
+                            player,
+                            displayScore: "",
+                            sortingScore: 0,
+                        };
+                    }),
+                };
+            },
+        );
         result.sort((a, b) => b.sortingScore - a.sortingScore);
 
         return result;

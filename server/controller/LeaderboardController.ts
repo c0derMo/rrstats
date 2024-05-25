@@ -85,24 +85,19 @@ type LeaderboardStatistic =
     | LeaderboardCountryStatistic
     | LeaderboardMapStatistic;
 
+type LeaderboardEntry =
+    | LeaderboardPlayerEntry
+    | LeaderboardCountryEntry
+    | LeaderboardMapEntry;
+
 export default class LeaderboardController {
     private static cache: Record<
         string,
         | LeaderboardPlayerEntry[]
         | LeaderboardCountryEntry[]
         | LeaderboardMapEntry[]
-        | Record<
-              HitmanMap,
-              | LeaderboardPlayerEntry[]
-              | LeaderboardCountryEntry[]
-              | LeaderboardMapEntry[]
-          >
-        | Record<
-              HitmanMap | OptionalMap,
-              | LeaderboardPlayerEntry[]
-              | LeaderboardCountryEntry[]
-              | LeaderboardMapEntry[]
-          >
+        | Record<HitmanMap, LeaderboardEntry[]>
+        | Record<HitmanMap | OptionalMap, LeaderboardEntry[]>
     > = {};
     private static calculationPromise: Promise<void> | null = null;
 
@@ -227,7 +222,7 @@ export default class LeaderboardController {
     public static async getEntries(
         category: string,
         map?: HitmanMap | OptionalMap,
-    ): Promise<LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]> {
+    ): Promise<LeaderboardEntry[]> {
         if (LeaderboardController.calculationPromise != null) {
             await LeaderboardController.calculationPromise;
         }
@@ -244,20 +239,18 @@ export default class LeaderboardController {
             } else if (map === OptionalMap.NO_MAP) {
                 return LeaderboardController.cache[category] as Record<
                     HitmanMap | OptionalMap,
-                    LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]
+                    LeaderboardEntry[]
                 >[OptionalMap.NO_MAP];
             } else {
                 return (
                     LeaderboardController.cache[category] as Record<
                         HitmanMap,
-                        LeaderboardPlayerEntry[] | LeaderboardCountryEntry[]
+                        LeaderboardEntry[]
                     >
                 )[map];
             }
         } else {
-            return LeaderboardController.cache[category] as
-                | LeaderboardCountryEntry[]
-                | LeaderboardPlayerEntry[];
+            return LeaderboardController.cache[category] as LeaderboardEntry[];
         }
     }
 }
