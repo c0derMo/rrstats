@@ -14,3 +14,9 @@ export type IPlayer = {
 
     excludedFromSearch?: boolean;
 };
+
+export type IPlayerStatistics = {
+    winrate: number;
+    mapWinrate: number;
+    bestPlacement: number | undefined;
+};
