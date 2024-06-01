@@ -39,6 +39,8 @@ export default class PlayerStatisticController {
             winrate: matchCollection.winrate(uuid),
             mapWinrate: matchCollection.mapWinrate(uuid),
             bestPlacement: placementCollection.bestPlacement(),
+            winTieLoss: matchCollection.wtl(uuid),
+            debutMatch: matchCollection.earliestMatch(),
         });
     }
 }

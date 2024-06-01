@@ -59,16 +59,18 @@
                                 }}%
                             </span>
                             <br />
-                            <template v-if="debut !== undefined">
-                                <span class="italic opacity-75">Debut: </span
-                                ><span class="text-2xl"
-                                    >{{
-                                        DateTime.fromMillis(debut.timestamp)
+                            <template v-if="statistics.debutMatch != null">
+                                <span class="italic opacity-75">Debut: </span>
+                                <span class="text-2xl">
+                                    {{
+                                        DateTime.fromMillis(
+                                            statistics.debutMatch.timestamp,
+                                        )
                                             .setLocale(useLocale().value)
                                             .toLocaleString(DateTime.DATE_SHORT)
                                     }}
-                                    ({{ debut.competition }})</span
-                                >
+                                    ({{ statistics.debutMatch.competition }})
+                                </span>
                             </template>
                         </div>
                     </div>
@@ -171,11 +173,8 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 import { IMatch } from "~/utils/interfaces/IMatch";
+import { emptyStatistics } from "~/utils/interfaces/IPlayer";
 import { mapsPicked } from "~/utils/statCalculators/mapStatCalculators";
-import {
-    calculateWTL,
-    debutMatch,
-} from "~/utils/statCalculators/matchStatCalculators";
 
 const route = useRoute();
 
@@ -195,17 +194,13 @@ const avatar = (
     await useFetch(`/api/player/avatar?player=${route.params.player}`)
 ).data;
 const stillLoading = ref(player.value?.shouldRetry ?? false);
-const statistics = (
-    await useFetch(`/api/player/statistics?player=${player.value?.uuid}`)
-).data;
+const statistics = ref(emptyStatistics());
+statistics.value =
+    (await useFetch(`/api/player/statistics?player=${player.value?.uuid}`)).data
+        ?.value ?? statistics.value;
 
 const wtl = computed(() => {
-    const wtl = calculateWTL(
-        player.value?.matches ?? [],
-        player.value?.uuid ?? "",
-    );
-
-    return `${wtl.w}-${wtl.t}-${wtl.l}`;
+    return `${statistics.value.winTieLoss.w}-${statistics.value.winTieLoss.t}-${statistics.value.winTieLoss.l}`;
 });
 
 const pickedMaps = computed(() => {
@@ -225,14 +220,6 @@ const pickedMaps = computed(() => {
     return maps;
 });
 
-const debut = computed(() => {
-    if (player.value?.matches === undefined) {
-        return undefined;
-    }
-
-    return debutMatch(player.value.matches);
-});
-
 useSeoMeta({
     ogTitle: () => `${route.params.player} - RRStats`,
     ogDescription: () =>
@@ -249,8 +236,12 @@ onMounted(async () => {
         const playerRequest = await $fetch(`/api/player/`, {
             query: { player: route.params.player },
         });
+        const statisticsRequest = await $fetch(
+            `/api/player/statistics?player=${player.value.uuid}`,
+        );
 
         player.value = playerRequest;
+        statistics.value = statisticsRequest;
         stillLoading.value = false;
     }
 });

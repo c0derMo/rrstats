@@ -1,6 +1,6 @@
 import { IMatch, RRMap, WinningPlayer } from "~/utils/interfaces/IMatch";
 
-type CacheKey = "winrate" | "mapWinrate";
+type CacheKey = "winrate" | "mapWinrate" | "wtl" | "earliestMatch";
 
 export default class MatchCollection {
     private matches: IMatch[];
@@ -8,8 +8,8 @@ export default class MatchCollection {
     private cache: Map<CacheKey, unknown>;
 
     constructor(matches: IMatch[]) {
-        this.matches = matches;
-        this.nonForfeitMatches = matches.filter(wasMatchNotForfeit);
+        this.matches = [...matches].sort((a, b) => a.timestamp - b.timestamp);
+        this.nonForfeitMatches = this.matches.filter(wasMatchNotForfeit);
         this.cache = new Map();
     }
 
@@ -22,12 +22,9 @@ export default class MatchCollection {
 
     winrate(player: string): number {
         return this.getCachedOrCalculate("winrate", () => {
-            const wins = this.nonForfeitMatches.filter((m) =>
-                hasPlayerWon(player, m),
-            ).length;
-            const ties = this.nonForfeitMatches.filter(wasMatchTie).length;
+            const wtl = this.wtl(player);
 
-            return (wins + 0.5 * ties) / this.nonForfeitMatches.length;
+            return (wtl.w + 0.5 * wtl.t) / (wtl.w + wtl.t + wtl.l);
         });
     }
 
@@ -55,6 +52,28 @@ export default class MatchCollection {
                 .reduce((a, b) => a + b, 0);
 
             return (wins + 0.5 * ties) / maps;
+        });
+    }
+
+    wtl(player: string): { w: number; t: number; l: number } {
+        return this.getCachedOrCalculate("wtl", () => {
+            const wins = this.nonForfeitMatches.filter((m) =>
+                hasPlayerWon(player, m),
+            ).length;
+            const ties = this.nonForfeitMatches.filter(wasMatchTie).length;
+            const losses = this.nonForfeitMatches.filter(
+                (m) => !hasPlayerWon(player, m) && !wasMatchTie(m),
+            ).length;
+
+            return { w: wins, t: ties, l: losses };
+        });
+    }
+
+    earliestMatch(): IMatch | null {
+        return this.getCachedOrCalculate("earliestMatch", () => {
+            if (this.matches.length <= 0) return null;
+
+            return this.matches[0];
         });
     }
 }
