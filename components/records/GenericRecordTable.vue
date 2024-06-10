@@ -38,8 +38,9 @@
 
         <template #match="{ value }">
             <a
+                v-if="matches[value as string] != null"
                 :href="
-                    matches[value as string] != null
+                    matches[value as string].vodLink != null
                         ? matches[value as string].vodLink![0]
                         : ''
                 "
