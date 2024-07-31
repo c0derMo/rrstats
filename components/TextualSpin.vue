@@ -7,9 +7,11 @@
             {{ buildComplications(target.complications) }}
         </li>
         <li v-for="(additional, idx) in spin.additionalObjectives" :key="idx">
-            <span class="font-bold">{{ additional.objective.name }}</span
-            >: {{ additional.completionMethod.name }} as
-            {{ additional.disguise.name }}
+            <span class="font-bold">{{ additional.objective.name }}</span>
+            : {{ additional.completionMethod.name }}
+            <span v-if="additional.disguise != null">
+                as {{ additional.disguise.name }}
+            </span>
         </li>
     </ul>
 </template>
