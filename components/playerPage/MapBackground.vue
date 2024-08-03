@@ -2,11 +2,11 @@
     <div
         class="fixed w-full h-full pointer-events-none -z-10 bg-cover bg-repeat dark:brightness-50 top-0 left-0"
         :style="bgStyle"
-    ></div>
+    />
 </template>
 
 <script setup lang="ts">
-import { HitmanMap, getAllMaps } from "~/utils/mapUtils";
+import { type HitmanMap, getAllMaps } from "~/utils/mapUtils";
 
 const props = defineProps({
     maps: {

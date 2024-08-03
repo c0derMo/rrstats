@@ -5,14 +5,14 @@ import { In } from "typeorm";
 import { DateTime } from "luxon";
 import { HitmanMap, getMapBySlug } from "../../../utils/mapUtils";
 import {
-    Spin,
-    RRMap,
+    type Spin,
+    type RRMap,
     WinningPlayer,
     ChoosingPlayer,
-    RRBannedMap,
+    type RRBannedMap,
 } from "~/utils/interfaces/IMatch";
 import { Competition } from "~/server/model/Competition";
-import { IGroup } from "~/utils/interfaces/ICompetition";
+import type { IGroup } from "~/utils/interfaces/ICompetition";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -62,39 +62,39 @@ export interface HitmapsMatch {
 }
 
 export default class HitmapsIntegration {
-    private static cache: Record<string, number> = {};
-    private static promises: Record<string, Promise<void>> = {};
+    private static cache: Map<string, number> = new Map();
+    private static promises: Map<string, Promise<void>> = new Map();
 
     static async updateHitmapsTournament(
         hitmapsSlug: string,
         competitionSlug: string,
     ): Promise<void> {
-        if (
-            this.cache[hitmapsSlug] !== undefined &&
-            this.promises[hitmapsSlug] === undefined
-        ) {
-            if (Date.now() - this.cache[hitmapsSlug] < 90000) {
+        if (this.cache.has(hitmapsSlug) && !this.promises.has(hitmapsSlug)) {
+            if (Date.now() - this.cache.get(hitmapsSlug)! < 90000) {
                 // Cache is too old
                 return;
             }
         }
 
-        if (this.promises[hitmapsSlug] === undefined) {
-            this.promises[hitmapsSlug] = new Promise((resolve) => {
-                this._updateHitmapsTournament(hitmapsSlug, competitionSlug)
-                    .catch((e: Error) => {
-                        console.log(
-                            `Error trying to fetch data from hitmaps: ${e.message}`,
-                        );
-                    })
-                    .finally(() => {
-                        delete this.promises[hitmapsSlug];
-                        resolve();
-                    });
-            });
+        if (!this.promises.has(hitmapsSlug)) {
+            this.promises.set(
+                hitmapsSlug,
+                new Promise((resolve) => {
+                    this._updateHitmapsTournament(hitmapsSlug, competitionSlug)
+                        .catch((e: Error) => {
+                            console.log(
+                                `Error trying to fetch data from hitmaps: ${e.message}`,
+                            );
+                        })
+                        .finally(() => {
+                            this.promises.delete(hitmapsSlug);
+                            resolve();
+                        });
+                }),
+            );
         }
 
-        return this.promises[hitmapsSlug];
+        return this.promises.get(hitmapsSlug);
     }
 
     static async _updateHitmapsTournament(
@@ -113,7 +113,7 @@ export default class HitmapsIntegration {
             request.data.matches,
             competitionSlug,
         );
-        this.cache[hitmapsSlug] = Date.now();
+        this.cache.set(hitmapsSlug, Date.now());
     }
 
     private static async fetchHitmapsMatches(

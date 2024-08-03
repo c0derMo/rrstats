@@ -1,5 +1,5 @@
 import { GenericRecord, MapRecord } from "~/server/model/Record";
-import {
+import type {
     GenericRecordType,
     IGenericRecord,
     IMapRecord,

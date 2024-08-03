@@ -1,6 +1,6 @@
 import { In } from "typeorm";
 import { Player } from "~/server/model/Player";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);

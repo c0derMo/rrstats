@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { LeaderboardMapEntry } from "~/utils/interfaces/LeaderboardEntry";
+import type { LeaderboardMapEntry } from "~/utils/interfaces/LeaderboardEntry";
 
 const props = defineProps({
     leaderboardData: {

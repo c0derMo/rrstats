@@ -7,8 +7,6 @@ import { Player } from "../model/Player";
 import MapperService from "../controller/MapperService";
 import { getMap } from "~/utils/mapUtils";
 
-const compToExport = "RR2";
-
 function formatSpin(s: Spin) {
     return s.targetConditions
         .map((target) => {
@@ -38,7 +36,7 @@ async function main() {
     await dataSource.initialize();
     console.log("Database connection established.");
 
-    const matches = await Match.find({ where: { competition: compToExport } });
+    const matches = await Match.find();
     const players = await Player.find();
     const playerLookupMap = MapperService.createStringMapFromList(
         players,
@@ -51,6 +49,7 @@ async function main() {
     const mappedMatches = matches.map((match) => {
         maxMapCount = Math.max(maxMapCount, match.playedMaps.length);
         const result = {
+            competition: match.competition,
             date: DateTime.fromMillis(match.timestamp).toISODate(),
             platform: match.platform,
             round: match.round,
@@ -77,6 +76,7 @@ async function main() {
     });
 
     const headers = [
+        { id: "competition", title: "COMPETITION" },
         { id: "date", title: "DATE" },
         { id: "platform", title: "PLATFORM" },
         { id: "round", title: "ROUND" },
@@ -99,7 +99,7 @@ async function main() {
     console.log(mappedMatches[0]);
 
     const writer = createObjectCsvWriter({
-        path: `./${compToExport}.csv`,
+        path: `./matches.csv`,
         header: headers,
     });
     await writer.writeRecords(mappedMatches);

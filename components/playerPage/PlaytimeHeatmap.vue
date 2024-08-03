@@ -2,7 +2,7 @@
     <table class="table-fixed w-full">
         <thead>
             <tr class="w-full">
-                <th></th>
+                <th />
                 <th v-for="timeslot in timeslots" :key="timeslot">
                     {{ timeslot }}
                 </th>
@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 const weekdays = [
     "Monday",

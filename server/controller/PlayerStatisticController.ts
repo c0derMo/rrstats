@@ -1,4 +1,4 @@
-import { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 import { Match } from "../model/Match";
 import MatchCollection from "../../utils/playerStatistics/MatchCollection";
 import PlacementCollection from "../../utils/playerStatistics/PlacementCollection";
@@ -54,3 +54,5 @@ export default class PlayerStatisticController {
         });
     }
 }
+
+// TODO: Listener to clear player stat cache!

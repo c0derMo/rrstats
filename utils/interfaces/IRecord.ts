@@ -1,4 +1,4 @@
-import { HitmanMap } from "../mapUtils";
+import type { HitmanMap } from "../mapUtils";
 
 export type IGenericRecord = {
     timestamp: number;

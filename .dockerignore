@@ -4,7 +4,7 @@
 /.vscode
 /node_modules
 .env
-.eslintrc.json
+.eslintrc.config.mjs
 .gitignore
 .prettierrc
 *.db

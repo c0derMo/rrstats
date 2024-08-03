@@ -168,7 +168,7 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 import { emptyStatistics } from "~/utils/interfaces/IPlayer";
 
 const route = useRoute();

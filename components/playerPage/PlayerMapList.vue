@@ -77,8 +77,8 @@
 </template>
 
 <script setup lang="ts">
-import { ICompetition } from "~/utils/interfaces/ICompetition";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { ICompetition } from "~/utils/interfaces/ICompetition";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 import MatchCollection from "~/utils/playerStatistics/MatchCollection";
 
 const props = defineProps({

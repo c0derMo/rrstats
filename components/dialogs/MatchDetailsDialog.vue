@@ -83,7 +83,7 @@
                         class="w-fit mx-auto"
                     />
                 </div>
-                <div></div>
+                <div />
                 <div class="flex flex-col gap-2 text-center">
                     <MapTag
                         v-for="(ban, idx) of playerTwoBans"
@@ -140,7 +140,7 @@
 <script setup lang="ts">
 import {
     ChoosingPlayer,
-    IMatch,
+    type IMatch,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 import { DateTime, Duration } from "luxon";

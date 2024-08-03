@@ -2,7 +2,7 @@
     <div
         class="h-1 w-full bg-neutral-200 dark:bg-neutral-600 overflow-x-hidden"
     >
-        <div class="h-1 bg-red-800 dark:bg-red-700 progressbar"></div>
+        <div class="h-1 bg-red-800 dark:bg-red-700 progressbar" />
     </div>
 </template>
 

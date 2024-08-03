@@ -39,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { HitmanMap } from "#imports";
-import { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import type { HitmanMap } from "#imports";
+import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
 const props = defineProps({
     maps: {

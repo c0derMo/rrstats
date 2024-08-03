@@ -2,7 +2,7 @@
     <div class="relative">
         <div
             class="absolute w-full h-10 bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded"
-        ></div>
+        />
         <div class="flex flex-row w-full gap-3 p-1 z-10">
             <div
                 v-for="tab in tabs"

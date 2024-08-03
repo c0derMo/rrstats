@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
 
 const props = defineProps({
     player: {

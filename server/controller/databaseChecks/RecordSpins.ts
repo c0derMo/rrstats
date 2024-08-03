@@ -1,5 +1,5 @@
 import { Player } from "~/server/model/Player";
-import {
+import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,
@@ -8,8 +8,8 @@ import { MapRecord } from "~/server/model/Record";
 import { Match } from "~/server/model/Match";
 import { getAllMaps, getMap } from "~/utils/mapUtils";
 import { DateTime } from "luxon";
-import { IMapRecord } from "~/utils/interfaces/IRecord";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMapRecord } from "~/utils/interfaces/IRecord";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 export class RecordSpins implements DatabaseCheck {
     info: CheckInfo = {

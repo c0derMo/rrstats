@@ -1,7 +1,7 @@
-import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
-import { IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
+import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { type IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
 
 export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
     type = "player" as const;

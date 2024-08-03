@@ -81,9 +81,9 @@
 </template>
 
 <script setup lang="ts">
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { IPlayer, IPlayerStatistics } from "~/utils/interfaces/IPlayer";
-import { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { IPlayer, IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 
 interface ComparisonData {
     player: IPlayer;

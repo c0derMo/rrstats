@@ -172,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { IPlayer, IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import type { IPlayer, IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
 enum Player {
     SELF,

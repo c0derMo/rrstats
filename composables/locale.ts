@@ -1,7 +1,7 @@
 export const useLocale = () =>
     useState<string>("locale", () => {
         const locale = ref("en-US"); // Fallback value
-        if (process.server) {
+        if (import.meta.server) {
             const reqLocale =
                 useRequestHeaders()["accept-language"]?.split(",")[0];
             if (reqLocale) {

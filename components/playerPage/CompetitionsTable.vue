@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import {
+import type {
     ICompetition,
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";

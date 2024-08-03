@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 const props = defineProps({
     matches: {

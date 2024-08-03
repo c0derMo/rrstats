@@ -1,5 +1,5 @@
 import { Match } from "~/server/model/Match";
-import {
+import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,

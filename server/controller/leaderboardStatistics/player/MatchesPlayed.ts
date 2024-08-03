@@ -1,7 +1,7 @@
-import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
+import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
 import { filterForfeitMatches } from "~/utils/matchUtils";
 
 export class PlayerMatchesPlayed implements LeaderboardPlayerStatistic {

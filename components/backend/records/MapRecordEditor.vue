@@ -58,8 +58,8 @@
 </template>
 
 <script setup lang="ts">
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { IMapRecord } from "~/utils/interfaces/IRecord";
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMapRecord } from "~/utils/interfaces/IRecord";
 
 const props = defineProps({
     record: {

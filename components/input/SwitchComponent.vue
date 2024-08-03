@@ -17,8 +17,7 @@
             <label
                 :for="id"
                 class="before:content[''] absolute top-2/4 -left-1 h-5 w-5 -translate-y-2/4 cursor-pointer rounded-full border border-blue-gray-100 bg-white shadow-md transition-all duration-300 peer-checked:translate-x-full peer-checked:border-blue-500"
-            >
-            </label>
+            />
         </div>
         <span v-if="reverse">{{ label }}</span>
     </div>

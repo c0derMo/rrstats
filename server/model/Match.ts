@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
-import { IMatch, RRBannedMap, RRMap } from "~/utils/interfaces/IMatch";
+import type { IMatch, RRBannedMap, RRMap } from "~/utils/interfaces/IMatch";
 
 @Entity()
 export class Match extends BaseEntity implements IMatch {

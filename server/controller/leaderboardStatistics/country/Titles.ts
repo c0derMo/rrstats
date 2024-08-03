@@ -1,9 +1,9 @@
-import { LeaderboardCountryStatistic } from "../../LeaderboardController";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import { LeaderboardCountryEntry } from "~/utils/interfaces/LeaderboardEntry";
+import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { LeaderboardCountryEntry } from "~/utils/interfaces/LeaderboardEntry";
 import MapperService from "../../MapperService";
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 import { DefaultedMap, getSumOfValues } from "~/utils/DefaultedMap";
 
 export class CountryTitles implements LeaderboardCountryStatistic {

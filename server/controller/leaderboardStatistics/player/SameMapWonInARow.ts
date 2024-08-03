@@ -1,10 +1,15 @@
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import { LeaderboardPlayerStatistic } from "../../LeaderboardController";
-import { IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
-import { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { type IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
+import type { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
 import { DefaultedMap } from "~/utils/DefaultedMap";
 import { StreakCounter } from "~/utils/StreakCounter";
-import { HitmanMap, OptionalMap, getAllMaps, getMap } from "~/utils/mapUtils";
+import {
+    type HitmanMap,
+    type OptionalMap,
+    getAllMaps,
+    getMap,
+} from "~/utils/mapUtils";
 
 export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
     type = "player" as const;

@@ -1,5 +1,5 @@
 import { Player } from "~/server/model/Player";
-import {
+import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,

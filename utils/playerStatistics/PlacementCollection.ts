@@ -1,4 +1,4 @@
-import {
+import type {
     ICompetition,
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";

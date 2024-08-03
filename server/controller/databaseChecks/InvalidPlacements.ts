@@ -1,5 +1,5 @@
 import { CompetitionPlacement } from "~/server/model/Competition";
-import {
+import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,

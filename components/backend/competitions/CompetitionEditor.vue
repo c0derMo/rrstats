@@ -80,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import {
+import type {
     ICompetition,
     ICompetitionPlacement,
     IGroupSettings,

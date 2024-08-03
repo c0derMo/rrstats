@@ -1,6 +1,6 @@
 import HitmapsIntegration from "~/server/controller/integrations/HitmapsIntegration";
 import { Competition } from "~/server/model/Competition";
-import { ICompetition } from "~/utils/interfaces/ICompetition";
+import type { ICompetition } from "~/utils/interfaces/ICompetition";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);

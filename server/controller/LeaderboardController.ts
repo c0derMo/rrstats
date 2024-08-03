@@ -1,10 +1,10 @@
-import {
+import type {
     ICompetition,
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import {
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import type {
     LeaderboardCountryEntry,
     LeaderboardMapEntry,
     LeaderboardPlayerEntry,
@@ -12,13 +12,13 @@ import {
 import { Player } from "../model/Player";
 import { Match } from "../model/Match";
 import { Competition, CompetitionPlacement } from "../model/Competition";
-import { HitmanMap, OptionalMap } from "~/utils/mapUtils";
+import { type HitmanMap, OptionalMap } from "~/utils/mapUtils";
 import {
-    EntitySubscriberInterface,
+    type EntitySubscriberInterface,
     EventSubscriber,
     In,
-    InsertEvent,
-    UpdateEvent,
+    type InsertEvent,
+    type UpdateEvent,
 } from "typeorm";
 import { DateTime } from "luxon";
 import { PlayerWinrate } from "./leaderboardStatistics/player/Winrate";

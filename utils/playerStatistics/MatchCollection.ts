@@ -1,8 +1,8 @@
 import {
     ChoosingPlayer,
-    IMatch,
-    RRBannedMap,
-    RRMap,
+    type IMatch,
+    type RRBannedMap,
+    type RRMap,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 import { getAllMaps } from "~/utils/mapUtils";

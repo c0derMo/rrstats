@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChoosingPlayer, RRBannedMap } from "~/utils/interfaces/IMatch";
+import { ChoosingPlayer, type RRBannedMap } from "~/utils/interfaces/IMatch";
 
 const props = defineProps({
     bannedMaps: {

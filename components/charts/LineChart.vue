@@ -1,6 +1,6 @@
 <template>
     <div class="w-full h-full relative">
-        <canvas ref="chart"></canvas>
+        <canvas ref="chart" />
     </div>
 </template>
 
@@ -13,8 +13,8 @@ import {
     PointElement,
     LineElement,
     Tooltip,
-    Tick,
-    TooltipItem,
+    type Tick,
+    type TooltipItem,
 } from "chart.js";
 
 Chart.register(

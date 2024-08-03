@@ -1,4 +1,4 @@
-import { IMatch } from "./IMatch";
+import type { IMatch } from "./IMatch";
 
 export type IPlayer = {
     uuid: string;

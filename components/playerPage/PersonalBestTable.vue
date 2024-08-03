@@ -35,7 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import { IMatch, RRMap, WinningPlayer } from "~/utils/interfaces/IMatch";
+import {
+    type IMatch,
+    type RRMap,
+    WinningPlayer,
+} from "~/utils/interfaces/IMatch";
 
 const props = defineProps({
     matches: {
