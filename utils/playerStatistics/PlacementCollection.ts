@@ -3,7 +3,11 @@ import {
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";
 
-type CacheKey = "bestPlacement";
+type CacheKey =
+    | "bestPlacement"
+    | "amountCompetitions"
+    | "amountWins"
+    | "averagePlacement";
 
 export default class PlacementCollection {
     private placements: ICompetitionPlacement[];
@@ -39,10 +43,58 @@ export default class PlacementCollection {
 
             if (officialPlacements.length <= 0) return undefined;
             return officialPlacements
-                .map((placement) => placement.placement)
+                .map((placement) => placement.placement!)
                 .reduce((prev, cur) => {
-                    return Math.min(prev!, cur!);
+                    return Math.min(prev, cur);
                 }, Number.MAX_SAFE_INTEGER);
+        });
+    }
+
+    amountCompetitions(): number {
+        return this.getCachedOrCalculate("amountCompetitions", () => {
+            return this.placements.filter((placement) =>
+                isPlacementOfOfficialCompetition(placement, this.competitions),
+            ).length;
+        });
+    }
+
+    amountWins(): number {
+        return this.getCachedOrCalculate("amountWins", () => {
+            const officialPlacements = this.placements
+                .filter((placement) =>
+                    isPlacementOfOfficialCompetition(
+                        placement,
+                        this.competitions,
+                    ),
+                )
+                .filter(isNumericPlacement);
+
+            return officialPlacements.filter(
+                (placement) => placement.placement === 1,
+            ).length;
+        });
+    }
+
+    averagePlacement(): number | undefined {
+        return this.getCachedOrCalculate("averagePlacement", () => {
+            const officialPlacements = this.placements
+                .filter((placement) =>
+                    isPlacementOfOfficialCompetition(
+                        placement,
+                        this.competitions,
+                    ),
+                )
+                .filter(isNumericPlacement);
+
+            if (officialPlacements.length <= 0) return undefined;
+
+            return (
+                officialPlacements
+                    .map((placement) => placement.placement!)
+                    .reduce((prev, cur) => {
+                        return prev + cur;
+                    }, 0) / officialPlacements.length
+            );
         });
     }
 }

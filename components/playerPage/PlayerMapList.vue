@@ -79,11 +79,7 @@
 <script setup lang="ts">
 import { ICompetition } from "~/utils/interfaces/ICompetition";
 import { IMatch } from "~/utils/interfaces/IMatch";
-import {
-    mapWinratePerMap,
-    mapsBannedPerMap,
-    mapsPickedPerMap,
-} from "~/utils/statCalculators/mapStatCalculators";
+import MatchCollection from "~/utils/playerStatistics/MatchCollection";
 
 const props = defineProps({
     matches: {
@@ -165,34 +161,40 @@ watch(rrwcOnly, () => {
 });
 
 const filteredMatches = computed(() => {
-    return props.matches.filter((m) => {
-        if (
-            regularRROnly.value &&
-            m.competition.toLowerCase().includes("rrwc")
-        ) {
-            return false;
-        }
-        if (rrwcOnly.value && !m.competition.toLowerCase().includes("rrwc")) {
-            return false;
-        }
+    return new MatchCollection(
+        props.matches.filter((m) => {
+            if (
+                regularRROnly.value &&
+                m.competition.toLowerCase().includes("rrwc")
+            ) {
+                return false;
+            }
+            if (
+                rrwcOnly.value &&
+                !m.competition.toLowerCase().includes("rrwc")
+            ) {
+                return false;
+            }
 
-        const compIndex = sortedCompetitions.value.findIndex(
-            (c) => c.tag === m.competition,
-        );
+            const compIndex = sortedCompetitions.value.findIndex(
+                (c) => c.tag === m.competition,
+            );
 
-        return (
-            compIndex >= selectedMinComp.value &&
-            compIndex <= selectedMaxComp.value
-        );
-    });
+            return (
+                compIndex >= selectedMinComp.value &&
+                compIndex <= selectedMaxComp.value
+            );
+        }),
+        props.localPlayer,
+    );
 });
 
 const pickedRows = computed(() => {
-    const maps = mapsPickedPerMap(filteredMatches.value, props.localPlayer);
+    const maps = filteredMatches.value.mapPickAmount();
 
     const result = [];
     for (const map of getAllMaps()) {
-        if (maps[map] !== undefined) {
+        if (maps[map] > 0) {
             result.push({
                 Map: getMap(map)!.name,
                 Picked: maps[map],
@@ -204,14 +206,14 @@ const pickedRows = computed(() => {
 });
 
 const bannedRows = computed(() => {
-    const maps = mapsBannedPerMap(filteredMatches.value, props.localPlayer);
+    const bans = filteredMatches.value.mapBanAmount();
 
     const result = [];
     for (const map of getAllMaps()) {
-        if (maps[map] !== undefined) {
+        if (bans[map] > 0) {
             result.push({
                 Map: getMap(map)!.name,
-                Banned: maps[map],
+                Banned: bans[map],
             });
         }
     }
@@ -220,16 +222,18 @@ const bannedRows = computed(() => {
 });
 
 const winrateRows = computed(() => {
-    const maps = mapWinratePerMap(filteredMatches.value, props.localPlayer);
+    const winrate = filteredMatches.value.perMapWinrate();
+    const wins = filteredMatches.value.mapWinAmount();
+    const plays = filteredMatches.value.mapPlayAmount();
 
     const result = [];
     for (const map of getAllMaps()) {
-        if (maps[map] !== undefined) {
+        if (plays[map] > 0) {
             result.push({
                 Map: getMap(map)!.name,
-                Winrate: Math.round(maps[map].winrate * 100),
-                Won: maps[map].wins,
-                Played: maps[map].plays,
+                Winrate: Math.round(winrate[map] * 100),
+                Won: wins[map],
+                Played: plays[map],
             });
         }
     }

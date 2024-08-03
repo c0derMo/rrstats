@@ -1,7 +1,7 @@
 import { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 import { Match } from "../model/Match";
-import MatchCollection from "./playerStatistics/MatchCollection";
-import PlacementCollection from "./playerStatistics/PlacementCollection";
+import MatchCollection from "../../utils/playerStatistics/MatchCollection";
+import PlacementCollection from "../../utils/playerStatistics/PlacementCollection";
 import { Competition, CompetitionPlacement } from "../model/Competition";
 import { In } from "typeorm";
 
@@ -29,18 +29,28 @@ export default class PlayerStatisticController {
             tag: In(placements.map((p) => p.competition)),
         });
 
-        const matchCollection = new MatchCollection(matches);
+        const matchCollection = new MatchCollection(matches, uuid);
         const placementCollection = new PlacementCollection(
             placements,
             competitions,
         );
 
         PlayerStatisticController.cache.set(uuid, {
-            winrate: matchCollection.winrate(uuid),
-            mapWinrate: matchCollection.mapWinrate(uuid),
+            winrate: matchCollection.winrate(),
+            mapWinrate: matchCollection.mapWinrate(),
             bestPlacement: placementCollection.bestPlacement(),
-            winTieLoss: matchCollection.wtl(uuid),
+            winTieLoss: matchCollection.wtl(),
             debutMatch: matchCollection.earliestMatch(),
+            matchCount: matchCollection.amountMatches(),
+            mapCount: matchCollection.amountMaps(),
+            officialCompetitionCount: placementCollection.amountCompetitions(),
+            competitionsWon: placementCollection.amountWins(),
+            averagePlacement: placementCollection.averagePlacement(),
+            mapsPicked: matchCollection.mapPickAmount(),
+            mapsBanned: matchCollection.mapBanAmount(),
+            mapsPlayed: matchCollection.mapPlayAmount(),
+            mapsWon: matchCollection.mapWinAmount(),
+            perMapWinrate: matchCollection.perMapWinrate(),
         });
     }
 }

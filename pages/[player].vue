@@ -90,17 +90,13 @@
                     class="flex-grow text-center md:border-x border-neutral-500"
                 >
                     Maps played:
-                    {{
-                        player?.matches
-                            .map((m) => m.playedMaps.length)
-                            .reduce((prev, cur) => prev + cur, 0) || 0
-                    }}
+                    {{ statistics?.mapCount }}
                 </div>
                 <div
                     class="flex-grow text-center md:border-x border-neutral-500"
                 >
                     Matches played:
-                    {{ filterForfeitMatches(player?.matches || []).length }}
+                    {{ statistics?.matchCount }}
                 </div>
                 <div class="flex-grow md:text-right text-center md:pr-10">
                     W-T-L: {{ wtl }}
@@ -174,7 +170,6 @@
 import { DateTime } from "luxon";
 import { IMatch } from "~/utils/interfaces/IMatch";
 import { emptyStatistics } from "~/utils/interfaces/IPlayer";
-import { mapsPicked } from "~/utils/statCalculators/mapStatCalculators";
 
 const route = useRoute();
 
@@ -204,15 +199,12 @@ const wtl = computed(() => {
 });
 
 const pickedMaps = computed(() => {
-    if (player.value?.matches === undefined) {
-        return undefined;
-    }
+    const maps: number[] = [];
 
-    const maps = mapsPicked(player.value.matches, player.value.uuid ?? "");
     for (const map of getAllMaps()) {
-        const currentAmount = maps.filter((m) => m === map).length;
-        const biasIncrease = Math.floor(currentAmount / 4);
-        for (let i = 0; i < biasIncrease; i++) {
+        const currentAmount = statistics.value.mapsPicked[map];
+        const totalAmount = Math.floor(currentAmount / 4) + currentAmount;
+        for (let i = 0; i < totalAmount; i++) {
             maps.push(map);
         }
     }

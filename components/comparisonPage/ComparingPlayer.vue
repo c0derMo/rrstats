@@ -14,7 +14,7 @@
                 <img
                     class="rounded-full w-20 h-20"
                     :src="playerAvatar"
-                    alt="Player Profile Picture"
+                    alt="Player Avatar"
                 />
                 <div class="flex-grow mx-5" :class="{ 'text-right': reverse }">
                     <h1 class="text-5xl">{{ player.primaryName }}</h1>
@@ -37,11 +37,7 @@
                 >
                     <span class="flex-grow font-light">Winrate</span>
                     <span :class="getAheadBehindClass(getWinrate)">
-                        {{
-                            Math.round(
-                                getWinrate(player.uuid, playerMatches) * 100,
-                            )
-                        }}%
+                        {{ Math.round(getWinrate(Player.SELF) * 100) }}%
                     </span>
                 </div>
 
@@ -54,11 +50,7 @@
                 >
                     <span class="flex-grow font-light">Map-Winrate</span>
                     <span :class="getAheadBehindClass(getMapWinrate)">
-                        {{
-                            Math.round(
-                                getMapWinrate(player.uuid, playerMatches) * 100,
-                            )
-                        }}%
+                        {{ Math.round(getMapWinrate(Player.SELF) * 100) }}%
                     </span>
                 </div>
 
@@ -73,7 +65,7 @@
                 >
                     <span class="flex-grow font-light">Matches played</span>
                     <span :class="getAheadBehindClass(getMatchesPlayed)">
-                        {{ getMatchesPlayed(player.uuid, playerMatches) }}
+                        {{ getMatchesPlayed(Player.SELF) }}
                     </span>
                 </div>
 
@@ -86,7 +78,7 @@
                 >
                     <span class="flex-grow font-light">Maps played</span>
                     <span :class="getAheadBehindClass(getMapsPlayed)">
-                        {{ getMapsPlayed(player.uuid, playerMatches) }}
+                        {{ getMapsPlayed(Player.SELF) }}
                     </span>
                 </div>
 
@@ -99,7 +91,7 @@
                 >
                     <span class="flex-grow font-light">W-T-L</span>
                     <span>
-                        {{ getWTL(player.uuid, playerMatches) }}
+                        {{ getWTL(Player.SELF) }}
                     </span>
                 </div>
 
@@ -114,7 +106,7 @@
                 >
                     <span class="flex-grow font-light">RRs played</span>
                     <span :class="getAheadBehindClass(getRRAmount)">
-                        {{ getRRAmount(player.uuid, playerMatches) }}
+                        {{ getRRAmount(Player.SELF) }}
                     </span>
                 </div>
 
@@ -127,13 +119,7 @@
                 >
                     <span class="flex-grow font-light">RRs won</span>
                     <span :class="getAheadBehindClass(getRRWins)">
-                        {{
-                            getRRWins(
-                                player.uuid,
-                                playerMatches,
-                                playerPlacements,
-                            )
-                        }}
+                        {{ getRRWins(Player.SELF) }}
                     </span>
                 </div>
 
@@ -149,17 +135,10 @@
                         :class="getAheadBehindClass(getBestRRPlacement, true)"
                     >
                         {{
-                            getBestRRPlacement(
-                                player.uuid,
-                                playerMatches,
-                                playerPlacements,
-                            ) === Number.MAX_SAFE_INTEGER
+                            getBestRRPlacement(Player.SELF) ===
+                            Number.MAX_SAFE_INTEGER
                                 ? "n/a"
-                                : getBestRRPlacement(
-                                      player.uuid,
-                                      playerMatches,
-                                      playerPlacements,
-                                  )
+                                : getBestRRPlacement(Player.SELF)
                         }}
                     </span>
                 </div>
@@ -180,19 +159,10 @@
                         "
                     >
                         {{
-                            getAverageRRPlacement(
-                                player.uuid,
-                                playerMatches,
-                                playerPlacements,
-                            ) === Number.MAX_SAFE_INTEGER
+                            getAverageRRPlacement(Player.SELF) ===
+                            Number.MAX_SAFE_INTEGER
                                 ? "n/a"
-                                : Math.round(
-                                      getAverageRRPlacement(
-                                          player.uuid,
-                                          playerMatches,
-                                          playerPlacements,
-                                      ),
-                                  )
+                                : Math.round(getAverageRRPlacement(Player.SELF))
                         }}
                     </span>
                 </div>
@@ -202,56 +172,28 @@
 </template>
 
 <script setup lang="ts">
-import {
-    ICompetition,
-    ICompetitionPlacement,
-} from "~/utils/interfaces/ICompetition";
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import {
-    amountRRWins,
-    amountRRs,
-    averageRRPlacement,
-    bestRRPlacement,
-} from "~/utils/statCalculators/competitionStatCalculators";
-import {
-    mapWinrate,
-    mapsPlayed,
-} from "~/utils/statCalculators/mapStatCalculators";
-import {
-    calculateWTL,
-    calculateWinrate,
-} from "~/utils/statCalculators/matchStatCalculators";
+import { IPlayer, IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+
+enum Player {
+    SELF,
+    COMPARISON,
+}
 
 const props = defineProps({
     player: {
         type: Object as PropType<IPlayer>,
         required: true,
     },
-    playerMatches: {
-        type: Array<IMatch>,
+    playerStatistics: {
+        type: Object as PropType<IPlayerStatistics>,
         required: true,
     },
     playerAvatar: {
         type: String,
         required: true,
     },
-    playerPlacements: {
-        type: Array<ICompetitionPlacement>,
-        required: true,
-    },
-    comparingPlayer: {
-        type: String,
-        required: false,
-        default: undefined,
-    },
-    comparingMatches: {
-        type: Array<IMatch>,
-        required: false,
-        default: undefined,
-    },
-    comparingPlacements: {
-        type: Array<ICompetitionPlacement>,
+    comparingStatistics: {
+        type: Object as PropType<IPlayerStatistics>,
         required: false,
         default: undefined,
     },
@@ -259,122 +201,118 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    competitions: {
-        type: Array<ICompetition>,
-        required: true,
-    },
 });
 
-function getWinrate(player: string, matches: IMatch[]): number {
-    return calculateWinrate(matches, player);
+function getWinrate(player: Player): number {
+    if (player === Player.SELF) {
+        return props.playerStatistics.winrate;
+    } else if (player === Player.COMPARISON) {
+        return props.comparingStatistics?.winrate ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getMapWinrate(player: string, matches: IMatch[]): number {
-    return mapWinrate(matches, player);
+function getMapWinrate(player: Player): number {
+    if (player === Player.SELF) {
+        return props.playerStatistics.mapWinrate;
+    } else if (player === Player.COMPARISON) {
+        return props.comparingStatistics?.mapWinrate ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getMatchesPlayed(player: string, matches: IMatch[]): number {
-    return matches.length;
+function getMatchesPlayed(player: Player): number {
+    if (player === Player.SELF) {
+        return props.playerStatistics.matchCount;
+    } else if (player === Player.COMPARISON) {
+        return props.comparingStatistics?.matchCount ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getMapsPlayed(player: string, matches: IMatch[]): number {
-    return mapsPlayed(matches).length;
+function getMapsPlayed(player: Player): number {
+    if (player === Player.SELF) {
+        return props.playerStatistics.mapCount;
+    } else if (player === Player.COMPARISON) {
+        return props.comparingStatistics?.mapCount ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getWTL(player: string, matches: IMatch[]): string {
-    const wtl = calculateWTL(matches, player);
-
-    return `${wtl.w}-${wtl.t}-${wtl.l}`;
+function getWTL(player: Player): string {
+    if (player === Player.SELF) {
+        const wtl = props.playerStatistics.winTieLoss;
+        return `${wtl.w}-${wtl.t}-${wtl.l}`;
+    } else if (player === Player.COMPARISON) {
+        const wtl = props.comparingStatistics?.winTieLoss ?? {
+            w: 0,
+            t: 0,
+            l: 0,
+        };
+        return `${wtl.w}-${wtl.t}-${wtl.l}`;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getRRAmount(player: string, matches: IMatch[]): number {
-    return amountRRs(matches);
+function getRRAmount(player: Player): number {
+    if (player === Player.SELF) {
+        return props.playerStatistics.officialCompetitionCount;
+    } else if (player === Player.COMPARISON) {
+        return props.comparingStatistics?.officialCompetitionCount ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getRRWins(
-    player: string,
-    matches: IMatch[],
-    placements: ICompetitionPlacement[],
-): number {
-    return amountRRWins(placements, props.competitions);
+function getRRWins(player: Player): number {
+    if (player === Player.SELF) {
+        return props.playerStatistics.competitionsWon;
+    } else if (player === Player.COMPARISON) {
+        return props.comparingStatistics?.competitionsWon ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getBestRRPlacement(
-    player: string,
-    matches: IMatch[],
-    placements: ICompetitionPlacement[],
-): number {
-    return (
-        bestRRPlacement(placements, props.competitions) ??
-        Number.MAX_SAFE_INTEGER
-    );
+function getBestRRPlacement(player: Player): number {
+    if (player === Player.SELF) {
+        return props.playerStatistics.bestPlacement ?? Number.MAX_SAFE_INTEGER;
+    } else if (player === Player.COMPARISON) {
+        return (
+            props.comparingStatistics?.bestPlacement ?? Number.MAX_SAFE_INTEGER
+        );
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getAverageRRPlacement(
-    player: string,
-    matches: IMatch[],
-    placements: ICompetitionPlacement[],
-): number {
-    return (
-        averageRRPlacement(placements, props.competitions) ??
-        Number.MAX_SAFE_INTEGER
-    );
+function getAverageRRPlacement(player: Player): number {
+    if (player === Player.SELF) {
+        return (
+            props.playerStatistics.averagePlacement ?? Number.MAX_SAFE_INTEGER
+        );
+    } else if (player === Player.COMPARISON) {
+        return (
+            props.comparingStatistics?.averagePlacement ??
+            Number.MAX_SAFE_INTEGER
+        );
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function isAhead(
-    f: (
-        player: string,
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ) => number,
-): boolean {
-    if (
-        props.comparingPlayer == null ||
-        props.comparingMatches == null ||
-        props.comparingPlacements == null
-    ) {
+function isAhead(f: (player: Player) => number): boolean {
+    if (props.comparingStatistics == null) {
         return false;
     }
-    return (
-        f(props.player.uuid, props.playerMatches, props.playerPlacements) >
-        f(
-            props.comparingPlayer,
-            props.comparingMatches,
-            props.comparingPlacements,
-        )
-    );
+    return f(Player.SELF) > f(Player.COMPARISON);
 }
 
-function isBehind(
-    f: (
-        player: string,
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ) => number,
-): boolean {
-    if (
-        props.comparingPlayer == null ||
-        props.comparingMatches == null ||
-        props.comparingPlacements == null
-    ) {
+function isBehind(f: (player: Player) => number): boolean {
+    if (props.comparingStatistics == null) {
         return false;
     }
-    return (
-        f(props.player.uuid, props.playerMatches, props.playerPlacements) <
-        f(
-            props.comparingPlayer,
-            props.comparingMatches,
-            props.comparingPlacements,
-        )
-    );
+    return f(Player.SELF) < f(Player.COMPARISON);
 }
 
 function getAheadBehindClass(
-    f: (
-        player: string,
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ) => number,
+    f: (player: Player) => number,
     reverse = false,
 ): string {
     if ((isAhead(f) && !reverse) || (isBehind(f) && reverse)) {

@@ -27,6 +27,16 @@ export type IPlayerStatistics = {
         l: number;
     };
     debutMatch: IMatch | null;
+    matchCount: number;
+    mapCount: number;
+    officialCompetitionCount: number;
+    averagePlacement: number | undefined;
+    competitionsWon: number;
+    mapsPicked: number[];
+    mapsPlayed: number[];
+    mapsWon: number[];
+    mapsBanned: number[];
+    perMapWinrate: number[];
 };
 
 export function emptyStatistics(): IPlayerStatistics {
@@ -40,5 +50,15 @@ export function emptyStatistics(): IPlayerStatistics {
             l: 0,
         },
         debutMatch: null,
+        matchCount: 0,
+        mapCount: 0,
+        officialCompetitionCount: 0,
+        averagePlacement: undefined,
+        competitionsWon: 0,
+        mapsPicked: getAllMaps().map(() => 0),
+        mapsPlayed: getAllMaps().map(() => 0),
+        mapsWon: getAllMaps().map(() => 0),
+        mapsBanned: getAllMaps().map(() => 0),
+        perMapWinrate: getAllMaps().map(() => 0),
     };
 }
