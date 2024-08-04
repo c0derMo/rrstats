@@ -37,6 +37,7 @@ export type IPlayerStatistics = {
     mapsWon: number[];
     mapsBanned: number[];
     perMapWinrate: number[];
+    mapPBs: { match: IMatch | null, map: number }[];
 };
 
 export function emptyStatistics(): IPlayerStatistics {
@@ -60,5 +61,6 @@ export function emptyStatistics(): IPlayerStatistics {
         mapsWon: getAllMaps().map(() => 0),
         mapsBanned: getAllMaps().map(() => 0),
         perMapWinrate: getAllMaps().map(() => 0),
+        mapPBs: getAllMaps().map(() => { return { match: null, map: -1 } }),
     };
 }

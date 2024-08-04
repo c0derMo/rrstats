@@ -53,6 +53,7 @@ export default class PlayerStatisticController {
             mapsPlayed: matchCollection.mapPlayAmount(),
             mapsWon: matchCollection.mapWinAmount(),
             perMapWinrate: matchCollection.perMapWinrate(),
+            mapPBs: matchCollection.mapPBs(),
         });
     }
 }

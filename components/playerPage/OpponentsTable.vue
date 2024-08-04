@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import type { IMatch } from "~/utils/interfaces/IMatch";
+import MatchCollection from "~/utils/playerStatistics/MatchCollection";
 
 const props = defineProps({
     matches: {
@@ -37,41 +38,31 @@ const headers = [
             const bScore = bSplit[0] + bSplit[1] / 2;
             const aMatches = aSplit[0] + aSplit[1] + aSplit[2];
             const bMatches = bSplit[0] + bSplit[1] + bSplit[2];
-            console.log(`Sorting ${aScore / aMatches} vs ${bScore / bMatches}`);
             return aScore / aMatches - bScore / bMatches;
         },
     },
 ];
 
 const rows = computed(() => {
-    const opponents: Record<string, { w: number; t: number; l: number }> = {};
+    const matches: Record<string, IMatch[]> = {};
 
     for (const match of props.matches) {
         const opponent =
             match.playerOne === props.localPlayer
                 ? match.playerTwo
                 : match.playerOne;
-        if (opponents[opponent] === undefined) {
-            opponents[opponent] = { w: 0, t: 0, l: 0 };
+
+        if (matches[opponent] === undefined) {
+            matches[opponent] = [];
         }
 
-        if (
-            (match.playerOne === props.localPlayer &&
-                match.playerOneScore > match.playerTwoScore) ||
-            (match.playerTwo === props.localPlayer &&
-                match.playerTwoScore > match.playerOneScore)
-        ) {
-            opponents[opponent].w += 1;
-        } else if (match.playerOneScore === match.playerTwoScore) {
-            opponents[opponent].t += 1;
-        } else {
-            opponents[opponent].l += 1;
-        }
+        matches[opponent].push(match);
     }
 
     const result = [];
-    for (const opponent of Object.keys(opponents)) {
-        const wtl = opponents[opponent];
+    for (const opponent of Object.keys(matches)) {
+        const collection = new MatchCollection(matches[opponent], props.localPlayer);
+        const wtl = collection.wtl();
         result.push({
             Opponent: props.opponents[opponent],
             Matches: wtl.w + wtl.t + wtl.l,

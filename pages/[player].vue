@@ -155,9 +155,9 @@
                     </template>
                     <template #[pB]>
                         <PersonalBestTable
-                            :matches="player?.matches || []"
                             :local-player="player?.uuid || ''"
                             :players="player?.opponents"
+                            :statistics="statistics"
                         />
                     </template>
                 </TabbedContainer>

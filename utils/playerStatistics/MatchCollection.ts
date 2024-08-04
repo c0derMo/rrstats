@@ -20,7 +20,8 @@ type CacheKey =
     | "selfBannedMaps"
     | "mapPlayed"
     | "mapWon"
-    | "perMapWinrate";
+    | "perMapWinrate"
+    | "mapPBs";
 
 export default class MatchCollection {
     private matches: IMatch[];
@@ -208,6 +209,32 @@ export default class MatchCollection {
             return mapWinrate;
         });
     }
+
+    mapPBs(): { match: IMatch | null, map: number }[] {
+        return this.getCachedOrCalculate("mapPBs", () => {
+            const pbs = getAllMaps().map(() => { return { match: null as (IMatch | null), map: -1 } });
+
+            for (const match of this.matches) {
+                for (const mapIdx in match.playedMaps) {
+                    const map = match.playedMaps[mapIdx];
+                    if (!wasMapNotForfeit(map) || !hasMapTimeGreaterZero(map) || !wasMapWonBy(this.player, match, map)) {
+                        continue;
+                    }
+
+                    const previousBestMapIndex = pbs[map.map].map;
+                    const previousBest = pbs[map.map].match?.playedMaps[previousBestMapIndex].timeTaken ?? -1;
+                    if (map.timeTaken < previousBest || previousBest < 0) {
+                        pbs[map.map] = {
+                            match: match,
+                            map: parseInt(mapIdx)
+                        }
+                    }
+                }
+            }
+
+            return pbs;
+        });
+    }
 }
 
 // Filter functions
@@ -254,4 +281,8 @@ function wasMapPickedBy(
             match.playerOne === player) ||
         (map.picked === ChoosingPlayer.PLAYER_TWO && match.playerTwo === player)
     );
+}
+
+function hasMapTimeGreaterZero(map: RRMap): boolean {
+    return map.timeTaken > 0;
 }

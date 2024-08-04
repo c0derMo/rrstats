@@ -35,17 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import {
-    type IMatch,
-    type RRMap,
-    WinningPlayer,
-} from "~/utils/interfaces/IMatch";
+import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
 const props = defineProps({
-    matches: {
-        type: Array<IMatch>,
-        required: true,
-    },
     localPlayer: {
         type: String,
         required: true,
@@ -55,6 +47,10 @@ const props = defineProps({
         required: false,
         default: () => {},
     },
+    statistics: {
+        type: Object as PropType<IPlayerStatistics>,
+        required: true,
+    }
 });
 
 const headers = [
@@ -65,33 +61,14 @@ const headers = [
 ];
 
 const pbs = computed(() => {
-    const personalBests = new Map<number, { match: IMatch; map: RRMap }>();
-
-    for (const match of props.matches) {
-        for (const map of match.playedMaps) {
-            if (map.forfeit) continue;
-            if (map.timeTaken < 0) continue;
-            if (
-                map.winner === WinningPlayer.DRAW ||
-                (map.winner === WinningPlayer.PLAYER_ONE &&
-                    match.playerOne != props.localPlayer) ||
-                (map.winner === WinningPlayer.PLAYER_TWO &&
-                    match.playerTwo != props.localPlayer)
-            )
-                continue;
-
-            const previousBest =
-                personalBests.get(map.map)?.map.timeTaken || -1;
-            if (map.timeTaken < previousBest || previousBest < 0) {
-                personalBests.set(map.map, { match: match, map: map });
-            }
-        }
-    }
+    const personalBests = props.statistics.mapPBs;
 
     const result = [];
-
-    for (const [map, info] of personalBests.entries()) {
-        result.push({ map: map, match: info.match, matchMap: info.map });
+    for (const map in personalBests) {
+        if (personalBests[map].match == null) {
+            continue;
+        }
+        result.push({ map: parseInt(map) as HitmanMap, match: personalBests[map].match!, matchMap: personalBests[map].match!.playedMaps[personalBests[map].map]})
     }
 
     return result;
