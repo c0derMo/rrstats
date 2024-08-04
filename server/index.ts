@@ -9,6 +9,7 @@ import { User } from "./model/User";
 import LeaderboardController, {
     LeaderboardDatabaseListener,
 } from "./controller/LeaderboardController";
+import { PlayerStatisticDatabaseListener } from "./controller/PlayerStatisticController";
 
 const logger = useLogger("rrstats:database");
 
@@ -27,7 +28,7 @@ export default defineNitroPlugin(async (nitroApp) => {
             CompetitionPlacement,
             User,
         ],
-        subscribers: [PlayerAccoladeSubscriber, LeaderboardDatabaseListener],
+        subscribers: [PlayerAccoladeSubscriber, LeaderboardDatabaseListener, PlayerStatisticDatabaseListener],
         synchronize: true,
     });
     await db.initialize();
