@@ -61,7 +61,10 @@ const rows = computed(() => {
 
     const result = [];
     for (const opponent of Object.keys(matches)) {
-        const collection = new MatchCollection(matches[opponent], props.localPlayer);
+        const collection = new MatchCollection(
+            matches[opponent],
+            props.localPlayer,
+        );
         const wtl = collection.wtl();
         result.push({
             Opponent: props.opponents[opponent],

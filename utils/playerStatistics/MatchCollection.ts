@@ -210,24 +210,32 @@ export default class MatchCollection {
         });
     }
 
-    mapPBs(): { match: IMatch | null, map: number }[] {
+    mapPBs(): { match: IMatch | null; map: number }[] {
         return this.getCachedOrCalculate("mapPBs", () => {
-            const pbs = getAllMaps().map(() => { return { match: null as (IMatch | null), map: -1 } });
+            const pbs = getAllMaps().map(() => {
+                return { match: null as IMatch | null, map: -1 };
+            });
 
             for (const match of this.matches) {
                 for (const mapIdx in match.playedMaps) {
                     const map = match.playedMaps[mapIdx];
-                    if (!wasMapNotForfeit(map) || !hasMapTimeGreaterZero(map) || !wasMapWonBy(this.player, match, map)) {
+                    if (
+                        !wasMapNotForfeit(map) ||
+                        !hasMapTimeGreaterZero(map) ||
+                        !wasMapWonBy(this.player, match, map)
+                    ) {
                         continue;
                     }
 
                     const previousBestMapIndex = pbs[map.map].map;
-                    const previousBest = pbs[map.map].match?.playedMaps[previousBestMapIndex].timeTaken ?? -1;
+                    const previousBest =
+                        pbs[map.map].match?.playedMaps[previousBestMapIndex]
+                            .timeTaken ?? -1;
                     if (map.timeTaken < previousBest || previousBest < 0) {
                         pbs[map.map] = {
                             match: match,
-                            map: parseInt(mapIdx)
-                        }
+                            map: parseInt(mapIdx),
+                        };
                     }
                 }
             }

@@ -11,7 +11,10 @@ function formatSpin(s: Spin) {
     return s.targetConditions
         .map((target) => {
             let targetS = `${target.target.name}: `;
-            if (target.killMethod.selectedVariant != null && target.killMethod.selectedVariant != "") {
+            if (
+                target.killMethod.selectedVariant != null &&
+                target.killMethod.selectedVariant != ""
+            ) {
                 targetS += `${target.killMethod.selectedVariant} `;
             }
             targetS += `${target.killMethod.name} as ${target.disguise.name}`;

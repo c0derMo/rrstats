@@ -3,7 +3,13 @@ import { Match } from "../model/Match";
 import MatchCollection from "../../utils/playerStatistics/MatchCollection";
 import PlacementCollection from "../../utils/playerStatistics/PlacementCollection";
 import { Competition, CompetitionPlacement } from "../model/Competition";
-import { type EntitySubscriberInterface, EventSubscriber, In, type InsertEvent, type UpdateEvent } from "typeorm";
+import {
+    type EntitySubscriberInterface,
+    EventSubscriber,
+    In,
+    type InsertEvent,
+    type UpdateEvent,
+} from "typeorm";
 import { DateTime } from "luxon";
 import { Player } from "../model/Player";
 
@@ -59,7 +65,9 @@ export default class PlayerStatisticController {
 }
 
 @EventSubscriber()
-export class PlayerStatisticDatabaseListener implements EntitySubscriberInterface {
+export class PlayerStatisticDatabaseListener
+    implements EntitySubscriberInterface
+{
     private lastDatabaseWrite: DateTime;
     private timerStart: DateTime;
     private invalidationTimer: NodeJS.Timeout | null = null;

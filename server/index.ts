@@ -28,7 +28,11 @@ export default defineNitroPlugin(async (nitroApp) => {
             CompetitionPlacement,
             User,
         ],
-        subscribers: [PlayerAccoladeSubscriber, LeaderboardDatabaseListener, PlayerStatisticDatabaseListener],
+        subscribers: [
+            PlayerAccoladeSubscriber,
+            LeaderboardDatabaseListener,
+            PlayerStatisticDatabaseListener,
+        ],
         synchronize: true,
     });
     await db.initialize();

@@ -50,7 +50,7 @@ const props = defineProps({
     statistics: {
         type: Object as PropType<IPlayerStatistics>,
         required: true,
-    }
+    },
 });
 
 const headers = [
@@ -68,7 +68,12 @@ const pbs = computed(() => {
         if (personalBests[map].match == null) {
             continue;
         }
-        result.push({ map: parseInt(map) as HitmanMap, match: personalBests[map].match!, matchMap: personalBests[map].match!.playedMaps[personalBests[map].map]})
+        result.push({
+            map: parseInt(map) as HitmanMap,
+            match: personalBests[map].match!,
+            matchMap:
+                personalBests[map].match!.playedMaps[personalBests[map].map],
+        });
     }
 
     return result;
