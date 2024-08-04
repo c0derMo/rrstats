@@ -19,8 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { IGroupSettings } from "~/utils/interfaces/ICompetition";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IGroupSettings } from "~/utils/interfaces/ICompetition";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 const props = defineProps({
     groupsInfo: {

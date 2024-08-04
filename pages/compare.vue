@@ -37,13 +37,9 @@
                 <ComparingPlayer
                     v-if="leftPlayerObject !== null"
                     :player="leftPlayerObject.player"
-                    :player-matches="leftPlayerObject.matches"
                     :player-avatar="leftPlayerObject.avatar"
-                    :player-placements="leftPlayerObject.placements"
-                    :comparing-player="rightPlayerObject?.player.uuid"
-                    :comparing-matches="rightPlayerObject?.matches"
-                    :comparing-placements="rightPlayerObject?.placements"
-                    :competitions="competitions!"
+                    :player-statistics="leftPlayerObject.statistics"
+                    :comparing-statistics="rightPlayerObject?.statistics"
                 />
             </div>
 
@@ -52,13 +48,9 @@
                     v-if="rightPlayerObject !== null"
                     :reverse="true"
                     :player="rightPlayerObject.player"
-                    :player-matches="rightPlayerObject.matches"
                     :player-avatar="rightPlayerObject.avatar"
-                    :player-placements="rightPlayerObject.placements"
-                    :comparing-player="leftPlayerObject?.player.uuid"
-                    :comparing-matches="leftPlayerObject?.matches"
-                    :comparing-placements="leftPlayerObject?.placements"
-                    :competitions="competitions!"
+                    :player-statistics="rightPlayerObject.statistics"
+                    :comparing-statistics="leftPlayerObject?.statistics"
                 />
             </div>
 
@@ -73,35 +65,32 @@
                 v-if="leftPlayerObject !== null"
                 class="col-span-2 md:col-span-1"
                 :maps="comparingMaps"
-                :player="leftPlayerObject.player.uuid"
-                :player-matches="leftPlayerObject.matches"
-                :comparing-player="rightPlayerObject?.player.uuid"
-                :comparing-player-matches="rightPlayerObject?.matches"
+                :statistics="leftPlayerObject.statistics"
+                :comparing-statistics="rightPlayerObject?.statistics"
             />
 
             <MapComparison
                 v-if="rightPlayerObject !== null"
                 class="col-span-2 md:col-span-1"
                 :maps="comparingMaps"
-                :player="rightPlayerObject.player.uuid"
-                :player-matches="rightPlayerObject.matches"
-                :comparing-player="leftPlayerObject?.player.uuid"
-                :comparing-player-matches="leftPlayerObject?.matches"
+                :statistics="rightPlayerObject.statistics"
+                :comparing-statistics="leftPlayerObject?.statistics"
             />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { IPlayer, IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 
 interface ComparisonData {
     player: IPlayer;
     matches: IMatch[];
     avatar: string;
     placements: ICompetitionPlacement[];
+    statistics: IPlayerStatistics;
 }
 
 useHead({
@@ -109,7 +98,6 @@ useHead({
 });
 
 const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
-const competitions = (await useFetch("/api/competitions/list")).data;
 const route = useRoute();
 
 const leftPlayer = ref("");
@@ -165,11 +153,20 @@ async function getComparisonData(
     ) {
         return null;
     }
+
+    const statistics = await useFetch(
+        `/api/player/statistics?player=${playerData.data.value!.uuid}`,
+    );
+    if (statistics.status.value !== "success") {
+        return null;
+    }
+
     return {
         player: playerData.data.value as IPlayer,
         matches: playerData.data.value!.matches,
         avatar: avatar.data.value!,
         placements: playerData.data.value!.placements,
+        statistics: statistics.data.value!,
     };
 }
 

@@ -2,13 +2,13 @@ import { In } from "typeorm";
 import { Match } from "~/server/model/Match";
 import { Player } from "~/server/model/Player";
 import { GenericRecord, MapRecord } from "~/server/model/Record";
-import { IMatch } from "~/utils/interfaces/IMatch";
-import {
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import type {
     GenericRecordType,
     IGenericRecord,
     IMapRecord,
 } from "~/utils/interfaces/IRecord";
-import { HitmanMap } from "~/utils/mapUtils";
+import type { HitmanMap } from "~/utils/mapUtils";
 
 export default defineEventHandler(async () => {
     const genericRecordTypes = await GenericRecord.find({ select: ["record"] });

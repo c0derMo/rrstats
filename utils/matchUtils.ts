@@ -1,4 +1,4 @@
-import { IMatch } from "./interfaces/IMatch";
+import type { IMatch } from "./interfaces/IMatch";
 
 export function filterForfeitMatches(matches: IMatch[]): IMatch[] {
     return matches.filter((match) => {

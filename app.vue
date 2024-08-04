@@ -3,7 +3,7 @@
         <div
             class="dark:text-white min-w-screen min-h-screen w-full h-full flex flex-col"
         >
-            <div class="dark:bg-slate-900 fixed w-full h-full -z-50"></div>
+            <div class="dark:bg-slate-900 fixed w-full h-full -z-50" />
             <LocalStorageConsentDialog
                 v-if="showForm"
                 @decline="showForm = false"

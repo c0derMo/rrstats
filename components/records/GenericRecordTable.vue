@@ -68,8 +68,11 @@
 </template>
 
 <script setup lang="ts">
-import { GenericRecordType, IGenericRecord } from "~/utils/interfaces/IRecord";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import {
+    GenericRecordType,
+    type IGenericRecord,
+} from "~/utils/interfaces/IRecord";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 interface RecordMap {
     map: number;

@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import {
+import type {
     ICompetition,
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";

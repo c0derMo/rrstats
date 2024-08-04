@@ -2,7 +2,7 @@ import { In } from "typeorm";
 import { AuthController } from "~/server/controller/AuthController";
 import { Match } from "~/server/model/Match";
 import { Player } from "~/server/model/Player";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 export default defineEventHandler(async (event) => {
     const authHeader = getRequestHeader(event, "authorization");

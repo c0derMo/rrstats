@@ -108,7 +108,7 @@
                     "
                 />
 
-                <div class="border-b w-full my-2"></div>
+                <div class="border-b w-full my-2" />
 
                 <TextualSpin :spin="playedMapData[selectedMap].spin" />
             </div>
@@ -119,8 +119,8 @@
 <script setup lang="ts">
 import {
     ChoosingPlayer,
-    RRMap,
-    Spin,
+    type RRMap,
+    type Spin,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 

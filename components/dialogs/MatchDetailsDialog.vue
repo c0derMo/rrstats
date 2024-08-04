@@ -83,7 +83,7 @@
                         class="w-fit mx-auto"
                     />
                 </div>
-                <div></div>
+                <div />
                 <div class="flex flex-col gap-2 text-center">
                     <MapTag
                         v-for="(ban, idx) of playerTwoBans"
@@ -127,6 +127,11 @@
                                 ? durationToLocale(map.timeTaken * 1000)
                                 : "unknown"
                         }}
+                        <Tag v-if="isMapPB(idx)" narrow color="purple"
+                            >Personal best ({{
+                                getPlayerName(map.winner, "unknown")
+                            }})</Tag
+                        >
                     </div>
                 </template>
             </div>
@@ -140,7 +145,7 @@
 <script setup lang="ts">
 import {
     ChoosingPlayer,
-    IMatch,
+    type IMatch,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 import { DateTime, Duration } from "luxon";
@@ -157,6 +162,13 @@ const props = defineProps({
         required: true,
     },
 });
+
+const playerOneStatistics = (
+    await useFetch(`/api/player/statistics?player=${props.match.playerOne}`)
+).data;
+const playerTwoStatistics = (
+    await useFetch(`/api/player/statistics?player=${props.match.playerTwo}`)
+).data;
 
 const playerOneBans = computed(() => {
     return props.match.bannedMaps.filter(
@@ -206,5 +218,24 @@ function getPlayerColor(
         return "#b91c1c";
     }
     return undefined;
+}
+
+function isMapPB(mapIdx: number): boolean {
+    const map = props.match.playedMaps[mapIdx];
+    if (map.winner === WinningPlayer.PLAYER_ONE) {
+        return (
+            playerOneStatistics.value?.mapPBs[map.map].match?.uuid ===
+                props.match.uuid &&
+            playerOneStatistics.value?.mapPBs[map.map].map === mapIdx
+        );
+    }
+    if (map.winner === WinningPlayer.PLAYER_TWO) {
+        return (
+            playerTwoStatistics.value?.mapPBs[map.map].match?.uuid ===
+                props.match.uuid &&
+            playerTwoStatistics.value?.mapPBs[map.map].map === mapIdx
+        );
+    }
+    return false;
 }
 </script>

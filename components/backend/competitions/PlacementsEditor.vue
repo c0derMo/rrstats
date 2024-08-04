@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
+import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 
 const props = defineProps({
     placements: {

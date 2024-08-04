@@ -160,8 +160,8 @@
 <script setup lang="ts">
 import {
     ChoosingPlayer,
-    IMatch,
-    RRMap,
+    type IMatch,
+    type RRMap,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 import { DateTime } from "luxon";

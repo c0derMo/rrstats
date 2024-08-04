@@ -9,7 +9,7 @@
                             <img
                                 class="rounded-full self-center"
                                 :src="avatar!"
-                                alt="Player Profile Picture"
+                                alt="Player Avatar"
                             />
                             <img
                                 v-if="
@@ -43,24 +43,34 @@
                         <div class="text-xl font-light text-right">
                             <span class="italic opacity-75">Winrate: </span>
                             <span class="text-2xl">
-                                {{ Math.round(winrate * 100) }}%
+                                {{
+                                    Math.round(
+                                        (statistics?.winrate ?? 0) * 100,
+                                    )
+                                }}%
                             </span>
                             <br />
                             <span class="italic opacity-75">Map-Winrate: </span>
                             <span class="text-2xl">
-                                {{ Math.round(mapWinrate * 100) }}%
+                                {{
+                                    Math.round(
+                                        (statistics?.mapWinrate ?? 0) * 100,
+                                    )
+                                }}%
                             </span>
                             <br />
-                            <template v-if="debut !== undefined">
-                                <span class="italic opacity-75">Debut: </span
-                                ><span class="text-2xl"
-                                    >{{
-                                        DateTime.fromMillis(debut.timestamp)
+                            <template v-if="statistics.debutMatch != null">
+                                <span class="italic opacity-75">Debut: </span>
+                                <span class="text-2xl">
+                                    {{
+                                        DateTime.fromMillis(
+                                            statistics.debutMatch.timestamp,
+                                        )
                                             .setLocale(useLocale().value)
                                             .toLocaleString(DateTime.DATE_SHORT)
                                     }}
-                                    ({{ debut.competition }})</span
-                                >
+                                    ({{ statistics.debutMatch.competition }})
+                                </span>
                             </template>
                         </div>
                     </div>
@@ -69,23 +79,24 @@
 
             <CardComponent class="flex md:flex-row w-3/5 mx-auto flex-col">
                 <div class="flex-grow md:text-left text-center md:pl-10">
-                    Best RR Placement: {{ bestPlacement }}
-                </div>
-                <div
-                    class="flex-grow text-center md:border-x border-neutral-500"
-                >
-                    Maps played:
+                    Best RR Placement:
                     {{
-                        player?.matches
-                            .map((m) => m.playedMaps.length)
-                            .reduce((prev, cur) => prev + cur, 0) || 0
+                        statistics?.bestPlacement
+                            ? formatPlacement(statistics.bestPlacement)
+                            : "n/a"
                     }}
                 </div>
                 <div
                     class="flex-grow text-center md:border-x border-neutral-500"
                 >
+                    Maps played:
+                    {{ statistics?.mapCount }}
+                </div>
+                <div
+                    class="flex-grow text-center md:border-x border-neutral-500"
+                >
                     Matches played:
-                    {{ filterForfeitMatches(player?.matches || []).length }}
+                    {{ statistics?.matchCount }}
                 </div>
                 <div class="flex-grow md:text-right text-center md:pr-10">
                     W-T-L: {{ wtl }}
@@ -144,9 +155,9 @@
                     </template>
                     <template #[pB]>
                         <PersonalBestTable
-                            :matches="player?.matches || []"
                             :local-player="player?.uuid || ''"
                             :players="player?.opponents"
+                            :statistics="statistics"
                         />
                     </template>
                 </TabbedContainer>
@@ -157,17 +168,8 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import { IMatch } from "~/utils/interfaces/IMatch";
-import { bestRRPlacement } from "~/utils/statCalculators/competitionStatCalculators";
-import {
-    mapsPicked,
-    mapWinrate as getMapWinrate,
-} from "~/utils/statCalculators/mapStatCalculators";
-import {
-    calculateWTL,
-    calculateWinrate,
-    debutMatch,
-} from "~/utils/statCalculators/matchStatCalculators";
+import type { IMatch } from "~/utils/interfaces/IMatch";
+import { emptyStatistics } from "~/utils/interfaces/IPlayer";
 
 const route = useRoute();
 
@@ -177,54 +179,32 @@ useHead({
 
 const tH = "Time Heatmap";
 const pB = "Personal Bests";
-const player = ref(
-    (
-        await useFetch(
-            `/api/player/?player=${route.params.player}&initialLoad=true`,
-        )
-    ).data.value,
-);
+const player = (
+    await useFetch(
+        `/api/player/?player=${route.params.player}&initialLoad=true`,
+    )
+).data;
 const competitions = (await useFetch("/api/competitions/list")).data;
 const avatar = (
     await useFetch(`/api/player/avatar?player=${route.params.player}`)
 ).data;
 const stillLoading = ref(player.value?.shouldRetry ?? false);
+const statistics = ref(emptyStatistics());
+statistics.value =
+    (await useFetch(`/api/player/statistics?player=${player.value?.uuid}`)).data
+        ?.value ?? statistics.value;
 
 const wtl = computed(() => {
-    const wtl = calculateWTL(
-        player.value?.matches ?? [],
-        player.value?.uuid ?? "",
-    );
-
-    return `${wtl.w}-${wtl.t}-${wtl.l}`;
-});
-
-const winrate = computed(() => {
-    if (player.value === null || player.value.matches.length <= 0) {
-        return 0;
-    }
-
-    return calculateWinrate(player.value.matches, player.value.uuid ?? "");
-});
-
-const mapWinrate = computed(() => {
-    if (player.value === null || player.value.matches.length <= 0) {
-        return 0;
-    }
-
-    return getMapWinrate(player.value.matches, player.value.uuid ?? "");
+    return `${statistics.value.winTieLoss.w}-${statistics.value.winTieLoss.t}-${statistics.value.winTieLoss.l}`;
 });
 
 const pickedMaps = computed(() => {
-    if (player.value?.matches === undefined) {
-        return undefined;
-    }
+    const maps: number[] = [];
 
-    const maps = mapsPicked(player.value.matches, player.value.uuid ?? "");
     for (const map of getAllMaps()) {
-        const currentAmount = maps.filter((m) => m === map).length;
-        const biasIncrease = Math.floor(currentAmount / 4);
-        for (let i = 0; i < biasIncrease; i++) {
+        const currentAmount = statistics.value.mapsPicked[map];
+        const totalAmount = Math.floor(currentAmount / 4) + currentAmount;
+        for (let i = 0; i < totalAmount; i++) {
             maps.push(map);
         }
     }
@@ -232,36 +212,12 @@ const pickedMaps = computed(() => {
     return maps;
 });
 
-const debut = computed(() => {
-    if (player.value?.matches === undefined) {
-        return undefined;
-    }
-
-    return debutMatch(player.value.matches);
-});
-
-const bestPlacement = computed(() => {
-    if (player.value?.placements == null) {
-        return "n/a";
-    }
-
-    const placement = bestRRPlacement(
-        player.value.placements,
-        competitions.value!,
-    );
-    if (placement !== undefined) {
-        return formatPlacement(placement);
-    } else {
-        return "n/a";
-    }
-});
-
 useSeoMeta({
     ogTitle: () => `${route.params.player} - RRStats`,
     ogDescription: () =>
-        `${player.value?.accolade} - ${Math.round(winrate.value * 100)}% - ${
-            wtl.value
-        }`,
+        `${player.value?.accolade} - ${Math.round(
+            (statistics.value?.winrate ?? 0) * 100,
+        )}% - ${wtl.value}`,
     ogImage: () => avatar.value,
     ogType: "website",
     twitterCard: "summary",
@@ -272,8 +228,12 @@ onMounted(async () => {
         const playerRequest = await $fetch(`/api/player/`, {
             query: { player: route.params.player },
         });
+        const statisticsRequest = await $fetch(
+            `/api/player/statistics?player=${player.value.uuid}`,
+        );
 
         player.value = playerRequest;
+        statistics.value = statisticsRequest;
         stillLoading.value = false;
     }
 });

@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { IPermission, IUser } from "~/utils/interfaces/IUser";
+import { IPermission, type IUser } from "~/utils/interfaces/IUser";
 
 definePageMeta({
     layout: "backend",

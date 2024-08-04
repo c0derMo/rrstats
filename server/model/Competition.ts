@@ -6,7 +6,7 @@ import {
     Entity,
     PrimaryColumn,
 } from "typeorm";
-import {
+import type {
     ICompetition,
     ICompetitionPlacement,
     IGroupSettings,

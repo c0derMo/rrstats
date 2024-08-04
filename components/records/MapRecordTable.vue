@@ -68,8 +68,8 @@
 </template>
 
 <script setup lang="ts">
-import { IMapRecord } from "~/utils/interfaces/IRecord";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMapRecord } from "~/utils/interfaces/IRecord";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 const headers = [
     { title: "Map", key: "map" },

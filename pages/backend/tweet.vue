@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { IGenericRecord, IMapRecord } from "~/utils/interfaces/IRecord";
+import type { IGenericRecord, IMapRecord } from "~/utils/interfaces/IRecord";
 
 interface PreviousRecord {
     players: string;

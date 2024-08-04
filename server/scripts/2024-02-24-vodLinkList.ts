@@ -5,7 +5,7 @@ import {
     Entity,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import { RRMap, RRBannedMap } from "~/utils/interfaces/IMatch";
+import type { RRMap, RRBannedMap } from "~/utils/interfaces/IMatch";
 
 @Entity("match")
 export class OldMatch extends BaseEntity {

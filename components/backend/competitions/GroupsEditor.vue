@@ -19,7 +19,7 @@
                 :items="settings.groups.map((g, idx) => `Group ${idx + 1}`)"
             />
 
-            <div class="flex-grow"></div>
+            <div class="flex-grow" />
 
             <ButtonComponent @click="removeGroup()"
                 ><FontAwesomeIcon :icon="['fa', 'trash']" class="text-red-500"
@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { IGroupSettings } from "~/utils/interfaces/ICompetition";
+import type { IGroupSettings } from "~/utils/interfaces/ICompetition";
 
 const props = defineProps({
     groupSettings: {

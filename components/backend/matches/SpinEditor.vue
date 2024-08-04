@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { Spin } from "~/utils/interfaces/IMatch";
+import type { Spin } from "~/utils/interfaces/IMatch";
 
 const props = defineProps({
     map: {

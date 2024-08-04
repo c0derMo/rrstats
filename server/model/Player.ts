@@ -4,13 +4,13 @@ import {
     Column,
     BaseEntity,
     EventSubscriber,
-    EntitySubscriberInterface,
+    type EntitySubscriberInterface,
     BeforeInsert,
     BeforeUpdate,
     In,
     Index,
 } from "typeorm";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
 import { Competition, CompetitionPlacement } from "./Competition";
 
 @Entity()

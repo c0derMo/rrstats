@@ -37,7 +37,7 @@
                     <FontAwesomeIcon
                         :icon="['fas', 'plus']"
                         class="text-green-500"
-                    ></FontAwesomeIcon>
+                    />
                 </ButtonComponent>
             </template>
 
@@ -74,7 +74,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { DateTime } from "luxon";
-import { IMatch } from "~/utils/interfaces/IMatch";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 definePageMeta({
     layout: "backend",

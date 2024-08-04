@@ -161,12 +161,12 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { DateTime } from "luxon";
-import { ICompetition } from "~/utils/interfaces/ICompetition";
+import type { ICompetition } from "~/utils/interfaces/ICompetition";
 import {
     ChoosingPlayer,
-    IMatch,
-    RRBannedMap,
-    RRMap,
+    type IMatch,
+    type RRBannedMap,
+    type RRMap,
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 
@@ -204,7 +204,7 @@ const sortedMatches = computed(() => {
     if (data.value === null) {
         return [];
     }
-    return data.value.matches.sort((a, b) => b.timestamp - a.timestamp);
+    return [...data.value.matches].sort((a, b) => b.timestamp - a.timestamp);
 });
 
 function getMapPicker(map: RRMap | RRBannedMap, match: IMatch): string {

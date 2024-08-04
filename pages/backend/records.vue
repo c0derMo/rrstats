@@ -158,8 +158,8 @@
 import { DateTime } from "luxon";
 import {
     GenericRecordType,
-    IGenericRecord,
-    IMapRecord,
+    type IGenericRecord,
+    type IMapRecord,
     isRetiredRecord,
 } from "~/utils/interfaces/IRecord";
 import { HitmanMap } from "~/utils/mapUtils";

@@ -7,16 +7,16 @@
 
             <div class="flex flex-row mt-2 ml-10 text-sm gap-5">
                 <div>Matches: {{ numbers?.matches ?? "?" }}</div>
-                <div class="border-x"></div>
+                <div class="border-x" />
                 <div>
                     Competitions: {{ numbers?.competitions ?? "?" }} ({{
                         numbers?.officialCompetitions ?? "?"
                     }}
                     official)
                 </div>
-                <div class="border-x"></div>
+                <div class="border-x" />
                 <div>Players: {{ numbers?.players ?? "?" }}</div>
-                <div class="border-x"></div>
+                <div class="border-x" />
                 <div>
                     Records:
                     {{
@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <div class="flex-grow"></div>
+            <div class="flex-grow" />
 
             <span>Logged in as: {{ user?.username ?? "unknown" }}</span>
             <div class="mb-2">
@@ -63,9 +63,9 @@ const nextAlertId = ref(0);
 const alerts: Ref<{ text: string; type?: string; alertId: number }[]> = ref([]);
 
 useRouter().afterEach((to) => {
-    updateTitle(to.meta.pageTitle);
+    updateTitle(to.meta.pageTitle as string);
 });
-updateTitle(route.meta.pageTitle);
+updateTitle(route.meta.pageTitle as string);
 
 function updateTitle(pageTitle?: string) {
     useHead({

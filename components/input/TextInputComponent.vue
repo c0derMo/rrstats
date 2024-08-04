@@ -42,7 +42,7 @@
                     '!border-blue-700': isFocused,
                     '!border-red-600': error,
                 }"
-            ></div>
+            />
             <div
                 class="h-full w-fit inline-block border border-l-0 border-r-0 text-transparent text-xs border-neutral-500"
                 :class="{
@@ -59,7 +59,7 @@
                     '!border-blue-700': isFocused,
                     '!border-red-600': error,
                 }"
-            ></div>
+            />
         </div>
     </div>
 </template>

@@ -16,7 +16,7 @@
             :value="maxValue"
             @input="(value) => updateBar(1, value)"
         />
-        <div class="absolute h-1 bg-blue-500 top-2" :style="barStyle"></div>
+        <div class="absolute h-1 bg-blue-500 top-2" :style="barStyle" />
     </div>
 </template>
 

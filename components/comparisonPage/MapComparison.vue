@@ -7,35 +7,31 @@
 
             <template #Picked="{ row }">
                 <span :class="getAheadBehindClass(row.map, getPicked)">
-                    {{ getPicked(row.map, player, playerMatches) }}
+                    {{ getPicked(row.map, Player.SELF) }}
                 </span>
             </template>
 
             <template #Banned="{ row }">
                 <span :class="getAheadBehindClass(row.map, getBanned)">
-                    {{ getBanned(row.map, player, playerMatches) }}
+                    {{ getBanned(row.map, Player.SELF) }}
                 </span>
             </template>
 
             <template #Played="{ row }">
                 <span :class="getAheadBehindClass(row.map, getPlayed)">
-                    {{ getPlayed(row.map, player, playerMatches) }}
+                    {{ getPlayed(row.map, Player.SELF) }}
                 </span>
             </template>
 
             <template #Won="{ row }">
                 <span :class="getAheadBehindClass(row.map, getWon)">
-                    {{ getWon(row.map, player, playerMatches) }}
+                    {{ getWon(row.map, Player.SELF) }}
                 </span>
             </template>
 
             <template #Winrate="{ row }">
                 <span :class="getAheadBehindClass(row.map, getWinrate)">
-                    {{
-                        Math.round(
-                            getWinrate(row.map, player, playerMatches) * 100,
-                        )
-                    }}%
+                    {{ Math.round(getWinrate(row.map, Player.SELF) * 100) }}%
                 </span>
             </template>
         </TableComponent>
@@ -43,35 +39,20 @@
 </template>
 
 <script setup lang="ts">
-import { HitmanMap } from "#imports";
-import { IMatch } from "~/utils/interfaces/IMatch";
-import {
-    mapBansForMap,
-    mapPicksForMap,
-    mapPlaysForMap,
-    mapWinsForMap,
-} from "~/utils/statCalculators/mapStatCalculators";
+import type { HitmanMap } from "#imports";
+import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
 const props = defineProps({
     maps: {
         type: Array<HitmanMap>,
         required: true,
     },
-    player: {
-        type: String,
+    statistics: {
+        type: Object as PropType<IPlayerStatistics>,
         required: true,
     },
-    playerMatches: {
-        type: Array<IMatch>,
-        required: true,
-    },
-    comparingPlayer: {
-        type: String,
-        required: false,
-        default: undefined,
-    },
-    comparingPlayerMatches: {
-        type: Array<IMatch>,
+    comparingStatistics: {
+        type: Object as PropType<IPlayerStatistics>,
         required: false,
         default: undefined,
     },
@@ -86,55 +67,79 @@ const rows = computed(() => {
     });
 });
 
-function getPicked(map: HitmanMap, player: string, matches: IMatch[]): number {
-    return mapPicksForMap(matches, player, map);
+enum Player {
+    SELF,
+    COMPARING,
 }
 
-function getBanned(map: HitmanMap, player: string, matches: IMatch[]): number {
-    return mapBansForMap(matches, player, map);
+function getPicked(map: HitmanMap, player: Player): number {
+    if (player === Player.SELF) {
+        return props.statistics.mapsPicked[map];
+    } else if (player === Player.COMPARING) {
+        return props.comparingStatistics?.mapsPicked[map] ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getPlayed(map: HitmanMap, player: string, matches: IMatch[]): number {
-    return mapPlaysForMap(matches, map);
+function getBanned(map: HitmanMap, player: Player): number {
+    if (player === Player.SELF) {
+        return props.statistics.mapsBanned[map];
+    } else if (player === Player.COMPARING) {
+        return props.comparingStatistics?.mapsBanned[map] ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getWon(map: HitmanMap, player: string, matches: IMatch[]): number {
-    return mapWinsForMap(matches, player, map);
+function getPlayed(map: HitmanMap, player: Player): number {
+    if (player === Player.SELF) {
+        return props.statistics.mapsPlayed[map];
+    } else if (player === Player.COMPARING) {
+        return props.comparingStatistics?.mapsPlayed[map] ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
-function getWinrate(map: HitmanMap, player: string, matches: IMatch[]): number {
-    return getWon(map, player, matches) / getPlayed(map, player, matches);
+function getWon(map: HitmanMap, player: Player): number {
+    if (player === Player.SELF) {
+        return props.statistics.mapsWon[map];
+    } else if (player === Player.COMPARING) {
+        return props.comparingStatistics?.mapsWon[map] ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
+}
+
+function getWinrate(map: HitmanMap, player: Player): number {
+    if (player === Player.SELF) {
+        return props.statistics.perMapWinrate[map];
+    } else if (player === Player.COMPARING) {
+        return props.comparingStatistics?.perMapWinrate[map] ?? 0;
+    }
+    throw new Error(`illegal player: ${player}`);
 }
 
 function isAhead(
     map: HitmanMap,
-    f: (map: HitmanMap, player: string, matches: IMatch[]) => number,
+    f: (map: HitmanMap, player: Player) => number,
 ): boolean {
-    if (props.comparingPlayer == null || props.comparingPlayerMatches == null) {
+    if (props.comparingStatistics == null) {
         return false;
     }
-    return (
-        f(map, props.player, props.playerMatches) >
-        f(map, props.comparingPlayer, props.comparingPlayerMatches)
-    );
+    return f(map, Player.SELF) > f(map, Player.COMPARING);
 }
 
 function isBehind(
     map: HitmanMap,
-    f: (map: HitmanMap, player: string, matches: IMatch[]) => number,
+    f: (map: HitmanMap, player: Player) => number,
 ): boolean {
-    if (props.comparingPlayer == null || props.comparingPlayerMatches == null) {
+    if (props.comparingStatistics == null) {
         return false;
     }
-    return (
-        f(map, props.player, props.playerMatches) <
-        f(map, props.comparingPlayer, props.comparingPlayerMatches)
-    );
+    return f(map, Player.SELF) < f(map, Player.COMPARING);
 }
 
 function getAheadBehindClass(
     map: HitmanMap,
-    f: (map: HitmanMap, player: string, matches: IMatch[]) => number,
+    f: (map: HitmanMap, player: Player) => number,
 ): string {
     if (isAhead(map, f)) {
         return "ahead";

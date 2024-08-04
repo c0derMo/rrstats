@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { Spin } from "~/utils/interfaces/IMatch";
+import type { Spin } from "~/utils/interfaces/IMatch";
 
 defineProps({
     spin: {
@@ -31,7 +31,7 @@ function buildKillMethod(method: {
     selectedVariant: string | null;
     name: string;
 }): string {
-    if (method.selectedVariant != null) {
+    if (method.selectedVariant != null && method.selectedVariant != "") {
         return `${method.selectedVariant} ${method.name}`;
     } else {
         return method.name;

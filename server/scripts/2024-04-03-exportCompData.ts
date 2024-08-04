@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm";
 import { Match } from "../model/Match";
 import { DateTime } from "luxon";
-import { Spin } from "~/utils/interfaces/IMatch";
+import type { Spin } from "~/utils/interfaces/IMatch";
 import { createObjectCsvWriter } from "csv-writer";
 import { Player } from "../model/Player";
 import MapperService from "../controller/MapperService";

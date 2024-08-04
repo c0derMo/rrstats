@@ -47,12 +47,12 @@
 </template>
 
 <script setup lang="ts">
-import { TooltipItem } from "chart.js";
+import type { TooltipItem } from "chart.js";
 import { Duration, DateTime } from "luxon";
 import {
     GenericRecordType,
-    IGenericRecord,
-    IMapRecord,
+    type IGenericRecord,
+    type IMapRecord,
 } from "~/utils/interfaces/IRecord";
 import { getMapsBySeason } from "~/utils/mapUtils";
 

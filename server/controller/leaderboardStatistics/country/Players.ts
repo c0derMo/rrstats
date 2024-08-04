@@ -1,7 +1,7 @@
 import { DefaultedMap } from "~/utils/DefaultedMap";
-import { LeaderboardCountryStatistic } from "../../LeaderboardController";
-import { IPlayer } from "~/utils/interfaces/IPlayer";
-import { LeaderboardCountryEntry } from "~/utils/interfaces/LeaderboardEntry";
+import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import type { LeaderboardCountryEntry } from "~/utils/interfaces/LeaderboardEntry";
 
 export class CountryPlayers implements LeaderboardCountryStatistic {
     type = "country" as const;

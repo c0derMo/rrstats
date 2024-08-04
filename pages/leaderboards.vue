@@ -188,7 +188,7 @@
 </template>
 
 <script setup lang="ts">
-import {
+import type {
     LeaderboardCountryEntry,
     LeaderboardMapEntry,
     LeaderboardPlayerEntry,
@@ -281,6 +281,7 @@ const shownCategories = computed(() => {
     if (selectedTab.value === "Maps") {
         return mapCategories;
     }
+    return [];
 });
 
 const selectedCategoryType = computed(() => {

@@ -1,4 +1,4 @@
-import { HitmanMap } from "~/utils/mapUtils";
+import type { HitmanMap } from "~/utils/mapUtils";
 import LeaderboardController from "../../controller/LeaderboardController";
 
 export default defineEventHandler(async (event) => {

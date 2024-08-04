@@ -73,7 +73,10 @@
 </template>
 
 <script setup lang="ts">
-import { GenericRecordType, IGenericRecord } from "~/utils/interfaces/IRecord";
+import {
+    GenericRecordType,
+    type IGenericRecord,
+} from "~/utils/interfaces/IRecord";
 
 const props = defineProps({
     record: {

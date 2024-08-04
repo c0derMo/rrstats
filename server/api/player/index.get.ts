@@ -3,7 +3,7 @@ import { Player } from "../../model/Player";
 import { In, IsNull, Not, Raw } from "typeorm";
 import HitmapsIntegration from "../../controller/integrations/HitmapsIntegration";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
-import { ICompetition } from "~/utils/interfaces/ICompetition";
+import type { ICompetition } from "~/utils/interfaces/ICompetition";
 import MapperService from "~/server/controller/MapperService";
 
 export default defineEventHandler(async (event) => {
