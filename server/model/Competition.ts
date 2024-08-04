@@ -37,6 +37,9 @@ export class Competition extends BaseEntity implements ICompetition {
     @Column("simple-json", { nullable: true })
     groupsConfig?: IGroupSettings;
 
+    @Column("integer")
+    matchTimeoutTime: number;
+
     @BeforeInsert()
     @BeforeUpdate()
     checkOptionalFields() {

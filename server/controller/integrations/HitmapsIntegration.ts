@@ -285,7 +285,7 @@ export default class HitmapsIntegration {
                 if (map.chosenByName === fullMatch.participants[1].name)
                     pickedBy = ChoosingPlayer.PLAYER_TWO;
 
-                let spinTime = -1;
+                let spinTime = competition?.matchTimeoutTime ?? -1;
                 if (map.mapStartedAt != null) {
                     const startingTime = DateTime.fromISO(map.mapStartedAt);
                     if (map.winnerFinishedAt != null) {

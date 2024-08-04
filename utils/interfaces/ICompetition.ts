@@ -24,6 +24,7 @@ export type ICompetition = {
     backgroundImage?: string;
 
     groupsConfig?: IGroupSettings;
+    matchTimeoutTime: number;
 };
 
 export type ICompetitionPlacement = {

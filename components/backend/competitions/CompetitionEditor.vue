@@ -47,6 +47,13 @@
                             placeholder="Background image"
                             class="w-full"
                         />
+
+                        <TextInputComponent
+                            v-model="compData.matchTimeoutTime"
+                            placeholder="Map timeout time"
+                            type="number"
+                            class="w-full"
+                        />
                     </div>
                 </template>
 
