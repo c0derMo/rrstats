@@ -6,12 +6,14 @@
             <AutocompleteComponent
                 :suggestions="players ?? []"
                 placeholder="Left player"
+                :default-text="leftPlayerRaw"
                 @confirm="(val) => (leftPlayer = val)"
             />
 
             <AutocompleteComponent
                 :suggestions="players ?? []"
                 placeholder="Right player"
+                :default-text="rightPlayerRaw"
                 @confirm="(val) => (rightPlayer = val)"
             />
 
@@ -100,6 +102,8 @@ useHead({
 const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
 const route = useRoute();
 
+const leftPlayerRaw = ref("");
+const rightPlayerRaw = ref("");
 const leftPlayer = ref("");
 const rightPlayer = ref("");
 
@@ -113,9 +117,11 @@ const selectedSeason = ref("Season 1");
 onMounted(async () => {
     if (route.query.leftPlayer !== undefined) {
         leftPlayer.value = route.query.leftPlayer as string;
+        leftPlayerRaw.value = leftPlayer.value;
     }
     if (route.query.rightPlayer !== undefined) {
         rightPlayer.value = route.query.rightPlayer as string;
+        rightPlayerRaw.value = rightPlayer.value;
     }
 });
 

@@ -5,6 +5,31 @@ import { In } from "typeorm";
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
 
+    if (query.uuid !== undefined) {
+        const match = await Match.findOne({
+            where: { uuid: query.uuid as string },
+            select: [
+                "bannedMaps",
+                "competition",
+                "platform",
+                "round",
+                "playedMaps",
+                "playerOne",
+                "playerTwo",
+                "playerOneScore",
+                "playerTwoScore",
+                "shoutcasters",
+                "vodLink",
+                "timestamp",
+                "annulated",
+            ],
+        });
+        return {
+            matches: [match],
+            players: {},
+        };
+    }
+
     if (query.tournament === undefined) {
         throw createError({
             statusCode: 400,

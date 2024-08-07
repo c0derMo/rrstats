@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(["confirm"]);
+const emits = defineEmits(["confirm", "input"]);
 const props = defineProps({
     suggestions: {
         type: Array<string>,
@@ -125,5 +125,9 @@ watch(currentSuggestions, (newValue) => {
         0,
         newValue.length - 1,
     );
+});
+
+watch(value, () => {
+    emits("input", value.value);
 });
 </script>

@@ -79,7 +79,7 @@ interface ExtendedHeader {
     key: string;
     title: string;
     disableSort?: boolean;
-    sort?: (a: unknown, b: unknown) => number;
+    sort?: (a: unknown, b: unknown, objectA: R, objectB: R) => number;
 }
 
 const props = defineProps({
@@ -122,6 +122,11 @@ const props = defineProps({
         required: false,
         default: 5,
     },
+    disableAll: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
 });
 
 const emits = defineEmits(["update:itemsPerPage", "click-row"]);
@@ -157,7 +162,9 @@ const selectableRowsPerPage = computed(() => {
     const converted = props.rowsPerPage.map((rPP) => {
         return { text: String(rPP), value: rPP };
     });
-    converted.push({ text: "All", value: props.rows.length });
+    if (!props.disableAll) {
+        converted.push({ text: "All", value: props.rows.length });
+    }
     return converted;
 });
 
@@ -200,7 +207,7 @@ const filteredRows = computed(() => {
             const valB = b[sortingBy.value!.key];
 
             if (sortingBy.value!.sort !== undefined) {
-                return sortingBy.value!.sort(valA, valB);
+                return sortingBy.value!.sort(valA, valB, a, b);
             }
 
             if (!isNaN(valA as number) && !isNaN(valB as number)) {

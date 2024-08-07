@@ -50,6 +50,23 @@ export interface RRMap {
     timeTaken: number;
 }
 
+export interface IPlayedMap {
+    map: HitmanMap;
+    winner: WinningPlayer;
+    spin?: Spin;
+    timeTaken: number;
+    matchUuid: string;
+    forfeit: boolean;
+    match: {
+        playerOne: string;
+        playerTwo: string;
+        competition: string;
+        timestamp: number;
+        round: string;
+        platform?: string;
+    };
+}
+
 export interface Spin {
     mission: {
         slug: string;

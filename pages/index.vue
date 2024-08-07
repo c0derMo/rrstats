@@ -35,25 +35,32 @@
                 class="overflow-x-visible mt-8 mb-2"
                 :bg-opacity="80"
             >
-                <div class="flex md:flex-row flex-col-reverse gap-5">
+                <div
+                    class="flex md:flex-row flex-col-reverse gap-5 justify-between"
+                >
                     <ButtonComponent
                         class="border-0 text-blue-500"
                         :disable-hover="true"
-                        >Player search</ButtonComponent
+                        >Search</ButtonComponent
                     >
+                    <NuxtLink to="/compare">
+                        <ButtonComponent class="border-0">
+                            Compare
+                        </ButtonComponent>
+                    </NuxtLink>
                     <NuxtLink to="/records">
                         <ButtonComponent class="border-0">
                             Records
                         </ButtonComponent>
                     </NuxtLink>
-                    <NuxtLink to="/compare">
-                        <ButtonComponent class="border-0">
-                            Compare players
-                        </ButtonComponent>
-                    </NuxtLink>
                     <NuxtLink to="/leaderboards">
                         <ButtonComponent class="border-0">
                             Leaderboards
+                        </ButtonComponent>
+                    </NuxtLink>
+                    <NuxtLink to="/spins">
+                        <ButtonComponent class="border-0">
+                            Spins
                         </ButtonComponent>
                     </NuxtLink>
                     <DropdownComponent
@@ -63,6 +70,7 @@
                         @update:model-value="selectTournament"
                     />
                 </div>
+
                 <AutocompleteComponent
                     placeholder="Player"
                     class="w-full xl:w-[600px] text-lg mt-3"
@@ -70,6 +78,7 @@
                     @confirm="(p) => navigateTo(`/${p}`)"
                 />
             </CardComponent>
+
             <div class="flex flex-row w-full gap-3 justify-between text-sm">
                 <a
                     class="text-blue-600 underline"

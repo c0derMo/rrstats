@@ -1,19 +1,27 @@
 <template>
-    <ul v-if="spin">
-        <li v-for="(target, idx) in spin.targetConditions" :key="idx">
-            <span class="font-bold">{{ target.target.name }}</span
-            >: {{ buildKillMethod(target.killMethod) }} as
-            {{ target.disguise.name }}
-            {{ buildComplications(target.complications) }}
-        </li>
-        <li v-for="(additional, idx) in spin.additionalObjectives" :key="idx">
-            <span class="font-bold">{{ additional.objective.name }}</span>
-            : {{ additional.completionMethod.name }}
-            <span v-if="additional.disguise != null">
-                as {{ additional.disguise.name }}
-            </span>
-        </li>
-    </ul>
+    <div>
+        <span v-if="showMap && spin" class="font-bold">{{
+            getMapBySlug(spin.mission.slug)?.name
+        }}</span>
+        <ul v-if="spin">
+            <li v-for="(target, idx) in spin.targetConditions" :key="idx">
+                <span class="font-bold">{{ target.target.name }}</span
+                >: {{ buildKillMethod(target.killMethod) }} as
+                {{ target.disguise.name }}
+                {{ buildComplications(target.complications) }}
+            </li>
+            <li
+                v-for="(additional, idx) in spin.additionalObjectives"
+                :key="idx"
+            >
+                <span class="font-bold">{{ additional.objective.name }}</span>
+                : {{ additional.completionMethod.name }}
+                <span v-if="additional.disguise != null">
+                    as {{ additional.disguise.name }}
+                </span>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -24,6 +32,11 @@ defineProps({
         type: Object as PropType<Spin>,
         required: false,
         default: undefined,
+    },
+    showMap: {
+        type: Boolean,
+        required: false,
+        default: false,
     },
 });
 
