@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { Match } from "./model/Match";
 import { Player, PlayerAccoladeSubscriber } from "./model/Player";
+import { useLogger } from "@nuxt/kit";
 import { GenericRecord, MapRecord } from "./model/Record";
 import { Competition, CompetitionPlacement } from "./model/Competition";
 import { User } from "./model/User";
@@ -10,8 +11,10 @@ import LeaderboardController, {
 } from "./controller/LeaderboardController";
 import { PlayerStatisticDatabaseListener } from "./controller/PlayerStatisticController";
 
+const logger = useLogger("rrstats:database");
+
 export default defineNitroPlugin(async (nitroApp) => {
-    console.log("Connecting to database");
+    logger.info("Connecting to database");
 
     const db = new DataSource({
         type: "sqlite",
@@ -33,14 +36,14 @@ export default defineNitroPlugin(async (nitroApp) => {
         synchronize: true,
     });
     await db.initialize();
-    console.log("Connected to database.");
+    logger.info("Connected to database.");
 
     await LeaderboardController.recalculate();
-    console.log("Recalculated leaderboards");
+    useLogger("rrstats:leaderboards").log("Recalculated leaderboards");
 
     nitroApp.hooks.hook("close", async () => {
         if (db.isInitialized) {
-            console.log("Closing database connection");
+            logger.info("Closing database connection");
             await db.destroy();
         }
     });
