@@ -13,6 +13,7 @@ import {
 } from "~/utils/interfaces/IMatch";
 import { Competition } from "~/server/model/Competition";
 import type { IGroup } from "~/utils/interfaces/ICompetition";
+import FunctionTimer from "~/utils/FunctionTimer";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -101,6 +102,9 @@ export default class HitmapsIntegration {
         hitmapsSlug: string,
         competitionSlug: string,
     ): Promise<void> {
+        const timer = new FunctionTimer(
+            `HitmapsIntegration._updateHitmapsTournament(${hitmapsSlug}, ${competitionSlug})`,
+        );
         const request = await axios.get<{ matches: HitmapsTournamentMatch[] }>(
             `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
         );
@@ -114,6 +118,7 @@ export default class HitmapsIntegration {
             competitionSlug,
         );
         this.cache.set(hitmapsSlug, Date.now());
+        timer.finish();
     }
 
     private static async fetchHitmapsMatches(

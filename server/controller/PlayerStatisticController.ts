@@ -12,6 +12,7 @@ import {
 } from "typeorm";
 import { DateTime } from "luxon";
 import { Player } from "../model/Player";
+import FunctionTimer from "~/utils/FunctionTimer";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();
@@ -28,6 +29,9 @@ export default class PlayerStatisticController {
     }
 
     private static async calculate(uuid: string) {
+        const timer = new FunctionTimer(
+            `PlayerStatisticController.calculate(${uuid})`,
+        );
         const matches = await Match.find({
             where: [{ playerOne: uuid }, { playerTwo: uuid }],
             order: { timestamp: "DESC" },
@@ -61,6 +65,7 @@ export default class PlayerStatisticController {
             perMapWinrate: matchCollection.perMapWinrate(),
             mapPBs: matchCollection.mapPBs(),
         });
+        timer.finish();
     }
 }
 

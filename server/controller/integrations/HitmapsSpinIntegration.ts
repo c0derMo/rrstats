@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import FunctionTimer from "~/utils/FunctionTimer";
 import type { HitmanMapInfo } from "~/utils/mapUtils";
 
 interface CacheEntry {
@@ -59,6 +60,9 @@ export default class HitmapsSpinIntegration {
     }
 
     private static async refetch(map: HitmanMapInfo): Promise<void> {
+        const timer = new FunctionTimer(
+            `HitmapsSpinIntegration.refetch(${map.map})`,
+        );
         const season = "hitman" + (map.season > 1 ? map.season : "");
         const locationName = map.name
             .toLowerCase()
@@ -120,6 +124,7 @@ export default class HitmapsSpinIntegration {
             killMethods: killConditions,
             lastFetched: DateTime.now(),
         });
+        timer.finish();
     }
 
     private static buildKillMethods(raw: HitmapsKillCondition[]): string[] {

@@ -16,7 +16,7 @@ export default defineNuxtConfig({
         database: "rrstats.db",
     },
     nitro: {
-        plugins: ["~/server/index.ts"],
+        plugins: ["~/server/index.ts", "~/server/timeApiCalls.ts"],
         esbuild: {
             options: {
                 target: "esnext",
