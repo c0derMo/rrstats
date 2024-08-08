@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     typescript: { shim: false },
     modules: ["@nuxtjs/tailwindcss", "@nuxt/eslint"],
     components: [{ path: "~/components", pathPrefix: false }],
+
     runtimeConfig: {
         discordToken: "",
         discordId: "",
@@ -15,6 +16,7 @@ export default defineNuxtConfig({
         publicOrigin: "http://localhost:3000",
         database: "rrstats.db",
     },
+
     nitro: {
         plugins: ["~/server/index.ts", "~/server/timeApiCalls.ts"],
         esbuild: {
@@ -28,13 +30,18 @@ export default defineNuxtConfig({
             },
         },
     },
+
     css: ["@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
+
     build: {
         transpile: ["@fortawesome/vue-fontawesome"],
     },
+
     app: {
         head: {
             link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
         },
     },
+
+    compatibilityDate: "2024-08-08",
 });
