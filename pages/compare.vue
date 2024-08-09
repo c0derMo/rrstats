@@ -99,7 +99,7 @@ useHead({
     title: "Comparison - RRStats",
 });
 
-const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
+const { data: players } = await useFetch<string[]>("/api/player/list");
 const route = useRoute();
 
 const leftPlayerRaw = ref("");

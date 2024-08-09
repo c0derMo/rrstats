@@ -204,10 +204,11 @@ const categoryRequest = await useFetch("/api/leaderboards/list");
 const playerCategories = categoryRequest.data.value?.player ?? [];
 const countryCategories = categoryRequest.data.value?.country ?? [];
 const mapCategories = categoryRequest.data.value?.map ?? [];
-const playerLookupTable =
-    ((await useFetch(`/api/player/lookup`)).data as Ref<
-        Record<string, string>
-    >) ?? ref({});
+
+const { data: playerLookupTable } = await useFetch<Record<string, string>>(
+    `/api/player/lookup`,
+    { default: () => ({}) },
+);
 
 const selectedTab = ref("Players");
 const selectedCategory: Ref<{
@@ -219,7 +220,7 @@ const selectedCategory: Ref<{
     explanatoryText?: string;
 }> = ref(playerCategories[0]);
 const leaderboardData: Ref<
-    LeaderboardPlayerEntry[] | LeaderboardCountryEntry[] | LeaderboardMapEntry[]
+    (LeaderboardPlayerEntry | LeaderboardCountryEntry | LeaderboardMapEntry)[]
 > = ref([]);
 const leaderboardLoading = ref(false);
 const secondaryFilter = ref(0);

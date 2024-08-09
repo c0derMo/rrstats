@@ -81,6 +81,7 @@ function newCompetition() {
         tag: "",
         officialCompetition: false,
         startingTimestamp: DateTime.now().toMillis(),
+        matchTimeoutTime: -1,
     };
 }
 

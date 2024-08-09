@@ -111,9 +111,9 @@ useHead({
     title: "RRStats",
 });
 
-const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
-const competitions = (await useFetch("/api/competitions/list")).data;
-const numbers = (await useFetch("/api/onlyNumbers")).data;
+const { data: players } = await useFetch<string[]>("/api/player/list");
+const { data: competitions } = await useFetch("/api/competitions/list");
+const { data: numbers } = await useFetch("/api/onlyNumbers");
 
 const competitionsDropdown = computed(() => {
     if (competitions.value === null) {

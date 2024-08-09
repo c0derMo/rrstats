@@ -55,8 +55,9 @@
 </template>
 
 <script setup lang="ts">
-const user = (await useFetch("/api/auth/user")).data;
-const numbers = (await useFetch("/api/onlyNumbers")).data;
+const { data: user } = await useFetch("/api/auth/user");
+const { data: numbers } = await useFetch("/api/onlyNumbers");
+
 const route = useRoute();
 
 const nextAlertId = ref(0);

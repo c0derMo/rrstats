@@ -163,12 +163,12 @@ const props = defineProps({
     },
 });
 
-const playerOneStatistics = (
-    await useFetch(`/api/player/statistics?player=${props.match.playerOne}`)
-).data;
-const playerTwoStatistics = (
-    await useFetch(`/api/player/statistics?player=${props.match.playerTwo}`)
-).data;
+const { data: playerOneStatistics } = await useFetch(
+    `/api/player/statistics?player=${props.match.playerOne}`,
+);
+const { data: playerTwoStatistics } = await useFetch(
+    `/api/player/statistics?player=${props.match.playerTwo}`,
+);
 
 const playerOneBans = computed(() => {
     return props.match.bannedMaps.filter(

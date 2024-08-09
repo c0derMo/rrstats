@@ -179,20 +179,19 @@ useHead({
 
 const tH = "Time Heatmap";
 const pB = "Personal Bests";
-const player = (
-    await useFetch(
-        `/api/player/?player=${route.params.player}&initialLoad=true`,
-    )
-).data;
-const competitions = (await useFetch("/api/competitions/list")).data;
-const avatar = (
-    await useFetch(`/api/player/avatar?player=${route.params.player}`)
-).data;
+const { data: player } = await useFetch(
+    `/api/player/?player=${route.params.player}&initialLoad=true`,
+);
+const { data: competitions } = await useFetch("/api/competitions/list");
+const { data: avatar } = await useFetch(
+    `/api/player/avatar?player=${route.params.player}`,
+);
+const { data: statistics } = await useFetch(
+    `/api/player/statistics?player=${player.value?.uuid}`,
+    { default: emptyStatistics },
+);
+
 const stillLoading = ref(player.value?.shouldRetry ?? false);
-const statistics = ref(emptyStatistics());
-statistics.value =
-    (await useFetch(`/api/player/statistics?player=${player.value?.uuid}`)).data
-        ?.value ?? statistics.value;
 
 const wtl = computed(() => {
     return `${statistics.value.winTieLoss.w}-${statistics.value.winTieLoss.t}-${statistics.value.winTieLoss.l}`;

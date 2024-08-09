@@ -185,14 +185,15 @@ const headers = [
 ];
 
 const tournament = useRoute().query.tournament;
-const data = ref(
-    (await useFetch("/api/matches", { query: { tournament } })).data,
-);
-const competition = (
-    await useFetch("/api/competitions", {
-        query: { tag: tournament, initialLoad: true },
-    })
-).data as Ref<(ICompetition & { shouldRetry: boolean }) | null>;
+const { data } = await useFetch<{
+    matches: IMatch[];
+    players: Record<string, string>;
+}>("/api/matches", { query: { tournament } });
+const { data: competition } = await useFetch<
+    (ICompetition & { shouldRetry: boolean }) | null
+>("/api/competitions", {
+    query: { tag: tournament, initialLoad: true },
+});
 
 const stillLoading = ref(competition.value?.shouldRetry ?? false);
 
@@ -228,7 +229,10 @@ function getMapWinner(map: RRMap, match: IMatch): string {
 onMounted(async () => {
     if (competition.value?.shouldRetry) {
         await $fetch("/api/competitions", { query: { tag: tournament } });
-        const matchRequest = await $fetch("/api/matches", {
+        const matchRequest = await $fetch<{
+            matches: IMatch[];
+            players: Record<string, string>;
+        }>("/api/matches", {
             query: { tournament },
         });
 

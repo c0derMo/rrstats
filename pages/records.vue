@@ -45,7 +45,7 @@ useHead({
     title: "Records - RRStats",
 });
 
-const records = (await useFetch("/api/records")).data;
+const { data: records } = await useFetch("/api/records");
 
 const mapRecords = computed(() => {
     return records.value?.maps ?? [];

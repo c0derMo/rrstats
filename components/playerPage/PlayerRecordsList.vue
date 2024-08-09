@@ -50,9 +50,9 @@ const headers = [
     { key: "record_duration", title: "Record duration" },
 ];
 
-const records = (
-    await useFetch("/api/records/player", { query: { player: props.player } })
-).data;
+const { data: records } = await useFetch("/api/records/player", {
+    query: { player: props.player },
+});
 
 records.value?.sort((a, b) => {
     if (a.brokenAt === -1 && b.brokenAt !== -1) {

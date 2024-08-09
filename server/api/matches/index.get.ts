@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
         });
         return {
             matches: [match],
-            players: {},
+            players: {} as Record<string, string>,
         };
     }
 
