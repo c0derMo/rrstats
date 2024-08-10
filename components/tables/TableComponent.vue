@@ -32,11 +32,11 @@
                 >
                     <slot
                         :name="header.key"
-                        :value="row[header.key]"
+                        :value="getValue(row, header.key)"
                         :row="row"
                         :index="idx"
                     >
-                        {{ row[header.key] }}
+                        {{ getValue(row, header.key) }}
                     </slot>
                 </td>
             </tr>
@@ -49,7 +49,7 @@
     </table>
 </template>
 
-<script setup lang="ts" generic="R extends { [key in keyof any]: unknown }">
+<script setup lang="ts" generic="R">
 interface ExtendedHeader {
     title: string;
     key: string;
@@ -76,7 +76,13 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
         return props.headers as ExtendedHeader[];
     }
     return (props.headers as string[]).map((header) => {
-        return { key: header, title: header };
+        return { key: header, title: header } as ExtendedHeader;
     });
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getValue(row: R, key: string): any {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return row[key as keyof R] as any;
+}
 </script>

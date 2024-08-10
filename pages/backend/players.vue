@@ -29,7 +29,7 @@
             :rows="filteredPlayers"
             :enable-sorting="false"
             :rows-per-page="[25, 50, 100]"
-            :items-per-page="25"
+            :selected-rows-per-page="25"
         >
             <template #header-more>
                 <ButtonComponent @click="newPlayer()">

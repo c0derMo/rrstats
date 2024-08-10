@@ -13,9 +13,9 @@
     />
 
     <TableComponent :headers="headers" :rows="sortedRecords">
-        <template #maps="{ value }">
+        <template #maps="{ value }: { value: RecordMap[] }">
             <MapTag
-                v-for="(entry, idx) in value as RecordMap[]"
+                v-for="(entry, idx) in value"
                 :key="idx"
                 :map="getMap(entry.map)!"
                 class="mr-2"
@@ -25,12 +25,12 @@
         </template>
 
         <template #time="{ value }">
-            {{ secondsToTime(value as number) }}
+            {{ secondsToTime(value) }}
         </template>
 
-        <template #players="{ value }">
+        <template #players="{ value }: { value: string[] }">
             {{
-                (value as string[])
+                value
                     .map((p) => players[p] || `Unknown player: ${p}`)
                     .join(", ")
             }}
@@ -38,10 +38,10 @@
 
         <template #match="{ value }">
             <a
-                v-if="matches[value as string] != null"
+                v-if="matches[value] != null"
                 :href="
-                    matches[value as string].vodLink != null
-                        ? matches[value as string].vodLink![0]
+                    matches[value].vodLink != null
+                        ? matches[value].vodLink![0]
                         : ''
                 "
                 :class="{
@@ -49,18 +49,16 @@
                         matches[value as string].vodLink != null,
                 }"
             >
-                {{ matches[value as string].competition }}
-                {{ matches[value as string].round }}
+                {{ matches[value].competition }}
+                {{ matches[value].round }}
             </a>
         </template>
 
         <template #more="{ row }">
-            <ButtonComponent @click="historyRecord = row.record as string">
+            <ButtonComponent @click="historyRecord = row.record">
                 <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
             </ButtonComponent>
-            <ButtonComponent
-                @click="detailedMatch = matches[row.match as string]"
-            >
+            <ButtonComponent @click="detailedMatch = matches[row.match]">
                 <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
             </ButtonComponent>
         </template>

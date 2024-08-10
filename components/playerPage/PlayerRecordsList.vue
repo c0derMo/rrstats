@@ -14,7 +14,7 @@
         </template>
 
         <template #time="{ value }">
-            {{ secondsToTime(value as number) }}
+            {{ secondsToTime(value) }}
         </template>
 
         <template #record_duration="{ row }">

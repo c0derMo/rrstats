@@ -13,7 +13,7 @@
 
     <TableComponent :headers="headers" :rows="sortedRecords">
         <template #map="{ value }">
-            <MapTag :map="getMap(value as number)!" full-name />
+            <MapTag :map="getMap(value)!" full-name />
         </template>
 
         <template #spin="{ row }">
@@ -23,35 +23,34 @@
         </template>
 
         <template #time="{ value }">
-            {{ secondsToTime(value as number) }}
+            {{ secondsToTime(value) }}
         </template>
 
         <template #player="{ value }">
             <PlayerLinkTag
-                :player="players[value as string] ?? `Unknown player: ${value}`"
+                :player="players[value] ?? `Unknown player: ${value}`"
             />
         </template>
 
         <template #match="{ row, value }">
             <a
-                v-if="matches[value as string] != null"
+                v-if="matches[value] != null"
                 :href="
-                    matches[value as string].vodLink != null
-                        ? matches[value as string].vodLink![0]
+                    matches[value].vodLink != null
+                        ? matches[value].vodLink![0]
                         : ''
                 "
                 :class="{
-                    'underline text-blue-500':
-                        matches[value as string].vodLink != null,
+                    'underline text-blue-500': matches[value].vodLink != null,
                 }"
             >
-                {{ matches[value as string].competition }}
-                {{ matches[value as string].round }}
-                <span v-if="matches[value as string].playerOne === row.player"
-                    >vs {{ players[matches[value as string].playerTwo] }}</span
+                {{ matches[value].competition }}
+                {{ matches[value].round }}
+                <span v-if="matches[value].playerOne === row.player"
+                    >vs {{ players[matches[value].playerTwo] }}</span
                 >
-                <span v-if="matches[value as string].playerTwo === row.player"
-                    >vs {{ players[matches[value as string].playerOne] }}</span
+                <span v-if="matches[value].playerTwo === row.player"
+                    >vs {{ players[matches[value].playerOne] }}</span
                 >
             </a>
         </template>

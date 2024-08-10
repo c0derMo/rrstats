@@ -17,7 +17,7 @@
             :rows="competitions"
             :enable-sorting="false"
             :rows-per-page="[10, 25, 50]"
-            :items-per-page="10"
+            :selected-rows-per-page="10"
         >
             <template #header-more>
                 <ButtonComponent @click="newCompetition()">

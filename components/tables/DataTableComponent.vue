@@ -26,7 +26,10 @@
                     }"
                     class="transition opacity-0 mr-1"
                 />
-                <slot :name="`header-${header.key}`" :value="header.title">
+                <slot
+                    :name="`header-${String(header.key)}`"
+                    :value="header.title"
+                >
                     {{ value }}
                 </slot>
             </span>
@@ -39,7 +42,7 @@
         <template
             v-for="header of convertedHeaders"
             :key="header.key"
-            #[`${header.key}`]="{ value, row, index }"
+            #[header.key]="{ value, row, index }"
         >
             <div :class="{ 'ml-4': enableSorting }">
                 <slot
@@ -74,7 +77,7 @@
     </div>
 </template>
 
-<script setup lang="ts" generic="R extends { [key in keyof any]: unknown }">
+<script setup lang="ts" generic="R">
 interface ExtendedHeader {
     key: string;
     title: string;
@@ -84,7 +87,19 @@ interface ExtendedHeader {
 
 const props = defineProps({
     headers: {
-        type: Array as () => string[] | ExtendedHeader[],
+        type: Array as () =>
+            | string[]
+            | {
+                  key: string;
+                  title: string;
+                  disableSort?: boolean;
+                  sort?: (
+                      a: unknown,
+                      b: unknown,
+                      objectA: R,
+                      objectB: R,
+                  ) => number;
+              }[],
         required: true,
     },
     rows: {
@@ -117,12 +132,12 @@ const props = defineProps({
         required: false,
         default: [5, 10, 20],
     },
-    itemsPerPage: {
+    selectedRowsPerPage: {
         type: Number,
         required: false,
         default: 5,
     },
-    disableAll: {
+    disableAllPerPage: {
         type: Boolean,
         required: false,
         default: false,
@@ -131,7 +146,7 @@ const props = defineProps({
 
 const emits = defineEmits(["update:itemsPerPage", "click-row"]);
 
-const selectedRowsPerPage = ref(props.itemsPerPage);
+const selectedRowsPerPage = ref(props.selectedRowsPerPage);
 const selectedPage = ref(1);
 const sortingBy: Ref<ExtendedHeader | null> = ref(null);
 const sortingOrder: Ref<"ASC" | "DESC" | null> = ref(null);
@@ -140,9 +155,9 @@ watch(selectedRowsPerPage, () => {
     emits("update:itemsPerPage", selectedRowsPerPage.value);
 });
 watch(
-    () => props.itemsPerPage,
+    () => props.selectedRowsPerPage,
     () => {
-        selectedRowsPerPage.value = props.itemsPerPage;
+        selectedRowsPerPage.value = props.selectedRowsPerPage;
     },
 );
 
@@ -154,7 +169,7 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
         return props.headers as ExtendedHeader[];
     }
     return (props.headers as string[]).map((header) => {
-        return { key: header, title: header };
+        return { key: header, title: header } as ExtendedHeader;
     });
 });
 
@@ -162,7 +177,7 @@ const selectableRowsPerPage = computed(() => {
     const converted = props.rowsPerPage.map((rPP) => {
         return { text: String(rPP), value: rPP };
     });
-    if (!props.disableAll) {
+    if (!props.disableAllPerPage) {
         converted.push({ text: "All", value: props.rows.length });
     }
     return converted;
@@ -203,8 +218,8 @@ const filteredRows = computed(() => {
 
     if (sortingBy.value !== null && props.enableSorting) {
         result = result.sort((a, b) => {
-            const valA = a[sortingBy.value!.key];
-            const valB = b[sortingBy.value!.key];
+            const valA = a[sortingBy.value!.key as keyof R];
+            const valB = b[sortingBy.value!.key as keyof R];
 
             if (sortingBy.value!.sort !== undefined) {
                 return sortingBy.value!.sort(valA, valB, a, b);

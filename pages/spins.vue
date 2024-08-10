@@ -70,8 +70,8 @@
                         :headers="tableHeaders"
                         :rows="filteredSpins"
                         :rows-per-page="[10, 20, 25, 50]"
-                        :items-per-page="10"
-                        :disable-all="filteredSpins.length > 250"
+                        :selected-rows-per-page="10"
+                        :disable-all-per-page="filteredSpins.length > 250"
                         always-sort
                     >
                         <template #date="{ row }">
@@ -82,34 +82,28 @@
                             }}
                         </template>
 
-                        <template #map="{ value }">
-                            <MapTag
-                                :map="getMap(value as HitmanMap)!"
-                                full-name
-                            />
+                        <template #map="{ value }: { value: HitmanMap }">
+                            <MapTag :map="getMap(value)!" full-name />
                         </template>
 
-                        <template #spin="{ value }">
-                            <TextualSpin
-                                v-if="value != null"
-                                :spin="value as Spin"
-                            />
+                        <template #spin="{ value }: { value: Spin | null }">
+                            <TextualSpin v-if="value != null" :spin="value" />
                         </template>
 
                         <template #timeTaken="{ value }">
                             {{
                                 (value as number) > 0
                                     ? Duration.fromObject({
-                                          seconds: value as number,
+                                          seconds: value,
                                       }).toFormat("mm:ss")
                                     : "unknown"
                             }}
                         </template>
 
                         <template #player="{ row }">
-                            <span v-if="isDraw(row)" class="italic"
-                                >Draw ({{ joinPlayers(row) }})</span
-                            >
+                            <span v-if="isDraw(row)" class="italic">
+                                Draw ({{ joinPlayers(row) }})
+                            </span>
                             <template v-else>
                                 <span class="text-green-600">{{
                                     getWinningPlayer(row)

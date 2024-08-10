@@ -30,7 +30,7 @@
             :rows="matchesToShow"
             :enable-sorting="false"
             :rows-per-page="[10, 25, 50]"
-            :items-per-page="10"
+            :selected-rows-per-page="10"
         >
             <template #header-more>
                 <ButtonComponent @click="newMatch()">
@@ -42,7 +42,7 @@
             </template>
 
             <template #playerOne="{ value }">
-                {{ playerLookupTable[value as string] }}
+                {{ playerLookupTable[value] }}
             </template>
 
             <template #score="{ row }">
@@ -50,7 +50,7 @@
             </template>
 
             <template #playerTwo="{ value }">
-                {{ playerLookupTable[value as string] }}
+                {{ playerLookupTable[value] }}
             </template>
 
             <template #more="{ row }">

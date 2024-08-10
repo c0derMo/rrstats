@@ -9,7 +9,8 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "prettier": "prettier . --write",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "typecheck": "nuxt typecheck"
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",

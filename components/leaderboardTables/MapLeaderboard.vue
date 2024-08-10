@@ -47,7 +47,7 @@
             :headers="headers"
             :rows="filteredMapData"
             :rows-per-page="[10, 25, 50]"
-            :items-per-page="10"
+            :selected-rows-per-page="10"
             :enable-sorting="false"
             @click-row="expandMap"
         >

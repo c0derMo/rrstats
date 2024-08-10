@@ -67,11 +67,11 @@
                 </div>
 
                 <DataTableComponent
-                    v-if="selectedCategoryType === 'player'"
+                    v-if="isPlayerLB(searchedLeaderboardData)"
                     :headers="playerTableHeaders"
-                    :rows="searchedLeaderboardData as LeaderboardPlayerEntry[]"
+                    :rows="searchedLeaderboardData"
                     :rows-per-page="[10, 25, 50]"
-                    :items-per-page="10"
+                    :selected-rows-per-page="10"
                     :enable-sorting="false"
                 >
                     <template #placement="{ row }">
@@ -96,19 +96,17 @@
                     </template>
                     <template #player="{ value }">
                         <PlayerLinkTag
-                            :player="
-                                playerLookupTable[value as string] ?? value
-                            "
+                            :player="playerLookupTable[value] ?? value"
                         />
                     </template>
                 </DataTableComponent>
 
                 <DataTableComponent
-                    v-else-if="selectedCategoryType === 'country'"
+                    v-else-if="isCountryLB(searchedLeaderboardData)"
                     :headers="countryTableHeaders"
-                    :rows="searchedLeaderboardData as LeaderboardCountryEntry[]"
+                    :rows="searchedLeaderboardData"
                     :rows-per-page="[10, 25, 50]"
-                    :items-per-page="10"
+                    :selected-rows-per-page="10"
                     :enable-sorting="false"
                     @click-row="expandCountry"
                 >
@@ -179,8 +177,8 @@
                 </DataTableComponent>
 
                 <MapLeaderboard
-                    v-if="selectedCategoryType === 'map'"
-                    :leaderboard-data="leaderboardData as LeaderboardMapEntry[]"
+                    v-if="isMapLB(leaderboardData)"
+                    :leaderboard-data="leaderboardData"
                 />
             </CardComponent>
         </div>
@@ -360,6 +358,36 @@ async function loadLeaderboardData(updateMap: boolean) {
     leaderboardData.value = leaderboardRequest.data.value;
 
     leaderboardLoading.value = false;
+}
+
+function isMapLB(
+    _: (
+        | LeaderboardPlayerEntry
+        | LeaderboardCountryEntry
+        | LeaderboardMapEntry
+    )[],
+): _ is LeaderboardMapEntry[] {
+    return selectedCategoryType.value === "map";
+}
+
+function isPlayerLB(
+    _: (
+        | LeaderboardPlayerEntry
+        | LeaderboardCountryEntry
+        | LeaderboardMapEntry
+    )[],
+): _ is LeaderboardPlayerEntry[] {
+    return selectedCategoryType.value === "player";
+}
+
+function isCountryLB(
+    _: (
+        | LeaderboardPlayerEntry
+        | LeaderboardCountryEntry
+        | LeaderboardMapEntry
+    )[],
+): _ is LeaderboardCountryEntry[] {
+    return selectedCategoryType.value === "country";
 }
 
 watch(selectedCategory, async () => {

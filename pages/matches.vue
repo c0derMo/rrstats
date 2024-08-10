@@ -49,11 +49,11 @@
                 :rows="sortedMatches"
                 :enable-sorting="false"
                 :rows-per-page="[10, 25, 50, 100]"
-                :items-per-page="25"
+                :selected-rows-per-page="25"
             >
                 <template #timestamp="{ value }">
                     {{
-                        DateTime.fromMillis(value as number)
+                        DateTime.fromMillis(value)
                             .setLocale(useLocale().value)
                             .toLocaleString(DateTime.DATETIME_MED)
                     }}
@@ -62,34 +62,29 @@
                 <template #playerOne="{ value }">
                     <PlayerLinkTag
                         :player="
-                            data?.players[value as string] ??
-                            `Unknown player: ${value}`
+                            data?.players[value] ?? `Unknown player: ${value}`
                         "
                     />
                 </template>
 
                 <template #score="{ row }">
-                    <span class="whitespace-nowrap"
-                        >{{ row.playerOneScore }} -
-                        {{ row.playerTwoScore }}</span
-                    >
+                    <span class="whitespace-nowrap">
+                        {{ row.playerOneScore }} - {{ row.playerTwoScore }}
+                    </span>
                 </template>
 
                 <template #playerTwo="{ value }">
                     <PlayerLinkTag
                         :player="
-                            data?.players[value as string] ??
-                            `Unknown player: ${value}`
+                            data?.players[value] ?? `Unknown player: ${value}`
                         "
                     />
                 </template>
 
-                <template #bans="{ row }">
+                <template #bans="{ row }: { row: IMatch }">
                     <div class="flex flex-wrap">
                         <TooltipComponent
-                            v-for="(
-                                ban, idx
-                            ) in row.bannedMaps as RRBannedMap[]"
+                            v-for="(ban, idx) in row.bannedMaps"
                             :key="idx"
                         >
                             <MapTag :map="getMap(ban.map)!" />
@@ -102,10 +97,18 @@
                     </div>
                 </template>
 
-                <template #playedMaps="{ value, row }">
+                <template
+                    #playedMaps="{
+                        value,
+                        row,
+                    }: {
+                        value: RRMap[];
+                        row: IMatch;
+                    }"
+                >
                     <div class="flex flex-wrap">
                         <TooltipComponent
-                            v-for="(play, idx) in value as RRMap[]"
+                            v-for="(play, idx) in value"
                             :key="idx"
                         >
                             <MapTag :map="getMap(play.map)!" />
@@ -119,7 +122,15 @@
                     </div>
                 </template>
 
-                <template #shoutcasters="{ value, row }">
+                <template
+                    #shoutcasters="{
+                        value,
+                        row,
+                    }: {
+                        value: string[];
+                        row: IMatch;
+                    }"
+                >
                     <a
                         v-if="value !== null"
                         :href="
@@ -132,7 +143,7 @@
                                 row.vodLink != null && row.vodLink.length > 0,
                         }"
                     >
-                        {{ (value as string[]).join(", ") }}
+                        {{ value.join(", ") }}
                     </a>
 
                     <template v-for="(vod, idx) of row.vodLink" :key="idx">
@@ -140,8 +151,9 @@
                             v-if="idx > 0"
                             class="underline text-blue-600 dark:text-blue-400 ml-1"
                             :href="vod"
-                            >(Part {{ idx + 1 }})</a
                         >
+                            (Part {{ idx + 1 }})
+                        </a>
                     </template>
                 </template>
 

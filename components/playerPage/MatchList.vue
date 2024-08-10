@@ -101,17 +101,13 @@
 
             <template #playerOne="{ value }">
                 <PlayerLinkTag
-                    :player="
-                        players[value as string] ?? `Unknown player: ${value}`
-                    "
+                    :player="players[value] ?? `Unknown player: ${value}`"
                 />
             </template>
 
             <template #playerTwo="{ value }">
                 <PlayerLinkTag
-                    :player="
-                        players[value as string] ?? `Unknown player: ${value}`
-                    "
+                    :player="players[value] ?? `Unknown player: ${value}`"
                 />
             </template>
 
@@ -123,19 +119,19 @@
                 />
             </template>
 
-            <template #playedMaps="{ value, row }">
+            <template
+                #playedMaps="{ value, row }: { value: RRMap[]; row: IMatch }"
+            >
                 <TooltipComponent v-for="(map, idx) of value" :key="idx">
                     <MapTag
-                        :map="getMap((map as RRMap).map)!"
-                        :draw="(map as RRMap).winner === WinningPlayer.DRAW"
-                        :won="
-                            getLocalWinningPlayer(row) === (map as RRMap).winner
-                        "
+                        :map="getMap(map.map)!"
+                        :draw="map.winner === WinningPlayer.DRAW"
+                        :won="getLocalWinningPlayer(row) === map.winner"
                         class="ml-2"
                     />
 
                     <template #tooltip>
-                        Map: {{ getMap((map as RRMap).map)?.name }}<br />
+                        Map: {{ getMap(map.map)?.name }}<br />
                         Picked by: {{ getMapPicker(map, row) }}<br />
                         Won by: {{ getMapWinner(map, row) }}
                     </template>

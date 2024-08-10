@@ -31,7 +31,7 @@
                     :rows="filteredMapRecords"
                     :enable-sorting="false"
                     :rows-per-page="[25, 50, 100]"
-                    :items-per-page="25"
+                    :selected-rows-per-page="25"
                 >
                     <template #header-more>
                         <ButtonComponent @click="newMapRecord()">
@@ -42,24 +42,24 @@
                         </ButtonComponent>
                     </template>
 
-                    <template #map="{ value }">
-                        {{ getMap(value as HitmanMap)!.name }}
+                    <template #map="{ value }: { value: HitmanMap }">
+                        {{ getMap(value)!.name }}
                     </template>
                     <template #timestamp="{ value }">
                         {{
-                            DateTime.fromMillis(value as number)
+                            DateTime.fromMillis(value)
                                 .setLocale(useLocale().value)
                                 .toLocaleString(DateTime.DATETIME_FULL)
                         }}
                     </template>
                     <template #player="{ value }">
                         {{
-                            playerLookupTable[value as string] ??
+                            playerLookupTable[value] ??
                             `unknown player: ${value}`
                         }}
                     </template>
                     <template #time="{ value }">
-                        {{ secondsToTime(value as number) }}
+                        {{ secondsToTime(value) }}
                     </template>
                     <template #more="{ row, index }">
                         <ButtonComponent @click="mapRecordToEdit = row">
@@ -101,7 +101,7 @@
                     :rows="filteredGenericRecords"
                     :enable-sorting="false"
                     :rows-per-page="[25, 50, 100]"
-                    :items-per-page="25"
+                    :selected-rows-per-page="25"
                 >
                     <template #header-more>
                         <ButtonComponent @click="newGenericRecord()">
@@ -114,14 +114,14 @@
 
                     <template #timestamp="{ value }">
                         {{
-                            DateTime.fromMillis(value as number)
+                            DateTime.fromMillis(value)
                                 .setLocale(useLocale().value)
                                 .toLocaleString(DateTime.DATETIME_FULL)
                         }}
                     </template>
-                    <template #players="{ value }">
+                    <template #players="{ value }: { value: string[] }">
                         {{
-                            (value as string[])
+                            value
                                 .map(
                                     (player) =>
                                         playerLookupTable[player] ??
@@ -131,7 +131,7 @@
                         }}
                     </template>
                     <template #time="{ value }">
-                        {{ secondsToTime(value as number) }}
+                        {{ secondsToTime(value) }}
                     </template>
                     <template #more="{ row, index }">
                         <ButtonComponent @click="genericRecordToEdit = row">
