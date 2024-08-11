@@ -341,23 +341,19 @@ async function loadLeaderboardData(updateMap: boolean) {
         }
     }
 
-    const leaderboardRequest = await useFetch(`/api/leaderboards/category`, {
-        query: {
-            category: selectedCategory.value.name,
-            map: selectedCategory.value.hasMaps ? selectedMap.value : undefined,
-        },
-    });
-    if (
-        leaderboardRequest.data.value == null ||
-        leaderboardRequest.status.value !== "success"
-    ) {
+    try {
+        const leaderboardRequest = await $fetch(`/api/leaderboards/category`, {
+            query: {
+                category: selectedCategory.value.name,
+                map: selectedCategory.value.hasMaps
+                    ? selectedMap.value
+                    : undefined,
+            },
+        });
+        leaderboardData.value = leaderboardRequest;
+    } finally {
         leaderboardLoading.value = false;
-        return;
     }
-
-    leaderboardData.value = leaderboardRequest.data.value;
-
-    leaderboardLoading.value = false;
 }
 
 function isMapLB(

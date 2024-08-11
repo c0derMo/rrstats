@@ -262,7 +262,7 @@ async function deleteRecord(
 ) {
     currentlyDeleting.value = index;
 
-    await useFetch("/api/records/", {
+    await $fetch("/api/records/", {
         method: "delete",
         body: record,
         query: { type: type },
@@ -273,30 +273,14 @@ async function deleteRecord(
 }
 
 async function updatePlayerLookupTable() {
-    const playerQuery = await useFetch("/api/player/lookup");
-
-    if (
-        playerQuery.status.value !== "success" ||
-        playerQuery.data.value == null
-    ) {
-        return;
-    }
-
-    playerLookupTable.value = playerQuery.data.value as Record<string, string>;
+    const playerQuery = await $fetch("/api/player/lookup");
+    playerLookupTable.value = playerQuery;
 }
 
 async function updateLists() {
-    const recordQuery = await useFetch("/api/records/list");
-    if (
-        recordQuery.status.value !== "success" ||
-        recordQuery.data.value == null
-    ) {
-        return;
-    }
-
-    mapRecords.value = recordQuery.data.value.mapRecords as IMapRecord[];
-    genericRecords.value = recordQuery.data.value
-        .genericRecords as IGenericRecord[];
+    const recordQuery = await $fetch("/api/records/list");
+    mapRecords.value = recordQuery.mapRecords;
+    genericRecords.value = recordQuery.genericRecords;
 }
 
 await updateLists();

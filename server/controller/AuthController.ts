@@ -18,6 +18,9 @@ export class AuthController {
         return await useSession<SessionData>(event, {
             password: AuthController.sessionKey,
             name: "rrstats",
+            cookie: {
+                sameSite: false,
+            },
         });
     }
 

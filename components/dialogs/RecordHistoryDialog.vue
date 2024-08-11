@@ -105,11 +105,9 @@ async function requeryEverything() {
 async function queryRecords() {
     for (const selectedRecord of selectedRecords.value) {
         if (props.map != null) {
-            const record = (
-                await useFetch("/api/records/history", {
-                    query: { map: selectedRecord as number },
-                })
-            ).data.value;
+            const record = await $fetch("/api/records/history", {
+                query: { map: selectedRecord as number },
+            });
             if (record != null) {
                 records.value.push(record);
                 labels.value.push(getMap(selectedRecord as number)?.name ?? "");
@@ -119,11 +117,9 @@ async function queryRecords() {
             }
         }
         if (props.genericRecord != null) {
-            const record = (
-                await useFetch("/api/records/history", {
-                    query: { generic: selectedRecord as string },
-                })
-            ).data.value;
+            const record = await $fetch("/api/records/history", {
+                query: { generic: selectedRecord as string },
+            });
             if (record != null) {
                 records.value.push(record);
                 labels.value.push(selectedRecord as string);
@@ -150,11 +146,9 @@ async function queryPlayers() {
         }
     }
 
-    players.value = (
-        await useFetch("/api/player/lookup", {
-            query: { players: playersToLookup },
-        })
-    ).data.value as Record<string, string>;
+    players.value = await $fetch<Record<string, string>>("/api/player/lookup", {
+        query: { players: playersToLookup },
+    });
 }
 
 const selectedScale = ref("All time");

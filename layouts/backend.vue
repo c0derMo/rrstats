@@ -3,7 +3,12 @@
         <div
             class="flex flex-row px-3 border-b h-16 gap-3 items-center dark:bg-slate-800 bg-gray-100"
         >
-            <a class="text-2xl bold" href="/backend">RRStats</a>
+            <a
+                class="text-2xl bold cursor-pointer"
+                @click="navigateTo('/backend')"
+            >
+                RRStats
+            </a>
 
             <div class="flex flex-row mt-2 ml-10 text-sm gap-5">
                 <div>Matches: {{ numbers?.matches ?? "?" }}</div>

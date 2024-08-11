@@ -3,6 +3,7 @@
     "extends": "./.nuxt/tsconfig.json",
     "compilerOptions": {
         "experimentalDecorators": true,
-        "strictPropertyInitialization": false
+        "strictPropertyInitialization": false,
+        "module": "ESNext"
     }
 }

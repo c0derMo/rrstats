@@ -151,7 +151,7 @@ function newMatch() {
 }
 
 async function deleteMatch(uuid: string) {
-    await useFetch("/api/matches", {
+    await $fetch("/api/matches", {
         method: "DELETE",
         body: { uuid },
     });
@@ -160,28 +160,14 @@ async function deleteMatch(uuid: string) {
 }
 
 async function updatePlayers() {
-    const playerQuery = await useFetch("/api/player/lookup");
-
-    if (
-        playerQuery.status.value !== "success" ||
-        playerQuery.data.value == null
-    ) {
-        return;
-    }
-
-    playerLookupTable.value = playerQuery.data.value as Record<string, string>;
+    const playerQuery =
+        await $fetch<Record<string, string>>("/api/player/lookup");
+    playerLookupTable.value = playerQuery;
 }
 
 async function updateList() {
-    const matchQuery = await useFetch("/api/matches/list");
-    if (
-        matchQuery.status.value !== "success" ||
-        matchQuery.data.value == null
-    ) {
-        return;
-    }
-
-    matches.value = matchQuery.data.value;
+    const matchQuery = await $fetch("/api/matches/list");
+    matches.value = matchQuery;
 }
 
 await updateList();

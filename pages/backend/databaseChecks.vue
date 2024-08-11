@@ -51,19 +51,12 @@ async function runChecks(
         return;
     }
     isLoading.value = true;
-    const checkQuery = await useFetch("/api/procedures/databaseChecks", {
+    const checkQuery = await $fetch("/api/procedures/databaseChecks", {
         method: "POST",
         body: { checks, ignoredCompetitions, knownIssues },
     });
+    resultData.value = checkQuery;
 
-    if (
-        checkQuery.status.value !== "success" ||
-        checkQuery.data.value == null
-    ) {
-        return;
-    }
-
-    resultData.value = checkQuery.data.value;
     isLoading.value = false;
 }
 

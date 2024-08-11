@@ -84,14 +84,14 @@ const barStyle = computed(() => {
 }
 
 .slider {
+    @apply pointer-events-none bg-none;
+    background: none;
+
     &::-webkit-slider-runnable-track,
     &::-webkit-slider-thumb,
     & {
         -webkit-appearance: none;
     }
-
-    @apply pointer-events-none bg-none;
-    background: none;
 
     &::-webkit-slider-runnable-track {
         @apply track;

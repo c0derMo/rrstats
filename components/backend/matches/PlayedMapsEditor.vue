@@ -210,12 +210,13 @@ async function importSpin() {
     importingSpin.value = true;
 
     const id = props.hitmapsOverlayUrl.split("/").pop();
-    const request = await useFetch<{ currentSpin: Spin }>(
-        `https://rouletteapi.hitmaps.com/api/matchups/${id}`,
-    );
-    if (request.data?.value != null && request.status.value === "success") {
-        playedMapData.value[selectedMap.value].spin =
-            request.data.value.currentSpin;
+    try {
+        const request = await $fetch<{ currentSpin: Spin }>(
+            `https://rouletteapi.hitmaps.com/api/matchups/${id}`,
+        );
+        playedMapData.value[selectedMap.value].spin = request.currentSpin;
+    } catch {
+        // Do nothing
     }
 
     spinRefresher.value += 1;

@@ -2,10 +2,11 @@ import { DataSource } from "typeorm";
 import { Match } from "../model/Match";
 import { DateTime } from "luxon";
 import type { Spin } from "~/utils/interfaces/IMatch";
-import { createObjectCsvWriter } from "csv-writer";
+import { stringify } from "csv-stringify/sync";
 import { Player } from "../model/Player";
 import MapperService from "../controller/MapperService";
 import { getMap } from "~/utils/mapUtils";
+import { writeFile } from "node:fs/promises";
 
 function formatSpin(s: Spin) {
     return s.targetConditions
@@ -60,7 +61,7 @@ async function main() {
             player2: playerLookupMap[match.playerTwo],
             score: `${match.playerOneScore}-${match.playerTwoScore}`,
             casters: match.shoutcasters?.join(", "),
-            castLink: match.vodLink,
+            castLink: match.vodLink?.join(","),
         } as Record<string, unknown>;
         for (const mapIdxS in match.playedMaps) {
             const mapIdx = parseInt(mapIdxS);
@@ -79,33 +80,30 @@ async function main() {
     });
 
     const headers = [
-        { id: "competition", title: "COMPETITION" },
-        { id: "date", title: "DATE" },
-        { id: "platform", title: "PLATFORM" },
-        { id: "round", title: "ROUND" },
-        { id: "player1", title: "PLAYER1" },
-        { id: "player2", title: "PLAYER2" },
-        { id: "score", title: "SCORE" },
-        { id: "casters", title: "CASTERS" },
-        { id: "castLink", title: "CASTLINK" },
+        { key: "competition", header: "COMPETITION" },
+        { key: "date", header: "DATE" },
+        { key: "platform", header: "PLATFORM" },
+        { key: "round", header: "ROUND" },
+        { key: "player1", header: "PLAYER1" },
+        { key: "player2", header: "PLAYER2" },
+        { key: "score", header: "SCORE" },
+        { key: "casters", header: "CASTERS" },
+        { key: "castLink", header: "CASTLINK" },
     ];
     for (let i = 0; i < maxMapCount; i++) {
         headers.push(
-            { id: `map${i + 1}`, title: `MAP${i + 1}` },
-            { id: `spinMap${i + 1}`, title: `SPINMAP${i + 1}` },
-            { id: `winnerMap${i + 1}`, title: `WINNERMAP${i + 1}` },
-            { id: `pickerMap${i + 1}`, title: `PICKERMAP${i + 1}` },
-            { id: `timeMap${i + 1}`, title: `TIMEMAP${i + 1}` },
+            { key: `map${i + 1}`, header: `MAP${i + 1}` },
+            { key: `spinMap${i + 1}`, header: `SPINMAP${i + 1}` },
+            { key: `winnerMap${i + 1}`, header: `WINNERMAP${i + 1}` },
+            { key: `pickerMap${i + 1}`, header: `PICKERMAP${i + 1}` },
+            { key: `timeMap${i + 1}`, header: `TIMEMAP${i + 1}` },
         );
     }
 
     console.log(mappedMatches[0]);
 
-    const writer = createObjectCsvWriter({
-        path: `./matches.csv`,
-        header: headers,
-    });
-    await writer.writeRecords(mappedMatches);
+    const output = stringify(mappedMatches, { header: true, columns: headers });
+    await writeFile("./matches.csv", output, "utf-8");
 }
 
 void main();

@@ -1,7 +1,13 @@
 export default defineNuxtRouteMiddleware(async () => {
-    const user = await useFetch("/api/auth/user");
+    if (import.meta.server) return;
 
-    if (user.status.value !== "success" || user.data.value == null) {
+    try {
+        const user = await $fetch("/api/auth/user");
+
+        if (!user) {
+            return navigateTo("/api/auth/discord_login", { external: true });
+        }
+    } catch (error) {
         return navigateTo("/api/auth/discord_login", { external: true });
     }
 });

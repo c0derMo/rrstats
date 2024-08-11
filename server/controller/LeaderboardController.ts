@@ -54,6 +54,7 @@ import { MapRNG } from "./leaderboardStatistics/map/RNG";
 import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
 import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
 import FunctionTimer from "~/utils/FunctionTimer";
+import consola from "consola";
 
 interface StatisticData<T extends string> {
     name: string;
@@ -90,6 +91,8 @@ type LeaderboardEntry =
     | LeaderboardPlayerEntry
     | LeaderboardCountryEntry
     | LeaderboardMapEntry;
+
+const logger = consola.withTag("rrstats:leaderboards");
 
 export default class LeaderboardController {
     private static cache: Record<
@@ -147,6 +150,7 @@ export default class LeaderboardController {
         } finally {
             LeaderboardController.calculationPromise = null;
         }
+        logger.info("Leaderboards recalculated.");
     }
 
     private static async _recalculate(): Promise<void> {

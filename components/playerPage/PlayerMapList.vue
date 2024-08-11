@@ -42,7 +42,7 @@
         <div class="flex lg:flex-row flex-col gap-5">
             <div class="flex-grow">
                 <DataTableComponent
-                    v-model:itemsPerPage="selectedMapsPerPage"
+                    v-model:selected-rows-per-page="selectedMapsPerPage"
                     :headers="pickedHeaders"
                     :rows="pickedRows"
                     :always-sort="true"
@@ -52,7 +52,7 @@
             </div>
             <div class="flex-grow">
                 <DataTableComponent
-                    v-model:itemsPerPage="selectedMapsPerPage"
+                    v-model:selected-rows-per-page="selectedMapsPerPage"
                     :headers="winrateHeaders"
                     :rows="winrateRows"
                     :always-sort="true"
@@ -64,7 +64,7 @@
             </div>
             <div class="flex-grow">
                 <DataTableComponent
-                    v-model:itemsPerPage="selectedMapsPerPage"
+                    v-model:selected-rows-per-page="selectedMapsPerPage"
                     :headers="bannedHeaders"
                     :rows="bannedRows"
                     :always-sort="true"

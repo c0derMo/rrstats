@@ -117,17 +117,10 @@ async function checkPlayerAndUpdateMatches(initialLoad?: boolean) {
 
     recordData.value.player = playerToUUIDTable.value[player.value.trim()];
 
-    const matchRequest = await useFetch("/api/matches/player", {
+    const matchRequest = await $fetch("/api/matches/player", {
         query: { player: recordData.value.player },
     });
-    if (
-        matchRequest.data.value == null ||
-        matchRequest.status.value !== "success"
-    ) {
-        return;
-    }
-
-    rawMatches.value = matchRequest.data.value;
+    rawMatches.value = matchRequest;
 
     if (possibleMatches.value.length <= 0) {
         recordData.value.match = "";

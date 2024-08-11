@@ -16,16 +16,19 @@ const props = defineProps({
     },
 });
 
-const chosenBackgroundIndex = Math.floor(
-    props.competitions.length * Math.random(),
-);
-const chosenBackground = props.competitions[chosenBackgroundIndex];
+const chosenBackground = useState<string>("background");
+
+callOnce(() => {
+    const chosenBackgroundIndex = Math.floor(
+        props.competitions.length * Math.random(),
+    );
+    chosenBackground.value = props.competitions[chosenBackgroundIndex];
+});
+
 const bgStyle = computed(() => {
-    if (chosenBackground === undefined || chosenBackground === null) return "";
-    if (chosenBackground.startsWith("http")) {
-        return `background-image: url(${chosenBackground})`;
-    }
-    // TODO: Load local file!
-    return `background-image: url(${chosenBackground})`;
+    if (chosenBackground.value == null || chosenBackground.value === "")
+        return "";
+
+    return `background-image: url(${chosenBackground.value})`;
 });
 </script>

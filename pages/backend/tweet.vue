@@ -174,19 +174,17 @@ async function tweet() {
     success.value = false;
     error.value = false;
 
-    const tweetQuery = await useFetch("/api/procedures/tweet", {
-        method: "POST",
-        body: tweets,
-    });
-
-    if (
-        tweetQuery.status.value !== "success" ||
-        tweetQuery.data.value == null
-    ) {
-        error.value = true;
-    } else if (tweetQuery.data.value === true) {
-        success.value = true;
-    } else {
+    try {
+        const tweetQuery = await $fetch("/api/procedures/tweet", {
+            method: "POST",
+            body: tweets,
+        });
+        if (tweetQuery === true) {
+            success.value = true;
+        } else {
+            error.value = true;
+        }
+    } catch {
         error.value = true;
     }
 
@@ -194,24 +192,19 @@ async function tweet() {
 }
 
 async function fetchPlayerNames(playerUuids: string[]): Promise<string[]> {
-    const lookupQuery = await useFetch("/api/player/lookup", {
-        query: { players: playerUuids },
-    });
+    try {
+        const lookupQuery = await $fetch("/api/player/lookup", {
+            query: { players: playerUuids },
+        });
+        const players: string[] = [];
+        for (const player of playerUuids) {
+            players.push(lookupQuery[player]);
+        }
 
-    if (
-        lookupQuery.status.value !== "success" ||
-        lookupQuery.data.value == null
-    ) {
+        return players;
+    } catch {
         return [];
     }
-
-    const lookupTable = lookupQuery.data.value as Record<string, string>;
-    const players: string[] = [];
-    for (const player of playerUuids) {
-        players.push(lookupTable[player]);
-    }
-
-    return players;
 }
 
 async function fetchPreviousRecord(
@@ -223,16 +216,17 @@ async function fetchPreviousRecord(
     } else {
         query = { generic: (record as IGenericRecord).record };
     }
-    const historyQuery = await useFetch("/api/records/history", { query });
 
-    if (
-        historyQuery.status.value !== "success" ||
-        historyQuery.data.value == null
-    ) {
+    let records: (IMapRecord | IGenericRecord)[];
+    try {
+        records = await $fetch<(IMapRecord | IGenericRecord)[]>(
+            "/api/records/history",
+            { query },
+        );
+    } catch {
         return [];
     }
 
-    const records = historyQuery.data.value as (IMapRecord | IGenericRecord)[];
     if (records.length <= 1) {
         return [];
     }
@@ -264,20 +258,10 @@ async function fetchPreviousRecord(
 }
 
 async function fetchRecentRecords() {
-    const recordQuery = await useFetch("/api/records");
+    const recordQuery = await $fetch("/api/records");
 
-    if (
-        recordQuery.status.value !== "success" ||
-        recordQuery.data.value == null
-    ) {
-        return;
-    }
-
-    recordPlayers.value = recordQuery.data.value.players;
-    recentRecords.value = [
-        ...recordQuery.data.value.maps,
-        ...recordQuery.data.value.generic,
-    ];
+    recordPlayers.value = recordQuery.players;
+    recentRecords.value = [...recordQuery.maps, ...recordQuery.generic];
 }
 
 await fetchRecentRecords();

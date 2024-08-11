@@ -3,11 +3,7 @@
         <CompetitionBackground
             :competitions="
                 competitions
-                    ?.filter(
-                        (m) =>
-                            m.backgroundImage !== undefined &&
-                            m.backgroundImage !== null,
-                    )
+                    ?.filter((m) => m.backgroundImage != null)
                     .map((m) => m.backgroundImage) as string[]
             "
         />

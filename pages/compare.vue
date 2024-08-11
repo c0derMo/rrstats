@@ -150,30 +150,22 @@ async function getComparisonData(
     if (player === "") {
         return null;
     }
-    const playerData = await useFetch(`/api/player/?player=${player}`);
-    const avatar = await useFetch(`/api/player/avatar?player=${player}`);
-
-    if (
-        playerData.status.value !== "success" ||
-        avatar.status.value !== "success"
-    ) {
+    try {
+        const playerData = await $fetch(`/api/player/?player=${player}`);
+        const avatar = await $fetch(`/api/player/avatar?player=${player}`);
+        const statistics = await $fetch(
+            `/api/player/statistics?player=${playerData.uuid}`,
+        );
+        return {
+            player: playerData as IPlayer,
+            matches: playerData.matches,
+            avatar: avatar,
+            placements: playerData.placements,
+            statistics: statistics,
+        };
+    } catch {
         return null;
     }
-
-    const statistics = await useFetch(
-        `/api/player/statistics?player=${playerData.data.value!.uuid}`,
-    );
-    if (statistics.status.value !== "success") {
-        return null;
-    }
-
-    return {
-        player: playerData.data.value as IPlayer,
-        matches: playerData.data.value!.matches,
-        avatar: avatar.data.value!,
-        placements: playerData.data.value!.placements,
-        statistics: statistics.data.value!,
-    };
 }
 
 const comparingMaps = computed(() => {

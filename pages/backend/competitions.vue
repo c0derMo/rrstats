@@ -86,7 +86,7 @@ function newCompetition() {
 }
 
 async function deleteCompetition(tag: string) {
-    await useFetch("/api/competitions", {
+    await $fetch("/api/competitions", {
         method: "DELETE",
         body: { tag },
     });
@@ -95,33 +95,25 @@ async function deleteCompetition(tag: string) {
 }
 
 async function updateList() {
-    const competitionsQuery = await useFetch("/api/competitions/list");
-    if (
-        competitionsQuery.status.value !== "success" ||
-        competitionsQuery.data.value == null
-    ) {
+    try {
+        const competitionsQuery = await $fetch("/api/competitions/list");
+        competitions.value = competitionsQuery;
+    } catch {
         error.value = true;
-    } else {
-        competitions.value = competitionsQuery.data.value;
     }
 }
 
 async function loadUpdateMatch(tag: string) {
     competitionToLoad.value = tag;
-    const compQuery = await useFetch("/api/competitions", { query: { tag } });
-    const placementsQuery = await useFetch("/api/competitions/placements", {
-        query: { tag },
-    });
-    if (
-        compQuery.status.value !== "success" ||
-        compQuery.data.value == null ||
-        placementsQuery.status.value !== "success" ||
-        placementsQuery.data.value == null
-    ) {
+    try {
+        const compQuery = await $fetch("/api/competitions", { query: { tag } });
+        const placementsQuery = await $fetch("/api/competitions/placements", {
+            query: { tag },
+        });
+        competitionToShow.value = compQuery;
+        placementsToShow.value = placementsQuery;
+    } catch {
         error.value = true;
-    } else {
-        competitionToShow.value = compQuery.data.value;
-        placementsToShow.value = placementsQuery.data.value;
     }
     competitionToLoad.value = "";
 }

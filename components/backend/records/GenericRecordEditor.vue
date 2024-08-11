@@ -129,17 +129,10 @@ async function checkPlayersAndUpdateMatches() {
         .split(",")
         .map((player) => playerToUUIDTable.value[player.trim()]);
 
-    const matchRequest = await useFetch("/api/matches/versus", {
+    const matchRequest = await $fetch("/api/matches/versus", {
         query: { players: recordData.value.players },
     });
-    if (
-        matchRequest.data.value == null ||
-        matchRequest.status.value !== "success"
-    ) {
-        return;
-    }
-
-    possibleMatches.value = matchRequest.data.value.map((match) => {
+    possibleMatches.value = matchRequest.map((match) => {
         return {
             text: `${match.competition} ${match.round} ${
                 uuidToPlayerTable.value[match.playerOne]

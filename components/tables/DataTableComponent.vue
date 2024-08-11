@@ -144,7 +144,7 @@ const props = defineProps({
     },
 });
 
-const emits = defineEmits(["update:itemsPerPage", "click-row"]);
+const emits = defineEmits(["update:selectedRowsPerPage", "click-row"]);
 
 const selectedRowsPerPage = ref(props.selectedRowsPerPage);
 const selectedPage = ref(1);
@@ -152,7 +152,7 @@ const sortingBy: Ref<ExtendedHeader | null> = ref(null);
 const sortingOrder: Ref<"ASC" | "DESC" | null> = ref(null);
 
 watch(selectedRowsPerPage, () => {
-    emits("update:itemsPerPage", selectedRowsPerPage.value);
+    emits("update:selectedRowsPerPage", selectedRowsPerPage.value);
 });
 watch(
     () => props.selectedRowsPerPage,
