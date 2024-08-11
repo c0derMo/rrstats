@@ -1,4 +1,4 @@
-import axios from "axios";
+import type { FetchError } from "ofetch";
 
 interface DiscordCacheEntry {
     lastRequest: number;
@@ -38,30 +38,32 @@ export default class DiscordAvatarIntegration {
         }
 
         // We need to query
-        const request = await axios.get<DiscordResponse>(
-            `https://discord.com/api/v9/users/${discordId}`,
-            {
-                headers: { Authorization: `Bot ${this.DISCORD_TOKEN}` },
-                validateStatus: () => true,
-            },
-        );
-        if (request.status === 429) {
-            console.log("WARN: Discord request hit 429");
-            this.retryIn = Date.now() + request.data.retry_after! * 1000;
+        let request: DiscordResponse;
+        try {
+            request = await $fetch<DiscordResponse>(
+                `https://discord.com/api/v9/users/${discordId}`,
+                {
+                    headers: { Authorization: `Bot ${this.DISCORD_TOKEN}` },
+                    retry: 0,
+                },
+            );
+        } catch (e) {
+            const fetchError = e as FetchError;
+            if (fetchError.statusCode === 429) {
+                console.log("WARN: Discord request hit 429");
+                this.retryIn = Date.now() + fetchError.data.retry_after! * 1000;
+            }
             return this.DEFAULT_AVATAR;
-        } else if (request.status !== 200) {
-            return this.DEFAULT_AVATAR;
-        } else if (
-            request.data.avatar === undefined ||
-            request.data.avatar === null
-        ) {
+        }
+
+        if (request.avatar == null) {
             this.cache[discordId] = {
                 avatarLink: this.DEFAULT_AVATAR,
                 lastRequest: Date.now(),
             };
         } else {
             this.cache[discordId] = {
-                avatarLink: `https://cdn.discordapp.com/avatars/${discordId}/${request.data.avatar}.png`,
+                avatarLink: `https://cdn.discordapp.com/avatars/${discordId}/${request.avatar}.png`,
                 lastRequest: Date.now(),
             };
         }

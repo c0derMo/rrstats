@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Match } from "../../model/Match";
 import { Player } from "../../model/Player";
 import { In } from "typeorm";
@@ -105,20 +104,17 @@ export default class HitmapsIntegration {
         const timer = new FunctionTimer(
             `HitmapsIntegration._updateHitmapsTournament(${hitmapsSlug}, ${competitionSlug})`,
         );
-        const request = await axios.get<{ matches: HitmapsTournamentMatch[] }>(
-            `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
-        );
-        if (request.status !== 200) {
-            // Error out somehow
+
+        try {
+            const request = await $fetch<{ matches: HitmapsTournamentMatch[] }>(
+                `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
+            );
+            await this.parseHitmapsTournament(request.matches, competitionSlug);
+            this.cache.set(hitmapsSlug, Date.now());
+            timer.finish();
+        } catch {
             return;
         }
-
-        await this.parseHitmapsTournament(
-            request.data.matches,
-            competitionSlug,
-        );
-        this.cache.set(hitmapsSlug, Date.now());
-        timer.finish();
     }
 
     private static async fetchHitmapsMatches(
@@ -132,10 +128,15 @@ export default class HitmapsIntegration {
             );
         }
         const listOfMatches = hitmapsMatchIds.join(",");
-        const req = await axios.get<{ matches: HitmapsMatch[] }>(
-            `https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`,
-        );
-        return req.data.matches;
+
+        try {
+            const request = await $fetch<{ matches: HitmapsMatch[] }>(
+                `https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`,
+            );
+            return request.matches;
+        } catch {
+            return [];
+        }
     }
 
     private static async createNewPlayer(

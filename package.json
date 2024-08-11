@@ -37,7 +37,6 @@
         "@fortawesome/free-regular-svg-icons": "^6.6.0",
         "@fortawesome/free-solid-svg-icons": "^6.6.0",
         "@fortawesome/vue-fontawesome": "^3.0.8",
-        "axios": "^1.7.3",
         "chart.js": "^4.4.3",
         "luxon": "^3.5.0",
         "reflect-metadata": "^0.1.14",
