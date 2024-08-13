@@ -258,8 +258,9 @@ const filteredSpins = computed(() => {
                 ) {
                     return false;
                 } else if (
+                    (variant == null || variant === "") &&
                     filterMethods.value[target.target.name] !=
-                    target.killMethod.name
+                        target.killMethod.name
                 ) {
                     return false;
                 }
