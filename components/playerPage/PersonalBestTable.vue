@@ -37,21 +37,16 @@
 <script setup lang="ts">
 import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
-const props = defineProps({
-    localPlayer: {
-        type: String,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        localPlayer: string;
+        players?: Record<string, string>;
+        statistics: IPlayerStatistics;
+    }>(),
+    {
+        players: () => ({}),
     },
-    players: {
-        type: Object as PropType<Record<string, string>>,
-        required: false,
-        default: () => {},
-    },
-    statistics: {
-        type: Object as PropType<IPlayerStatistics>,
-        required: true,
-    },
-});
+);
 
 const headers = [
     { title: "Map", key: "map" },

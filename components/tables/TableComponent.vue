@@ -55,18 +55,14 @@ interface ExtendedHeader {
     key: string;
 }
 
-const props = defineProps({
-    headers: {
-        type: Array as () => string[] | ExtendedHeader[],
-        required: true,
-    },
-    rows: {
-        type: Array as () => R[],
-        required: true,
-    },
-});
+const props = defineProps<{
+    headers: string[] | ExtendedHeader[];
+    rows: R[];
+}>();
 
-defineEmits(["click-row"]);
+defineEmits<{
+    "click-row": [row: R, idx: number];
+}>();
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     if (props.headers.length === 0) {

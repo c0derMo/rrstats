@@ -79,7 +79,8 @@
                         placeholder="Hitmaps Overlay URL"
                         class="flex-grow"
                         @update:model-value="
-                            (v) => $emit('update:hitmapsOverlayUrl', v)
+                            (v) =>
+                                $emit('update:hitmapsOverlayUrl', v as string)
                         "
                     />
                     <ButtonComponent
@@ -124,22 +125,21 @@ import {
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    playedMaps: {
-        type: Array<RRMap>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        playedMaps: RRMap[];
+        players: string[];
+        hitmapsOverlayUrl?: string;
+    }>(),
+    {
+        hitmapsOverlayUrl: "",
     },
-    players: {
-        type: Array<string>,
-        required: true,
-    },
-    hitmapsOverlayUrl: {
-        type: String,
-        default: "",
-    },
-});
+);
 
-const emits = defineEmits(["update:playedMaps", "update:hitmapsOverlayUrl"]);
+const emits = defineEmits<{
+    "update:playedMaps": [value: RRMap[]];
+    "update:hitmapsOverlayUrl": [value: string];
+}>();
 
 const playedMapData = toRef(props.playedMaps);
 const selectedMap = ref(0);

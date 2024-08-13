@@ -29,14 +29,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    tabs: {
-        type: Array<string>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    tabs: string[];
+}>();
 
-const emits = defineEmits(["changeTab"]);
+const emits = defineEmits<{
+    changeTab: [value: string];
+}>();
 
 const selectedTab = ref(props.tabs[0]);
 

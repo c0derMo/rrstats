@@ -85,66 +85,33 @@ interface ExtendedHeader {
     sort?: (a: unknown, b: unknown, objectA: R, objectB: R) => number;
 }
 
-const props = defineProps({
-    headers: {
-        type: Array as () =>
-            | string[]
-            | {
-                  key: string;
-                  title: string;
-                  disableSort?: boolean;
-                  sort?: (
-                      a: unknown,
-                      b: unknown,
-                      objectA: R,
-                      objectB: R,
-                  ) => number;
-              }[],
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        headers: string[] | ExtendedHeader[];
+        rows: R[];
+        enableSorting?: boolean;
+        alwaysSort?: boolean;
+        defaultSortingKey?: string;
+        defaultSortingOrder?: string;
+        rowsPerPage?: number[];
+        selectedRowsPerPage?: number;
+        disableAllPerPage?: boolean;
+    }>(),
+    {
+        enableSorting: true,
+        alwaysSort: false,
+        defaultSortingKey: undefined,
+        defaultSortingOrder: "DESC",
+        rowsPerPage: () => [5, 10, 20],
+        selectedRowsPerPage: 5,
+        disableAllPerPage: false,
     },
-    rows: {
-        type: Array as () => R[],
-        required: true,
-    },
-    enableSorting: {
-        type: Boolean,
-        required: false,
-        default: true,
-    },
-    alwaysSort: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-    defaultSortingKey: {
-        type: String,
-        required: false,
-        default: undefined,
-    },
-    defaultSortingOrder: {
-        type: String,
-        required: false,
-        default: "DESC",
-        validator: (v) => v === "ASC" || v === "DESC",
-    },
-    rowsPerPage: {
-        type: Array<number>,
-        required: false,
-        default: [5, 10, 20],
-    },
-    selectedRowsPerPage: {
-        type: Number,
-        required: false,
-        default: 5,
-    },
-    disableAllPerPage: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-});
+);
 
-const emits = defineEmits(["update:selectedRowsPerPage", "click-row"]);
+const emits = defineEmits<{
+    "update:selectedRowsPerPage": [value: number];
+    "click-row": [row: R, index: number];
+}>();
 
 const selectedRowsPerPage = ref(props.selectedRowsPerPage);
 const selectedPage = ref(1);

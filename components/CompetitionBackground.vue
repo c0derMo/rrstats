@@ -9,12 +9,9 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    competitions: {
-        type: Array<string>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    competitions: string[];
+}>();
 
 const chosenBackground = useState<string>("background");
 

@@ -70,12 +70,9 @@ const colorMap = {
     10: "dark:bg-blue-100 bg-blue-950 text-white dark:text-black",
 } as Record<number, string>;
 
-const props = defineProps({
-    matches: {
-        type: Object as PropType<IMatch[]>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    matches: IMatch[];
+}>();
 
 const matchesInSlots = computed(() => {
     const timeslots: number[] = Array(7 * 12).fill(0);

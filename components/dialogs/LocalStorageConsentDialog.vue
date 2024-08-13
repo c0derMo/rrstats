@@ -16,5 +16,8 @@
 </template>
 
 <script setup lang="ts">
-defineEmits(["consent", "decline"]);
+defineEmits<{
+    consent: [];
+    decline: [];
+}>();
 </script>

@@ -10,21 +10,21 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 
-const props = defineProps({
-    placeholder: {
-        type: String,
-        default: "",
+const props = withDefaults(
+    defineProps<{
+        placeholder?: string;
+        modelValue?: number;
+        seconds?: boolean;
+    }>(),
+    {
+        placeholder: "",
+        modelValue: undefined,
+        seconds: false,
     },
-    modelValue: {
-        type: Number,
-        default: undefined,
-    },
-    seconds: {
-        type: Boolean,
-        default: false,
-    },
-});
-const emits = defineEmits(["update:modelValue"]);
+);
+const emits = defineEmits<{
+    "update:modelValue": [value: number];
+}>();
 
 const input = computed({
     get() {

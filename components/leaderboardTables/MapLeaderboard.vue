@@ -110,12 +110,9 @@
 <script setup lang="ts">
 import type { LeaderboardMapEntry } from "~/utils/interfaces/LeaderboardEntry";
 
-const props = defineProps({
-    leaderboardData: {
-        type: Array<LeaderboardMapEntry>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    leaderboardData: LeaderboardMapEntry[];
+}>();
 
 const competitionsQuery = await useFetch("/api/competitions/list");
 const competitions =

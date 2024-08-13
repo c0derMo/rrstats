@@ -113,18 +113,20 @@
 <script setup lang="ts">
 import type { IMatch } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    match: {
-        type: Object as PropType<IMatch>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        match: IMatch;
+        hitmapsOverlayUrl?: string;
+    }>(),
+    {
+        hitmapsOverlayUrl: "",
     },
-    hitmapsOverlayUrl: {
-        type: String,
-        default: "",
-    },
-});
+);
 
-const emits = defineEmits(["close", "update:hitmapsOverlayUrl"]);
+const emits = defineEmits<{
+    close: [];
+    "update:hitmapsOverlayUrl": [value: string];
+}>();
 
 const matchData: Ref<IMatch> = ref(props.match);
 const playerToUUIDTable: Ref<Record<string, string>> = ref({});

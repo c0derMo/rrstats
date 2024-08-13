@@ -56,18 +56,16 @@ import {
 } from "~/utils/interfaces/IRecord";
 import { getMapsBySeason } from "~/utils/mapUtils";
 
-const props = defineProps({
-    map: {
-        type: Number,
-        required: false,
-        default: undefined,
+const props = withDefaults(
+    defineProps<{
+        map?: number;
+        genericRecord?: string;
+    }>(),
+    {
+        map: undefined,
+        genericRecord: undefined,
     },
-    genericRecord: {
-        type: String,
-        required: false,
-        default: undefined,
-    },
-});
+);
 
 const selectedRecords: Ref<(number | string)[]> = ref([]);
 

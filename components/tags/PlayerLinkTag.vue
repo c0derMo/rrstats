@@ -8,10 +8,7 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-    player: {
-        type: String,
-        required: true,
-    },
-});
+defineProps<{
+    player: string;
+}>();
 </script>

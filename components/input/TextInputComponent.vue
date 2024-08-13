@@ -65,36 +65,30 @@
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(["update:model-value", "focus-change", "keydown"]);
+const props = withDefaults(
+    defineProps<{
+        placeholder?: string;
+        modelValue?: string | number;
+        type?: string;
+        error?: boolean;
+        disabled?: boolean;
+        step?: string | number;
+    }>(),
+    {
+        placeholder: "",
+        modelValue: "",
+        type: "text",
+        error: false,
+        disabled: false,
+        step: undefined,
+    },
+);
 
-const props = defineProps({
-    placeholder: {
-        type: String,
-        required: false,
-        default: "",
-    },
-    modelValue: {
-        type: [String, Number],
-        required: false,
-        default: "",
-    },
-    type: {
-        type: String,
-        default: "text",
-    },
-    error: {
-        type: Boolean,
-        default: false,
-    },
-    disabled: {
-        type: Boolean,
-        default: false,
-    },
-    step: {
-        type: [String, Number],
-        default: undefined,
-    },
-});
+const emits = defineEmits<{
+    "update:model-value": [value: string | number];
+    "focus-change": [value: boolean];
+    keydown: [key: KeyboardEvent];
+}>();
 
 const isFocused = ref(false);
 const nonEmptyOrFocussed = computed(() => {

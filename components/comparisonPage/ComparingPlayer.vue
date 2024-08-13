@@ -179,29 +179,19 @@ enum Player {
     COMPARISON,
 }
 
-const props = defineProps({
-    player: {
-        type: Object as PropType<IPlayer>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        player: IPlayer;
+        playerStatistics: IPlayerStatistics;
+        playerAvatar: string;
+        comparingStatistics?: IPlayerStatistics;
+        reverse?: boolean;
+    }>(),
+    {
+        comparingStatistics: undefined,
+        reverse: false,
     },
-    playerStatistics: {
-        type: Object as PropType<IPlayerStatistics>,
-        required: true,
-    },
-    playerAvatar: {
-        type: String,
-        required: true,
-    },
-    comparingStatistics: {
-        type: Object as PropType<IPlayerStatistics>,
-        required: false,
-        default: undefined,
-    },
-    reverse: {
-        type: Boolean,
-        default: false,
-    },
-});
+);
 
 function getWinrate(player: Player): number {
     if (player === Player.SELF) {

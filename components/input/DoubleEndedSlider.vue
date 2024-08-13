@@ -21,27 +21,23 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    min: {
-        type: Number,
-        required: false,
-        default: 0,
+const props = withDefaults(
+    defineProps<{
+        min?: number;
+        max?: number;
+        minValue: number;
+        maxValue: number;
+    }>(),
+    {
+        min: 0,
+        max: 100,
     },
-    max: {
-        type: Number,
-        required: false,
-        default: 100,
-    },
-    minValue: {
-        type: Number,
-        required: true,
-    },
-    maxValue: {
-        type: Number,
-        required: true,
-    },
-});
-const emits = defineEmits(["update:minValue", "update:maxValue"]);
+);
+
+const emits = defineEmits<{
+    "update:minValue": [value: number];
+    "update:maxValue": [value: number];
+}>();
 
 function updateBar(barNumber: 0 | 1, event: Event) {
     let value = parseInt((event.target as HTMLInputElement).value);

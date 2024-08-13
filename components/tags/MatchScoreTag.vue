@@ -7,20 +7,11 @@
 <script setup lang="ts">
 import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    left: {
-        type: Number,
-        required: true,
-    },
-    right: {
-        type: Number,
-        required: true,
-    },
-    playerIndex: {
-        type: Number,
-        required: true,
-    },
-});
+const props = defineProps<{
+    left: number;
+    right: number;
+    playerIndex: number;
+}>();
 
 const color = computed(() => {
     if (props.left === props.right) {

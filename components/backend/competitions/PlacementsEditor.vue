@@ -10,7 +10,9 @@
                 <TextInputComponent
                     v-model="placementPlayers[index]"
                     :error="playersIncorrect[index]"
-                    @update:model-value="(val) => tryLookupPlayer(val, index)"
+                    @update:model-value="
+                        (val) => tryLookupPlayer(val as string, index)
+                    "
                 />
             </template>
             <template #bracket="{ index }">
@@ -46,14 +48,13 @@
 <script setup lang="ts">
 import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    placements: {
-        type: Array<ICompetitionPlacement>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    placements: ICompetitionPlacement[];
+}>();
 
-const emits = defineEmits(["update:placements"]);
+const emits = defineEmits<{
+    "update:placements": [value: ICompetitionPlacement[]];
+}>();
 
 const placementsData = toRef(props.placements);
 const playerToUUIDTable: Ref<Record<string, string>> = ref({});

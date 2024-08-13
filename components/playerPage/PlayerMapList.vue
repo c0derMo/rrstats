@@ -81,20 +81,11 @@ import type { ICompetition } from "~/utils/interfaces/ICompetition";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 import MatchCollection from "~/utils/playerStatistics/MatchCollection";
 
-const props = defineProps({
-    matches: {
-        type: Object as PropType<IMatch[]>,
-        required: true,
-    },
-    localPlayer: {
-        type: String,
-        required: true,
-    },
-    competitions: {
-        type: Array<ICompetition>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    matches: IMatch[];
+    localPlayer: string;
+    competitions: ICompetition[];
+}>();
 
 const selectedMapsPerPage = ref(10);
 

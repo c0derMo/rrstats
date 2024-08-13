@@ -12,7 +12,7 @@
                 <DropdownComponent
                     :model-value="selectedVariant[idx] ?? ''"
                     :items="selectableVariants[idx]"
-                    @update:model-value="(v) => selectVariant(idx, v)"
+                    @update:model-value="(v) => selectVariant(idx, v as string)"
                 />
                 <AutocompleteComponent
                     :default-text="selectedConditions[idx]"
@@ -35,18 +35,18 @@
 <script setup lang="ts">
 import type { Spin } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    map: {
-        type: Number,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        map: number;
+        spin?: Spin | null;
+    }>(),
+    {
+        spin: null,
     },
-    spin: {
-        type: Object as PropType<Spin>,
-        required: false,
-        default: null,
-    },
-});
-const emits = defineEmits(["updateSpin"]);
+);
+const emits = defineEmits<{
+    updateSpin: [value: Spin];
+}>();
 
 const finishedLoading = ref(false);
 const targets: Ref<{ name: string; tileUrl: string }[]> = ref([]);

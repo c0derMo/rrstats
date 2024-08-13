@@ -37,12 +37,9 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 
-const props = defineProps({
-    player: {
-        type: String,
-        required: true,
-    },
-});
+const props = defineProps<{
+    player: string;
+}>();
 
 const headers = [
     { key: "record", title: "Record" },

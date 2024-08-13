@@ -8,12 +8,14 @@
 <script setup lang="ts">
 import { type HitmanMap, getAllMaps } from "~/utils/mapUtils";
 
-const props = defineProps({
-    maps: {
-        type: Array<HitmanMap>,
-        default: getAllMaps(),
+const props = withDefaults(
+    defineProps<{
+        maps?: HitmanMap[];
+    }>(),
+    {
+        maps: () => getAllMaps(),
     },
-});
+);
 
 const mapSelection = computed(() => {
     if (props.maps.length <= 0) {

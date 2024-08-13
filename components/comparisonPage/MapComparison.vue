@@ -42,21 +42,16 @@
 import type { HitmanMap } from "#imports";
 import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
-const props = defineProps({
-    maps: {
-        type: Array<HitmanMap>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        maps: HitmanMap[];
+        statistics: IPlayerStatistics;
+        comparingStatistics?: IPlayerStatistics;
+    }>(),
+    {
+        comparingStatistics: undefined,
     },
-    statistics: {
-        type: Object as PropType<IPlayerStatistics>,
-        required: true,
-    },
-    comparingStatistics: {
-        type: Object as PropType<IPlayerStatistics>,
-        required: false,
-        default: undefined,
-    },
-});
+);
 
 const headers = ["Map", "Picked", "Banned", "Played", "Won", "Winrate"];
 const rows = computed(() => {

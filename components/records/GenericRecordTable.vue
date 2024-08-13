@@ -89,22 +89,17 @@ const headers = [
 const detailedMatch: Ref<IMatch | null> = ref(null);
 const historyRecord: Ref<string | null> = ref(null);
 
-const props = defineProps({
-    records: {
-        type: Array<IGenericRecord>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        records: IGenericRecord[];
+        players?: Record<string, string>;
+        matches?: Record<string, IMatch>;
+    }>(),
+    {
+        players: () => ({}),
+        matches: () => ({}),
     },
-    players: {
-        type: Object as PropType<Record<string, string>>,
-        required: false,
-        default: () => {},
-    },
-    matches: {
-        type: Object as PropType<Record<string, IMatch>>,
-        required: false,
-        default: () => {},
-    },
-});
+);
 
 const sortedRecords = computed(() => {
     return [...props.records].sort(

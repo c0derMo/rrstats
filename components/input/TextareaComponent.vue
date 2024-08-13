@@ -20,16 +20,18 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-    modelValue: {
-        type: String,
-        default: "",
+withDefaults(
+    defineProps<{
+        modelValue?: string;
+        maxLength?: number;
+    }>(),
+    {
+        modelValue: "",
+        maxLength: undefined,
     },
-    maxLength: {
-        type: Number,
-        default: undefined,
-    },
-});
+);
 
-defineEmits(["update:modelValue"]);
+defineEmits<{
+    "update:modelValue": [value: string];
+}>();
 </script>

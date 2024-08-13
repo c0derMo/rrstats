@@ -64,7 +64,11 @@
                         :error="playersIncorrect[selectedGroupIndex][idx]"
                         @update:model-value="
                             (val) =>
-                                tryLookupPlayer(val, selectedGroupIndex!, idx)
+                                tryLookupPlayer(
+                                    val as string,
+                                    selectedGroupIndex!,
+                                    idx,
+                                )
                         "
                     />
                     <ButtonComponent @click="removePlayer(idx)"
@@ -98,14 +102,13 @@
 <script setup lang="ts">
 import type { IGroupSettings } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    groupSettings: {
-        type: Object as PropType<IGroupSettings>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    groupSettings: IGroupSettings;
+}>();
 
-const emits = defineEmits(["update:groupSettings"]);
+const emits = defineEmits<{
+    "update:groupSettings": [value: IGroupSettings];
+}>();
 
 const settings = toRef(props.groupSettings);
 const selectedGroup = ref("");

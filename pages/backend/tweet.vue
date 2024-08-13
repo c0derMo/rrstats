@@ -10,7 +10,9 @@
             <DropdownComponent
                 :items="dropdownableRecords"
                 button-text="Add record template"
-                @update:model-value="(v) => addRecordTemplate(v)"
+                @update:model-value="
+                    (v) => addRecordTemplate(v as IGenericRecord | IMapRecord)
+                "
             />
 
             <div class="flex flex-row gap-2">

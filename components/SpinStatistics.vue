@@ -153,26 +153,18 @@ import {
 } from "~/utils/interfaces/IMatch";
 import objectHash from "object-hash";
 
-const props = defineProps({
-    spins: {
-        type: Array<IPlayedMap>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        spins: IPlayedMap[];
+        players: Record<string, string>;
+        disguises?: string[];
+        killMethods?: Record<string, string[]>;
+    }>(),
+    {
+        disguises: () => [],
+        killMethods: () => ({}),
     },
-    players: {
-        type: Object as PropType<Record<string, string>>,
-        required: true,
-    },
-    disguises: {
-        type: Array<string>,
-        required: false,
-        default: [],
-    },
-    killMethods: {
-        type: Object as PropType<Record<string, string[]>>,
-        required: false,
-        default: () => ({}),
-    },
-});
+);
 
 const uniqueSpinMap = ref(
     new Map<

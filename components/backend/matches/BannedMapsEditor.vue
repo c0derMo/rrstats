@@ -45,18 +45,14 @@
 <script setup lang="ts">
 import { ChoosingPlayer, type RRBannedMap } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    bannedMaps: {
-        type: Array<RRBannedMap>,
-        required: true,
-    },
-    players: {
-        type: Array<string>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    bannedMaps: RRBannedMap[];
+    players: string[];
+}>();
 
-const emits = defineEmits(["update:bannedMaps"]);
+const emits = defineEmits<{
+    "update:bannedMaps": [value: RRBannedMap[]];
+}>();
 
 const bannedMapData = toRef(props.bannedMaps);
 
@@ -82,11 +78,11 @@ const bannedPlayerOptions = computed(() => {
 
 function deleteBan(index: number) {
     bannedMapData.value.splice(index, 1);
-    emits("update:bannedMaps", bannedMapData);
+    emits("update:bannedMaps", bannedMapData.value);
 }
 
 function addBan() {
     bannedMapData.value.push({ map: 0, picked: 0 });
-    emits("update:bannedMaps", bannedMapData);
+    emits("update:bannedMaps", bannedMapData.value);
 }
 </script>

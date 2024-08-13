@@ -26,16 +26,16 @@ import type {
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    placements: {
-        type: Array<ICompetitionPlacement>,
-        default: [],
+const props = withDefaults(
+    defineProps<{
+        placements?: ICompetitionPlacement[];
+        competitions?: Record<string, ICompetition>;
+    }>(),
+    {
+        placements: () => [],
+        competitions: () => ({}),
     },
-    competitions: {
-        type: Object as PropType<Record<string, ICompetition>>,
-        default: () => {},
-    },
-});
+);
 
 const headers = [
     { key: "competition", title: "Competiton" },

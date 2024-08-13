@@ -24,24 +24,20 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-    label: {
-        type: String,
-        required: false,
-        default: "",
+withDefaults(
+    defineProps<{
+        label?: string;
+        modelValue?: boolean;
+        id: string;
+        reverse?: boolean;
+    }>(),
+    {
+        label: "",
+        reverse: false,
     },
-    modelValue: {
-        type: Boolean,
-    },
-    id: {
-        type: String,
-        required: true,
-    },
-    reverse: {
-        type: Boolean,
-        default: false,
-    },
-});
+);
 
-defineEmits(["update:modelValue"]);
+defineEmits<{
+    "update:modelValue": [value: boolean];
+}>();
 </script>

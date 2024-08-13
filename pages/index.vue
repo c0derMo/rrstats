@@ -63,7 +63,9 @@
                         button-class="border-0"
                         button-text="Tournaments"
                         :items="competitionsDropdown"
-                        @update:model-value="selectTournament"
+                        @update:model-value="
+                            (v) => selectTournament(v as string)
+                        "
                     />
                 </div>
 

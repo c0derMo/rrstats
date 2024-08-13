@@ -27,18 +27,16 @@
 <script setup lang="ts">
 import type { Spin } from "~/utils/interfaces/IMatch";
 
-defineProps({
-    spin: {
-        type: Object as PropType<Spin>,
-        required: false,
-        default: undefined,
+withDefaults(
+    defineProps<{
+        spin?: Spin;
+        showMap?: boolean;
+    }>(),
+    {
+        spin: undefined,
+        showMap: false,
     },
-    showMap: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-});
+);
 
 function buildKillMethod(method: {
     selectedVariant: string | null;

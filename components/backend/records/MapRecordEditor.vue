@@ -61,14 +61,13 @@
 import type { IMatch } from "~/utils/interfaces/IMatch";
 import type { IMapRecord } from "~/utils/interfaces/IRecord";
 
-const props = defineProps({
-    record: {
-        type: Object as PropType<IMapRecord>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    record: IMapRecord;
+}>();
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits<{
+    close: [];
+}>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 

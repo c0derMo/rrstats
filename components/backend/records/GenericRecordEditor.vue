@@ -78,14 +78,13 @@ import {
     type IGenericRecord,
 } from "~/utils/interfaces/IRecord";
 
-const props = defineProps({
-    record: {
-        type: Object as PropType<IGenericRecord>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    record: IGenericRecord;
+}>();
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits<{
+    close: [];
+}>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 

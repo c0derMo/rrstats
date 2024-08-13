@@ -93,18 +93,14 @@ import type {
     IGroupSettings,
 } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    competition: {
-        type: Object as PropType<ICompetition>,
-        required: true,
-    },
-    placements: {
-        type: Object as PropType<ICompetitionPlacement[]>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    competition: ICompetition;
+    placements: ICompetitionPlacement[];
+}>();
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits<{
+    close: [];
+}>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 

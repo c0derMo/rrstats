@@ -58,38 +58,30 @@ interface ExtendedOption {
     value: unknown;
 }
 
-const props = defineProps({
-    items: {
-        type: Array<
-            | number
-            | string
-            | ExtendedOption
+const props = withDefaults(
+    defineProps<{
+        items:
             | number[]
             | string[]
             | ExtendedOption[]
-        >,
-        required: true,
+            | number[][]
+            | string[][]
+            | ExtendedOption[][];
+        columnHeaders?: string[];
+        modelValue: unknown[];
+        disabled?: boolean;
+        emptyText?: string;
+    }>(),
+    {
+        columnHeaders: () => [],
+        disabled: false,
+        emptyText: "",
     },
-    columnHeaders: {
-        type: Array<string>,
-        required: false,
-        default: [],
-    },
-    modelValue: {
-        type: Array<unknown>,
-        required: true,
-    },
-    disabled: {
-        type: Boolean,
-        default: false,
-    },
-    emptyText: {
-        type: String,
-        default: "",
-    },
-});
+);
 
-const emits = defineEmits(["update:modelValue"]);
+const emits = defineEmits<{
+    "update:modelValue": [values: unknown[]];
+}>();
 
 const select: Ref<HTMLDivElement | null> = ref(null);
 const showDropdown = ref(false);

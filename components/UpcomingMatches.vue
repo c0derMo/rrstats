@@ -113,12 +113,9 @@ interface HitmapsMatch {
     matchAdmin: null;
 }
 
-const props = defineProps({
-    tournamentSlug: {
-        type: String,
-        required: true,
-    },
-});
+const props = defineProps<{
+    tournamentSlug: string;
+}>();
 
 const headers = [
     { title: "Date & Time", key: "datetime" },

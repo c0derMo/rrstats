@@ -10,13 +10,16 @@
 </template>
 
 <script setup lang="ts">
-defineEmits(["clickOutside"]);
+defineEmits<{
+    clickOutside: [];
+}>();
 
-defineProps({
-    dialogClass: {
-        type: String,
-        required: false,
-        default: undefined,
+withDefaults(
+    defineProps<{
+        dialogClass?: string;
+    }>(),
+    {
+        dialogClass: undefined,
     },
-});
+);
 </script>

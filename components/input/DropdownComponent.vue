@@ -58,25 +58,22 @@ interface ExtendedOption {
     value: unknown;
 }
 
-const props = defineProps({
-    items: {
-        type: Array as () => number[] | string[] | ExtendedOption[],
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        items: number[] | string[] | ExtendedOption[];
+        modelValue?: number | string;
+        buttonText?: string | null;
+        buttonClass?: string;
+    }>(),
+    {
+        modelValue: undefined,
+        buttonText: null,
+        buttonClass: "",
     },
-    modelValue: {
-        type: [String, Number],
-        default: undefined,
-    },
-    buttonText: {
-        type: String,
-        default: null,
-    },
-    buttonClass: {
-        type: String,
-        default: "",
-    },
-});
-defineEmits(["update:modelValue"]);
+);
+defineEmits<{
+    "update:modelValue": [value: string | number | unknown];
+}>();
 
 const showDropdown = ref(false);
 const element: Ref<HTMLElement | null> = ref(null);

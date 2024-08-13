@@ -150,18 +150,14 @@ import {
 } from "~/utils/interfaces/IMatch";
 import { DateTime, Duration } from "luxon";
 
-defineEmits(["clickOutside"]);
+defineEmits<{
+    clickOutside: [];
+}>();
 
-const props = defineProps({
-    match: {
-        type: Object as PropType<IMatch>,
-        required: true,
-    },
-    opponents: {
-        type: Object as PropType<Record<string, string>>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    match: IMatch;
+    opponents: Record<string, string>;
+}>();
 
 const { data: playerOneStatistics } = await useFetch(
     `/api/player/statistics?player=${props.match.playerOne}`,

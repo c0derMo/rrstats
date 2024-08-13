@@ -42,13 +42,16 @@
 </template>
 
 <script setup lang="ts">
-defineEmits(["confirm"]);
-defineProps({
-    checks: {
-        type: Array<{ id: string; name: string; description: string }>,
-        required: true,
-    },
-});
+defineEmits<{
+    confirm: [
+        selectedChecks: string[],
+        ignoredCompetitions: string[],
+        knownIssues: string,
+    ];
+}>();
+defineProps<{
+    checks: { id: string; name: string; description: string }[];
+}>();
 
 const selectedChecks: Ref<string[]> = ref([]);
 const knownIssues = ref(

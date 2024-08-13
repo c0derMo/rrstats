@@ -181,22 +181,17 @@ const mobileHeaders = [
 const matchToShow: Ref<IMatch | null> = ref(null);
 const searchFilter = ref("");
 
-const props = defineProps({
-    matches: {
-        type: Array<IMatch>,
-        required: false,
-        default: [],
+const props = withDefaults(
+    defineProps<{
+        matches?: IMatch[];
+        players?: Record<string, string>;
+        localPlayer: string;
+    }>(),
+    {
+        matches: () => [],
+        players: () => ({}),
     },
-    players: {
-        type: Object as PropType<Record<string, string>>,
-        required: false,
-        default: () => {},
-    },
-    localPlayer: {
-        type: String,
-        required: true,
-    },
-});
+);
 
 const filteredSortedMatches = computed(() => {
     return props.matches

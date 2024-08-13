@@ -64,14 +64,13 @@
 <script setup lang="ts">
 import type { IPlayer } from "~/utils/interfaces/IPlayer";
 
-const props = defineProps({
-    player: {
-        type: Object as PropType<IPlayer>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    player: IPlayer;
+}>();
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits<{
+    close: [];
+}>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
