@@ -61,17 +61,17 @@
         </template>
     </TableComponent>
 
-    <div class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center">
+    <div class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center flex-nowrap text-nowrap">
         <span class="md:text-base text-sm">Rows per page:</span>
         <DropdownComponent
             v-model="selectedRowsPerPage"
             :items="selectableRowsPerPage"
         />
-        <div class="md:w-3" />
+        <div class="md:max-w-3 w-full" />
         <span class="md:text-base text-sm">
             {{ startIndex + 1 }} - {{ endIndex }} of {{ props.rows.length }}
         </span>
-        <div class="md:w-3" />
+        <div class="md:max-w-3 w-full" />
         <ButtonComponent @click="previousPage">&lt;</ButtonComponent>
         <ButtonComponent @click="nextPage">&gt;</ButtonComponent>
     </div>

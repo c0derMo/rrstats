@@ -16,7 +16,7 @@
         <tbody
             v-for="(row, idx) of rows"
             :key="idx"
-            class="border-b dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
+            class="border-b dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-300"
             @click="$emit('click-row', row, idx)"
         >
             <tr v-if="$slots['before-row']">
@@ -28,7 +28,7 @@
                 <td
                     v-for="header of convertedHeaders"
                     :key="header.key"
-                    class="md:px-6 px-2 py-2"
+                    class="md:px-3 px-1 py-2"
                 >
                     <slot
                         :name="header.key"

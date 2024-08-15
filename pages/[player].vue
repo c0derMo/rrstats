@@ -104,7 +104,7 @@
             </CardComponent>
 
             <div class="flex 2xl:flex-row gap-5 flex-col-reverse">
-                <CardComponent class="2xl:w-fit w-full overflow-x-visible">
+                <CardComponent class="2xl:w-3/12 w-full overflow-x-visible">
                     <TabbedContainer
                         :tabs="['Competitions', 'Opponents', 'Records']"
                     >

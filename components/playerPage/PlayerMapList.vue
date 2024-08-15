@@ -1,43 +1,28 @@
 <template>
     <div>
-        <DoubleEndedSlider
-            v-model:minValue="selectedMinComp"
-            v-model:maxValue="selectedMaxComp"
-            class="w-full mb-2"
-            :max="dropdownCompetitions.length - 1"
-        />
-
-        <div class="flex flex-row w-full">
-            <div class="flex-grow">
-                <DropdownComponent
-                    v-model="selectedMinComp"
-                    :items="dropdownCompetitions"
-                />
-            </div>
-            <div class="flex-grow mr-3">
-                <SwitchComponent
-                    id="only-rr"
-                    v-model="regularRROnly"
-                    label="Only regular RRs:"
-                    class="float-right"
-                />
-            </div>
-            <div class="flex-grow ml-3">
-                <SwitchComponent
-                    id="only-rrwc"
-                    v-model="rrwcOnly"
-                    label="Only RRWCs:"
-                    class="float-left"
-                />
-            </div>
-            <div class="flex-grow">
-                <DropdownComponent
-                    v-model="selectedMaxComp"
-                    :items="dropdownCompetitions"
-                    class="float-right"
-                />
-            </div>
-        </div>
+        <RangeSelector
+            v-model:min-value="selectedMinComp"
+            v-model:max-value="selectedMaxComp"
+            :max="compNames.length - 1"
+            :item-labels="compNames"
+        >
+            <template #additionalChecks>
+                <div class="w-fit">
+                    <SwitchComponent
+                        id="only-rr"
+                        v-model="regularRROnly"
+                        label="Only regular RRs:"
+                        class="mr-2"
+                    />
+                    <SwitchComponent
+                        id="only-rrwc"
+                        v-model="rrwcOnly"
+                        label="Only RRWCs:"
+                        class="ml-2"
+                    />
+                </div>
+            </template>
+        </RangeSelector>
 
         <div class="flex lg:flex-row flex-col gap-5">
             <div class="flex-grow">
@@ -119,27 +104,15 @@ const sortedCompetitions = computed(() => {
         .sort((a, b) => a.startingTimestamp - b.startingTimestamp);
 });
 
-const dropdownCompetitions = computed(() => {
-    return sortedCompetitions.value.map((comp, idx) => {
-        return { text: comp.tag, value: idx };
-    });
+const compNames = computed(() => {
+    return sortedCompetitions.value.map((comp) => comp.tag);
 });
 
 const selectedMinComp = ref(0);
-const selectedMaxComp = ref(dropdownCompetitions.value.length - 1);
+const selectedMaxComp = ref(compNames.value.length - 1);
 const regularRROnly = ref(false);
 const rrwcOnly = ref(false);
 
-watch(selectedMaxComp, () => {
-    if (selectedMaxComp.value < selectedMinComp.value) {
-        selectedMaxComp.value = selectedMinComp.value;
-    }
-});
-watch(selectedMinComp, () => {
-    if (selectedMinComp.value > selectedMaxComp.value) {
-        selectedMinComp.value = selectedMaxComp.value;
-    }
-});
 watch(regularRROnly, () => {
     if (regularRROnly.value && rrwcOnly.value) {
         rrwcOnly.value = false;

@@ -13,12 +13,14 @@
             class="w-full"
             @click="showDropdown = !showDropdown"
         >
-            <div class="text-nowrap min-h-6">
-                {{
-                    buttonText ??
-                    (convertedItems.find((i) => i.value === modelValue)?.text ||
-                        modelValue)
-                }}
+            <div class="text-nowrap flex flex-nowrap min-h-6">
+                <span class="flex-grow">
+                    {{
+                        buttonText ??
+                        (convertedItems.find((i) => i.value === modelValue)?.text ||
+                            modelValue)
+                    }}
+                </span>
                 <FontAwesomeIcon
                     v-if="buttonText === null"
                     :icon="['fas', 'chevron-down']"
