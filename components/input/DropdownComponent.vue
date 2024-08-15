@@ -33,9 +33,13 @@
         </ButtonComponent>
         <div class="relative">
             <div
-                v-if="showDropdown"
                 ref="dropdown"
-                class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full"
+                class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full scale-y-0 opacity-0 transition-all"
+                :class="{
+                    'scale-y-100 opacity-100': showDropdown,
+                    'origin-top': !shouldDropUp,
+                    'origin-bottom': shouldDropUp
+                }"
                 :style="shouldDropUp ? dropupHeight : dropdownHeight"
             >
                 <div
@@ -95,6 +99,9 @@ const dropupHeight = computed(() => {
 });
 
 const shouldDropUp = computed(() => {
+    if (window == null) {
+        return true;
+    }
     return window.innerHeight - elementBottom.value < 200;
 });
 
