@@ -1,7 +1,9 @@
 <template>
     <DialogComponent
         dialog-class="min-w-[45%]"
-        @click-outside="$emit('clickOutside')"
+        :open="dialogOpen"
+        @click-outside="dialogOpen = false"
+        @closed="$emit('clickOutside')"
     >
         <CardComponent class="max-h-screen flex flex-col gap-5">
             <h1 class="text-3xl flex flex-row md:gap-10 gap-1">
@@ -158,6 +160,8 @@ const props = defineProps<{
     match: IMatch;
     opponents: Record<string, string>;
 }>();
+
+const dialogOpen = ref(true);
 
 const { data: playerOneStatistics } = await useFetch(
     `/api/player/statistics?player=${props.match.playerOne}`,
