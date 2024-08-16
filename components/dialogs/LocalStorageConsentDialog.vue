@@ -1,5 +1,5 @@
 <template>
-    <DialogComponent @click-outside="$emit('decline')" :animate-on-show="false">
+    <DialogComponent :animate-on-show="false" @click-outside="$emit('decline')">
         <CardComponent class="fixed right-3 top-10 text-sm">
             <h1 class="font-bold text-base">Just one second</h1>
 

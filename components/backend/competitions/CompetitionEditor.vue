@@ -1,5 +1,9 @@
 <template>
-    <DialogComponent dialog-class="w-3/5">
+    <DialogComponent
+        dialog-class="w-3/5"
+        :open="showDialog"
+        @closed="$emit('close')"
+    >
         <CardComponent class="overflow-y-auto flex flex-col gap-3 max-h-screen">
             <TabbedContainer :tabs="['Basic', 'Groups', 'Placements']">
                 <template #Basic>
@@ -98,12 +102,13 @@ const props = defineProps<{
     placements: ICompetitionPlacement[];
 }>();
 
-const emits = defineEmits<{
+defineEmits<{
     close: [];
 }>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
+const showDialog = ref(true);
 const compData = toRef(props.competition);
 const placementsData = toRef(props.placements);
 const groupsEnabled = ref(compData.value.groupsConfig != null);
@@ -143,10 +148,10 @@ async function save() {
     }
 
     isSaving.value = false;
-    emits("close");
+    showDialog.value = false;
 }
 
 function close() {
-    emits("close");
+    showDialog.value = false;
 }
 </script>

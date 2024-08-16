@@ -17,7 +17,8 @@
                 <span class="flex-grow">
                     {{
                         buttonText ??
-                        (convertedItems.find((i) => i.value === modelValue)?.text ||
+                        (convertedItems.find((i) => i.value === modelValue)
+                            ?.text ||
                             modelValue)
                     }}
                 </span>
@@ -31,30 +32,32 @@
                 />
             </div>
         </ButtonComponent>
-        <div class="relative">
-            <div
-                ref="dropdown"
-                class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full scale-y-0 opacity-0 transition-all"
-                :class="{
-                    'scale-y-100 opacity-100': showDropdown,
-                    'origin-top': !shouldDropUp,
-                    'origin-bottom': shouldDropUp
-                }"
-                :style="shouldDropUp ? dropupHeight : dropdownHeight"
-            >
+        <ClientOnly>
+            <div class="relative">
                 <div
-                    v-for="(item, idx) of convertedItems"
-                    :key="idx"
-                    class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600 min-h-4"
-                    @click="
-                        $emit('update:modelValue', item.value);
-                        showDropdown = false;
-                    "
+                    ref="dropdown"
+                    class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full scale-y-0 opacity-0 transition-all"
+                    :class="{
+                        'scale-y-100 opacity-100': showDropdown,
+                        'origin-top': !shouldDropUp,
+                        'origin-bottom': shouldDropUp,
+                    }"
+                    :style="shouldDropUp ? dropupHeight : dropdownHeight"
                 >
-                    {{ item.text }}
+                    <div
+                        v-for="(item, idx) of convertedItems"
+                        :key="idx"
+                        class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600 min-h-4"
+                        @click="
+                            $emit('update:modelValue', item.value);
+                            showDropdown = false;
+                        "
+                    >
+                        {{ item.text }}
+                    </div>
                 </div>
             </div>
-        </div>
+        </ClientOnly>
     </div>
 </template>
 
@@ -99,9 +102,6 @@ const dropupHeight = computed(() => {
 });
 
 const shouldDropUp = computed(() => {
-    if (window == null) {
-        return true;
-    }
     return window.innerHeight - elementBottom.value < 200;
 });
 

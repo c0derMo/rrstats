@@ -1,5 +1,9 @@
 <template>
-    <DialogComponent dialog-class="w-3/5">
+    <DialogComponent
+        dialog-class="w-3/5"
+        :open="showDialog"
+        @closed="$emit('close')"
+    >
         <CardComponent class="max-h-screen !overflow-visible">
             <TextInputComponent
                 v-model="matchData.uuid"
@@ -123,11 +127,12 @@ const props = withDefaults(
     },
 );
 
-const emits = defineEmits<{
+defineEmits<{
     close: [];
     "update:hitmapsOverlayUrl": [value: string];
 }>();
 
+const showDialog = ref(true);
 const matchData: Ref<IMatch> = ref(props.match);
 const playerToUUIDTable: Ref<Record<string, string>> = ref({});
 const players = ref([matchData.value.playerOne, matchData.value.playerTwo]);
@@ -207,10 +212,10 @@ async function save() {
     }
 
     isSaving.value = false;
-    emits("close");
+    showDialog.value = false;
 }
 
 function close() {
-    emits("close");
+    showDialog.value = false;
 }
 </script>

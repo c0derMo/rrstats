@@ -1,5 +1,9 @@
 <template>
-    <DialogComponent dialog-class="w-3/5">
+    <DialogComponent
+        dialog-class="w-3/5"
+        :open="showDialog"
+        @closed="$emit('close')"
+    >
         <CardComponent class="overflow-x-visible">
             <div class="flex flex-col gap-5">
                 <DropdownComponent
@@ -65,12 +69,13 @@ const props = defineProps<{
     record: IMapRecord;
 }>();
 
-const emits = defineEmits<{
+defineEmits<{
     close: [];
 }>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
+const showDialog = ref(true);
 const recordData: Ref<IMapRecord> = toRef(props.record);
 const isSaving = ref(false);
 const rawMatches: Ref<IMatch[]> = ref([]);
@@ -166,11 +171,11 @@ async function save() {
     }
 
     isSaving.value = false;
-    emits("close");
+    showDialog.value = false;
 }
 
 function close() {
-    emits("close");
+    showDialog.value = false;
 }
 
 async function loadPlayers() {

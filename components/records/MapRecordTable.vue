@@ -8,7 +8,7 @@
     <RecordHistoryDialog
         v-if="historyMap != null"
         :map="historyMap"
-        @click-outside="historyMap = null"
+        @closed="historyMap = null"
     />
 
     <TableComponent :headers="headers" :rows="sortedRecords">
@@ -56,12 +56,14 @@
         </template>
 
         <template #more="{ row }">
-            <ButtonComponent @click="historyMap = row.map">
-                <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
-            </ButtonComponent>
-            <ButtonComponent @click="detailedMatch = matches[row.match]">
-                <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
-            </ButtonComponent>
+            <div class="flex flex-nowrap">
+                <ButtonComponent @click="historyMap = row.map">
+                    <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
+                </ButtonComponent>
+                <ButtonComponent @click="detailedMatch = matches[row.match]">
+                    <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
+                </ButtonComponent>
+            </div>
         </template>
     </TableComponent>
 </template>

@@ -61,7 +61,9 @@
         </template>
     </TableComponent>
 
-    <div class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center flex-nowrap text-nowrap">
+    <div
+        class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center flex-nowrap text-nowrap"
+    >
         <span class="md:text-base text-sm">Rows per page:</span>
         <DropdownComponent
             v-model="selectedRowsPerPage"

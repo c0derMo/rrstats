@@ -4,8 +4,14 @@
             <div
                 class="absolute w-full h-full bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded"
             />
-            <div class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded scale-y-75 transition-all duration-200" :style="selectorStyle" />
-            <div class="flex flex-row w-full gap-3 p-1 z-10" ref="parentElement">
+            <div
+                class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded scale-y-75 transition-all duration-200"
+                :style="selectorStyle"
+            />
+            <div
+                ref="parentElement"
+                class="flex flex-row w-full gap-3 p-1 z-10"
+            >
                 <div
                     v-for="tab in tabs"
                     :key="tab"
@@ -44,7 +50,7 @@ const parentElement = ref<HTMLDivElement | null>(null);
 
 const selectorStyle = computed(() => {
     return `width: ${(tabElement.value?.clientWidth ?? 2) - 2}px; left: ${(tabElement.value?.offsetLeft ?? 0) + 1}px`;
-})
+});
 
 function changeTab(tab: string, event: MouseEvent) {
     selectedTab.value = tab;
@@ -56,6 +62,7 @@ watch(selectedTab, () => {
 });
 
 onMounted(() => {
-    tabElement.value = parentElement.value?.children.item(0) as HTMLDivElement ?? null;
-})
+    tabElement.value =
+        (parentElement.value?.children.item(0) as HTMLDivElement) ?? null;
+});
 </script>

@@ -9,7 +9,7 @@
         v-if="historyRecord != null"
         :generic-record="historyRecord"
         :players="players"
-        @click-outside="historyRecord = null"
+        @closed="historyRecord = null"
     />
 
     <TableComponent :headers="headers" :rows="sortedRecords">
@@ -55,12 +55,14 @@
         </template>
 
         <template #more="{ row }">
-            <ButtonComponent @click="historyRecord = row.record">
-                <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
-            </ButtonComponent>
-            <ButtonComponent @click="detailedMatch = matches[row.match]">
-                <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
-            </ButtonComponent>
+            <div class="flex flex-nowrap">
+                <ButtonComponent @click="historyRecord = row.record">
+                    <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
+                </ButtonComponent>
+                <ButtonComponent @click="detailedMatch = matches[row.match]">
+                    <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
+                </ButtonComponent>
+            </div>
         </template>
     </TableComponent>
 </template>

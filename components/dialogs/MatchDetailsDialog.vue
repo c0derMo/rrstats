@@ -137,9 +137,7 @@
                     </div>
                 </template>
             </div>
-            <ButtonComponent @click="$emit('clickOutside')"
-                >Close</ButtonComponent
-            >
+            <ButtonComponent @click="dialogOpen = false">Close</ButtonComponent>
         </CardComponent>
     </DialogComponent>
 </template>

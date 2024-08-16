@@ -1,5 +1,10 @@
 <template>
-    <DialogComponent dialog-class="w-4/5 h-4/5">
+    <DialogComponent
+        dialog-class="w-4/5 h-4/5"
+        :open="showDialog"
+        @click-outside="showDialog = false"
+        @closed="$emit('closed')"
+    >
         <CardComponent class="w-full h-full">
             <div class="flex flex-col w-full h-full">
                 <h1 class="text-center text-xl bold">Record Progression</h1>
@@ -67,6 +72,11 @@ const props = withDefaults(
     },
 );
 
+defineEmits<{
+    closed: [];
+}>();
+
+const showDialog = ref(true);
 const selectedRecords: Ref<(number | string)[]> = ref([]);
 
 const records: Ref<(IMapRecord | IGenericRecord)[][]> = ref([]);
