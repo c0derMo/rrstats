@@ -10,6 +10,7 @@ import LeaderboardController, {
 } from "./controller/LeaderboardController";
 import { PlayerStatisticDatabaseListener } from "./controller/PlayerStatisticController";
 import consola from "consola";
+import { PlayedMap } from "./model/PlayedMap";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -27,6 +28,7 @@ export default defineNitroPlugin(async (nitroApp) => {
             Competition,
             CompetitionPlacement,
             User,
+            PlayedMap,
         ],
         subscribers: [
             PlayerAccoladeSubscriber,

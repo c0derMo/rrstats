@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
-import type { IMatch, RRBannedMap, RRMap } from "~/utils/interfaces/IMatch";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from "typeorm";
+import type { IMatch, RRBannedMap } from "~/utils/interfaces/IMatch";
+import { PlayedMap } from "./PlayedMap";
 
 @Entity()
 export class Match extends BaseEntity implements IMatch {
@@ -31,12 +32,13 @@ export class Match extends BaseEntity implements IMatch {
     platform?: string;
 
     @Column("simple-json")
-    playedMaps: RRMap[];
-    @Column("simple-json")
     bannedMaps: RRBannedMap[];
 
     @Column("simple-json", { nullable: true })
     shoutcasters?: string[];
     @Column("simple-json", { nullable: true })
     vodLink?: string[];
+
+    @OneToMany(() => PlayedMap, (map) => map.match, { eager: true })
+    playedMaps: PlayedMap[];
 }
