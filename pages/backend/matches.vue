@@ -119,12 +119,12 @@ const matchesToShow = computed(() => {
 
     if (filter.value.includes("No VOD")) {
         result = result.filter((match) => {
-            return match.vodLink == null;
+            return match.vodLink == null || match.vodLink.length <= 0;
         });
     }
     if (filter.value.includes("No Shoutcasters")) {
         result = result.filter((match) => {
-            return match.shoutcasters == null || match.shoutcasters.length > 0;
+            return match.shoutcasters == null || match.shoutcasters.length <= 0;
         });
     }
     if (filter.value.includes("No Spin")) {

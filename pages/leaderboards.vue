@@ -304,8 +304,11 @@ const searchedLeaderboardData = computed(() => {
     return filteredLeaderboardData.value.filter((data) => {
         return (
             playerLookup
-                .get((data as LeaderboardPlayerEntry).player, "")
-                .toLowerCase()
+                .get(
+                    (data as LeaderboardPlayerEntry).player,
+                    (data as LeaderboardPlayerEntry).player,
+                )
+                ?.toLowerCase()
                 .includes(search.value.toLowerCase()) ||
             (data as LeaderboardCountryEntry).country
                 ?.toLowerCase()

@@ -5,8 +5,6 @@ import type { IPlayer } from "~/utils/interfaces/IPlayer";
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
 
-    console.log("Lookup queried");
-
     let rawPlayers: IPlayer[];
     if (query.players !== undefined) {
         if (Array.isArray(query.players)) {
