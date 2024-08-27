@@ -82,8 +82,8 @@
                             v-for="(spin, idx) in data.mostRepeated.spins[0]"
                             :key="idx"
                         >
-                            {{ players[spin.match.playerOne] }} and
-                            {{ players[spin.match.playerTwo] }} in
+                            {{ players.get(spin.match.playerOne) }} and
+                            {{ players.get(spin.match.playerTwo) }} in
                             {{ spin.match.competition }} {{ spin.match.round }}
                         </div>
                     </template>
@@ -157,10 +157,12 @@ import { type IPlayedMap, WinningPlayer } from "~/utils/interfaces/IMatch";
 
 const props = defineProps<{
     map: number;
-    players: Record<string, string>;
 }>();
 
 const loading = ref(true);
+const players = usePlayers();
+
+await players.queryAll();
 
 const data = ref({
     total: 0,
@@ -202,22 +204,22 @@ const percentageOfSpinsCompleted = computed(() => {
 
 function getSpinWinner(spin: IPlayedMap): string {
     if (spin.winner === WinningPlayer.PLAYER_ONE) {
-        return props.players[spin.match.playerOne];
+        return players.get(spin.match.playerOne);
     } else if (spin.winner === WinningPlayer.PLAYER_TWO) {
-        return props.players[spin.match.playerTwo];
+        return players.get(spin.match.playerTwo);
     }
     return `Draw`;
 }
 
 function getSpinLoser(spin: IPlayedMap): string {
     if (spin.winner === WinningPlayer.PLAYER_ONE) {
-        return props.players[spin.match.playerTwo];
+        return players.get(spin.match.playerTwo);
     } else if (spin.winner === WinningPlayer.PLAYER_TWO) {
-        return props.players[spin.match.playerOne];
+        return players.get(spin.match.playerOne);
     }
-    return `(${props.players[spin.match.playerOne]}, ${
-        props.players[spin.match.playerTwo]
-    })`;
+    return `(${players.get(spin.match.playerOne)}, ${players.get(
+        spin.match.playerTwo,
+    )})`;
 }
 
 async function update() {

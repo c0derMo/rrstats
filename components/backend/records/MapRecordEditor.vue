@@ -82,9 +82,10 @@ const rawMatches: Ref<IMatch[]> = ref([]);
 const possibleMaps: Ref<{ text: string; value: number }[]> = ref([]);
 const playerInvalid = ref(false);
 const player = ref("");
-const playerToUUIDTable: Ref<Record<string, string>> = ref({});
-const uuidToPlayerTable: Ref<Record<string, string>> = ref({});
 const showAllMatches = ref(false);
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
 
 const maps = getAllMaps().map((map) => {
     return { text: getMap(map)!.name, value: map };
@@ -102,11 +103,11 @@ const shownMatches = computed(() => {
 const possibleMatches = computed(() => {
     return shownMatches.value.map((match) => {
         return {
-            text: `${match.competition} ${match.round} ${
-                uuidToPlayerTable.value[match.playerOne]
-            } ${match.playerOneScore} - ${match.playerTwoScore} ${
-                uuidToPlayerTable.value[match.playerTwo]
-            }`,
+            text: `${match.competition} ${match.round} ${playerLookup.get(
+                match.playerOne,
+            )} ${match.playerOneScore} - ${match.playerTwoScore} ${playerLookup.get(
+                match.playerTwo,
+            )}`,
             value: match.uuid,
         };
     });
@@ -114,12 +115,12 @@ const possibleMatches = computed(() => {
 
 async function checkPlayerAndUpdateMatches(initialLoad?: boolean) {
     playerInvalid.value = false;
-    if (playerToUUIDTable.value[player.value.trim()] == null) {
+    if (playerLookup.getUUID(player.value.trim()) == null) {
         playerInvalid.value = true;
         return;
     }
 
-    recordData.value.player = playerToUUIDTable.value[player.value.trim()];
+    recordData.value.player = playerLookup.getUUID(player.value.trim());
 
     const matchRequest = await $fetch("/api/matches/player", {
         query: { player: recordData.value.player },
@@ -178,26 +179,5 @@ function close() {
     showDialog.value = false;
 }
 
-async function loadPlayers() {
-    const playersRequest = await useFetch("/api/player/lookup");
-    if (
-        playersRequest.data.value == null ||
-        playersRequest.status.value !== "success"
-    ) {
-        return;
-    }
-
-    uuidToPlayerTable.value = playersRequest.data.value as Record<
-        string,
-        string
-    >;
-    for (const uuid in uuidToPlayerTable.value) {
-        playerToUUIDTable.value[uuidToPlayerTable.value[uuid]] = uuid;
-    }
-
-    player.value = uuidToPlayerTable.value[recordData.value.player] ?? "";
-}
-
-await loadPlayers();
 await checkPlayerAndUpdateMatches(true);
 </script>

@@ -83,7 +83,7 @@ const records: Ref<(IMapRecord | IGenericRecord)[][]> = ref([]);
 const labels: Ref<string[]> = ref([]);
 const colors: Ref<string[]> = ref([]);
 
-const players: Ref<Record<string, string>> = ref({});
+const playerLookup = usePlayers();
 
 const showGraph = ref(false);
 
@@ -154,9 +154,7 @@ async function queryPlayers() {
         }
     }
 
-    players.value = await $fetch<Record<string, string>>("/api/player/lookup", {
-        query: { players: playersToLookup },
-    });
+    await playerLookup.queryPlayers(playersToLookup);
 }
 
 const selectedScale = ref("All time");
@@ -209,15 +207,10 @@ function rebuildRecord(
 
     let recordHolders: string[] = [];
     if (isMapRecord(startingRecord)) {
-        recordHolders = [
-            players.value[startingRecord.player] ||
-                `Unknown player: ${startingRecord.player}`,
-        ];
+        recordHolders = [playerLookup.get(startingRecord.player)];
     }
     if (isGenericRecord(startingRecord)) {
-        recordHolders = startingRecord.players.map(
-            (p) => players.value[p] || `Unknown player: ${p}`,
-        );
+        recordHolders = startingRecord.players.map((p) => playerLookup.get(p));
     }
 
     const points: unknown[] = [];
@@ -230,15 +223,10 @@ function rebuildRecord(
             currentRecordIndex++;
             const record = sortedRecords[currentRecordIndex];
             if (isMapRecord(record)) {
-                recordHolders = [
-                    players.value[record.player] ||
-                        `Unknown player: ${record.player}`,
-                ];
+                recordHolders = [playerLookup.get(record.player)];
             }
             if (isGenericRecord(record)) {
-                recordHolders = record.players.map(
-                    (p) => players.value[p] || `Unknown player: ${p}`,
-                );
+                recordHolders = record.players.map((p) => playerLookup.get(p));
             }
         }
 

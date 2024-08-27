@@ -96,7 +96,7 @@
                     </template>
                     <template #player="{ value }">
                         <PlayerLinkTag
-                            :player="playerLookupTable[value] ?? value"
+                            :player="playerLookup.get(value, value)"
                         />
                     </template>
                 </DataTableComponent>
@@ -166,7 +166,7 @@
                                 class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300"
                             >
                                 <div class="flex-grow">
-                                    {{ playerLookupTable[player.player] }}
+                                    {{ playerLookup.get(player.player) }}
                                 </div>
                                 <div class="flex-grow text-right">
                                     {{ player.displayScore }}
@@ -203,11 +203,6 @@ const playerCategories = categoryRequest.data.value?.player ?? [];
 const countryCategories = categoryRequest.data.value?.country ?? [];
 const mapCategories = categoryRequest.data.value?.map ?? [];
 
-const { data: playerLookupTable } = await useFetch<Record<string, string>>(
-    `/api/player/lookup`,
-    { default: () => ({}) },
-);
-
 const selectedTab = ref("Players");
 const selectedCategory: Ref<{
     name: string;
@@ -225,6 +220,9 @@ const secondaryFilter = ref(0);
 const selectedMap: Ref<number> = ref(HitmanMap.PARIS);
 const search = ref("");
 const expandedCountry = ref("");
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
 
 const selectableMaps = computed(() => {
     const maps = getAllMaps().map((map) => {
@@ -305,8 +303,9 @@ const searchedLeaderboardData = computed(() => {
     }
     return filteredLeaderboardData.value.filter((data) => {
         return (
-            playerLookupTable.value[(data as LeaderboardPlayerEntry).player]
-                ?.toLowerCase()
+            playerLookup
+                .get((data as LeaderboardPlayerEntry).player, "")
+                .toLowerCase()
                 .includes(search.value.toLowerCase()) ||
             (data as LeaderboardCountryEntry).country
                 ?.toLowerCase()

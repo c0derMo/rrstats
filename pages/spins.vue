@@ -3,7 +3,6 @@
         <MatchDetailsDialog
             v-if="detailedMatch != null"
             :match="detailedMatch"
-            :opponents="playerLookup"
             @click-outside="
                 detailedMatch = null;
                 loadingUuid = '';
@@ -23,10 +22,7 @@
 
             <TabbedContainer :tabs="['Spins', 'Statistics']">
                 <template #Statistics>
-                    <SpinStatistics
-                        :map="selectedMap"
-                        :players="playerLookup"
-                    />
+                    <SpinStatistics :map="selectedMap" />
                 </template>
 
                 <template #Spins>
@@ -180,12 +176,10 @@ const queryQueue = ref<number[]>([]);
 const currentlyQuerying = ref<Promise<void> | null>(null);
 const triggerReGet = ref(0);
 const amountSpins = ref(0);
+const playerLookup = usePlayers();
 
-const { data: playerLookup } = await useFetch("/api/player/lookup", {
-    default() {
-        return {} as Record<string, string>;
-    },
-});
+await playerLookup.queryAll();
+
 const disguises: Ref<string[]> = ref([]);
 const killMethods: Ref<Record<string, string[]>> = ref({});
 
@@ -305,7 +299,6 @@ async function updateSpins() {
     }
 
     try {
-        const playerRequest = await $fetch(`/api/player/lookup`);
         if (selectedMap.value >= 0) {
             const conditionsRequest = await $fetch("/api/spins/filters", {
                 query: { map: selectedMap.value },
@@ -316,7 +309,6 @@ async function updateSpins() {
             disguises.value = [];
             killMethods.value = {};
         }
-        playerLookup.value = playerRequest;
     } catch (e) {
         console.warn("Updating spins failed");
         return;
@@ -344,26 +336,26 @@ function isDraw(map: IPlayedMap): boolean {
 
 function joinPlayers(map: IPlayedMap): string {
     return (
-        playerLookup.value[map.match.playerOne] +
+        playerLookup.get(map.match.playerOne) +
         ", " +
-        playerLookup.value[map.match.playerTwo]
+        playerLookup.get(map.match.playerTwo)
     );
 }
 
 function getWinningPlayer(map: IPlayedMap): string {
     if (map.winner === WinningPlayer.PLAYER_ONE) {
-        return playerLookup.value[map.match.playerOne];
+        return playerLookup.get(map.match.playerOne);
     } else if (map.winner === WinningPlayer.PLAYER_TWO) {
-        return playerLookup.value[map.match.playerTwo];
+        return playerLookup.get(map.match.playerTwo);
     }
     return "n/a";
 }
 
 function getLosingPlayer(map: IPlayedMap): string {
     if (map.winner === WinningPlayer.PLAYER_ONE) {
-        return playerLookup.value[map.match.playerTwo];
+        return playerLookup.get(map.match.playerTwo);
     } else if (map.winner === WinningPlayer.PLAYER_TWO) {
-        return playerLookup.value[map.match.playerOne];
+        return playerLookup.get(map.match.playerOne);
     }
     return "n/a";
 }

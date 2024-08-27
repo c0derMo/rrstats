@@ -98,9 +98,10 @@ const isSaving = ref(false);
 const possibleMatches: Ref<{ text: string; value: string }[]> = ref([]);
 const playersInvalid = ref(false);
 const players = ref("");
-const playerToUUIDTable: Ref<Record<string, string>> = ref({});
-const uuidToPlayerTable: Ref<Record<string, string>> = ref({});
 const isTimeInvalid = ref(Array(recordData.value.maps.length).fill(false));
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
 
 const mapHeaders = [
     { title: "Map", key: "map" },
@@ -121,7 +122,7 @@ const totalTime = computed(() => {
 async function checkPlayersAndUpdateMatches() {
     playersInvalid.value = false;
     players.value.split(",").forEach((player) => {
-        if (playerToUUIDTable.value[player.trim()] == null) {
+        if (playerLookup.getUUID(player.trim()) == null) {
             playersInvalid.value = true;
         }
     });
@@ -131,18 +132,18 @@ async function checkPlayersAndUpdateMatches() {
 
     recordData.value.players = players.value
         .split(",")
-        .map((player) => playerToUUIDTable.value[player.trim()]);
+        .map((player) => playerLookup.getUUID(player.trim()));
 
     const matchRequest = await $fetch("/api/matches/versus", {
         query: { players: recordData.value.players },
     });
     possibleMatches.value = matchRequest.map((match) => {
         return {
-            text: `${match.competition} ${match.round} ${
-                uuidToPlayerTable.value[match.playerOne]
-            } ${match.playerOneScore} - ${match.playerTwoScore} ${
-                uuidToPlayerTable.value[match.playerTwo]
-            }`,
+            text: `${match.competition} ${match.round} ${playerLookup.get(
+                match.playerOne,
+            )} ${match.playerOneScore} - ${match.playerTwoScore} ${playerLookup.get(
+                match.playerTwo,
+            )}`,
             value: match.uuid,
         };
     });
@@ -203,28 +204,5 @@ function close() {
     showDialog.value = false;
 }
 
-async function loadPlayers() {
-    const playersRequest = await useFetch("/api/player/lookup");
-    if (
-        playersRequest.data.value == null ||
-        playersRequest.status.value !== "success"
-    ) {
-        return;
-    }
-
-    uuidToPlayerTable.value = playersRequest.data.value as Record<
-        string,
-        string
-    >;
-    for (const uuid in uuidToPlayerTable.value) {
-        playerToUUIDTable.value[uuidToPlayerTable.value[uuid]] = uuid;
-    }
-
-    players.value = recordData.value.players
-        .map((player) => uuidToPlayerTable.value[player])
-        .join(", ");
-}
-
-await loadPlayers();
 await checkPlayersAndUpdateMatches();
 </script>

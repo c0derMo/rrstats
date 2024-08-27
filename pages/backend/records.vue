@@ -53,10 +53,7 @@
                         }}
                     </template>
                     <template #player="{ value }">
-                        {{
-                            playerLookupTable[value] ??
-                            `unknown player: ${value}`
-                        }}
+                        {{ playerLookup.get(value) }}
                     </template>
                     <template #time="{ value }">
                         {{ secondsToTime(value) }}
@@ -122,11 +119,7 @@
                     <template #players="{ value }: { value: string[] }">
                         {{
                             value
-                                .map(
-                                    (player) =>
-                                        playerLookupTable[player] ??
-                                        `unknown player: ${player}`,
-                                )
+                                .map((player) => playerLookup.get(player))
                                 .join(", ")
                         }}
                     </template>
@@ -175,9 +168,11 @@ const genericRecords: Ref<IGenericRecord[]> = ref([]);
 const mapFilter = ref(-1);
 const genericFilter = ref("");
 const currentlyDeleting = ref(-1);
-const playerLookupTable: Ref<Record<string, string>> = ref({});
 const genericRecordToEdit: Ref<IGenericRecord | null> = ref(null);
 const mapRecordToEdit: Ref<IMapRecord | null> = ref(null);
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
 
 const mapFilterOptions = computed(() => {
     return [
@@ -272,11 +267,6 @@ async function deleteRecord(
     currentlyDeleting.value = -1;
 }
 
-async function updatePlayerLookupTable() {
-    const playerQuery = await $fetch("/api/player/lookup");
-    playerLookupTable.value = playerQuery;
-}
-
 async function updateLists() {
     const recordQuery = await $fetch("/api/records/list");
     mapRecords.value = recordQuery.mapRecords;
@@ -284,5 +274,4 @@ async function updateLists() {
 }
 
 await updateLists();
-await updatePlayerLookupTable();
 </script>

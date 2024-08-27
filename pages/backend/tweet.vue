@@ -71,6 +71,7 @@ const tweets: Ref<string[]> = ref([""]);
 const tweeting = ref(false);
 const success = ref(false);
 const error = ref(false);
+const playerLookup = usePlayers();
 
 definePageMeta({
     layout: "backend",
@@ -193,22 +194,6 @@ async function tweet() {
     tweeting.value = false;
 }
 
-async function fetchPlayerNames(playerUuids: string[]): Promise<string[]> {
-    try {
-        const lookupQuery = await $fetch("/api/player/lookup", {
-            query: { players: playerUuids },
-        });
-        const players: string[] = [];
-        for (const player of playerUuids) {
-            players.push(lookupQuery[player]);
-        }
-
-        return players;
-    } catch {
-        return [];
-    }
-}
-
 async function fetchPreviousRecord(
     record: IMapRecord | IGenericRecord,
 ): Promise<PreviousRecord[]> {
@@ -239,11 +224,11 @@ async function fetchPreviousRecord(
         const nextRecord = records.pop() as IMapRecord | IGenericRecord;
         let players: string[];
         if (Object.hasOwn(nextRecord, "player")) {
-            players = await fetchPlayerNames([
+            players = await playerLookup.queryAndGet([
                 (nextRecord as IMapRecord).player,
             ]);
         } else {
-            players = await fetchPlayerNames(
+            players = await playerLookup.queryAndGet(
                 (nextRecord as IGenericRecord).players,
             );
         }

@@ -9,7 +9,7 @@
             <h1 class="text-3xl flex flex-row md:gap-10 gap-1">
                 <div class="flex-1 text-right">
                     <Tag :color="getPlayerColor(1)">
-                        {{ opponents[match.playerOne] }}
+                        {{ players.get(match.playerOne) }}
                     </Tag>
                 </div>
                 <span
@@ -20,7 +20,7 @@
                 >
                 <div class="flex-1 text-left">
                     <Tag :color="getPlayerColor(2)">
-                        {{ opponents[match.playerTwo] }}
+                        {{ players.get(match.playerTwo) }}
                     </Tag>
                 </div>
             </h1>
@@ -156,10 +156,12 @@ defineEmits<{
 
 const props = defineProps<{
     match: IMatch;
-    opponents: Record<string, string>;
 }>();
 
 const dialogOpen = ref(true);
+const players = usePlayers();
+
+await players.queryPlayers([props.match.playerOne, props.match.playerTwo]);
 
 const { data: playerOneStatistics } = await useFetch(
     `/api/player/statistics?player=${props.match.playerOne}`,
@@ -186,10 +188,10 @@ function getPlayerName(
     switch (player) {
         case ChoosingPlayer.PLAYER_ONE:
         case WinningPlayer.PLAYER_ONE:
-            return props.opponents[props.match.playerOne] || "unknown";
+            return players.get(props.match.playerOne, "unknown");
         case ChoosingPlayer.PLAYER_TWO:
         case WinningPlayer.PLAYER_TWO:
-            return props.opponents[props.match.playerTwo] || "unknown";
+            return players.get(props.match.playerTwo, "unknown");
         case ChoosingPlayer.RANDOM:
         case WinningPlayer.DRAW:
             return randomDrawOption;

@@ -42,7 +42,7 @@
             </template>
 
             <template #playerOne="{ value }">
-                {{ playerLookupTable[value] }}
+                {{ playerLookup.get(value) }}
             </template>
 
             <template #score="{ row }">
@@ -50,7 +50,7 @@
             </template>
 
             <template #playerTwo="{ value }">
-                {{ playerLookupTable[value] }}
+                {{ playerLookup.get(value) }}
             </template>
 
             <template #more="{ row }">
@@ -83,11 +83,13 @@ definePageMeta({
 });
 
 const matches: Ref<IMatch[]> = ref([]);
-const playerLookupTable: Ref<Record<string, string>> = ref({});
+const playerLookup = usePlayers();
 const matchToShow: Ref<IMatch | null> = ref(null);
 const search = ref("");
 const filter: Ref<string[]> = ref([]);
 const hitmapsOverlayUrl = ref("");
+
+await playerLookup.queryAll();
 
 const headers = [
     { key: "competition", title: "Competition" },
@@ -104,9 +106,9 @@ const matchesToShow = computed(() => {
     if (search.value !== "") {
         result = result.filter((match) => {
             if (match.competition.includes(search.value)) return true;
-            if (playerLookupTable.value[match.playerOne].includes(search.value))
+            if (playerLookup.get(match.playerOne).includes(search.value))
                 return true;
-            if (playerLookupTable.value[match.playerTwo].includes(search.value))
+            if (playerLookup.get(match.playerTwo).includes(search.value))
                 return true;
             if (match.round.includes(search.value)) return true;
             if (match.uuid.includes(search.value)) return true;
@@ -159,17 +161,10 @@ async function deleteMatch(uuid: string) {
     await updateList();
 }
 
-async function updatePlayers() {
-    const playerQuery =
-        await $fetch<Record<string, string>>("/api/player/lookup");
-    playerLookupTable.value = playerQuery;
-}
-
 async function updateList() {
     const matchQuery = await $fetch("/api/matches/list");
     matches.value = matchQuery;
 }
 
 await updateList();
-await updatePlayers();
 </script>
