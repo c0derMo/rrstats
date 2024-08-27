@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
         const match = await Match.findOne({
             where: { uuid: query.uuid as string },
             select: [
+                "uuid",
                 "bannedMaps",
                 "competition",
                 "platform",

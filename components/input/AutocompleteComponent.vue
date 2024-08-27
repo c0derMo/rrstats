@@ -36,6 +36,8 @@
 const emits = defineEmits<{
     confirm: [value: string];
     input: [value: string];
+    defocus: [];
+    focus: [];
 }>();
 const props = withDefaults(
     defineProps<{
@@ -127,5 +129,13 @@ watch(currentSuggestions, (newValue) => {
 
 watch(value, () => {
     emits("input", value.value);
+});
+
+watch(isFocussed, (value) => {
+    if (value) {
+        emits("focus");
+    } else {
+        emits("defocus");
+    }
 });
 </script>

@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from "typeorm";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    BaseEntity,
+    OneToMany,
+} from "typeorm";
 import type { IMatch, RRBannedMap } from "~/utils/interfaces/IMatch";
 import { PlayedMap } from "./PlayedMap";
 

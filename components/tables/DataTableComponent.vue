@@ -1,4 +1,5 @@
 <template>
+    <IndefiniteProgressBar v-if="asyncIsQuerying" />
     <TableComponent
         :headers="convertedHeaders"
         :rows="filteredRows"
@@ -71,7 +72,7 @@
         />
         <div class="md:max-w-3 w-full" />
         <span class="md:text-base text-sm">
-            {{ startIndex + 1 }} - {{ endIndex }} of {{ props.rows.length }}
+            {{ startIndex + 1 }} - {{ endIndex }} of {{ amountOfItems }}
         </span>
         <div class="md:max-w-3 w-full" />
         <ButtonComponent @click="previousPage">&lt;</ButtonComponent>
@@ -90,7 +91,7 @@ interface ExtendedHeader {
 const props = withDefaults(
     defineProps<{
         headers: string[] | ExtendedHeader[];
-        rows: R[];
+        rows?: R[];
         enableSorting?: boolean;
         alwaysSort?: boolean;
         defaultSortingKey?: string;
@@ -98,8 +99,16 @@ const props = withDefaults(
         rowsPerPage?: number[];
         selectedRowsPerPage?: number;
         disableAllPerPage?: boolean;
+        numberOfItems?: number;
+        queryFunction?: (
+            skip: number,
+            take: number,
+            orderBy: string | null,
+            sortingOrder: "ASC" | "DESC" | null,
+        ) => Promise<R[]>;
     }>(),
     {
+        rows: undefined,
         enableSorting: true,
         alwaysSort: false,
         defaultSortingKey: undefined,
@@ -107,6 +116,8 @@ const props = withDefaults(
         rowsPerPage: () => [5, 10, 20],
         selectedRowsPerPage: 5,
         disableAllPerPage: false,
+        numberOfItems: undefined,
+        queryFunction: undefined,
     },
 );
 
@@ -115,10 +126,19 @@ const emits = defineEmits<{
     "click-row": [row: R, index: number];
 }>();
 
+if (
+    props.rows == null &&
+    (props.numberOfItems == null || props.queryFunction == null)
+) {
+    throw new Error("rows or numberOfItems and queryFunction must be set");
+}
+
 const selectedRowsPerPage = ref(props.selectedRowsPerPage);
 const selectedPage = ref(1);
 const sortingBy: Ref<ExtendedHeader | null> = ref(null);
 const sortingOrder: Ref<"ASC" | "DESC" | null> = ref(null);
+const asyncItems: Ref<R[]> = ref([]);
+const asyncIsQuerying = ref(false);
 
 watch(selectedRowsPerPage, () => {
     emits("update:selectedRowsPerPage", selectedRowsPerPage.value);
@@ -129,6 +149,20 @@ watch(
         selectedRowsPerPage.value = props.selectedRowsPerPage;
     },
 );
+
+const isAsync = computed<boolean>(() => {
+    return props.queryFunction != null;
+});
+
+const amountOfItems = computed<number>(() => {
+    if (props.rows != null) {
+        return props.rows.length;
+    }
+    if (props.numberOfItems != null) {
+        return props.numberOfItems;
+    }
+    throw new Error("rows or numberOfItems and queryFunction must be set");
+});
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     if (props.headers.length === 0) {
@@ -147,7 +181,7 @@ const selectableRowsPerPage = computed(() => {
         return { text: String(rPP), value: rPP };
     });
     if (!props.disableAllPerPage) {
-        converted.push({ text: "All", value: props.rows.length });
+        converted.push({ text: "All", value: amountOfItems.value });
     }
     return converted;
 });
@@ -178,12 +212,18 @@ const startIndex = computed(() => {
 const endIndex = computed(() => {
     return Math.min(
         selectedPage.value * selectedRowsPerPage.value,
-        props.rows.length,
+        amountOfItems.value,
     );
 });
 
-const filteredRows = computed(() => {
-    let result = props.rows.slice();
+const filteredRows = computed<R[]>(() => {
+    if (isAsync.value) {
+        return asyncItems.value as R[];
+    }
+    if (props.rows == null) {
+        throw new Error("rows or numberOfItems and queryFunction must be set");
+    }
+    let result = [...props.rows];
 
     if (sortingBy.value !== null && props.enableSorting) {
         result = result.sort((a, b) => {
@@ -211,19 +251,39 @@ const filteredRows = computed(() => {
     return result;
 });
 
-function nextPage() {
-    if (selectedPage.value < props.rows.length / selectedRowsPerPage.value) {
+async function requery() {
+    if (props.queryFunction == null) {
+        throw new Error("rows or numberOfItems and queryFunction must be set");
+    }
+    asyncIsQuerying.value = true;
+    asyncItems.value = await props.queryFunction(
+        Math.max(0, startIndex.value - 1),
+        endIndex.value - startIndex.value,
+        sortingBy.value?.key ?? null,
+        sortingOrder.value,
+    );
+    asyncIsQuerying.value = false;
+}
+
+async function nextPage() {
+    if (selectedPage.value < amountOfItems.value / selectedRowsPerPage.value) {
         selectedPage.value++;
+    }
+    if (isAsync.value) {
+        await requery();
     }
 }
 
-function previousPage() {
+async function previousPage() {
     if (selectedPage.value > 1) {
         selectedPage.value--;
     }
+    if (isAsync.value) {
+        await requery();
+    }
 }
 
-function changeSorting(key: ExtendedHeader) {
+async function changeSorting(key: ExtendedHeader) {
     if (!props.enableSorting || key.disableSort) {
         return;
     }
@@ -245,13 +305,23 @@ function changeSorting(key: ExtendedHeader) {
                 break;
         }
     }
+    if (isAsync.value) {
+        await requery();
+    }
 }
 
-watch(selectedRowsPerPage, () => {
-    if (selectedPage.value > props.rows.length / selectedRowsPerPage.value) {
+watch(selectedRowsPerPage, async () => {
+    if (selectedPage.value > amountOfItems.value / selectedRowsPerPage.value) {
         selectedPage.value = Math.ceil(
-            props.rows.length / selectedRowsPerPage.value,
+            amountOfItems.value / selectedRowsPerPage.value,
         );
     }
+    if (isAsync.value) {
+        await requery();
+    }
 });
+
+if (isAsync.value) {
+    await requery();
+}
 </script>

@@ -1,6 +1,18 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ChoosingPlayer, RRMap, Spin, WinningPlayer } from "~/utils/interfaces/IMatch";
-import { HitmanMap } from "~/utils/mapUtils";
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    Index,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+} from "typeorm";
+import type {
+    ChoosingPlayer,
+    RRMap,
+    Spin,
+    WinningPlayer,
+} from "~/utils/interfaces/IMatch";
+import type { HitmanMap } from "~/utils/mapUtils";
 import { Match } from "./Match";
 
 @Entity()
@@ -9,6 +21,7 @@ export class PlayedMap extends BaseEntity implements RRMap {
     uuid: string;
     @ManyToOne(() => Match, (match) => match.playedMaps)
     match: Match;
+    @Index()
     @Column("integer")
     map: HitmanMap;
     @Column("integer")
@@ -17,7 +30,8 @@ export class PlayedMap extends BaseEntity implements RRMap {
     winner: WinningPlayer;
     @Column("boolean", { nullable: true })
     forfeit?: boolean;
-    @Column("simple-json")
+    @Index()
+    @Column("simple-json", { nullable: true })
     spin?: Spin;
     @Column("integer")
     timeTaken: number;

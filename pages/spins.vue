@@ -24,10 +24,8 @@
             <TabbedContainer :tabs="['Spins', 'Statistics']">
                 <template #Statistics>
                     <SpinStatistics
-                        :spins="filteredSpins"
+                        :map="selectedMap"
                         :players="playerLookup"
-                        :disguises="disguises"
-                        :kill-methods="killMethods"
                     />
                 </template>
 
@@ -50,6 +48,7 @@
                                             (val) =>
                                                 (filterMethods[target] = val)
                                         "
+                                        @defocus="requeryAndForceGet"
                                     />
                                 </div>
                                 <div class="w-1/3">
@@ -60,6 +59,7 @@
                                             (val) =>
                                                 (filterDisguises[target] = val)
                                         "
+                                        @defocus="requeryAndForceGet"
                                     />
                                 </div>
                             </div>
@@ -67,18 +67,20 @@
                     </template>
 
                     <DataTableComponent
+                        :key="triggerReGet"
+                        v-model:selected-rows-per-page="itemsPerPage"
                         :headers="tableHeaders"
-                        :rows="filteredSpins"
                         :rows-per-page="[10, 20, 25, 50]"
-                        :selected-rows-per-page="10"
-                        :disable-all-per-page="filteredSpins.length > 250"
+                        :number-of-items="amountSpins"
+                        :query-function="getSpins"
+                        disable-all-per-page
                         always-sort
                     >
-                        <template #date="{ row }">
+                        <template #[`match.timestamp`]="{ row }">
                             {{
-                                DateTime.fromMillis(
-                                    row.match.timestamp,
-                                ).toLocaleString(DateTime.DATETIME_MED)
+                                DateTime.fromMillis(row.match.timestamp)
+                                    .setLocale(useLocale().value)
+                                    .toLocaleString(DateTime.DATETIME_MED)
                             }}
                         </template>
 
@@ -116,9 +118,9 @@
                             {{ row.match.competition }} {{ row.match.round }}
 
                             <ButtonComponent
-                                :loading="loadingUuid === row.matchUuid"
+                                :loading="loadingUuid === row.match.uuid"
                                 class="ml-5"
-                                @click="showMatch(row.matchUuid)"
+                                @click="showMatch(row.match.uuid)"
                             >
                                 <FontAwesomeIcon
                                     :icon="['fas', 'ellipsis-h']"
@@ -154,7 +156,7 @@ const maps = [
 ];
 const tableHeaders = [
     {
-        key: "date",
+        key: "match.timestamp",
         title: "Date",
         sort: (_1: unknown, _2: unknown, a: IPlayedMap, b: IPlayedMap) =>
             a.match.timestamp - b.match.timestamp,
@@ -169,8 +171,16 @@ const tableHeaders = [
 const selectedMap = ref(-1);
 const detailedMatch: Ref<IMatch | null> = ref(null);
 const loadingUuid = ref("");
+const spins = ref<IPlayedMap[]>([]);
+const spinStartingIndex = ref(0);
+const itemsPerPage = ref(10);
+const orderingBy = ref<string | null>(null);
+const sortingOrder = ref<"ASC" | "DESC" | null>(null);
+const queryQueue = ref<number[]>([]);
+const currentlyQuerying = ref<Promise<void> | null>(null);
+const triggerReGet = ref(0);
+const amountSpins = ref(0);
 
-const { data: spins } = await useFetch("/api/spins");
 const { data: playerLookup } = await useFetch("/api/player/lookup", {
     default() {
         return {} as Record<string, string>;
@@ -182,6 +192,110 @@ const killMethods: Ref<Record<string, string[]>> = ref({});
 const filterDisguises: Ref<Record<string, string>> = ref({});
 const filterMethods: Ref<Record<string, string>> = ref({});
 
+async function querySpins(startIndex?: number) {
+    if (startIndex == null) {
+        startIndex = spinStartingIndex.value + itemsPerPage.value;
+    }
+    if (currentlyQuerying.value != null) {
+        queryQueue.value.push(startIndex);
+        await currentlyQuerying.value;
+        return;
+    }
+    currentlyQuerying.value = new Promise<void>((resolve) => {
+        let filterObject = {} as
+            | Record<string, { disguise: string | null; method: string | null }>
+            | undefined;
+
+        for (const target of targets.value) {
+            if (
+                (filterDisguises.value[target] != null &&
+                    filterDisguises.value[target] !== "") ||
+                (filterMethods.value[target] != null &&
+                    filterMethods.value[target] !== "")
+            ) {
+                filterObject![target] = {
+                    disguise: filterDisguises.value[target],
+                    method: filterMethods.value[target],
+                };
+            }
+        }
+
+        if (Object.keys(filterObject!).length === 0) {
+            filterObject = undefined;
+        }
+
+        $fetch
+            .raw("/api/spins", {
+                query: {
+                    map: selectedMap.value >= 0 ? selectedMap.value : undefined,
+                    skip: Math.max(0, startIndex - itemsPerPage.value),
+                    take: itemsPerPage.value * 3,
+                    orderBy: orderingBy.value,
+                    sortingOrder: sortingOrder.value,
+                    filter: filterObject,
+                },
+            })
+            .then((spinRequest) => {
+                amountSpins.value = parseInt(
+                    spinRequest.headers.get("X-Count") ?? "0",
+                );
+                spins.value = spinRequest._data as IPlayedMap[];
+                spinStartingIndex.value = startIndex;
+                resolve();
+            });
+    });
+
+    await currentlyQuerying.value;
+    currentlyQuerying.value = null;
+
+    if (queryQueue.value.length != 0) {
+        const nextQuery = queryQueue.value.splice(0, 1)[0];
+        await querySpins(nextQuery);
+    }
+}
+
+async function getSpins(
+    skip: number,
+    take: number,
+    newOrderBy: string | null,
+    newSortingOrder: "ASC" | "DESC" | null,
+) {
+    let mustRequery = false;
+    if (
+        newOrderBy !== orderingBy.value ||
+        newSortingOrder !== sortingOrder.value
+    ) {
+        orderingBy.value = newOrderBy;
+        sortingOrder.value = newSortingOrder;
+        mustRequery = true;
+    }
+
+    if (take !== itemsPerPage.value) {
+        itemsPerPage.value = take;
+    }
+
+    if (
+        skip < spinStartingIndex.value ||
+        skip + take > spinStartingIndex.value + spins.value.length
+    ) {
+        mustRequery = true;
+    }
+
+    if (mustRequery) {
+        await querySpins(skip);
+    }
+
+    const result = spins.value.slice(
+        skip - spinStartingIndex.value,
+        skip - spinStartingIndex.value + take,
+    );
+
+    if (!mustRequery) {
+        void querySpins(skip);
+    }
+    return result;
+}
+
 async function updateSpins() {
     filterDisguises.value = {};
     filterMethods.value = {};
@@ -191,11 +305,6 @@ async function updateSpins() {
     }
 
     try {
-        const spinRequest = await $fetch("/api/spins", {
-            query: {
-                map: selectedMap.value >= 0 ? selectedMap.value : undefined,
-            },
-        });
         const playerRequest = await $fetch(`/api/player/lookup`);
         if (selectedMap.value >= 0) {
             const conditionsRequest = await $fetch("/api/spins/filters", {
@@ -208,60 +317,18 @@ async function updateSpins() {
             killMethods.value = {};
         }
         playerLookup.value = playerRequest;
-        spins.value = spinRequest;
     } catch (e) {
         console.warn("Updating spins failed");
         return;
     }
+
+    await requeryAndForceGet();
 }
 
-const filteredSpins = computed(() => {
-    return [...(spins.value ?? [])]
-        .filter((spin) => {
-            return spin.spin != null;
-        })
-        .filter((spin) => {
-            for (const target of spin.spin!.targetConditions) {
-                if (
-                    filterDisguises.value[target.target.name] != null &&
-                    filterDisguises.value[target.target.name] !== "" &&
-                    filterDisguises.value[target.target.name] !==
-                        target.disguise.name
-                ) {
-                    return false;
-                }
-
-                if (
-                    filterMethods.value[target.target.name] == null ||
-                    filterMethods.value[target.target.name] === ""
-                ) {
-                    continue;
-                }
-
-                const anyName = `Any ${target.killMethod.name}`;
-                if (filterMethods.value[target.target.name] === anyName) {
-                    continue;
-                }
-
-                const variant = target.killMethod.selectedVariant;
-                if (
-                    variant != null &&
-                    variant !== "" &&
-                    filterMethods.value[target.target.name] !==
-                        `${variant} ${target.killMethod.name}`
-                ) {
-                    return false;
-                } else if (
-                    (variant == null || variant === "") &&
-                    filterMethods.value[target.target.name] !=
-                        target.killMethod.name
-                ) {
-                    return false;
-                }
-            }
-            return true;
-        });
-});
+async function requeryAndForceGet() {
+    await querySpins();
+    triggerReGet.value += 1;
+}
 
 const targets = computed(() => {
     if (selectedMap.value < 0) {
@@ -308,4 +375,5 @@ async function showMatch(uuid: string) {
 }
 
 watch(selectedMap, updateSpins);
+await querySpins();
 </script>

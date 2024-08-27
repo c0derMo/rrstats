@@ -55,9 +55,9 @@ export interface IPlayedMap {
     winner: WinningPlayer;
     spin?: Spin;
     timeTaken: number;
-    matchUuid: string;
-    forfeit: boolean;
+    forfeit?: boolean;
     match: {
+        uuid: string;
         playerOne: string;
         playerTwo: string;
         competition: string;

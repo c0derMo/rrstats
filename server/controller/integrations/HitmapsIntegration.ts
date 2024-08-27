@@ -5,7 +5,6 @@ import { DateTime } from "luxon";
 import { HitmanMap, getMapBySlug } from "../../../utils/mapUtils";
 import {
     type Spin,
-    type RRMap,
     WinningPlayer,
     ChoosingPlayer,
     type RRBannedMap,
@@ -13,6 +12,7 @@ import {
 import { Competition } from "~/server/model/Competition";
 import type { IGroup } from "~/utils/interfaces/ICompetition";
 import FunctionTimer from "~/utils/FunctionTimer";
+import { PlayedMap } from "~/server/model/PlayedMap";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -267,7 +267,7 @@ export default class HitmapsIntegration {
 
             let p1Score = 0;
             let p2Score = 0;
-            const picks: RRMap[] = [];
+            const picks: PlayedMap[] = [];
             const bans: RRBannedMap[] = [];
 
             for (const map of fullMatch.mapSelections) {
@@ -311,13 +311,16 @@ export default class HitmapsIntegration {
                     }
                 }
 
-                picks.push({
-                    map: getMapBySlug(map.hitmapsSlug)?.map ?? HitmanMap.PARIS,
-                    winner,
-                    picked: pickedBy,
-                    spin: map.spin,
-                    timeTaken: spinTime,
-                });
+                const dbMap = new PlayedMap();
+                dbMap.map =
+                    getMapBySlug(map.hitmapsSlug)?.map ?? HitmanMap.PARIS;
+                dbMap.winner = winner;
+                dbMap.picked = pickedBy;
+                dbMap.spin = map.spin;
+                dbMap.timeTaken = spinTime;
+                await dbMap.save();
+
+                picks.push(dbMap);
             }
 
             for (const map of newMatch.maps) {
