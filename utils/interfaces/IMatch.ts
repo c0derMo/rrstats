@@ -20,6 +20,8 @@ export type IMatch = {
     playedMaps: RRMap[];
     bannedMaps: RRBannedMap[];
 
+    notes?: string;
+
     shoutcasters?: string[];
     vodLink?: string[];
 };
@@ -45,26 +47,16 @@ export interface RRMap {
     map: HitmanMap;
     picked: ChoosingPlayer;
     winner: WinningPlayer;
+    index: number;
     forfeit?: boolean;
+    unscored?: boolean;
     spin?: Spin;
     timeTaken: number;
+    notes?: string;
 }
 
-export interface IPlayedMap {
-    map: HitmanMap;
-    winner: WinningPlayer;
-    spin?: Spin;
-    timeTaken: number;
-    forfeit?: boolean;
-    match: {
-        uuid: string;
-        playerOne: string;
-        playerTwo: string;
-        competition: string;
-        timestamp: number;
-        round: string;
-        platform?: string;
-    };
+export interface IPlayedMap extends RRMap {
+    match: IMatch;
 }
 
 export interface Spin {

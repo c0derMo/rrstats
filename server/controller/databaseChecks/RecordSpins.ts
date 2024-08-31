@@ -55,6 +55,7 @@ export class RecordSpins implements DatabaseCheck {
                 continue;
             const match = await Match.findOne({
                 select: [
+                    "uuid",
                     "playerOne",
                     "playerTwo",
                     "competition",

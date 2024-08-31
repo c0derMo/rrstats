@@ -78,7 +78,8 @@ async function main() {
     for (const match of matches) {
         const newMatch = await Match.findOneByOrFail({ uuid: match.uuid });
 
-        for (const map of match.playedMaps) {
+        for (const mapIndex in match.playedMaps) {
+            const map = match.playedMaps[mapIndex];
             const newMap = new PlayedMap();
             newMap.map = map.map;
             newMap.picked = map.picked;
@@ -86,13 +87,18 @@ async function main() {
             newMap.forfeit = map.forfeit;
             newMap.spin = map.spin;
             newMap.timeTaken = map.timeTaken;
+            newMap.index = parseInt(mapIndex);
             await newMap.save();
             newMatch.playedMaps.push(newMap);
         }
 
+        newMatch.notes = undefined;
+
         await newMatch.save();
     }
     console.log("Migrated all matches.");
+
+    newDB.query("VACUUM");
 }
 
 void main();

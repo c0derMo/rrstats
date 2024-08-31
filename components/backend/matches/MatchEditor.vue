@@ -83,6 +83,12 @@
                             placeholder="VOD Link"
                         />
                     </div>
+
+                    <TextInputComponent
+                        v-model="matchData.notes"
+                        class="mt-5"
+                        placeholder="Match notes"
+                    />
                 </template>
 
                 <template #Banned>
@@ -163,6 +169,12 @@ const vodLink = computed({
             .split(",")
             .map((name) => name.trim());
     },
+});
+
+onBeforeMount(() => {
+    players.value.forEach((uuid, idx) => {
+        players.value[idx] = playerLookup.get(uuid);
+    });
 });
 
 function checkPlayers() {

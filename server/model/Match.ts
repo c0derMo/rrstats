@@ -4,6 +4,9 @@ import {
     Column,
     BaseEntity,
     OneToMany,
+    BeforeInsert,
+    BeforeUpdate,
+    AfterLoad,
 } from "typeorm";
 import type { IMatch, RRBannedMap } from "~/utils/interfaces/IMatch";
 import { PlayedMap } from "./PlayedMap";
@@ -40,6 +43,9 @@ export class Match extends BaseEntity implements IMatch {
     @Column("simple-json")
     bannedMaps: RRBannedMap[];
 
+    @Column("text", { nullable: true })
+    notes?: string;
+
     @Column("simple-json", { nullable: true })
     shoutcasters?: string[];
     @Column("simple-json", { nullable: true })
@@ -47,4 +53,17 @@ export class Match extends BaseEntity implements IMatch {
 
     @OneToMany(() => PlayedMap, (map) => map.match, { eager: true })
     playedMaps: PlayedMap[];
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    checkOptionalFields() {
+        if (this.notes === "") {
+            this.notes = undefined;
+        }
+    }
+
+    @AfterLoad()
+    sortMaps() {
+        this.playedMaps.sort((a, b) => a.index - b.index);
+    }
 }

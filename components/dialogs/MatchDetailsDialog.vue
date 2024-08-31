@@ -68,6 +68,13 @@
             </div>
 
             <div
+                v-if="match.notes != null && match.notes !== ''"
+                class="italic text-center"
+            >
+                {{ match.notes }}
+            </div>
+
+            <div
                 v-if="match.bannedMaps.length > 0"
                 class="text-center font-bold"
             >
@@ -116,10 +123,19 @@
                             {{ getPlayerName(map.winner, "Draw") }}
                         </Tag>
                         <span v-if="map.forfeit">(Won by forfeit)</span>
+                        <span v-if="map.unscored">(Unscored)</span>
                     </div>
                     <div v-if="map.spin != null" class="col-span-3">
                         <TextualSpin :spin="map.spin" />
                     </div>
+
+                    <div
+                        v-if="map.notes != null && map.notes !== ''"
+                        class="col-span-3 text-center italic"
+                    >
+                        {{ map.notes }}
+                    </div>
+
                     <div
                         class="col-span-3 border-b border-gray-500 pb-3 mb-3 text-center"
                     >
@@ -137,6 +153,16 @@
                     </div>
                 </template>
             </div>
+
+            <div v-if="!allMapTimes.includes(-1)" class="text-center">
+                Total match RTA:
+                {{
+                    durationToLocale(
+                        allMapTimes.reduce((prev, cur) => prev + cur, 0) * 1000,
+                    )
+                }}
+            </div>
+
             <ButtonComponent @click="dialogOpen = false">Close</ButtonComponent>
         </CardComponent>
     </DialogComponent>
@@ -238,4 +264,8 @@ function isMapPB(mapIdx: number): boolean {
     }
     return false;
 }
+
+const allMapTimes = computed(() => {
+    return props.match.playedMaps.map((map) => map.timeTaken);
+});
 </script>

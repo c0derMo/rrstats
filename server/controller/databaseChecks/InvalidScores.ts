@@ -52,6 +52,9 @@ export class InvalidScores implements DatabaseCheck {
             let p1MapScore = 0;
             let p2MapScore = 0;
             for (const map of match.playedMaps) {
+                if (map.unscored) {
+                    continue;
+                }
                 if (map.winner === WinningPlayer.PLAYER_ONE) {
                     p1MapScore += 2;
                 } else if (map.winner === WinningPlayer.PLAYER_TWO) {

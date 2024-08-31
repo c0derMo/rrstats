@@ -64,10 +64,35 @@
                 @update:model-value="$emit('update:playedMaps', playedMapData)"
             />
 
+            <SwitchComponent
+                id="unscoredMap"
+                v-model="playedMapData[selectedMap].unscored"
+                label="Unscored map?"
+                @update:model-value="$emit('update:playedMaps', playedMapData)"
+            />
+
+            <div />
+
             <TextInputComponent
                 v-model="playedMapData[selectedMap].timeTaken"
                 type="number"
                 placeholder="RTA (in seconds)"
+                @update:model-value="$emit('update:playedMaps', playedMapData)"
+            />
+
+            <TextInputComponent
+                v-model="playedMapData[selectedMap].index"
+                type="number"
+                placeholder="Map index"
+                @update:model-value="$emit('update:playedMaps', playedMapData)"
+            />
+
+            <div />
+
+            <TextInputComponent
+                v-model="playedMapData[selectedMap].notes!"
+                class="col-span-3"
+                placeholder="Notes"
                 @update:model-value="$emit('update:playedMaps', playedMapData)"
             />
 
@@ -202,6 +227,7 @@ function addMap() {
         picked: 0,
         winner: 0,
         timeTaken: -1,
+        index: props.playedMaps.length,
     });
     emits("update:playedMaps", playedMapData.value);
 }

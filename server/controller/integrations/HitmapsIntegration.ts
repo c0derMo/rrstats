@@ -270,7 +270,8 @@ export default class HitmapsIntegration {
             const picks: PlayedMap[] = [];
             const bans: RRBannedMap[] = [];
 
-            for (const map of fullMatch.mapSelections) {
+            for (const mapIdx in fullMatch.mapSelections) {
+                const map = fullMatch.mapSelections[mapIdx];
                 if (!map.complete) continue;
 
                 let winner = WinningPlayer.DRAW;
@@ -299,14 +300,18 @@ export default class HitmapsIntegration {
                             map.winnerFinishedAt,
                         );
                         spinTime = Math.abs(
-                            startingTime.diff(endingTime).as("seconds"),
+                            Math.floor(
+                                startingTime.diff(endingTime).as("seconds"),
+                            ),
                         );
                     } else if (map.resultVerifiedAt != null) {
                         const endingTime = DateTime.fromISO(
                             map.resultVerifiedAt,
                         );
                         spinTime = Math.abs(
-                            startingTime.diff(endingTime).as("seconds"),
+                            Math.floor(
+                                startingTime.diff(endingTime).as("seconds"),
+                            ),
                         );
                     }
                 }
@@ -318,6 +323,7 @@ export default class HitmapsIntegration {
                 dbMap.picked = pickedBy;
                 dbMap.spin = map.spin;
                 dbMap.timeTaken = spinTime;
+                dbMap.index = parseInt(mapIdx);
                 await dbMap.save();
 
                 picks.push(dbMap);
