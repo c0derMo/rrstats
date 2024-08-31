@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
     typescript: { shim: false },
-    modules: ["@nuxtjs/tailwindcss", "@nuxt/eslint"],
+    modules: ["@nuxtjs/tailwindcss", "@nuxt/eslint", "@nuxtjs/robots"],
     components: [{ path: "~/components", pathPrefix: false }],
 
     runtimeConfig: {
@@ -42,5 +42,9 @@ export default defineNuxtConfig({
         },
     },
 
+    site: {
+        indexable: false,
+    },
+    
     compatibilityDate: "2024-08-10",
 });
