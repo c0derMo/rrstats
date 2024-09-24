@@ -75,6 +75,10 @@ async function main() {
 
     const matches = await OldMatch.find();
     console.log(`Loaded ${matches.length} matches.`);
+    let i = 0;
+    const queryRunner = newDB.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     for (const match of matches) {
         const newMatch = await Match.findOneByOrFail({ uuid: match.uuid });
 
@@ -88,15 +92,22 @@ async function main() {
             newMap.spin = map.spin;
             newMap.timeTaken = map.timeTaken;
             newMap.index = parseInt(mapIndex);
-            await newMap.save();
+            await queryRunner.manager.save(newMap);
             newMatch.playedMaps.push(newMap);
         }
 
         newMatch.notes = undefined;
 
-        await newMatch.save();
+        await queryRunner.manager.save(newMatch);
+        i++;
+        if (i % 100 == 0) {
+            console.log(`${i} matches done.`);
+        }
     }
+    console.log("Executing transaction");
+    await queryRunner.commitTransaction();
     console.log("Migrated all matches.");
+    await queryRunner.release();
 
     newDB.query("VACUUM");
 }

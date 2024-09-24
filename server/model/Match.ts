@@ -64,6 +64,8 @@ export class Match extends BaseEntity implements IMatch {
 
     @AfterLoad()
     sortMaps() {
-        this.playedMaps.sort((a, b) => a.index - b.index);
+        if (this.playedMaps != null) {
+            this.playedMaps.sort((a, b) => a.index - b.index);
+        }
     }
 }

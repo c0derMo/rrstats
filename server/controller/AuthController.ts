@@ -12,7 +12,12 @@ export class AuthController {
 
     static async useSession(event: H3Event) {
         if (AuthController.sessionKey === "") {
-            AuthController.sessionKey = randomBytes(32).toString("hex");
+            if (import.meta.dev) {
+                console.log("Dev Environment detected, using static session key");
+                AuthController.sessionKey = "static_dev_token_thats_a_bit_longer_to_have_32_characters";
+            } else {
+                AuthController.sessionKey = randomBytes(32).toString("hex");
+            }
         }
 
         return await useSession<SessionData>(event, {
