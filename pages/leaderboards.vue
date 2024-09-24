@@ -211,12 +211,13 @@ const selectedCategory: Ref<{
     type: string;
     secondaryFilter?: string;
     explanatoryText?: string;
+    defaultSecondaryFilter?: number;
 }> = ref(playerCategories[0]);
 const leaderboardData: Ref<
     (LeaderboardPlayerEntry | LeaderboardCountryEntry | LeaderboardMapEntry)[]
 > = ref([]);
 const leaderboardLoading = ref(false);
-const secondaryFilter = ref(0);
+const secondaryFilter = ref(playerCategories[0].defaultSecondaryFilter ?? 0);
 const selectedMap: Ref<number> = ref(HitmanMap.PARIS);
 const search = ref("");
 const expandedCountry = ref("");
@@ -389,6 +390,11 @@ function isCountryLB(
 }
 
 watch(selectedCategory, async () => {
+    if (selectedCategory.value.defaultSecondaryFilter != null) {
+        secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
+    } else {
+        secondaryFilter.value = 0;
+    }
     await loadLeaderboardData(true);
 });
 watch(selectedMap, async () => {

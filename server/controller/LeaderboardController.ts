@@ -63,6 +63,7 @@ interface StatisticData<T extends string> {
     mapOptional?: boolean;
     secondaryFilter?: string;
     explanatoryText?: string;
+    defaultSecondaryFilter?: number;
 }
 
 interface GenericLeaderboardStatistic<T extends string, R>
@@ -201,6 +202,7 @@ export default class LeaderboardController {
                         secondaryFilter: stat.secondaryFilter,
                         type: "player",
                         explanatoryText: stat.explanatoryText,
+                        defaultSecondaryFilter: stat.defaultSecondaryFilter,
                     };
                 }),
             country: LeaderboardController.statistics
@@ -213,6 +215,7 @@ export default class LeaderboardController {
                         secondaryFilter: stat.secondaryFilter,
                         type: "country",
                         explanatoryText: stat.explanatoryText,
+                        defaultSecondaryFilter: stat.defaultSecondaryFilter,
                     };
                 }),
             map: LeaderboardController.statistics
@@ -225,6 +228,7 @@ export default class LeaderboardController {
                         secondaryFilter: stat.secondaryFilter,
                         type: "map",
                         explanatoryText: stat.explanatoryText,
+                        defaultSecondaryFilter: stat.defaultSecondaryFilter,
                     };
                 }),
         };

@@ -9,6 +9,7 @@ export class PlayerAveragePlacement implements LeaderboardPlayerStatistic {
     name = "Average RR Placement";
     hasMaps = false;
     secondaryFilter = "Competitions played";
+    defaultSecondaryFilter = 3;
 
     calculate(
         players: IPlayer[],
