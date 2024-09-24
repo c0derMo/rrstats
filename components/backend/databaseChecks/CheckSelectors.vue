@@ -55,7 +55,7 @@ defineProps<{
 
 const selectedChecks: Ref<string[]> = ref([]);
 const knownIssues = ref(
-    "placements:d5007ed2-4c1c-47b5-819d-24c9f7cecddb:RR4;placements:d5007ed2-4c1c-47b5-819d-24c9f7cecddb:RR5;record_matches:Longest regular match:1707076393198",
+    "placements:d5007ed2-4c1c-47b5-819d-24c9f7cecddb:RR4;placements:d5007ed2-4c1c-47b5-819d-24c9f7cecddb:RR5",
 );
 const ignoredCompetitions = ref("RR1");
 
