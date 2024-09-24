@@ -60,6 +60,11 @@ export class Match extends BaseEntity implements IMatch {
         if (this.notes === "") {
             this.notes = undefined;
         }
+        if (this.vodLink?.length === 0) {
+            this.vodLink = undefined;
+        } else if (this.vodLink != null) {
+            this.vodLink = this.vodLink.filter((v) => v != "");
+        }
     }
 
     @AfterLoad()
