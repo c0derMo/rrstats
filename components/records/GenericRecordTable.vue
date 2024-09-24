@@ -28,12 +28,11 @@
             {{ secondsToTime(value) }}
         </template>
 
-        <template #players="{ value }: { value: string[] }">
-            {{
-                value
-                    .map((p) => players[p] || `Unknown player: ${p}`)
-                    .join(", ")
-            }}
+        <template #players="{ value, row }: { value: string[], row: IGenericRecord }">
+            <template v-for="(player, idx) in value" :key="idx">
+                <span :class="{'underline': isWinner(row, idx)}">{{ players[player] || `Unknown player: ${player}` }}</span>
+                <span v-if="idx < value.length-1">, </span>
+            </template>
         </template>
 
         <template #match="{ value }">
@@ -110,4 +109,17 @@ const sortedRecords = computed(() => {
             Object.values(GenericRecordType).findIndex((g) => b.record === g),
     );
 });
+
+function isWinner(record: IGenericRecord, playerIndex: number) {
+    const match = props.matches[record.match];
+    if (match == null) {
+        return false;
+    }
+    if (playerIndex == 0) {
+        return match.playerOneScore > match.playerTwoScore;
+    } else if (playerIndex == 1) {
+        return match.playerTwoScore > match.playerOneScore;
+    }
+    return false;
+}
 </script>
