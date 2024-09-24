@@ -21,11 +21,22 @@ export default class PlayerStatisticController {
         PlayerStatisticController.cache.clear();
     }
 
-    public static async get(uuid: string): Promise<IPlayerStatistics> {
+    public static async get(uuid: string, opponent?: string): Promise<IPlayerStatistics> {
         if (!PlayerStatisticController.cache.has(uuid)) {
             await PlayerStatisticController.calculate(uuid);
         }
-        return PlayerStatisticController.cache.get(uuid)!;
+
+        const stats = PlayerStatisticController.cache.get(uuid)!;
+
+        if (opponent != null) {
+            const matches = await Match.find({
+                where: { playerOne: In([uuid, opponent]), playerTwo: In([uuid, opponent]) }
+            });
+            const matchCollection = new MatchCollection(matches, uuid);
+            stats.h2hVsOpponent = matchCollection.wtl();
+        }
+
+        return stats;
     }
 
     private static async calculate(uuid: string) {

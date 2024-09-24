@@ -38,6 +38,7 @@ export type IPlayerStatistics = {
     mapsBanned: number[];
     perMapWinrate: number[];
     mapPBs: { match: IMatch | null; map: number }[];
+    h2hVsOpponent?: { w: number; t: number; l: number; };
 };
 
 export function emptyStatistics(): IPlayerStatistics {

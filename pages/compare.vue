@@ -127,7 +127,8 @@ onMounted(async () => {
 
 watch(leftPlayer, async () => {
     leftPlayerLoading.value = true;
-    leftPlayerObject.value = await getComparisonData(leftPlayer.value);
+    leftPlayerObject.value = await getComparisonData(leftPlayer.value, rightPlayerObject.value?.player.uuid);
+    rightPlayerObject.value = await getComparisonData(rightPlayer.value, leftPlayerObject.value?.player.uuid);
     leftPlayerLoading.value = false;
     const currentQuery = new URLSearchParams(window.location.search);
     currentQuery.set("leftPlayer", leftPlayer.value);
@@ -136,7 +137,8 @@ watch(leftPlayer, async () => {
 });
 watch(rightPlayer, async () => {
     rightPlayerLoading.value = true;
-    rightPlayerObject.value = await getComparisonData(rightPlayer.value);
+    rightPlayerObject.value = await getComparisonData(rightPlayer.value, leftPlayerObject.value?.player.uuid);
+    leftPlayerObject.value = await getComparisonData(leftPlayer.value, rightPlayerObject.value?.player.uuid);
     rightPlayerLoading.value = false;
     const currentQuery = new URLSearchParams(window.location.search);
     currentQuery.set("rightPlayer", rightPlayer.value);
@@ -146,6 +148,7 @@ watch(rightPlayer, async () => {
 
 async function getComparisonData(
     player: string,
+    opponent?: string,
 ): Promise<ComparisonData | null> {
     if (player === "") {
         return null;
@@ -154,7 +157,7 @@ async function getComparisonData(
         const playerData = await $fetch(`/api/player/?player=${player}`);
         const avatar = await $fetch(`/api/player/avatar?player=${player}`);
         const statistics = await $fetch(
-            `/api/player/statistics?player=${playerData.uuid}`,
+            `/api/player/statistics?player=${playerData.uuid}&opponent=${opponent}`,
         );
         return {
             player: playerData as IPlayer,

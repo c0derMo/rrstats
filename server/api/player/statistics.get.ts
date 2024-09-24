@@ -17,8 +17,12 @@ export default defineEventHandler(async (event) => {
         });
     }
     const uuid = query.player as string;
+    let opponent = query.opponent as string | undefined;
+    if (opponent != null && (await Player.countBy({ uuid: opponent })) <= 0) {
+        opponent = undefined;
+    }
 
-    const statistics = await PlayerStatisticController.get(uuid);
+    const statistics = await PlayerStatisticController.get(uuid, opponent);
 
     return statistics;
 });

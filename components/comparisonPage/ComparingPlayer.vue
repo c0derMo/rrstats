@@ -95,6 +95,19 @@
                     </span>
                 </div>
 
+                <div
+                    class="flex gap-5"
+                    :class="{
+                        'flex-row': !reverse,
+                        'flex-row-reverse': reverse
+                    }"
+                >
+                    <span class="flex-grow font-light">Head-2-Head</span>
+                    <span :class="getAheadBehindClass(getH2HWR)">
+                        {{ getH2H(Player.SELF) }}
+                    </span>
+                </div>
+
                 <br />
 
                 <div
@@ -242,6 +255,32 @@ function getWTL(player: Player): string {
         return `${wtl.w}-${wtl.t}-${wtl.l}`;
     }
     throw new Error(`illegal player: ${player}`);
+}
+
+function getH2H(player: Player): string {
+    let h2h: { w: number; t: number; l: number; } | undefined = { w: 0, t: 0, l: 0 };
+    if (player === Player.SELF) {
+        h2h = props.playerStatistics.h2hVsOpponent;
+    } else if (player === Player.COMPARISON) {
+        h2h = props.comparingStatistics?.h2hVsOpponent;
+    }
+    if (h2h != null) {
+        return `${h2h.w}-${h2h.t}-${h2h.l}`;
+    }
+    return "";
+}
+
+function getH2HWR(player: Player): number {
+    let h2h: { w: number; t: number; l: number; } | undefined = { w: 0, t: 0, l: 0 };
+    if (player === Player.SELF) {
+        h2h = props.playerStatistics.h2hVsOpponent;
+    } else if (player === Player.COMPARISON) {
+        h2h = props.comparingStatistics?.h2hVsOpponent;
+    }
+    if (h2h != null) {
+        return (h2h.w + 0.5*h2h.t) / (h2h.w + h2h.l + h2h.l);
+    }
+    return 0.5;
 }
 
 function getRRAmount(player: Player): number {
