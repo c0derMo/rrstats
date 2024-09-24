@@ -77,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+import type { IMatch } from "~/utils/interfaces/IMatch";
 import {
     GenericRecordType,
     type IGenericRecord,
@@ -102,6 +103,9 @@ const isTimeInvalid = ref(Array(recordData.value.maps.length).fill(false));
 const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
+players.value = recordData.value.players
+    .map((p) => playerLookup.get(p))
+    .join(", ");
 
 const mapHeaders = [
     { title: "Map", key: "map" },
@@ -134,7 +138,7 @@ async function checkPlayersAndUpdateMatches() {
         .split(",")
         .map((player) => playerLookup.getUUID(player.trim()));
 
-    const matchRequest = await $fetch("/api/matches/versus", {
+    const matchRequest = await $fetch<IMatch[]>("/api/matches", {
         query: { players: recordData.value.players },
     });
     possibleMatches.value = matchRequest.map((match) => {

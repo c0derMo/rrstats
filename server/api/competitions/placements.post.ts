@@ -4,7 +4,7 @@ import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
-    const body: ICompetitionPlacement[] = await readBody(event);
+    const body = await readBody<ICompetitionPlacement[]>(event);
     const session = await AuthController.useSession(event);
 
     if (

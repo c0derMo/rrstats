@@ -3,7 +3,6 @@
         <MatchDetailsDialog
             v-if="matchToShow != null"
             :match="matchToShow"
-            :opponents="data?.players || {}"
             @click-outside="matchToShow = null"
         />
         <CompetitionBackground
@@ -29,7 +28,6 @@
                 v-if="competition?.groupsConfig != null"
                 :groups-info="competition.groupsConfig"
                 :matches="sortedMatches"
-                :players="data?.players ?? {}"
             />
 
             <div
@@ -60,11 +58,7 @@
                 </template>
 
                 <template #playerOne="{ value }">
-                    <PlayerLinkTag
-                        :player="
-                            data?.players[value] ?? `Unknown player: ${value}`
-                        "
-                    />
+                    <PlayerLinkTag :player="players.get(value)" />
                 </template>
 
                 <template #score="{ row }">
@@ -74,11 +68,7 @@
                 </template>
 
                 <template #playerTwo="{ value }">
-                    <PlayerLinkTag
-                        :player="
-                            data?.players[value] ?? `Unknown player: ${value}`
-                        "
-                    />
+                    <PlayerLinkTag :player="players.get(value)" />
                 </template>
 
                 <template #bans="{ row }: { row: IMatch }">
@@ -197,10 +187,9 @@ const headers = [
 ];
 
 const tournament = useRoute().query.tournament;
-const { data } = await useFetch<{
-    matches: IMatch[];
-    players: Record<string, string>;
-}>("/api/matches", { query: { tournament } });
+const { data: matches } = await useFetch<IMatch[]>("/api/matches", {
+    query: { tournament },
+});
 const { data: competition } = await useFetch<
     (ICompetition & { shouldRetry: boolean }) | null
 >("/api/competitions", {
@@ -208,47 +197,46 @@ const { data: competition } = await useFetch<
 });
 
 const stillLoading = ref(competition.value?.shouldRetry ?? false);
+const players = usePlayers();
+await players.queryFromMatches(matches.value ?? []);
 
 useHead({
     title: `${competition.value?.name} - RRStats`,
 });
 
 const sortedMatches = computed(() => {
-    if (data.value === null) {
+    if (matches.value === null) {
         return [];
     }
-    return [...data.value.matches].sort((a, b) => b.timestamp - a.timestamp);
+    return [...matches.value].sort((a, b) => b.timestamp - a.timestamp);
 });
 
 function getMapPicker(map: RRMap | RRBannedMap, match: IMatch): string {
     if (map.picked === ChoosingPlayer.RANDOM) return "Random";
     if (map.picked === ChoosingPlayer.PLAYER_ONE)
-        return data.value?.players[match.playerOne] ?? "Unknown";
+        return players.get(match.playerOne, "Unknown");
     if (map.picked === ChoosingPlayer.PLAYER_TWO)
-        return data.value?.players[match.playerTwo] ?? "Unknown";
+        return players.get(match.playerTwo, "Unknown");
     return "Unknown";
 }
 
 function getMapWinner(map: RRMap, match: IMatch): string {
     if (map.winner === WinningPlayer.DRAW) return "Draw";
     if (map.winner === WinningPlayer.PLAYER_ONE)
-        return data.value?.players[match.playerOne] ?? "Unknown";
+        return players.get(match.playerOne, "Unknown");
     if (map.winner === WinningPlayer.PLAYER_TWO)
-        return data.value?.players[match.playerTwo] ?? "Unknown";
+        return players.get(match.playerTwo, "Unknown");
     return "Unknown";
 }
 
 onMounted(async () => {
     if (competition.value?.shouldRetry) {
         await $fetch("/api/competitions", { query: { tag: tournament } });
-        const matchRequest = await $fetch<{
-            matches: IMatch[];
-            players: Record<string, string>;
-        }>("/api/matches", {
+        const matchRequest = await $fetch<IMatch[]>("/api/matches", {
             query: { tournament },
         });
 
-        data.value = matchRequest;
+        matches.value = matchRequest;
         stillLoading.value = false;
     }
 });

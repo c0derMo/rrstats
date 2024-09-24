@@ -23,10 +23,10 @@
                     {{ row.match.round }}
                     vs
                     <span v-if="row.match.playerOne === localPlayer">
-                        {{ players[row.match.playerTwo] }}
+                        {{ players.get(row.match.playerTwo) }}
                     </span>
                     <span v-if="row.match.playerTwo === localPlayer">
-                        {{ players[row.match.playerOne] }}
+                        {{ players.get(row.match.playerOne) }}
                     </span>
                 </a>
             </template>
@@ -35,17 +35,19 @@
 </template>
 
 <script setup lang="ts">
+import type { IMatch } from "~/utils/interfaces/IMatch";
 import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
-const props = withDefaults(
-    defineProps<{
-        localPlayer: string;
-        players?: Record<string, string>;
-        statistics: IPlayerStatistics;
-    }>(),
-    {
-        players: () => ({}),
-    },
+const props = defineProps<{
+    localPlayer: string;
+    statistics: IPlayerStatistics;
+}>();
+
+const players = usePlayers();
+await players.queryFromMatches(
+    props.statistics.mapPBs
+        .map((pb) => pb.match)
+        .filter((match) => match != null) as IMatch[],
 );
 
 const headers = [

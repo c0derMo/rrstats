@@ -2,8 +2,8 @@ import { AuthController } from "~/server/controller/AuthController";
 import TwitterIntegration from "~/server/controller/integrations/TwitterIntegration";
 import { IPermission } from "~/utils/interfaces/IUser";
 
-export default defineEventHandler(async (event) => {
-    const tweets = await readBody(event);
+export default defineEventHandler<Promise<boolean>>(async (event) => {
+    const tweets = await readBody<string[]>(event);
     const session = await AuthController.useSession(event);
 
     if (

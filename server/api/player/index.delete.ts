@@ -4,7 +4,9 @@ import { Player } from "~/server/model/Player";
 import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+    const body = await readBody<{
+        uuid?: string;
+    }>(event);
     const session = await AuthController.useSession(event);
 
     if (
@@ -26,10 +28,10 @@ export default defineEventHandler(async (event) => {
     }
 
     const playerToRemove = await Player.findOneBy({
-        uuid: body.uuid as string,
+        uuid: body.uuid,
     });
     if (playerToRemove != null) {
         await playerToRemove.remove();
-        await CompetitionPlacement.delete({ player: body.uuid as string });
+        await CompetitionPlacement.delete({ player: body.uuid });
     }
 });

@@ -66,7 +66,6 @@ interface PreviousRecord {
 }
 
 const recentRecords: Ref<(IGenericRecord | IMapRecord)[]> = ref([]);
-const recordPlayers: Ref<Record<string, string>> = ref({});
 const tweets: Ref<string[]> = ref([""]);
 const tweeting = ref(false);
 const success = ref(false);
@@ -86,13 +85,13 @@ const dropdownableRecords = computed(() => {
             return {
                 text: `${getMap(mapRecord.map)!.name}: ${secondsToTime(
                     mapRecord.time,
-                )} by ${recordPlayers.value[mapRecord.player]}`,
+                )} by ${playerLookup.get(mapRecord.player)}`,
                 value: record,
             };
         } else {
             const genericRecord = record as IGenericRecord;
             const players = genericRecord.players
-                .map((p) => recordPlayers.value[p])
+                .map((p) => playerLookup.get(p))
                 .join(", ");
             return {
                 text: `${genericRecord.record}: ${secondsToTime(
@@ -109,12 +108,12 @@ async function addRecordTemplate(record: IGenericRecord | IMapRecord) {
     if (Object.hasOwn(record, "player")) {
         const mapRecord = record as IMapRecord;
         recordString = getMap(mapRecord.map)!.name;
-        players = recordPlayers.value[mapRecord.player];
+        players = playerLookup.get(mapRecord.player);
     } else {
         const genericRecord = record as IGenericRecord;
         recordString = genericRecord.record;
         players = genericRecord.players
-            .map((p) => recordPlayers.value[p])
+            .map((p) => playerLookup.get(p))
             .join(" and ");
     }
 
@@ -247,7 +246,6 @@ async function fetchPreviousRecord(
 async function fetchRecentRecords() {
     const recordQuery = await $fetch("/api/records");
 
-    recordPlayers.value = recordQuery.players;
     recentRecords.value = [...recordQuery.maps, ...recordQuery.generic];
 }
 

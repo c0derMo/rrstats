@@ -222,7 +222,7 @@ async function querySpins(startIndex?: number) {
             .raw("/api/spins", {
                 query: {
                     map: selectedMap.value >= 0 ? selectedMap.value : undefined,
-                    skip: Math.max(0, startIndex - itemsPerPage.value),
+                    skip: Math.max(0, startIndex! - itemsPerPage.value),
                     take: itemsPerPage.value * 3,
                     orderBy: orderingBy.value,
                     sortingOrder: sortingOrder.value,
@@ -234,7 +234,7 @@ async function querySpins(startIndex?: number) {
                     spinRequest.headers.get("X-Count") ?? "0",
                 );
                 spins.value = spinRequest._data as IPlayedMap[];
-                spinStartingIndex.value = startIndex;
+                spinStartingIndex.value = startIndex!;
                 resolve();
             });
     });
@@ -362,8 +362,8 @@ function getLosingPlayer(map: IPlayedMap): string {
 
 async function showMatch(uuid: string) {
     loadingUuid.value = uuid;
-    const match = await $fetch(`/api/matches?uuid=${uuid}`);
-    detailedMatch.value = match.matches[0];
+    const match = await $fetch<IMatch | null>(`/api/matches?uuid=${uuid}`);
+    detailedMatch.value = match;
 }
 
 watch(selectedMap, updateSpins);

@@ -56,7 +56,7 @@ import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWo
 import FunctionTimer from "~/utils/FunctionTimer";
 import consola from "consola";
 
-interface StatisticData<T extends string> {
+export interface StatisticData<T extends string> {
     name: string;
     type: T;
     hasMaps?: boolean;
@@ -83,12 +83,12 @@ export interface LeaderboardCountryStatistic
 export interface LeaderboardMapStatistic
     extends GenericLeaderboardStatistic<"map", LeaderboardMapEntry> {}
 
-type LeaderboardStatistic =
+export type LeaderboardStatistic =
     | LeaderboardPlayerStatistic
     | LeaderboardCountryStatistic
     | LeaderboardMapStatistic;
 
-type LeaderboardEntry =
+export type LeaderboardEntry =
     | LeaderboardPlayerEntry
     | LeaderboardCountryEntry
     | LeaderboardMapEntry;

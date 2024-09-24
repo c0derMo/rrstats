@@ -2,7 +2,7 @@ import { PlayedMap } from "~/server/model/PlayedMap";
 import take from "lodash/take";
 import drop from "lodash/drop";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
     const query = getQuery<{
         map: number | null;
         take: number;
@@ -78,14 +78,12 @@ export function filterSpins(
 
             const variant = target.killMethod.selectedVariant;
             if (
-                variant != null &&
-                variant !== "" &&
-                targetFilter.method !== `${variant} ${target.killMethod.name}`
-            ) {
-                return false;
-            } else if (
-                (variant == null || variant === "") &&
-                targetFilter.method !== target.killMethod.name
+                (variant != null &&
+                    variant !== "" &&
+                    targetFilter.method !==
+                        `${variant} ${target.killMethod.name}`) ||
+                ((variant == null || variant === "") &&
+                    targetFilter.method !== target.killMethod.name)
             ) {
                 return false;
             }

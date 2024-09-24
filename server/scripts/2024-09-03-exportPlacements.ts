@@ -30,7 +30,7 @@ async function main() {
         rows.push({
             competition: placement.competition,
             player: playerLookupMap[placement.player],
-            placement: placement.placement ?? "GS"
+            placement: placement.placement ?? "GS",
         });
     }
 

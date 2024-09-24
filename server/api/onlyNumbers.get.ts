@@ -3,7 +3,16 @@ import { Match } from "../model/Match";
 import { Player } from "../model/Player";
 import { GenericRecord, MapRecord } from "../model/Record";
 
-export default defineEventHandler(async () => {
+export default defineEventHandler<
+    Promise<{
+        matches: number;
+        competitions: number;
+        officialCompetitions: number;
+        players: number;
+        genericRecords: number;
+        mapRecords: number;
+    }>
+>(async () => {
     const matches = await Match.count();
     const competitions = await Competition.count();
     const officialCompetitions = await Competition.countBy({

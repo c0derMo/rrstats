@@ -134,17 +134,17 @@ onBeforeMount(async () => {
         const groupPositionOverrides: string[] = [];
 
         for (const player of group.players) {
-            const playerName = playerLookup.get(player, null);
-            groupPlayers.push(playerName || "Unknown player");
-            groupIncorrect.push(playerName == null);
+            const playerName = playerLookup.get(player, "Unknown player");
+            groupPlayers.push(playerName);
+            groupIncorrect.push(playerName === "Unknown player");
         }
         for (let i = 0; i < group.players.length; i++) {
             if (group.positionOverrides !== undefined) {
                 const playerName = playerLookup.get(
                     group.positionOverrides[i],
-                    null,
+                    "-- none --",
                 );
-                groupPositionOverrides.push(playerName ?? "-- none --");
+                groupPositionOverrides.push(playerName);
             } else {
                 groupPositionOverrides.push("-- none --");
             }

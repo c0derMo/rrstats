@@ -9,7 +9,31 @@ interface TimingStatistic {
 
 const timingRegex = /^([^?(]*)(?:\?.+|\(.+\))?: (\d+)ms$/;
 
-const ignoredRoutes = ["[GET] /rrCompetitions/", "[GET] /favicon.ico"];
+const ignoredRoutes = [
+    "[GET] /rrCompetitions/",
+    "[GET] /favicon.ico",
+    "[GET] /.DS_Store",
+    "[GET] /favicon.png",
+    "[GET] /defaultPB.png",
+    "[GET] /xmlrpc.php",
+    "[GET] /sitemap.xml",
+    "[GET] /sitemaps.xml",
+    "[GET] /apple-touch-icon-120x120.png",
+    "[GET] /apple-touch-icon-152x152.png",
+    "[GET] /login/",
+    "[GET] /apple-touch-icon-152x152.png",
+    "[GET] /app/",
+    "[GET] /apple-touch-icon.png",
+    "[GET] /apple-touch-icon-120x120-precomposed.png",
+    "[GET] /.env",
+    "[GET] /server-status",
+    "[GET] /config.json",
+    "[GET] /login.action",
+    "[GET] /apple-touch-icon-precomposed.png",
+    "[GET] /apple-touch-icon-152x152-precomposed.png",
+    "[HEAD] /wordpress/",
+    "[GET] /wp-login.php",
+];
 const uniformingRoutes = [
     /(\[GET\] \/api\/v2\/accolade\/)\d+: (\d+)ms/,
     /(\[GET\] \/api\/v2\/map\/)[\w%]+: (\d+)ms/,
@@ -17,7 +41,7 @@ const uniformingRoutes = [
     /(\[GET\] \/api\/v2\/player\/)\d+: (\d+)ms/,
 ];
 const renamingRoutes = {
-    "[GET] /[player]: ": /\[GET\] \/[\w%]+: (\d+)ms/,
+    "[GET] /[player] ": /\[GET\] \/[\w%+-]+\/?: (\d+)ms/,
 } as Record<string, RegExp>;
 
 async function main() {

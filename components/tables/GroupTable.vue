@@ -25,7 +25,9 @@
                     }"
                 >
                     <td class="text-right">{{ idx + 1 }}</td>
-                    <td class="text-left">{{ playerNames[player.name] }}</td>
+                    <td class="text-left">
+                        {{ playerLookup.get(player.name) }}
+                    </td>
                     <td class="text-center">
                         {{ player.wins + player.ties + player.losses }}
                     </td>
@@ -56,12 +58,14 @@ const props = withDefaults(
         matchesBetweenPlayers: number;
         advancingPlayers: number;
         positionOverrides?: Record<string, string>;
-        playerNames: Record<string, string>;
     }>(),
     {
         positionOverrides: () => ({}),
     },
 );
+
+const playerLookup = usePlayers();
+playerLookup.queryPlayers(props.players.map((p) => p.name));
 
 const sortedPlayers = computed(() => {
     const preSort = [...props.players].sort((a, b) => b.points - a.points);

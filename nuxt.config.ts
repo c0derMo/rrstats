@@ -45,6 +45,6 @@ export default defineNuxtConfig({
     site: {
         indexable: false,
     },
-    
+
     compatibilityDate: "2024-08-10",
 });

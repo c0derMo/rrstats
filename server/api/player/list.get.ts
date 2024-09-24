@@ -1,8 +1,14 @@
-import { IsNull } from "typeorm";
+import { Not } from "typeorm";
 import { AuthController } from "~/server/controller/AuthController";
 import { Player } from "~/server/model/Player";
+import type { IPlayer } from "~/utils/interfaces/IPlayer";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<
+    Promise<
+        | Pick<IPlayer, "primaryName">[]
+        | Pick<IPlayer, "uuid" | "primaryName" | "title" | "nationality">[]
+    >
+>(async (event) => {
     const query = getQuery(event);
     const session = await AuthController.useSession(event);
 
@@ -19,11 +25,8 @@ export default defineEventHandler(async (event) => {
 
     const rawPlayers = await Player.find({
         select: ["primaryName"],
-        where: [
-            { excludedFromSearch: false },
-            { excludedFromSearch: IsNull() },
-        ],
+        where: { excludedFromSearch: Not(true) },
     });
 
-    return rawPlayers.map((p) => p.primaryName);
+    return rawPlayers;
 });

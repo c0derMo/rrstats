@@ -1,3 +1,5 @@
+import type { IMatch } from "~/utils/interfaces/IMatch";
+
 export const usePlayers = () => {
     const players = useState<{
         players: Record<string, string>;
@@ -14,9 +16,12 @@ export const usePlayers = () => {
             return;
         }
 
-        let toQuery = [];
+        let toQuery: string[] = [];
         for (const player of uuids) {
-            if (players.value.players[player] != null) {
+            if (
+                players.value.players[player] == null &&
+                !toQuery.includes(player)
+            ) {
                 toQuery.push(player);
             }
         }
@@ -37,7 +42,7 @@ export const usePlayers = () => {
     };
 
     const queryAll = async () => {
-        if (players.value.lookedUpAll) {
+        if (players.value.lookedUpAll === true) {
             return;
         }
         const lookupRequest = await $fetch("/api/player/lookup");
@@ -68,11 +73,19 @@ export const usePlayers = () => {
         return uuids.map((uuid) => get(uuid));
     };
 
+    const queryFromMatches = async (matches: IMatch[]) => {
+        const players = matches
+            .map((match) => [match.playerOne, match.playerTwo])
+            .reduce((prev, cur) => [...prev, ...cur], []);
+        await queryPlayers(players);
+    };
+
     return {
         queryPlayers,
         queryAll,
         get,
         getUUID,
         queryAndGet,
+        queryFromMatches,
     };
 };

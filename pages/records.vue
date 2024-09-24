@@ -11,17 +11,12 @@
 
         <GenericRecordTable
             :records="genericRecords"
-            :players="records?.players"
             :matches="records?.matches"
         />
 
         <h3 class="text-2xl">Map-Records</h3>
 
-        <MapRecordTable
-            :records="mapRecords"
-            :players="records?.players"
-            :matches="records?.matches"
-        />
+        <MapRecordTable :records="mapRecords" :matches="records?.matches" />
 
         <h3 class="text-2xl">Retired Records</h3>
 
@@ -32,7 +27,6 @@
 
         <GenericRecordTable
             :records="retiredRecords"
-            :players="records?.players"
             :matches="records?.matches"
         />
     </div>

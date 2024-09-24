@@ -1,10 +1,13 @@
 import { AuthController } from "~/server/controller/AuthController";
 import { GenericRecord, MapRecord } from "~/server/model/Record";
+import type { IGenericRecord, IMapRecord } from "~/utils/interfaces/IRecord";
 import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
-    const query = getQuery(event);
+    const body = await readBody<IGenericRecord | IMapRecord>(event);
+    const query = getQuery<{
+        type?: "generic" | "map";
+    }>(event);
     const session = await AuthController.useSession(event);
 
     if (

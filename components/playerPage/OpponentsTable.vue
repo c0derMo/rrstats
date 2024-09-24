@@ -13,8 +13,10 @@ import MatchCollection from "~/utils/playerStatistics/MatchCollection";
 const props = defineProps<{
     matches: IMatch[];
     localPlayer: string;
-    opponents: Record<string, string>;
 }>();
+
+const players = usePlayers();
+await players.queryFromMatches(props.matches);
 
 const headers = [
     { key: "Opponent", title: "Opponent", disableSort: true },
@@ -58,7 +60,7 @@ const rows = computed(() => {
         );
         const wtl = collection.wtl();
         result.push({
-            Opponent: props.opponents[opponent],
+            Opponent: players.get(opponent),
             Matches: wtl.w + wtl.t + wtl.l,
             wtl: `${wtl.w}-${wtl.t}-${wtl.l}`,
         });

@@ -1,7 +1,8 @@
 import { AuthController } from "~/server/controller/AuthController";
 import { User } from "~/server/model/User";
+import type { IUser } from "~/utils/interfaces/IUser";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<Promise<IUser>>(async (event) => {
     const session = await AuthController.useSession(event);
 
     if (session.data.discordId == null) {

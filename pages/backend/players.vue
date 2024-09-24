@@ -137,8 +137,8 @@ async function updateList() {
 async function loadUpdatePlayer(uuid: string) {
     playerLoading.value = uuid;
     try {
-        const playerQuery = await $fetch("/api/player/raw", {
-            query: { player: uuid },
+        const playerQuery = await $fetch("/api/player", {
+            query: { uuid: uuid },
         });
         playerToShow.value = playerQuery;
     } finally {

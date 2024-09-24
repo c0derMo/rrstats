@@ -3,7 +3,9 @@ import { Competition, CompetitionPlacement } from "~/server/model/Competition";
 import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+    const body = await readBody<{
+        tag?: string;
+    }>(event);
     const session = await AuthController.useSession(event);
 
     if (
@@ -25,10 +27,10 @@ export default defineEventHandler(async (event) => {
     }
 
     const compToRemove = await Competition.findOneBy({
-        tag: body.tag as string,
+        tag: body.tag,
     });
     if (compToRemove != null) {
         await compToRemove.remove();
-        await CompetitionPlacement.delete({ competition: body.tag as string });
+        await CompetitionPlacement.delete({ competition: body.tag });
     }
 });

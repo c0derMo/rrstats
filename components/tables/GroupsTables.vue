@@ -12,7 +12,6 @@
                 :max-points-per-match="groupsInfo.maxPointsPerMatch"
                 :players="group.players"
                 :position-overrides="group.positionOverrides"
-                :player-names="players"
             />
         </div>
     </AccordionComponent>
@@ -25,7 +24,6 @@ import type { IMatch } from "~/utils/interfaces/IMatch";
 const props = defineProps<{
     groupsInfo: IGroupSettings;
     matches: IMatch[];
-    players: Record<string, string>;
 }>();
 
 const groups = computed(() => {

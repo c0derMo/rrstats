@@ -2,7 +2,6 @@
     <MatchDetailsDialog
         v-if="detailedMatch != null"
         :match="detailedMatch"
-        :opponents="players"
         @click-outside="detailedMatch = null"
     />
     <RecordHistoryDialog
@@ -28,10 +27,14 @@
             {{ secondsToTime(value) }}
         </template>
 
-        <template #players="{ value, row }: { value: string[], row: IGenericRecord }">
+        <template
+            #players="{ value, row }: { value: string[]; row: IGenericRecord }"
+        >
             <template v-for="(player, idx) in value" :key="idx">
-                <span :class="{'underline': isWinner(row, idx)}">{{ players[player] || `Unknown player: ${player}` }}</span>
-                <span v-if="idx < value.length-1">, </span>
+                <span :class="{ underline: isWinner(row, idx) }">{{
+                    players.get(player) || `Unknown player: ${player}`
+                }}</span>
+                <span v-if="idx < value.length - 1">, </span>
             </template>
         </template>
 
@@ -93,14 +96,15 @@ const historyRecord: Ref<string | null> = ref(null);
 const props = withDefaults(
     defineProps<{
         records: IGenericRecord[];
-        players?: Record<string, string>;
         matches?: Record<string, IMatch>;
     }>(),
     {
-        players: () => ({}),
         matches: () => ({}),
     },
 );
+
+const players = usePlayers();
+await players.queryFromMatches(Object.values(props.matches));
 
 const sortedRecords = computed(() => {
     return [...props.records].sort(

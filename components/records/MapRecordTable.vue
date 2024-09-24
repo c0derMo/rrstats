@@ -2,7 +2,6 @@
     <MatchDetailsDialog
         v-if="detailedMatch != null"
         :match="detailedMatch"
-        :opponents="players"
         @click-outside="detailedMatch = null"
     />
     <RecordHistoryDialog
@@ -27,9 +26,7 @@
         </template>
 
         <template #player="{ value }">
-            <PlayerLinkTag
-                :player="players[value] ?? `Unknown player: ${value}`"
-            />
+            <PlayerLinkTag :player="players.get(value)" />
         </template>
 
         <template #match="{ row, value }">
@@ -47,10 +44,10 @@
                 {{ matches[value].competition }}
                 {{ matches[value].round }}
                 <span v-if="matches[value].playerOne === row.player"
-                    >vs {{ players[matches[value].playerTwo] }}</span
+                    >vs {{ players.get(matches[value].playerTwo) }}</span
                 >
                 <span v-if="matches[value].playerTwo === row.player"
-                    >vs {{ players[matches[value].playerOne] }}</span
+                    >vs {{ players.get(matches[value].playerOne) }}</span
                 >
             </a>
         </template>
@@ -87,7 +84,6 @@ const historyMap: Ref<number | null> = ref(null);
 const props = withDefaults(
     defineProps<{
         records: IMapRecord[];
-        players?: Record<string, string>;
         matches?: Record<string, IMatch>;
     }>(),
     {
@@ -95,6 +91,9 @@ const props = withDefaults(
         matches: () => ({}),
     },
 );
+
+const players = usePlayers();
+await players.queryFromMatches(Object.values(props.matches));
 
 const sortedRecords = computed(() => {
     return [...props.records].sort(

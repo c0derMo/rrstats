@@ -72,7 +72,7 @@
                 <AutocompleteComponent
                     placeholder="Player"
                     class="w-full xl:w-[600px] text-lg mt-3"
-                    :suggestions="players || []"
+                    :suggestions="players?.map((p) => p.primaryName) || []"
                     @confirm="(p) => navigateTo(`/${p}`)"
                 />
             </CardComponent>
@@ -109,7 +109,7 @@ useHead({
     title: "RRStats",
 });
 
-const { data: players } = await useFetch<string[]>("/api/player/list");
+const { data: players } = await useFetch("/api/player/list");
 const { data: competitions } = await useFetch("/api/competitions/list");
 const { data: numbers } = await useFetch("/api/onlyNumbers");
 

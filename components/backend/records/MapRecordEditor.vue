@@ -86,6 +86,7 @@ const showAllMatches = ref(false);
 const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
+player.value = playerLookup.get(recordData.value.player);
 
 const maps = getAllMaps().map((map) => {
     return { text: getMap(map)!.name, value: map };
@@ -122,7 +123,7 @@ async function checkPlayerAndUpdateMatches(initialLoad?: boolean) {
 
     recordData.value.player = playerLookup.getUUID(player.value.trim());
 
-    const matchRequest = await $fetch("/api/matches/player", {
+    const matchRequest = await $fetch<IMatch[]>("/api/matches", {
         query: { player: recordData.value.player },
     });
     rawMatches.value = matchRequest;

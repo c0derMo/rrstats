@@ -7,7 +7,25 @@ import type { Spin } from "~/utils/interfaces/IMatch";
 import { type HitmanMap, getMap } from "~/utils/mapUtils";
 import { calculatePossibleSpinAmount } from "~/utils/spinCountCalculator";
 
-export default defineEventHandler(async (event) => {
+interface SpinStats {
+    total: number;
+    uniqueSpins: number;
+    mostRepeated: {
+        count: number;
+        spins: PlayedMap[][];
+    };
+    quickest: PlayedMap[];
+    slowest: PlayedMap[];
+    average: number | null;
+    averageLastYear: number | null;
+    possibleSpinFactors: {
+        methods: number;
+        disguises: number;
+        ntkos: number;
+    } | null;
+}
+
+export default defineEventHandler<Promise<SpinStats>>(async (event) => {
     const query = getQuery<{
         map: string | null;
     }>(event);

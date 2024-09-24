@@ -162,7 +162,7 @@ async function deleteMatch(uuid: string) {
 }
 
 async function updateList() {
-    const matchQuery = await $fetch("/api/matches/list");
+    const matchQuery = await $fetch("/api/matches/raw");
     matches.value = matchQuery;
 }
 

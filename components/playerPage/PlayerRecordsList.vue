@@ -6,7 +6,7 @@
     >
         <template #record="{ row }">
             <span v-if="'map' in row">
-                {{ getMap(row.map)!.name }}
+                {{ getMap(row.map!)!.name }}
             </span>
             <span v-if="'record' in row">
                 {{ row.record }}
