@@ -1,15 +1,16 @@
 import type { IMatch } from "~/utils/interfaces/IMatch";
 
-export const usePlayers = () => {
-    const players = useState<{
-        players: Record<string, string>;
-        lookedUpAll: boolean;
-    }>("players", () => ({ players: {}, lookedUpAll: false }));
+const players = useState<{
+    players: Record<string, string>;
+    lookedUpAll: boolean;
+}>("players", () => ({ players: {}, lookedUpAll: false }));
 
-    const inversePlayers = useState<Record<string, string>>(
-        "inversePlayers",
-        () => ({}),
-    );
+const inversePlayers = useState<Record<string, string>>(
+    "inversePlayers",
+    () => ({}),
+);
+
+export const usePlayers = () => {
 
     const queryPlayers = async (uuids: string[]) => {
         if (players.value.lookedUpAll) {
