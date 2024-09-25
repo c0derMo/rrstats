@@ -53,7 +53,7 @@ import { MapPlayed } from "./leaderboardStatistics/map/Played";
 import { MapRNG } from "./leaderboardStatistics/map/RNG";
 import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
 import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
-import FunctionTimer from "~/utils/FunctionTimer";
+import { Log } from "~/utils/FunctionTimer";
 import consola from "consola";
 
 export interface StatisticData<T extends string> {
@@ -154,10 +154,8 @@ export default class LeaderboardController {
         logger.info("Leaderboards recalculated.");
     }
 
+    @Log("LeaderboardController._recalculate")
     private static async _recalculate(): Promise<void> {
-        const timer = new FunctionTimer(
-            "LeaderboardControlller._recalculate()",
-        );
         // Empty the cache
         LeaderboardController.cache = {};
 
@@ -183,7 +181,6 @@ export default class LeaderboardController {
             );
             LeaderboardController.cache[statistic.name] = result;
         }
-        timer.finish();
     }
 
     public static async getCategories(): Promise<{

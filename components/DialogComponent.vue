@@ -34,7 +34,6 @@ const props = withDefaults(
 );
 
 const currentlyOpen = ref(!props.animateOnShow && props.open);
-console.log(currentlyOpen.value);
 
 const classes = computed(() => {
     if (currentlyOpen.value) {

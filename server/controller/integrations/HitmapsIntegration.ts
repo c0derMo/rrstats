@@ -11,8 +11,9 @@ import {
 } from "~/utils/interfaces/IMatch";
 import { Competition } from "~/server/model/Competition";
 import type { IGroup } from "~/utils/interfaces/ICompetition";
-import FunctionTimer from "~/utils/FunctionTimer";
+import { Log } from "~/utils/FunctionTimer";
 import { PlayedMap } from "~/server/model/PlayedMap";
+import consola from "consola";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -61,6 +62,8 @@ export interface HitmapsMatch {
     }[];
 }
 
+const logger = consola.withTag("rrstats:hitmaps");
+
 export default class HitmapsIntegration {
     private static cache: Map<string, number> = new Map();
     private static promises: Map<string, Promise<void>> = new Map();
@@ -82,7 +85,7 @@ export default class HitmapsIntegration {
                 new Promise((resolve) => {
                     this._updateHitmapsTournament(hitmapsSlug, competitionSlug)
                         .catch((e: Error) => {
-                            console.log(
+                            logger.error(
                                 `Error trying to fetch data from hitmaps: ${e.message}`,
                             );
                         })
@@ -97,21 +100,17 @@ export default class HitmapsIntegration {
         return this.promises.get(hitmapsSlug);
     }
 
+    @Log("HitmapsIntegration._updateHitmapsTournament", true)
     static async _updateHitmapsTournament(
         hitmapsSlug: string,
         competitionSlug: string,
     ): Promise<void> {
-        const timer = new FunctionTimer(
-            `HitmapsIntegration._updateHitmapsTournament(${hitmapsSlug}, ${competitionSlug})`,
-        );
-
         try {
             const request = await $fetch<{ matches: HitmapsTournamentMatch[] }>(
                 `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
             );
             await this.parseHitmapsTournament(request.matches, competitionSlug);
             this.cache.set(hitmapsSlug, Date.now());
-            timer.finish();
         } catch {
             return;
         }
@@ -150,7 +149,7 @@ export default class HitmapsIntegration {
         player.alternativeNames = [];
         player.nationality = nationality?.toLowerCase();
         await player.save();
-        console.log("Creating new player " + primaryName);
+        logger.info("Creating new player " + primaryName);
         return player.uuid;
     }
 

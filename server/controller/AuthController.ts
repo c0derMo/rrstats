@@ -2,10 +2,13 @@ import type { IPermission } from "~/utils/interfaces/IUser";
 import { User } from "../model/User";
 import type { H3Event } from "h3";
 import { randomBytes } from "crypto";
+import consola from "consola";
 
 interface SessionData {
     discordId?: string;
 }
+
+const logger = consola.withTag("rrstats:auth");
 
 export class AuthController {
     private static sessionKey: string = "";
@@ -13,7 +16,7 @@ export class AuthController {
     static async useSession(event: H3Event) {
         if (AuthController.sessionKey === "") {
             if (import.meta.dev) {
-                console.log(
+                logger.log(
                     "Dev Environment detected, using static session key",
                 );
                 AuthController.sessionKey =

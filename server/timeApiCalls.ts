@@ -1,16 +1,18 @@
 import type { H3Event } from "h3";
 import FunctionTimer from "~/utils/FunctionTimer";
 
-const enableLogging = true;
-
 export default defineNitroPlugin(async (nitroApp) => {
     const timers = new Map<H3Event, FunctionTimer>();
 
-    if (enableLogging) {
+    if (useRuntimeConfig().enableRouteTimings) {
         nitroApp.hooks.addHooks({
             request(event: H3Event) {
-                const timer = new FunctionTimer(event.toString());
-                timers.set(event, timer);
+                if (event.path.startsWith("/api/")) {
+                    const timer = new FunctionTimer(
+                        event.toString().split("?")[0],
+                    );
+                    timers.set(event, timer);
+                }
             },
 
             beforeResponse(event) {

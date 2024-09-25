@@ -1,6 +1,7 @@
 import { AuthController } from "~/server/controller/AuthController";
 import TwitterIntegration from "~/server/controller/integrations/TwitterIntegration";
 import { IPermission } from "~/utils/interfaces/IUser";
+import consola from "consola";
 
 export default defineEventHandler<Promise<boolean>>(async (event) => {
     const tweets = await readBody<string[]>(event);
@@ -28,7 +29,7 @@ export default defineEventHandler<Promise<boolean>>(async (event) => {
         await TwitterIntegration.tweet(tweets);
         return true;
     } catch (e) {
-        console.log(e);
+        consola.error(e);
         return false;
     }
 });

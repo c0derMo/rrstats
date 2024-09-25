@@ -1,4 +1,5 @@
 import type { FetchError } from "ofetch";
+import consola from "consola";
 
 interface DiscordCacheEntry {
     lastRequest: number;
@@ -50,7 +51,9 @@ export default class DiscordAvatarIntegration {
         } catch (e) {
             const fetchError = e as FetchError;
             if (fetchError.statusCode === 429) {
-                console.log("WARN: Discord request hit 429");
+                consola
+                    .withTag("rrstats:discord")
+                    .warn("Discord request hit 429");
                 this.retryIn = Date.now() + fetchError.data.retry_after! * 1000;
             }
             return this.DEFAULT_AVATAR;

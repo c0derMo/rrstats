@@ -15,6 +15,8 @@ export default defineNuxtConfig({
         twitterTokenSecret: "",
         publicOrigin: "http://localhost:3000",
         database: "rrstats.db",
+        enableFunctionTimings: false,
+        enableRouteTimings: false,
     },
 
     nitro: {
@@ -28,6 +30,9 @@ export default defineNuxtConfig({
                     },
                 },
             },
+        },
+        alias: {
+            consola: "consola",
         },
     },
 
