@@ -145,11 +145,25 @@
                                 ? durationToLocale(map.timeTaken * 1000)
                                 : "unknown"
                         }}
-                        <Tag v-if="isMapPB(idx)" narrow color="purple"
-                            >Personal best ({{
+                        <Tag v-if="isMapPB(idx)" narrow color="purple">
+                            Personal best ({{
                                 getPlayerName(map.winner, "unknown")
-                            }})</Tag
+                            }})
+                        </Tag>
+                        <Tag
+                            v-if="wrStatus[idx] === RecordStatus.CURRENT"
+                            narrow
+                            color="#cb8900"
                         >
+                            Current record
+                        </Tag>
+                        <Tag
+                            v-if="wrStatus[idx] === RecordStatus.FORMER"
+                            narrow
+                            color="#926711"
+                        >
+                            Former record
+                        </Tag>
                     </div>
                 </template>
             </div>
@@ -176,6 +190,12 @@ import {
 } from "~/utils/interfaces/IMatch";
 import { DateTime, Duration } from "luxon";
 
+enum RecordStatus {
+    NONE,
+    FORMER,
+    CURRENT,
+}
+
 defineEmits<{
     clickOutside: [];
 }>();
@@ -194,6 +214,9 @@ const { data: playerOneStatistics } = await useFetch(
 );
 const { data: playerTwoStatistics } = await useFetch(
     `/api/player/statistics?player=${props.match.playerTwo}`,
+);
+const wrStatus = ref<RecordStatus[]>(
+    props.match.playedMaps.map((_) => RecordStatus.NONE),
 );
 
 const playerOneBans = computed(() => {
@@ -267,5 +290,27 @@ function isMapPB(mapIdx: number): boolean {
 
 const allMapTimes = computed(() => {
     return props.match.playedMaps.map((map) => map.timeTaken);
+});
+
+onBeforeMount(async () => {
+    await Promise.all(
+        props.match.playedMaps.map((m, idx) => {
+            return new Promise<void>((resolve) => {
+                $fetch("/api/records/history", { query: { map: m.map } }).then(
+                    (data) => {
+                        const recordIndex = data.findIndex(
+                            (r) => r.match === props.match.uuid,
+                        );
+                        if (recordIndex === data.length - 1) {
+                            wrStatus.value[idx] = RecordStatus.CURRENT;
+                        } else if (recordIndex > 0) {
+                            wrStatus.value[idx] = RecordStatus.FORMER;
+                        }
+                        resolve();
+                    },
+                );
+            });
+        }),
+    );
 });
 </script>

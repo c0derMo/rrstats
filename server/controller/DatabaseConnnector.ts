@@ -45,7 +45,7 @@ export default class DatabaseConnector {
                   ]
                 : undefined,
             synchronize: true,
-            parseInt8: dbType === "postgres" ? true : undefined
+            parseInt8: dbType === "postgres" ? true : undefined,
         } as DataSourceOptions);
     }
 

@@ -16,7 +16,6 @@ const props = defineProps<{
 }>();
 
 const players = usePlayers();
-await players.queryFromMatches(props.matches);
 
 const headers = [
     { key: "Opponent", title: "Opponent", disableSort: true },
