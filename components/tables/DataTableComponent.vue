@@ -1,4 +1,5 @@
 <template>
+    <IndefiniteProgressBar v-if="asyncIsQuerying" />
     <TableComponent
         :headers="convertedHeaders"
         :rows="filteredRows"
@@ -26,7 +27,10 @@
                     }"
                     class="transition opacity-0 mr-1"
                 />
-                <slot :name="`header-${header.key}`" :value="header.title">
+                <slot
+                    :name="`header-${String(header.key)}`"
+                    :value="header.title"
+                >
                     {{ value }}
                 </slot>
             </span>
@@ -39,7 +43,7 @@
         <template
             v-for="header of convertedHeaders"
             :key="header.key"
-            #[`${header.key}`]="{ value, row, index }"
+            #[header.key]="{ value, row, index }"
         >
             <div :class="{ 'ml-4': enableSorting }">
                 <slot
@@ -58,23 +62,25 @@
         </template>
     </TableComponent>
 
-    <div class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center">
+    <div
+        class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center flex-nowrap text-nowrap"
+    >
         <span class="md:text-base text-sm">Rows per page:</span>
         <DropdownComponent
             v-model="selectedRowsPerPage"
             :items="selectableRowsPerPage"
         />
-        <div class="md:w-3" />
+        <div class="md:max-w-3 w-full" />
         <span class="md:text-base text-sm">
-            {{ startIndex + 1 }} - {{ endIndex }} of {{ props.rows.length }}
+            {{ startIndex + 1 }} - {{ endIndex }} of {{ amountOfItems }}
         </span>
-        <div class="md:w-3" />
+        <div class="md:max-w-3 w-full" />
         <ButtonComponent @click="previousPage">&lt;</ButtonComponent>
         <ButtonComponent @click="nextPage">&gt;</ButtonComponent>
     </div>
 </template>
 
-<script setup lang="ts" generic="R extends { [key in keyof any]: unknown }">
+<script setup lang="ts" generic="R">
 interface ExtendedHeader {
     key: string;
     title: string;
@@ -82,69 +88,81 @@ interface ExtendedHeader {
     sort?: (a: unknown, b: unknown, objectA: R, objectB: R) => number;
 }
 
-const props = defineProps({
-    headers: {
-        type: Array as () => string[] | ExtendedHeader[],
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        headers: string[] | ExtendedHeader[];
+        rows?: R[];
+        enableSorting?: boolean;
+        alwaysSort?: boolean;
+        defaultSortingKey?: string;
+        defaultSortingOrder?: string;
+        rowsPerPage?: number[];
+        selectedRowsPerPage?: number;
+        disableAllPerPage?: boolean;
+        numberOfItems?: number;
+        queryFunction?: (
+            skip: number,
+            take: number,
+            orderBy: string | null,
+            sortingOrder: "ASC" | "DESC" | null,
+        ) => Promise<R[]>;
+    }>(),
+    {
+        rows: undefined,
+        enableSorting: true,
+        alwaysSort: false,
+        defaultSortingKey: undefined,
+        defaultSortingOrder: "DESC",
+        rowsPerPage: () => [5, 10, 20],
+        selectedRowsPerPage: 5,
+        disableAllPerPage: false,
+        numberOfItems: undefined,
+        queryFunction: undefined,
     },
-    rows: {
-        type: Array as () => R[],
-        required: true,
-    },
-    enableSorting: {
-        type: Boolean,
-        required: false,
-        default: true,
-    },
-    alwaysSort: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-    defaultSortingKey: {
-        type: String,
-        required: false,
-        default: undefined,
-    },
-    defaultSortingOrder: {
-        type: String,
-        required: false,
-        default: "DESC",
-        validator: (v) => v === "ASC" || v === "DESC",
-    },
-    rowsPerPage: {
-        type: Array<number>,
-        required: false,
-        default: [5, 10, 20],
-    },
-    itemsPerPage: {
-        type: Number,
-        required: false,
-        default: 5,
-    },
-    disableAll: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-});
+);
 
-const emits = defineEmits(["update:itemsPerPage", "click-row"]);
+const emits = defineEmits<{
+    "update:selectedRowsPerPage": [value: number];
+    "click-row": [row: R, index: number];
+}>();
 
-const selectedRowsPerPage = ref(props.itemsPerPage);
+if (
+    props.rows == null &&
+    (props.numberOfItems == null || props.queryFunction == null)
+) {
+    throw new Error("rows or numberOfItems and queryFunction must be set");
+}
+
+const selectedRowsPerPage = ref(props.selectedRowsPerPage);
 const selectedPage = ref(1);
 const sortingBy: Ref<ExtendedHeader | null> = ref(null);
 const sortingOrder: Ref<"ASC" | "DESC" | null> = ref(null);
+const asyncItems: Ref<R[]> = ref([]);
+const asyncIsQuerying = ref(false);
 
 watch(selectedRowsPerPage, () => {
-    emits("update:itemsPerPage", selectedRowsPerPage.value);
+    emits("update:selectedRowsPerPage", selectedRowsPerPage.value);
 });
 watch(
-    () => props.itemsPerPage,
+    () => props.selectedRowsPerPage,
     () => {
-        selectedRowsPerPage.value = props.itemsPerPage;
+        selectedRowsPerPage.value = props.selectedRowsPerPage;
     },
 );
+
+const isAsync = computed<boolean>(() => {
+    return props.queryFunction != null;
+});
+
+const amountOfItems = computed<number>(() => {
+    if (props.rows != null) {
+        return props.rows.length;
+    }
+    if (props.numberOfItems != null) {
+        return props.numberOfItems;
+    }
+    throw new Error("rows or numberOfItems and queryFunction must be set");
+});
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     if (props.headers.length === 0) {
@@ -154,7 +172,7 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
         return props.headers as ExtendedHeader[];
     }
     return (props.headers as string[]).map((header) => {
-        return { key: header, title: header };
+        return { key: header, title: header } as ExtendedHeader;
     });
 });
 
@@ -162,8 +180,8 @@ const selectableRowsPerPage = computed(() => {
     const converted = props.rowsPerPage.map((rPP) => {
         return { text: String(rPP), value: rPP };
     });
-    if (!props.disableAll) {
-        converted.push({ text: "All", value: props.rows.length });
+    if (!props.disableAllPerPage) {
+        converted.push({ text: "All", value: amountOfItems.value });
     }
     return converted;
 });
@@ -194,17 +212,23 @@ const startIndex = computed(() => {
 const endIndex = computed(() => {
     return Math.min(
         selectedPage.value * selectedRowsPerPage.value,
-        props.rows.length,
+        amountOfItems.value,
     );
 });
 
-const filteredRows = computed(() => {
-    let result = props.rows.slice();
+const filteredRows = computed<R[]>(() => {
+    if (isAsync.value) {
+        return asyncItems.value as R[];
+    }
+    if (props.rows == null) {
+        throw new Error("rows or numberOfItems and queryFunction must be set");
+    }
+    let result = [...props.rows];
 
     if (sortingBy.value !== null && props.enableSorting) {
         result = result.sort((a, b) => {
-            const valA = a[sortingBy.value!.key];
-            const valB = b[sortingBy.value!.key];
+            const valA = a[sortingBy.value!.key as keyof R];
+            const valB = b[sortingBy.value!.key as keyof R];
 
             if (sortingBy.value!.sort !== undefined) {
                 return sortingBy.value!.sort(valA, valB, a, b);
@@ -227,19 +251,39 @@ const filteredRows = computed(() => {
     return result;
 });
 
-function nextPage() {
-    if (selectedPage.value < props.rows.length / selectedRowsPerPage.value) {
+async function requery() {
+    if (props.queryFunction == null) {
+        throw new Error("rows or numberOfItems and queryFunction must be set");
+    }
+    asyncIsQuerying.value = true;
+    asyncItems.value = await props.queryFunction(
+        Math.max(0, startIndex.value - 1),
+        endIndex.value - startIndex.value,
+        sortingBy.value?.key ?? null,
+        sortingOrder.value,
+    );
+    asyncIsQuerying.value = false;
+}
+
+async function nextPage() {
+    if (selectedPage.value < amountOfItems.value / selectedRowsPerPage.value) {
         selectedPage.value++;
+    }
+    if (isAsync.value) {
+        await requery();
     }
 }
 
-function previousPage() {
+async function previousPage() {
     if (selectedPage.value > 1) {
         selectedPage.value--;
     }
+    if (isAsync.value) {
+        await requery();
+    }
 }
 
-function changeSorting(key: ExtendedHeader) {
+async function changeSorting(key: ExtendedHeader) {
     if (!props.enableSorting || key.disableSort) {
         return;
     }
@@ -261,13 +305,23 @@ function changeSorting(key: ExtendedHeader) {
                 break;
         }
     }
+    if (isAsync.value) {
+        await requery();
+    }
 }
 
-watch(selectedRowsPerPage, () => {
-    if (selectedPage.value > props.rows.length / selectedRowsPerPage.value) {
+watch(selectedRowsPerPage, async () => {
+    if (selectedPage.value > amountOfItems.value / selectedRowsPerPage.value) {
         selectedPage.value = Math.ceil(
-            props.rows.length / selectedRowsPerPage.value,
+            amountOfItems.value / selectedRowsPerPage.value,
         );
     }
+    if (isAsync.value) {
+        await requery();
+    }
 });
+
+if (isAsync.value) {
+    await requery();
+}
 </script>

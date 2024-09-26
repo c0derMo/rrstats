@@ -1,5 +1,9 @@
 <template>
-    <DialogComponent dialog-class="w-3/5">
+    <DialogComponent
+        dialog-class="w-3/5"
+        :open="showDialog"
+        @closed="$emit('close')"
+    >
         <CardComponent>
             <div class="flex flex-col gap-5">
                 <TextInputComponent
@@ -64,17 +68,17 @@
 <script setup lang="ts">
 import type { IPlayer } from "~/utils/interfaces/IPlayer";
 
-const props = defineProps({
-    player: {
-        type: Object as PropType<IPlayer>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    player: IPlayer;
+}>();
 
-const emits = defineEmits(["close"]);
+defineEmits<{
+    close: [];
+}>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
+const showDialog = ref(true);
 const playerData = toRef(props.player);
 const isSaving = ref(false);
 
@@ -130,10 +134,10 @@ async function save() {
     }
 
     isSaving.value = false;
-    emits("close");
+    showDialog.value = false;
 }
 
 function close() {
-    emits("close");
+    showDialog.value = false;
 }
 </script>

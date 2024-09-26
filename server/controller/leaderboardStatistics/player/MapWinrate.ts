@@ -8,6 +8,7 @@ export class PlayerMapWinrate implements LeaderboardPlayerStatistic {
     name = "Map Winrate";
     hasMaps = false;
     secondaryFilter = "Maps played";
+    defaultSecondaryFilter = 5;
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
         // Calculating wins and matches

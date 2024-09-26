@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Match } from "../../model/Match";
 import { Player } from "../../model/Player";
 import { In } from "typeorm";
@@ -6,14 +5,15 @@ import { DateTime } from "luxon";
 import { HitmanMap, getMapBySlug } from "../../../utils/mapUtils";
 import {
     type Spin,
-    type RRMap,
     WinningPlayer,
     ChoosingPlayer,
     type RRBannedMap,
 } from "~/utils/interfaces/IMatch";
 import { Competition } from "~/server/model/Competition";
 import type { IGroup } from "~/utils/interfaces/ICompetition";
-import FunctionTimer from "~/utils/FunctionTimer";
+import { Log } from "~/utils/FunctionTimer";
+import { PlayedMap } from "~/server/model/PlayedMap";
+import consola from "consola";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -62,6 +62,8 @@ export interface HitmapsMatch {
     }[];
 }
 
+const logger = consola.withTag("rrstats:hitmaps");
+
 export default class HitmapsIntegration {
     private static cache: Map<string, number> = new Map();
     private static promises: Map<string, Promise<void>> = new Map();
@@ -83,7 +85,7 @@ export default class HitmapsIntegration {
                 new Promise((resolve) => {
                     this._updateHitmapsTournament(hitmapsSlug, competitionSlug)
                         .catch((e: Error) => {
-                            console.log(
+                            logger.error(
                                 `Error trying to fetch data from hitmaps: ${e.message}`,
                             );
                         })
@@ -98,27 +100,20 @@ export default class HitmapsIntegration {
         return this.promises.get(hitmapsSlug);
     }
 
+    @Log("HitmapsIntegration._updateHitmapsTournament", true)
     static async _updateHitmapsTournament(
         hitmapsSlug: string,
         competitionSlug: string,
     ): Promise<void> {
-        const timer = new FunctionTimer(
-            `HitmapsIntegration._updateHitmapsTournament(${hitmapsSlug}, ${competitionSlug})`,
-        );
-        const request = await axios.get<{ matches: HitmapsTournamentMatch[] }>(
-            `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
-        );
-        if (request.status !== 200) {
-            // Error out somehow
+        try {
+            const request = await $fetch<{ matches: HitmapsTournamentMatch[] }>(
+                `https://tournamentsapi.hitmaps.com/api/events/${hitmapsSlug}/statistics?statsKey=MatchHistory`,
+            );
+            await this.parseHitmapsTournament(request.matches, competitionSlug);
+            this.cache.set(hitmapsSlug, Date.now());
+        } catch {
             return;
         }
-
-        await this.parseHitmapsTournament(
-            request.data.matches,
-            competitionSlug,
-        );
-        this.cache.set(hitmapsSlug, Date.now());
-        timer.finish();
     }
 
     private static async fetchHitmapsMatches(
@@ -132,10 +127,15 @@ export default class HitmapsIntegration {
             );
         }
         const listOfMatches = hitmapsMatchIds.join(",");
-        const req = await axios.get<{ matches: HitmapsMatch[] }>(
-            `https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`,
-        );
-        return req.data.matches;
+
+        try {
+            const request = await $fetch<{ matches: HitmapsMatch[] }>(
+                `https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`,
+            );
+            return request.matches;
+        } catch {
+            return [];
+        }
     }
 
     private static async createNewPlayer(
@@ -149,7 +149,7 @@ export default class HitmapsIntegration {
         player.alternativeNames = [];
         player.nationality = nationality?.toLowerCase();
         await player.save();
-        console.log("Creating new player " + primaryName);
+        logger.info("Creating new player " + primaryName);
         return player.uuid;
     }
 
@@ -266,10 +266,11 @@ export default class HitmapsIntegration {
 
             let p1Score = 0;
             let p2Score = 0;
-            const picks: RRMap[] = [];
+            const picks: PlayedMap[] = [];
             const bans: RRBannedMap[] = [];
 
-            for (const map of fullMatch.mapSelections) {
+            for (const mapIdx in fullMatch.mapSelections) {
+                const map = fullMatch.mapSelections[mapIdx];
                 if (!map.complete) continue;
 
                 let winner = WinningPlayer.DRAW;
@@ -298,25 +299,33 @@ export default class HitmapsIntegration {
                             map.winnerFinishedAt,
                         );
                         spinTime = Math.abs(
-                            startingTime.diff(endingTime).as("seconds"),
+                            Math.floor(
+                                startingTime.diff(endingTime).as("seconds"),
+                            ),
                         );
                     } else if (map.resultVerifiedAt != null) {
                         const endingTime = DateTime.fromISO(
                             map.resultVerifiedAt,
                         );
                         spinTime = Math.abs(
-                            startingTime.diff(endingTime).as("seconds"),
+                            Math.floor(
+                                startingTime.diff(endingTime).as("seconds"),
+                            ),
                         );
                     }
                 }
 
-                picks.push({
-                    map: getMapBySlug(map.hitmapsSlug)?.map ?? HitmanMap.PARIS,
-                    winner,
-                    picked: pickedBy,
-                    spin: map.spin,
-                    timeTaken: spinTime,
-                });
+                const dbMap = new PlayedMap();
+                dbMap.map =
+                    getMapBySlug(map.hitmapsSlug)?.map ?? HitmanMap.PARIS;
+                dbMap.winner = winner;
+                dbMap.picked = pickedBy;
+                dbMap.spin = map.spin;
+                dbMap.timeTaken = spinTime;
+                dbMap.index = parseInt(mapIdx);
+                await dbMap.save();
+
+                picks.push(dbMap);
             }
 
             for (const map of newMatch.maps) {

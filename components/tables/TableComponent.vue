@@ -16,7 +16,7 @@
         <tbody
             v-for="(row, idx) of rows"
             :key="idx"
-            class="border-b dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
+            class="border-b dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-300"
             @click="$emit('click-row', row, idx)"
         >
             <tr v-if="$slots['before-row']">
@@ -28,15 +28,15 @@
                 <td
                     v-for="header of convertedHeaders"
                     :key="header.key"
-                    class="md:px-6 px-2 py-2"
+                    class="md:px-3 px-1 py-2"
                 >
                     <slot
                         :name="header.key"
-                        :value="row[header.key]"
+                        :value="getValue(row, header.key)"
                         :row="row"
                         :index="idx"
                     >
-                        {{ row[header.key] }}
+                        {{ getValue(row, header.key) }}
                     </slot>
                 </td>
             </tr>
@@ -49,24 +49,20 @@
     </table>
 </template>
 
-<script setup lang="ts" generic="R extends { [key in keyof any]: unknown }">
+<script setup lang="ts" generic="R">
 interface ExtendedHeader {
     title: string;
     key: string;
 }
 
-const props = defineProps({
-    headers: {
-        type: Array as () => string[] | ExtendedHeader[],
-        required: true,
-    },
-    rows: {
-        type: Array as () => R[],
-        required: true,
-    },
-});
+const props = defineProps<{
+    headers: string[] | ExtendedHeader[];
+    rows: R[];
+}>();
 
-defineEmits(["click-row"]);
+defineEmits<{
+    "click-row": [row: R, idx: number];
+}>();
 
 const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
     if (props.headers.length === 0) {
@@ -76,7 +72,13 @@ const convertedHeaders: ComputedRef<ExtendedHeader[]> = computed(() => {
         return props.headers as ExtendedHeader[];
     }
     return (props.headers as string[]).map((header) => {
-        return { key: header, title: header };
+        return { key: header, title: header } as ExtendedHeader;
     });
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getValue(row: R, key: string): any {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return row[key as keyof R] as any;
+}
 </script>

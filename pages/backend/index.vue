@@ -66,5 +66,5 @@ definePageMeta({
     middleware: ["auth"],
 });
 
-const user = (await useFetch("/api/auth/user")).data;
+const { data: user } = await useFetch("/api/auth/user");
 </script>

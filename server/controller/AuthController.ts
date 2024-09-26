@@ -2,22 +2,36 @@ import type { IPermission } from "~/utils/interfaces/IUser";
 import { User } from "../model/User";
 import type { H3Event } from "h3";
 import { randomBytes } from "crypto";
+import consola from "consola";
 
 interface SessionData {
     discordId?: string;
 }
+
+const logger = consola.withTag("rrstats:auth");
 
 export class AuthController {
     private static sessionKey: string = "";
 
     static async useSession(event: H3Event) {
         if (AuthController.sessionKey === "") {
-            AuthController.sessionKey = randomBytes(32).toString("hex");
+            if (import.meta.dev) {
+                logger.log(
+                    "Dev Environment detected, using static session key",
+                );
+                AuthController.sessionKey =
+                    "static_dev_token_thats_a_bit_longer_to_have_32_characters";
+            } else {
+                AuthController.sessionKey = randomBytes(32).toString("hex");
+            }
         }
 
         return await useSession<SessionData>(event, {
             password: AuthController.sessionKey,
             name: "rrstats",
+            cookie: {
+                sameSite: false,
+            },
         });
     }
 

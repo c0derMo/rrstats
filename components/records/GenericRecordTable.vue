@@ -2,20 +2,19 @@
     <MatchDetailsDialog
         v-if="detailedMatch != null"
         :match="detailedMatch"
-        :opponents="players"
         @click-outside="detailedMatch = null"
     />
     <RecordHistoryDialog
         v-if="historyRecord != null"
         :generic-record="historyRecord"
         :players="players"
-        @click-outside="historyRecord = null"
+        @closed="historyRecord = null"
     />
 
     <TableComponent :headers="headers" :rows="sortedRecords">
-        <template #maps="{ value }">
+        <template #maps="{ value }: { value: RecordMap[] }">
             <MapTag
-                v-for="(entry, idx) in value as RecordMap[]"
+                v-for="(entry, idx) in value"
                 :key="idx"
                 :map="getMap(entry.map)!"
                 class="mr-2"
@@ -25,23 +24,26 @@
         </template>
 
         <template #time="{ value }">
-            {{ secondsToTime(value as number) }}
+            {{ secondsToTime(value) }}
         </template>
 
-        <template #players="{ value }">
-            {{
-                (value as string[])
-                    .map((p) => players[p] || `Unknown player: ${p}`)
-                    .join(", ")
-            }}
+        <template
+            #players="{ value, row }: { value: string[]; row: IGenericRecord }"
+        >
+            <template v-for="(player, idx) in value" :key="idx">
+                <span :class="{ underline: isWinner(row, idx) }">{{
+                    players.get(player) || `Unknown player: ${player}`
+                }}</span>
+                <span v-if="idx < value.length - 1">, </span>
+            </template>
         </template>
 
         <template #match="{ value }">
             <a
-                v-if="matches[value as string] != null"
+                v-if="matches[value] != null"
                 :href="
-                    matches[value as string].vodLink != null
-                        ? matches[value as string].vodLink![0]
+                    matches[value].vodLink != null
+                        ? matches[value].vodLink![0]
                         : ''
                 "
                 :class="{
@@ -49,20 +51,20 @@
                         matches[value as string].vodLink != null,
                 }"
             >
-                {{ matches[value as string].competition }}
-                {{ matches[value as string].round }}
+                {{ matches[value].competition }}
+                {{ matches[value].round }}
             </a>
         </template>
 
         <template #more="{ row }">
-            <ButtonComponent @click="historyRecord = row.record as string">
-                <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
-            </ButtonComponent>
-            <ButtonComponent
-                @click="detailedMatch = matches[row.match as string]"
-            >
-                <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
-            </ButtonComponent>
+            <div class="flex flex-nowrap">
+                <ButtonComponent @click="historyRecord = row.record">
+                    <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
+                </ButtonComponent>
+                <ButtonComponent @click="detailedMatch = matches[row.match]">
+                    <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
+                </ButtonComponent>
+            </div>
         </template>
     </TableComponent>
 </template>
@@ -91,22 +93,18 @@ const headers = [
 const detailedMatch: Ref<IMatch | null> = ref(null);
 const historyRecord: Ref<string | null> = ref(null);
 
-const props = defineProps({
-    records: {
-        type: Array<IGenericRecord>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        records: IGenericRecord[];
+        matches?: Record<string, IMatch>;
+    }>(),
+    {
+        matches: () => ({}),
     },
-    players: {
-        type: Object as PropType<Record<string, string>>,
-        required: false,
-        default: () => {},
-    },
-    matches: {
-        type: Object as PropType<Record<string, IMatch>>,
-        required: false,
-        default: () => {},
-    },
-});
+);
+
+const players = usePlayers();
+await players.queryFromMatches(Object.values(props.matches));
 
 const sortedRecords = computed(() => {
     return [...props.records].sort(
@@ -115,4 +113,17 @@ const sortedRecords = computed(() => {
             Object.values(GenericRecordType).findIndex((g) => b.record === g),
     );
 });
+
+function isWinner(record: IGenericRecord, playerIndex: number) {
+    const match = props.matches[record.match];
+    if (match == null) {
+        return false;
+    }
+    if (playerIndex == 0) {
+        return match.playerOneScore > match.playerTwoScore;
+    } else if (playerIndex == 1) {
+        return match.playerTwoScore > match.playerOneScore;
+    }
+    return false;
+}
 </script>

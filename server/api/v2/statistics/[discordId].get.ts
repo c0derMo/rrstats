@@ -4,13 +4,20 @@ import MapperService from "~/server/controller/MapperService";
 import PlayerStatisticController from "~/server/controller/PlayerStatisticController";
 import { Player } from "~/server/model/Player";
 import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { StatisticsReponse } from "../APITypes";
+import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
 type ExtendedMatch = IMatch & {
     playerOneDiscord: string;
     playerTwoDiscord: string;
 };
 
-export default defineEventHandler(async (event) => {
+type ExtendedStatistics = IPlayerStatistics & {
+    debutMatch: ExtendedMatch | null;
+    mapPBs: { match: ExtendedMatch | null; map: number }[];
+};
+
+export default defineEventHandler<StatisticsReponse>(async (event) => {
     const authHeader = getRequestHeader(event, "authorization");
 
     if (!(await AuthController.isValidAPIKey(authHeader))) {
@@ -37,7 +44,9 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const statistics = await PlayerStatisticController.get(player.uuid);
+    const statistics = (await PlayerStatisticController.get(
+        player.uuid,
+    )) as ExtendedStatistics;
 
     const playersToQuery = [
         statistics.debutMatch?.playerOne,
@@ -57,9 +66,9 @@ export default defineEventHandler(async (event) => {
     );
 
     if (statistics.debutMatch != null) {
-        (statistics.debutMatch as ExtendedMatch).playerOneDiscord =
+        statistics.debutMatch.playerOneDiscord =
             playerLookupMap[statistics.debutMatch.playerOne] ?? "";
-        (statistics.debutMatch as ExtendedMatch).playerTwoDiscord =
+        statistics.debutMatch.playerTwoDiscord =
             playerLookupMap[statistics.debutMatch.playerTwo] ?? "";
     }
 
@@ -68,10 +77,8 @@ export default defineEventHandler(async (event) => {
             continue;
         }
 
-        (pb.match as ExtendedMatch).playerOneDiscord =
-            playerLookupMap[pb.match.playerOne] ?? "";
-        (pb.match as ExtendedMatch).playerTwoDiscord =
-            playerLookupMap[pb.match.playerTwo] ?? "";
+        pb.match.playerOneDiscord = playerLookupMap[pb.match.playerOne] ?? "";
+        pb.match.playerTwoDiscord = playerLookupMap[pb.match.playerTwo] ?? "";
     }
 
     return statistics;

@@ -67,11 +67,11 @@
                 </div>
 
                 <DataTableComponent
-                    v-if="selectedCategoryType === 'player'"
+                    v-if="isPlayerLB(searchedLeaderboardData)"
                     :headers="playerTableHeaders"
-                    :rows="searchedLeaderboardData as LeaderboardPlayerEntry[]"
+                    :rows="searchedLeaderboardData"
                     :rows-per-page="[10, 25, 50]"
-                    :items-per-page="10"
+                    :selected-rows-per-page="10"
                     :enable-sorting="false"
                 >
                     <template #placement="{ row }">
@@ -96,19 +96,17 @@
                     </template>
                     <template #player="{ value }">
                         <PlayerLinkTag
-                            :player="
-                                playerLookupTable[value as string] ?? value
-                            "
+                            :player="playerLookup.get(value, value)"
                         />
                     </template>
                 </DataTableComponent>
 
                 <DataTableComponent
-                    v-else-if="selectedCategoryType === 'country'"
+                    v-else-if="isCountryLB(searchedLeaderboardData)"
                     :headers="countryTableHeaders"
-                    :rows="searchedLeaderboardData as LeaderboardCountryEntry[]"
+                    :rows="searchedLeaderboardData"
                     :rows-per-page="[10, 25, 50]"
-                    :items-per-page="10"
+                    :selected-rows-per-page="10"
                     :enable-sorting="false"
                     @click-row="expandCountry"
                 >
@@ -168,7 +166,7 @@
                                 class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300"
                             >
                                 <div class="flex-grow">
-                                    {{ playerLookupTable[player.player] }}
+                                    {{ playerLookup.get(player.player) }}
                                 </div>
                                 <div class="flex-grow text-right">
                                     {{ player.displayScore }}
@@ -179,8 +177,8 @@
                 </DataTableComponent>
 
                 <MapLeaderboard
-                    v-if="selectedCategoryType === 'map'"
-                    :leaderboard-data="leaderboardData as LeaderboardMapEntry[]"
+                    v-if="isMapLB(leaderboardData)"
+                    :leaderboard-data="leaderboardData"
                 />
             </CardComponent>
         </div>
@@ -204,10 +202,6 @@ const categoryRequest = await useFetch("/api/leaderboards/list");
 const playerCategories = categoryRequest.data.value?.player ?? [];
 const countryCategories = categoryRequest.data.value?.country ?? [];
 const mapCategories = categoryRequest.data.value?.map ?? [];
-const playerLookupTable =
-    ((await useFetch(`/api/player/lookup`)).data as Ref<
-        Record<string, string>
-    >) ?? ref({});
 
 const selectedTab = ref("Players");
 const selectedCategory: Ref<{
@@ -217,15 +211,19 @@ const selectedCategory: Ref<{
     type: string;
     secondaryFilter?: string;
     explanatoryText?: string;
+    defaultSecondaryFilter?: number;
 }> = ref(playerCategories[0]);
 const leaderboardData: Ref<
-    LeaderboardPlayerEntry[] | LeaderboardCountryEntry[] | LeaderboardMapEntry[]
+    (LeaderboardPlayerEntry | LeaderboardCountryEntry | LeaderboardMapEntry)[]
 > = ref([]);
 const leaderboardLoading = ref(false);
-const secondaryFilter = ref(0);
+const secondaryFilter = ref(playerCategories[0].defaultSecondaryFilter ?? 0);
 const selectedMap: Ref<number> = ref(HitmanMap.PARIS);
 const search = ref("");
 const expandedCountry = ref("");
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
 
 const selectableMaps = computed(() => {
     const maps = getAllMaps().map((map) => {
@@ -306,7 +304,11 @@ const searchedLeaderboardData = computed(() => {
     }
     return filteredLeaderboardData.value.filter((data) => {
         return (
-            playerLookupTable.value[(data as LeaderboardPlayerEntry).player]
+            playerLookup
+                .get(
+                    (data as LeaderboardPlayerEntry).player,
+                    (data as LeaderboardPlayerEntry).player,
+                )
                 ?.toLowerCase()
                 .includes(search.value.toLowerCase()) ||
             (data as LeaderboardCountryEntry).country
@@ -342,26 +344,57 @@ async function loadLeaderboardData(updateMap: boolean) {
         }
     }
 
-    const leaderboardRequest = await useFetch(`/api/leaderboards/category`, {
-        query: {
-            category: selectedCategory.value.name,
-            map: selectedCategory.value.hasMaps ? selectedMap.value : undefined,
-        },
-    });
-    if (
-        leaderboardRequest.data.value == null ||
-        leaderboardRequest.status.value !== "success"
-    ) {
+    try {
+        const leaderboardRequest = await $fetch(`/api/leaderboards/category`, {
+            query: {
+                category: selectedCategory.value.name,
+                map: selectedCategory.value.hasMaps
+                    ? selectedMap.value
+                    : undefined,
+            },
+        });
+        leaderboardData.value = leaderboardRequest;
+    } finally {
         leaderboardLoading.value = false;
-        return;
     }
+}
 
-    leaderboardData.value = leaderboardRequest.data.value;
+function isMapLB(
+    _: (
+        | LeaderboardPlayerEntry
+        | LeaderboardCountryEntry
+        | LeaderboardMapEntry
+    )[],
+): _ is LeaderboardMapEntry[] {
+    return selectedCategoryType.value === "map";
+}
 
-    leaderboardLoading.value = false;
+function isPlayerLB(
+    _: (
+        | LeaderboardPlayerEntry
+        | LeaderboardCountryEntry
+        | LeaderboardMapEntry
+    )[],
+): _ is LeaderboardPlayerEntry[] {
+    return selectedCategoryType.value === "player";
+}
+
+function isCountryLB(
+    _: (
+        | LeaderboardPlayerEntry
+        | LeaderboardCountryEntry
+        | LeaderboardMapEntry
+    )[],
+): _ is LeaderboardCountryEntry[] {
+    return selectedCategoryType.value === "country";
 }
 
 watch(selectedCategory, async () => {
+    if (selectedCategory.value.defaultSecondaryFilter != null) {
+        secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
+    } else {
+        secondaryFilter.value = 0;
+    }
     await loadLeaderboardData(true);
 });
 watch(selectedMap, async () => {

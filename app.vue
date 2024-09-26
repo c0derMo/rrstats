@@ -10,6 +10,8 @@
                 @consent="consentToLocalStorage"
             />
 
+            <NuxtLoadingIndicator />
+
             <NuxtLayout>
                 <template #BackButton>
                     <FontAwesomeIcon
@@ -44,7 +46,6 @@
                     </div>
                 </template>
 
-                <NuxtLoadingIndicator />
                 <NuxtPage />
             </NuxtLayout>
         </div>

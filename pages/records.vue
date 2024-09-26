@@ -11,17 +11,12 @@
 
         <GenericRecordTable
             :records="genericRecords"
-            :players="records?.players"
             :matches="records?.matches"
         />
 
         <h3 class="text-2xl">Map-Records</h3>
 
-        <MapRecordTable
-            :records="mapRecords"
-            :players="records?.players"
-            :matches="records?.matches"
-        />
+        <MapRecordTable :records="mapRecords" :matches="records?.matches" />
 
         <h3 class="text-2xl">Retired Records</h3>
 
@@ -32,7 +27,6 @@
 
         <GenericRecordTable
             :records="retiredRecords"
-            :players="records?.players"
             :matches="records?.matches"
         />
     </div>
@@ -45,7 +39,7 @@ useHead({
     title: "Records - RRStats",
 });
 
-const records = (await useFetch("/api/records")).data;
+const { data: records } = await useFetch("/api/records");
 
 const mapRecords = computed(() => {
     return records.value?.maps ?? [];

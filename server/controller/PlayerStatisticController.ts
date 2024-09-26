@@ -12,7 +12,7 @@ import {
 } from "typeorm";
 import { DateTime } from "luxon";
 import { Player } from "../model/Player";
-import FunctionTimer from "~/utils/FunctionTimer";
+import { Log } from "~/utils/FunctionTimer";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();
@@ -21,17 +21,32 @@ export default class PlayerStatisticController {
         PlayerStatisticController.cache.clear();
     }
 
-    public static async get(uuid: string): Promise<IPlayerStatistics> {
+    public static async get(
+        uuid: string,
+        opponent?: string,
+    ): Promise<IPlayerStatistics> {
         if (!PlayerStatisticController.cache.has(uuid)) {
             await PlayerStatisticController.calculate(uuid);
         }
-        return PlayerStatisticController.cache.get(uuid)!;
+
+        const stats = PlayerStatisticController.cache.get(uuid)!;
+
+        if (opponent != null) {
+            const matches = await Match.find({
+                where: {
+                    playerOne: In([uuid, opponent]),
+                    playerTwo: In([uuid, opponent]),
+                },
+            });
+            const matchCollection = new MatchCollection(matches, uuid);
+            stats.h2hVsOpponent = matchCollection.wtl();
+        }
+
+        return stats;
     }
 
+    @Log("PlayerStatisticConteoller.calculate")
     private static async calculate(uuid: string) {
-        const timer = new FunctionTimer(
-            `PlayerStatisticController.calculate(${uuid})`,
-        );
         const matches = await Match.find({
             where: [{ playerOne: uuid }, { playerTwo: uuid }],
             order: { timestamp: "DESC" },
@@ -65,7 +80,6 @@ export default class PlayerStatisticController {
             perMapWinrate: matchCollection.perMapWinrate(),
             mapPBs: matchCollection.mapPBs(),
         });
-        timer.finish();
     }
 }
 

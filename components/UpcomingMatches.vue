@@ -8,19 +8,19 @@
         <TableComponent :headers="headers" :rows="displayedMatches">
             <template #datetime="{ value }">
                 {{
-                    DateTime.fromISO(value as string).toLocaleString(
+                    DateTime.fromISO(value).toLocaleString(
                         DateTime.DATETIME_MED,
                     )
                 }}
             </template>
 
             <template #playerOne="{ value }">
-                <a :href="`${value as string}`">
+                <a :href="`${value}`">
                     {{ value }}
                 </a>
             </template>
             <template #playerTwo="{ value }">
-                <a :href="`${value as string}`">
+                <a :href="`${value}`">
                     {{ value }}
                 </a>
             </template>
@@ -113,12 +113,9 @@ interface HitmapsMatch {
     matchAdmin: null;
 }
 
-const props = defineProps({
-    tournamentSlug: {
-        type: String,
-        required: true,
-    },
-});
+const props = defineProps<{
+    tournamentSlug: string;
+}>();
 
 const headers = [
     { title: "Date & Time", key: "datetime" },

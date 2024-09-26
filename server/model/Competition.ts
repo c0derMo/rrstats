@@ -21,7 +21,7 @@ export class Competition extends BaseEntity implements ICompetition {
 
     @Column("boolean")
     officialCompetition: boolean;
-    @Column("integer")
+    @Column("int8")
     startingTimestamp: number;
 
     @Column("text", { nullable: true })
@@ -37,7 +37,7 @@ export class Competition extends BaseEntity implements ICompetition {
     @Column("simple-json", { nullable: true })
     groupsConfig?: IGroupSettings;
 
-    @Column("integer")
+    @Column("int8")
     matchTimeoutTime: number;
 
     @BeforeInsert()

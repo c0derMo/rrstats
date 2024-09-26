@@ -64,7 +64,11 @@
                         :error="playersIncorrect[selectedGroupIndex][idx]"
                         @update:model-value="
                             (val) =>
-                                tryLookupPlayer(val, selectedGroupIndex!, idx)
+                                tryLookupPlayer(
+                                    val as string,
+                                    selectedGroupIndex!,
+                                    idx,
+                                )
                         "
                     />
                     <ButtonComponent @click="removePlayer(idx)"
@@ -98,14 +102,13 @@
 <script setup lang="ts">
 import type { IGroupSettings } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    groupSettings: {
-        type: Object as PropType<IGroupSettings>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    groupSettings: IGroupSettings;
+}>();
 
-const emits = defineEmits(["update:groupSettings"]);
+const emits = defineEmits<{
+    "update:groupSettings": [value: IGroupSettings];
+}>();
 
 const settings = toRef(props.groupSettings);
 const selectedGroup = ref("");
@@ -113,6 +116,7 @@ const playerNameToUUIDs: Ref<Record<string, string>> = ref({});
 const playersInGroups: Ref<string[][]> = ref([]);
 const playersIncorrect: Ref<boolean[][]> = ref([]);
 const positionOverrides: Ref<string[][]> = ref([]);
+const playerLookup = usePlayers();
 
 const selectedGroupIndex = computed(() => {
     if (selectedGroup.value === "") {
@@ -123,43 +127,32 @@ const selectedGroupIndex = computed(() => {
 });
 
 onBeforeMount(async () => {
-    const playersRequest = await useFetch("/api/player/lookup");
-    if (
-        playersRequest.data.value != null &&
-        playersRequest.status.value === "success"
-    ) {
-        const uuidsToPlayer = playersRequest.data.value as Record<
-            string,
-            string
-        >;
-        for (const uuid in playersRequest.data.value) {
-            playerNameToUUIDs.value[uuidsToPlayer[uuid]] = uuid;
+    await playerLookup.queryAll();
+    for (const group of settings.value.groups) {
+        const groupPlayers: string[] = [];
+        const groupIncorrect: boolean[] = [];
+        const groupPositionOverrides: string[] = [];
+
+        for (const player of group.players) {
+            const playerName = playerLookup.get(player, "Unknown player");
+            groupPlayers.push(playerName);
+            groupIncorrect.push(playerName === "Unknown player");
+        }
+        for (let i = 0; i < group.players.length; i++) {
+            if (group.positionOverrides !== undefined) {
+                const playerName = playerLookup.get(
+                    group.positionOverrides[i],
+                    "-- none --",
+                );
+                groupPositionOverrides.push(playerName);
+            } else {
+                groupPositionOverrides.push("-- none --");
+            }
         }
 
-        for (const group of settings.value.groups) {
-            const groupPlayers: string[] = [];
-            const groupIncorrect: boolean[] = [];
-            const groupPositionOverrides: string[] = [];
-
-            for (const player of group.players) {
-                const playerName = uuidsToPlayer[player];
-                groupPlayers.push(playerName || "Unknown player");
-                groupIncorrect.push(playerName === undefined);
-            }
-            for (let i = 0; i < group.players.length; i++) {
-                if (group.positionOverrides !== undefined) {
-                    const playerName =
-                        uuidsToPlayer[group.positionOverrides[i]];
-                    groupPositionOverrides.push(playerName || "-- none --");
-                } else {
-                    groupPositionOverrides.push("-- none --");
-                }
-            }
-
-            playersInGroups.value.push(groupPlayers);
-            playersIncorrect.value.push(groupIncorrect);
-            positionOverrides.value.push(groupPositionOverrides);
-        }
+        playersInGroups.value.push(groupPlayers);
+        playersIncorrect.value.push(groupIncorrect);
+        positionOverrides.value.push(groupPositionOverrides);
     }
 });
 

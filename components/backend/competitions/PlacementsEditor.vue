@@ -10,7 +10,9 @@
                 <TextInputComponent
                     v-model="placementPlayers[index]"
                     :error="playersIncorrect[index]"
-                    @update:model-value="(val) => tryLookupPlayer(val, index)"
+                    @update:model-value="
+                        (val) => tryLookupPlayer(val as string, index)
+                    "
                 />
             </template>
             <template #bracket="{ index }">
@@ -46,19 +48,18 @@
 <script setup lang="ts">
 import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    placements: {
-        type: Array<ICompetitionPlacement>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    placements: ICompetitionPlacement[];
+}>();
 
-const emits = defineEmits(["update:placements"]);
+const emits = defineEmits<{
+    "update:placements": [value: ICompetitionPlacement[]];
+}>();
 
 const placementsData = toRef(props.placements);
-const playerToUUIDTable: Ref<Record<string, string>> = ref({});
 const placementPlayers: Ref<string[]> = ref([]);
 const playersIncorrect: Ref<boolean[]> = ref([]);
+const playerLookup = usePlayers();
 
 const placementsHeaders = [
     { key: "player", title: "Player" },
@@ -68,24 +69,11 @@ const placementsHeaders = [
 ];
 
 onBeforeMount(async () => {
-    const playersRequest = await useFetch("/api/player/lookup");
-    if (
-        playersRequest.data.value != null &&
-        playersRequest.status.value === "success"
-    ) {
-        const uuidsToPlayer = playersRequest.data.value as Record<
-            string,
-            string
-        >;
-        for (const uuid in playersRequest.data.value) {
-            playerToUUIDTable.value[uuidsToPlayer[uuid]] = uuid;
-        }
-
-        for (const placement of placementsData.value) {
-            const playerName = uuidsToPlayer[placement.player];
-            placementPlayers.value.push(playerName || "Unknown player");
-            playersIncorrect.value.push(playerName === undefined);
-        }
+    await playerLookup.queryAll();
+    for (const placement of placementsData.value) {
+        const playerName = playerLookup.get(placement.player, null);
+        placementPlayers.value.push(playerName || "Unknown player");
+        playersIncorrect.value.push(playerName == null);
     }
 });
 
@@ -95,9 +83,9 @@ function checkAndEmit() {
     }
 
     for (let i = 0; i < placementsData.value.length; i++) {
-        placementsData.value[i].player =
-            playerToUUIDTable.value[placementPlayers.value[i]];
-        console.log(placementsData.value[i].placement);
+        placementsData.value[i].player = playerLookup.getUUID(
+            placementPlayers.value[i],
+        );
         if (placementsData.value[i].placement === 0) {
             placementsData.value[i].placement = undefined;
         }
@@ -125,7 +113,7 @@ function removePlacement(index: number) {
 }
 
 function tryLookupPlayer(player: string, index: number) {
-    if (playerToUUIDTable.value[player] != undefined) {
+    if (playerLookup.getUUID(player) != null) {
         playersIncorrect.value[index] = false;
         checkAndEmit();
     } else {

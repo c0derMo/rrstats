@@ -25,12 +25,14 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    expanded: {
-        type: Boolean,
-        default: false,
+const props = withDefaults(
+    defineProps<{
+        expanded?: boolean;
+    }>(),
+    {
+        expanded: false,
     },
-});
+);
 
 const showContent = ref(props.expanded);
 </script>

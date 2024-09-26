@@ -41,7 +41,7 @@ export class RecordMatches implements DatabaseCheck {
             if (knownIssues.includes(`${record.map}:${record.timestamp}`))
                 continue;
             const match = await Match.findOne({
-                select: ["playerOne", "playerTwo", "playedMaps"],
+                select: ["uuid", "playerOne", "playerTwo", "playedMaps"],
                 where: { uuid: record.match },
             });
 
@@ -97,7 +97,7 @@ export class RecordMatches implements DatabaseCheck {
             if (knownIssues.includes(`${record.record}:${record.timestamp}`))
                 continue;
             const match = await Match.findOne({
-                select: ["playerOne", "playerTwo", "playedMaps"],
+                select: ["uuid", "playerOne", "playerTwo", "playedMaps"],
                 where: { uuid: record.match },
             });
 

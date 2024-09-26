@@ -12,7 +12,7 @@
                 <DropdownComponent
                     :model-value="selectedVariant[idx] ?? ''"
                     :items="selectableVariants[idx]"
-                    @update:model-value="(v) => selectVariant(idx, v)"
+                    @update:model-value="(v) => selectVariant(idx, v as string)"
                 />
                 <AutocompleteComponent
                     :default-text="selectedConditions[idx]"
@@ -35,18 +35,18 @@
 <script setup lang="ts">
 import type { Spin } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    map: {
-        type: Number,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        map: number;
+        spin?: Spin | null;
+    }>(),
+    {
+        spin: null,
     },
-    spin: {
-        type: Object as PropType<Spin>,
-        required: false,
-        default: null,
-    },
-});
-const emits = defineEmits(["updateSpin"]);
+);
+const emits = defineEmits<{
+    updateSpin: [value: Spin];
+}>();
 
 const finishedLoading = ref(false);
 const targets: Ref<{ name: string; tileUrl: string }[]> = ref([]);
@@ -237,23 +237,24 @@ interface HitmapsDisguise {
 
 async function getDisguises(): Promise<{ name: string; image: string }[]> {
     const map = getMap(props.map)!;
-    const request = await useFetch<{ disguises: HitmapsDisguise[] }>(
-        `https://api.hitmaps.com/api/games/hitman${
-            map.season > 1 ? map.season : ""
-        }/locations/${map.name
-            .toLowerCase()
-            .replace(/\s/g, "-")
-            .replace(/à/g, "a")}/missions/${map.slug}/disguises`,
-    );
-    if (request.data.value == null || request.status.value !== "success") {
+    try {
+        const request = await $fetch<{ disguises: HitmapsDisguise[] }>(
+            `https://api.hitmaps.com/api/games/hitman${
+                map.season > 1 ? map.season : ""
+            }/locations/${map.name
+                .toLowerCase()
+                .replace(/\s/g, "-")
+                .replace(/à/g, "a")}/missions/${map.slug}/disguises`,
+        );
+        return request.disguises.map((disguise) => {
+            return {
+                name: disguise.suit ? "Suit" : disguise.name,
+                image: disguise.image,
+            };
+        });
+    } catch {
         return [];
     }
-    return request.data.value.disguises.map((disguise) => {
-        return {
-            name: disguise.suit ? "Suit" : disguise.name,
-            image: disguise.image,
-        };
-    });
 }
 
 async function getTargetEliminations(targets: string[]): Promise<
@@ -267,36 +268,39 @@ async function getTargetEliminations(targets: string[]): Promise<
     const map = getMap(props.map)!;
     for (const target of targets) {
         const encodedTarget = encodeURIComponent(target);
-        const request = await useFetch<HitmapsKillCondition[]>(
-            `https://rouletteapi.hitmaps.com/api/spins/kill-conditions?missionGame=hitman${
-                map.season > 1 ? map.season : ""
-            }&missionLocation=${map.name
-                .toLowerCase()
-                .replace(/\s/g, "-")
-                .replace(/à/g, "a")}&missionSlug=${
-                map.slug
-            }&specificDisguises=true&specificMelee=true&specificFirearms=true&specificAccidents=true&impossibleOrDifficultKills=true&targetName=${encodedTarget}`,
-        );
-        if (request.data.value == null || request.status.value !== "success") {
-            return [];
+        try {
+            const request = await $fetch<HitmapsKillCondition[]>(
+                `https://rouletteapi.hitmaps.com/api/spins/kill-conditions?missionGame=hitman${
+                    map.season > 1 ? map.season : ""
+                }&missionLocation=${map.name
+                    .toLowerCase()
+                    .replace(/\s/g, "-")
+                    .replace(/à/g, "a")}&missionSlug=${
+                    map.slug
+                }&specificDisguises=true&specificMelee=true&specificFirearms=true&specificAccidents=true&impossibleOrDifficultKills=true&targetName=${encodedTarget}`,
+            );
+            result.push(
+                request.map((condition) => {
+                    return {
+                        name: condition.name,
+                        image: condition.tileUrl,
+                        variants:
+                            condition.variants.length > 0
+                                ? condition.variants.map((variant) => {
+                                      return {
+                                          name: variant.name,
+                                          image:
+                                              variant.imageOverride ??
+                                              undefined,
+                                      };
+                                  })
+                                : [{ name: "Thrown" }, { name: "Melee" }],
+                    };
+                }),
+            );
+        } catch {
+            continue;
         }
-        result.push(
-            request.data.value.map((condition) => {
-                return {
-                    name: condition.name,
-                    image: condition.tileUrl,
-                    variants:
-                        condition.variants.length > 0
-                            ? condition.variants.map((variant) => {
-                                  return {
-                                      name: variant.name,
-                                      image: variant.imageOverride ?? undefined,
-                                  };
-                              })
-                            : [{ name: "Thrown" }, { name: "Melee" }],
-                };
-            }),
-        );
     }
     return result;
 }

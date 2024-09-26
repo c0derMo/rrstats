@@ -9,22 +9,18 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    color: {
-        type: String,
-        required: false,
-        default: "gray",
+const props = withDefaults(
+    defineProps<{
+        color?: string;
+        borderColor?: string;
+        narrow?: boolean;
+    }>(),
+    {
+        color: "gray",
+        borderColor: "",
+        narrow: false,
     },
-    borderColor: {
-        type: String,
-        required: false,
-        default: "",
-    },
-    narrow: {
-        type: Boolean,
-        default: false,
-    },
-});
+);
 
 const colorStyle = computed(() => {
     const styles: string[] = [];

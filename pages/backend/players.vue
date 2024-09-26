@@ -29,7 +29,7 @@
             :rows="filteredPlayers"
             :enable-sorting="false"
             :rows-per-page="[25, 50, 100]"
-            :items-per-page="25"
+            :selected-rows-per-page="25"
         >
             <template #header-more>
                 <ButtonComponent @click="newPlayer()">
@@ -119,7 +119,7 @@ function newPlayer() {
 }
 
 async function deletePlayer(uuid: string) {
-    await useFetch("/api/player", {
+    await $fetch("/api/player", {
         method: "DELETE",
         body: { uuid },
     });
@@ -128,32 +128,22 @@ async function deletePlayer(uuid: string) {
 }
 
 async function updateList() {
-    const playersQuery = await useFetch("/api/player/list", {
+    const playersQuery = await $fetch<IPlayer[]>("/api/player/list", {
         query: { full: true },
     });
-    if (
-        playersQuery.status.value !== "success" ||
-        playersQuery.data.value == null
-    ) {
-        return;
-    }
-
-    players.value = playersQuery.data.value as IPlayer[];
+    players.value = playersQuery;
 }
 
 async function loadUpdatePlayer(uuid: string) {
     playerLoading.value = uuid;
-    const playerQuery = await useFetch("/api/player/raw", {
-        query: { player: uuid },
-    });
-    if (
-        playerQuery.status.value === "success" &&
-        playerQuery.data.value != null
-    ) {
-        playerToShow.value = playerQuery.data.value;
+    try {
+        const playerQuery = await $fetch("/api/player", {
+            query: { uuid: uuid },
+        });
+        playerToShow.value = playerQuery;
+    } finally {
+        playerLoading.value = "";
     }
-
-    playerLoading.value = "";
 }
 
 await updateList();

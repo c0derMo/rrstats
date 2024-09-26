@@ -11,6 +11,7 @@ export class CountryWinrate implements LeaderboardCountryStatistic {
     name = "Winrate per country";
     hasMaps = false;
     secondaryFilter = "Matches played";
+    defaultSecondaryFilter = 5;
 
     calculate(
         players: IPlayer[],

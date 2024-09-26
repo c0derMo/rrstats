@@ -168,29 +168,16 @@ function removeAPIKey(index: number) {
 }
 
 async function updateUserList() {
-    const usersQuery = await useFetch("/api/auth/users");
-    if (
-        usersQuery.status.value !== "success" ||
-        usersQuery.data.value == null
-    ) {
-        return;
-    }
+    const usersQuery = await $fetch("/api/auth/users");
 
-    users.value = (usersQuery.data.value as IUser[]).filter(
-        (user) => !user.isAPIKey,
-    );
-    apiKeys.value = (usersQuery.data.value as IUser[]).filter(
-        (user) => user.isAPIKey,
-    );
+    users.value = usersQuery.filter((user) => !user.isAPIKey);
+    apiKeys.value = usersQuery.filter((user) => user.isAPIKey);
 }
 
 async function updateLocalUser() {
-    const userQuery = await useFetch("/api/auth/user");
-    if (userQuery.status.value !== "success" || userQuery.data.value == null) {
-        return;
-    }
+    const userQuery = await $fetch("/api/auth/user");
 
-    currentUserId.value = userQuery.data.value.authorizationKey;
+    currentUserId.value = userQuery.authorizationKey;
 }
 
 async function save() {

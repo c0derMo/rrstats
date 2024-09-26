@@ -1,8 +1,19 @@
 import { Like, MoreThan, Not } from "typeorm";
 import { GenericRecord, MapRecord } from "~/server/model/Record";
+import type { GenericRecordType } from "~/utils/interfaces/IRecord";
 
-export default defineEventHandler(async (event) => {
-    const query = getQuery(event);
+interface PlayerRecord {
+    map?: number;
+    record?: GenericRecordType;
+    time: number;
+    timestamp: number;
+    brokenAt: number;
+}
+
+export default defineEventHandler<Promise<PlayerRecord[]>>(async (event) => {
+    const query = getQuery<{
+        player?: string;
+    }>(event);
 
     if (query.player === undefined) {
         throw createError({

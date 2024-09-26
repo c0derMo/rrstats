@@ -1,5 +1,9 @@
 <template>
-    <DialogComponent dialog-class="w-3/5">
+    <DialogComponent
+        dialog-class="w-3/5"
+        :open="showDialog"
+        @closed="$emit('close')"
+    >
         <CardComponent class="max-h-screen !overflow-visible">
             <TextInputComponent
                 v-model="matchData.uuid"
@@ -79,6 +83,12 @@
                             placeholder="VOD Link"
                         />
                     </div>
+
+                    <TextInputComponent
+                        v-model="matchData.notes"
+                        class="mt-5"
+                        placeholder="Match notes"
+                    />
                 </template>
 
                 <template #Banned>
@@ -113,24 +123,29 @@
 <script setup lang="ts">
 import type { IMatch } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    match: {
-        type: Object as PropType<IMatch>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        match: IMatch;
+        hitmapsOverlayUrl?: string;
+    }>(),
+    {
+        hitmapsOverlayUrl: "",
     },
-    hitmapsOverlayUrl: {
-        type: String,
-        default: "",
-    },
-});
+);
 
-const emits = defineEmits(["close", "update:hitmapsOverlayUrl"]);
+defineEmits<{
+    close: [];
+    "update:hitmapsOverlayUrl": [value: string];
+}>();
 
+const showDialog = ref(true);
 const matchData: Ref<IMatch> = ref(props.match);
-const playerToUUIDTable: Ref<Record<string, string>> = ref({});
 const players = ref([matchData.value.playerOne, matchData.value.playerTwo]);
 const playersInvalid = ref([false, false]);
 const isSaving = ref(false);
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
 
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
@@ -156,29 +171,15 @@ const vodLink = computed({
     },
 });
 
-onBeforeMount(async () => {
-    const playersRequest = await useFetch("/api/player/lookup");
-    if (
-        playersRequest.data.value != null &&
-        playersRequest.status.value === "success"
-    ) {
-        const uuidsToPlayer = playersRequest.data.value as Record<
-            string,
-            string
-        >;
-        for (const uuid in playersRequest.data.value) {
-            playerToUUIDTable.value[uuidsToPlayer[uuid]] = uuid;
-        }
-
-        players.value.forEach((uuid, idx) => {
-            players.value[idx] = uuidsToPlayer[uuid];
-        });
-    }
+onBeforeMount(() => {
+    players.value.forEach((uuid, idx) => {
+        players.value[idx] = playerLookup.get(uuid);
+    });
 });
 
 function checkPlayers() {
     players.value.forEach((player, index) => {
-        if (playerToUUIDTable.value[player] == null) {
+        if (playerLookup.getUUID(player) == null) {
             playersInvalid.value[index] = true;
         } else {
             playersInvalid.value[index] = false;
@@ -189,10 +190,14 @@ function checkPlayers() {
 async function save() {
     isSaving.value = true;
 
-    matchData.value.playerOne =
-        playerToUUIDTable.value[players.value[0]] ?? matchData.value.playerOne;
-    matchData.value.playerTwo =
-        playerToUUIDTable.value[players.value[1]] ?? matchData.value.playerTwo;
+    matchData.value.playerOne = playerLookup.getUUID(
+        players.value[0],
+        matchData.value.playerOne,
+    );
+    matchData.value.playerTwo = playerLookup.getUUID(
+        players.value[1],
+        matchData.value.playerTwo,
+    );
 
     try {
         await $fetch("/api/matches", {
@@ -205,10 +210,10 @@ async function save() {
     }
 
     isSaving.value = false;
-    emits("close");
+    showDialog.value = false;
 }
 
 function close() {
-    emits("close");
+    showDialog.value = false;
 }
 </script>

@@ -25,7 +25,9 @@
                     }"
                 >
                     <td class="text-right">{{ idx + 1 }}</td>
-                    <td class="text-left">{{ playerNames[player.name] }}</td>
+                    <td class="text-left">
+                        {{ playerLookup.get(player.name) }}
+                    </td>
                     <td class="text-center">
                         {{ player.wins + player.ties + player.losses }}
                     </td>
@@ -48,36 +50,22 @@ interface GroupPlayer {
     points: number;
 }
 
-const props = defineProps({
-    groupName: {
-        type: String,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        groupName: string;
+        players: GroupPlayer[];
+        maxPointsPerMatch: number;
+        matchesBetweenPlayers: number;
+        advancingPlayers: number;
+        positionOverrides?: Record<string, string>;
+    }>(),
+    {
+        positionOverrides: () => ({}),
     },
-    players: {
-        type: Array<GroupPlayer>,
-        required: true,
-    },
-    maxPointsPerMatch: {
-        type: Number,
-        required: true,
-    },
-    matchesBetweenPlayers: {
-        type: Number,
-        required: true,
-    },
-    advancingPlayers: {
-        type: Number,
-        required: true,
-    },
-    positionOverrides: {
-        type: Object as PropType<Record<number, string>>,
-        default: () => {},
-    },
-    playerNames: {
-        type: Object as PropType<Record<string, string>>,
-        required: true,
-    },
-});
+);
+
+const playerLookup = usePlayers();
+playerLookup.queryPlayers(props.players.map((p) => p.name));
 
 const sortedPlayers = computed(() => {
     const preSort = [...props.players].sort((a, b) => b.points - a.points);

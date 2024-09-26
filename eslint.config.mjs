@@ -11,5 +11,7 @@ export default withNuxt({
                 },
             },
         ],
+        "vue/define-emits-declaration": ["warn"],
+        "vue/define-props-declaration": ["error"],
     },
 });

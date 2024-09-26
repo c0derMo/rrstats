@@ -3,9 +3,10 @@ import { Match } from "../model/Match";
 import { Player } from "../model/Player";
 import { DataSource } from "typeorm";
 import { WinningPlayer } from "~/utils/interfaces/IMatch";
-import { createObjectCsvWriter } from "csv-writer";
 import MapperService from "../controller/MapperService";
 import { getAllMaps, getMap } from "~/utils/mapUtils";
+import { stringify } from "csv-stringify/sync";
+import { writeFile } from "node:fs/promises";
 
 async function main() {
     const dataSource = new DataSource({
@@ -51,11 +52,11 @@ async function main() {
     }
 
     const headers = [
-        { id: "player", title: "PLAYER" },
+        { key: "player", header: "PLAYER" },
         ...getAllMaps().map((m) => {
             return {
-                id: m.toString(),
-                title: getMap(m)!.abbreviation,
+                key: m.toString(),
+                header: getMap(m)!.abbreviation,
             };
         }),
     ];
@@ -70,11 +71,8 @@ async function main() {
         return result;
     });
 
-    const writer = createObjectCsvWriter({
-        path: "./PBs.csv",
-        header: headers,
-    });
-    await writer.writeRecords(rows);
+    const output = stringify(rows, { header: true, columns: headers });
+    await writeFile("./PBs.csv", output, "utf-8");
 }
 
 void main();

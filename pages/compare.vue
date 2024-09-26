@@ -4,14 +4,14 @@
 
         <div class="grid grid-cols-2 gap-y-5 gap-x-1 md:gap-x-5 md:mx-10 my-5">
             <AutocompleteComponent
-                :suggestions="players ?? []"
+                :suggestions="players?.map((p) => p.primaryName) ?? []"
                 placeholder="Left player"
                 :default-text="leftPlayerRaw"
                 @confirm="(val) => (leftPlayer = val)"
             />
 
             <AutocompleteComponent
-                :suggestions="players ?? []"
+                :suggestions="players?.map((p) => p.primaryName) ?? []"
                 placeholder="Right player"
                 :default-text="rightPlayerRaw"
                 @confirm="(val) => (rightPlayer = val)"
@@ -99,7 +99,7 @@ useHead({
     title: "Comparison - RRStats",
 });
 
-const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
+const { data: players } = await useFetch("/api/player/list");
 const route = useRoute();
 
 const leftPlayerRaw = ref("");
@@ -127,7 +127,14 @@ onMounted(async () => {
 
 watch(leftPlayer, async () => {
     leftPlayerLoading.value = true;
-    leftPlayerObject.value = await getComparisonData(leftPlayer.value);
+    leftPlayerObject.value = await getComparisonData(
+        leftPlayer.value,
+        rightPlayerObject.value?.player.uuid,
+    );
+    rightPlayerObject.value = await getComparisonData(
+        rightPlayer.value,
+        leftPlayerObject.value?.player.uuid,
+    );
     leftPlayerLoading.value = false;
     const currentQuery = new URLSearchParams(window.location.search);
     currentQuery.set("leftPlayer", leftPlayer.value);
@@ -136,7 +143,14 @@ watch(leftPlayer, async () => {
 });
 watch(rightPlayer, async () => {
     rightPlayerLoading.value = true;
-    rightPlayerObject.value = await getComparisonData(rightPlayer.value);
+    rightPlayerObject.value = await getComparisonData(
+        rightPlayer.value,
+        leftPlayerObject.value?.player.uuid,
+    );
+    leftPlayerObject.value = await getComparisonData(
+        leftPlayer.value,
+        rightPlayerObject.value?.player.uuid,
+    );
     rightPlayerLoading.value = false;
     const currentQuery = new URLSearchParams(window.location.search);
     currentQuery.set("rightPlayer", rightPlayer.value);
@@ -146,34 +160,32 @@ watch(rightPlayer, async () => {
 
 async function getComparisonData(
     player: string,
+    opponent?: string,
 ): Promise<ComparisonData | null> {
     if (player === "") {
         return null;
     }
-    const playerData = await useFetch(`/api/player/?player=${player}`);
-    const avatar = await useFetch(`/api/player/avatar?player=${player}`);
+    try {
+        const playerData = await $fetch(`/api/player/?player=${player}`);
+        const avatar = await $fetch(`/api/player/avatar?player=${player}`);
+        const statistics = await $fetch(
+            `/api/player/statistics?player=${playerData.uuid}&opponent=${opponent}`,
+        );
+        const matches = await $fetch<IMatch[]>(`/api/matches?player=${player}`);
+        const placements = await $fetch(
+            `/api/competitions/placements?player=${player}`,
+        );
 
-    if (
-        playerData.status.value !== "success" ||
-        avatar.status.value !== "success"
-    ) {
+        return {
+            player: playerData as IPlayer,
+            matches: matches,
+            avatar: avatar,
+            placements: placements,
+            statistics: statistics,
+        };
+    } catch {
         return null;
     }
-
-    const statistics = await useFetch(
-        `/api/player/statistics?player=${playerData.data.value!.uuid}`,
-    );
-    if (statistics.status.value !== "success") {
-        return null;
-    }
-
-    return {
-        player: playerData.data.value as IPlayer,
-        matches: playerData.data.value!.matches,
-        avatar: avatar.data.value!,
-        placements: playerData.data.value!.placements,
-        statistics: statistics.data.value!,
-    };
 }
 
 const comparingMaps = computed(() => {

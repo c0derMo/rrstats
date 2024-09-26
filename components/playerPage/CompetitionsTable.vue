@@ -7,7 +7,10 @@
         />
         <DataTableComponent :headers="headers" :rows="filteredCompetitions">
             <template #competition="{ row }">
-                {{ competitions[row.competition].name }}
+                {{
+                    competitions?.find((comp) => comp.tag === row.competition)
+                        ?.name
+                }}
                 <span v-if="row.bracket !== ''"> - {{ row.bracket }}</span>
             </template>
 
@@ -26,16 +29,16 @@ import type {
     ICompetitionPlacement,
 } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    placements: {
-        type: Array<ICompetitionPlacement>,
-        default: [],
+const props = withDefaults(
+    defineProps<{
+        placements?: ICompetitionPlacement[];
+        competitions?: ICompetition[] | null;
+    }>(),
+    {
+        placements: () => [],
+        competitions: () => [],
     },
-    competitions: {
-        type: Object as PropType<Record<string, ICompetition>>,
-        default: () => {},
-    },
-});
+);
 
 const headers = [
     { key: "competition", title: "Competiton" },
@@ -48,7 +51,8 @@ const filteredCompetitions = computed(() => {
     return props.placements.filter((a) => {
         return (
             showUnofficial.value ||
-            props.competitions[a.competition].officialCompetition
+            props.competitions?.find((comp) => comp.tag === a.competition)
+                ?.officialCompetition
         );
     });
 });

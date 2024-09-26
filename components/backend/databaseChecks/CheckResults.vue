@@ -58,11 +58,10 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-    results: {
-        type: Array<{ name: string; issues: string[]; errors: string[] }>,
-        required: true,
-    },
-});
-defineEmits(["recheck"]);
+defineProps<{
+    results: { name: string; issues: string[]; errors: string[] }[];
+}>();
+defineEmits<{
+    recheck: [];
+}>();
 </script>

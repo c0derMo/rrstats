@@ -4,8 +4,9 @@ import { Match } from "~/server/model/Match";
 import { Player } from "~/server/model/Player";
 import { MapRecord } from "~/server/model/Record";
 import { getMapByName } from "~/utils/mapUtils";
+import type { MapResponse } from "../APITypes";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<MapResponse>(async (event) => {
     const authHeader = getRequestHeader(event, "authorization");
 
     if (!(await AuthController.isValidAPIKey(authHeader))) {

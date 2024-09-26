@@ -3,7 +3,9 @@ import { Match } from "~/server/model/Match";
 import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+    const body = await readBody<{
+        uuid?: string;
+    }>(event);
     const session = await AuthController.useSession(event);
 
     if (
@@ -25,7 +27,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const matchToRemove = await Match.findOneBy({
-        uuid: body.uuid as string,
+        uuid: body.uuid,
     });
     if (matchToRemove != null) {
         await matchToRemove.remove();

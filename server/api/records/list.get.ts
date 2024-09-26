@@ -1,8 +1,11 @@
 import { AuthController } from "~/server/controller/AuthController";
 import { GenericRecord, MapRecord } from "~/server/model/Record";
+import type { IGenericRecord, IMapRecord } from "~/utils/interfaces/IRecord";
 import { IPermission } from "~/utils/interfaces/IUser";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<
+    Promise<{ genericRecords: IGenericRecord[]; mapRecords: IMapRecord[] }>
+>(async (event) => {
     const session = await AuthController.useSession(event);
 
     if (

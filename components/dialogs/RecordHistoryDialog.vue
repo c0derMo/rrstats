@@ -1,5 +1,10 @@
 <template>
-    <DialogComponent dialog-class="w-4/5 h-4/5">
+    <DialogComponent
+        dialog-class="w-4/5 h-4/5"
+        :open="showDialog"
+        @click-outside="showDialog = false"
+        @closed="$emit('closed')"
+    >
         <CardComponent class="w-full h-full">
             <div class="flex flex-col w-full h-full">
                 <h1 class="text-center text-xl bold">Record Progression</h1>
@@ -56,26 +61,29 @@ import {
 } from "~/utils/interfaces/IRecord";
 import { getMapsBySeason } from "~/utils/mapUtils";
 
-const props = defineProps({
-    map: {
-        type: Number,
-        required: false,
-        default: undefined,
+const props = withDefaults(
+    defineProps<{
+        map?: number;
+        genericRecord?: string;
+    }>(),
+    {
+        map: undefined,
+        genericRecord: undefined,
     },
-    genericRecord: {
-        type: String,
-        required: false,
-        default: undefined,
-    },
-});
+);
 
+defineEmits<{
+    closed: [];
+}>();
+
+const showDialog = ref(true);
 const selectedRecords: Ref<(number | string)[]> = ref([]);
 
 const records: Ref<(IMapRecord | IGenericRecord)[][]> = ref([]);
 const labels: Ref<string[]> = ref([]);
 const colors: Ref<string[]> = ref([]);
 
-const players: Ref<Record<string, string>> = ref({});
+const playerLookup = usePlayers();
 
 const showGraph = ref(false);
 
@@ -105,11 +113,9 @@ async function requeryEverything() {
 async function queryRecords() {
     for (const selectedRecord of selectedRecords.value) {
         if (props.map != null) {
-            const record = (
-                await useFetch("/api/records/history", {
-                    query: { map: selectedRecord as number },
-                })
-            ).data.value;
+            const record = await $fetch("/api/records/history", {
+                query: { map: selectedRecord as number },
+            });
             if (record != null) {
                 records.value.push(record);
                 labels.value.push(getMap(selectedRecord as number)?.name ?? "");
@@ -119,11 +125,9 @@ async function queryRecords() {
             }
         }
         if (props.genericRecord != null) {
-            const record = (
-                await useFetch("/api/records/history", {
-                    query: { generic: selectedRecord as string },
-                })
-            ).data.value;
+            const record = await $fetch("/api/records/history", {
+                query: { generic: selectedRecord as string },
+            });
             if (record != null) {
                 records.value.push(record);
                 labels.value.push(selectedRecord as string);
@@ -150,11 +154,7 @@ async function queryPlayers() {
         }
     }
 
-    players.value = (
-        await useFetch("/api/player/lookup", {
-            query: { players: playersToLookup },
-        })
-    ).data.value as Record<string, string>;
+    await playerLookup.queryPlayers(playersToLookup);
 }
 
 const selectedScale = ref("All time");
@@ -207,15 +207,10 @@ function rebuildRecord(
 
     let recordHolders: string[] = [];
     if (isMapRecord(startingRecord)) {
-        recordHolders = [
-            players.value[startingRecord.player] ||
-                `Unknown player: ${startingRecord.player}`,
-        ];
+        recordHolders = [playerLookup.get(startingRecord.player)];
     }
     if (isGenericRecord(startingRecord)) {
-        recordHolders = startingRecord.players.map(
-            (p) => players.value[p] || `Unknown player: ${p}`,
-        );
+        recordHolders = startingRecord.players.map((p) => playerLookup.get(p));
     }
 
     const points: unknown[] = [];
@@ -228,15 +223,10 @@ function rebuildRecord(
             currentRecordIndex++;
             const record = sortedRecords[currentRecordIndex];
             if (isMapRecord(record)) {
-                recordHolders = [
-                    players.value[record.player] ||
-                        `Unknown player: ${record.player}`,
-                ];
+                recordHolders = [playerLookup.get(record.player)];
             }
             if (isGenericRecord(record)) {
-                recordHolders = record.players.map(
-                    (p) => players.value[p] || `Unknown player: ${p}`,
-                );
+                recordHolders = record.players.map((p) => playerLookup.get(p));
             }
         }
 

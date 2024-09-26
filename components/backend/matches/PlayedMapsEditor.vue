@@ -64,10 +64,35 @@
                 @update:model-value="$emit('update:playedMaps', playedMapData)"
             />
 
+            <SwitchComponent
+                id="unscoredMap"
+                v-model="playedMapData[selectedMap].unscored"
+                label="Unscored map?"
+                @update:model-value="$emit('update:playedMaps', playedMapData)"
+            />
+
+            <div />
+
             <TextInputComponent
                 v-model="playedMapData[selectedMap].timeTaken"
                 type="number"
                 placeholder="RTA (in seconds)"
+                @update:model-value="$emit('update:playedMaps', playedMapData)"
+            />
+
+            <TextInputComponent
+                v-model="playedMapData[selectedMap].index"
+                type="number"
+                placeholder="Map index"
+                @update:model-value="$emit('update:playedMaps', playedMapData)"
+            />
+
+            <div />
+
+            <TextInputComponent
+                v-model="playedMapData[selectedMap].notes!"
+                class="col-span-3"
+                placeholder="Notes"
                 @update:model-value="$emit('update:playedMaps', playedMapData)"
             />
 
@@ -79,7 +104,8 @@
                         placeholder="Hitmaps Overlay URL"
                         class="flex-grow"
                         @update:model-value="
-                            (v) => $emit('update:hitmapsOverlayUrl', v)
+                            (v) =>
+                                $emit('update:hitmapsOverlayUrl', v as string)
                         "
                     />
                     <ButtonComponent
@@ -124,22 +150,21 @@ import {
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 
-const props = defineProps({
-    playedMaps: {
-        type: Array<RRMap>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        playedMaps: RRMap[];
+        players: string[];
+        hitmapsOverlayUrl?: string;
+    }>(),
+    {
+        hitmapsOverlayUrl: "",
     },
-    players: {
-        type: Array<string>,
-        required: true,
-    },
-    hitmapsOverlayUrl: {
-        type: String,
-        default: "",
-    },
-});
+);
 
-const emits = defineEmits(["update:playedMaps", "update:hitmapsOverlayUrl"]);
+const emits = defineEmits<{
+    "update:playedMaps": [value: RRMap[]];
+    "update:hitmapsOverlayUrl": [value: string];
+}>();
 
 const playedMapData = toRef(props.playedMaps);
 const selectedMap = ref(0);
@@ -202,6 +227,7 @@ function addMap() {
         picked: 0,
         winner: 0,
         timeTaken: -1,
+        index: props.playedMaps.length,
     });
     emits("update:playedMaps", playedMapData.value);
 }
@@ -210,12 +236,13 @@ async function importSpin() {
     importingSpin.value = true;
 
     const id = props.hitmapsOverlayUrl.split("/").pop();
-    const request = await useFetch<{ currentSpin: Spin }>(
-        `https://rouletteapi.hitmaps.com/api/matchups/${id}`,
-    );
-    if (request.data?.value != null && request.status.value === "success") {
-        playedMapData.value[selectedMap.value].spin =
-            request.data.value.currentSpin;
+    try {
+        const request = await $fetch<{ currentSpin: Spin }>(
+            `https://rouletteapi.hitmaps.com/api/matchups/${id}`,
+        );
+        playedMapData.value[selectedMap.value].spin = request.currentSpin;
+    } catch {
+        // Do nothing
     }
 
     spinRefresher.value += 1;

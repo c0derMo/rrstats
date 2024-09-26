@@ -2,8 +2,9 @@
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
     typescript: { shim: false },
-    modules: ["@nuxtjs/tailwindcss", "@nuxt/eslint"],
+    modules: ["@nuxtjs/tailwindcss", "@nuxt/eslint", "@nuxtjs/robots"],
     components: [{ path: "~/components", pathPrefix: false }],
+
     runtimeConfig: {
         discordToken: "",
         discordId: "",
@@ -14,7 +15,11 @@ export default defineNuxtConfig({
         twitterTokenSecret: "",
         publicOrigin: "http://localhost:3000",
         database: "rrstats.db",
+        databaseType: "sqlite",
+        enableFunctionTimings: false,
+        enableRouteTimings: false,
     },
+
     nitro: {
         plugins: ["~/server/index.ts", "~/server/timeApiCalls.ts"],
         esbuild: {
@@ -27,8 +32,13 @@ export default defineNuxtConfig({
                 },
             },
         },
+        alias: {
+            consola: "consola",
+        },
     },
+
     css: ["@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
+
     build: {
         transpile: ["@fortawesome/vue-fontawesome"],
     },
@@ -37,4 +47,10 @@ export default defineNuxtConfig({
             link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
         },
     },
+
+    site: {
+        indexable: false,
+    },
+
+    compatibilityDate: "2024-08-10",
 });

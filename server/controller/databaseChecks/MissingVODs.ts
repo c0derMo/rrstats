@@ -29,7 +29,7 @@ export class MissingVODs implements DatabaseCheck {
         }
 
         const matchesWithoutVODs = await Match.find({
-            select: ["playerOne", "playerTwo", "competition", "round"],
+            select: ["uuid", "playerOne", "playerTwo", "competition", "round"],
             where: [
                 {
                     vodLink: IsNull(),
@@ -44,7 +44,7 @@ export class MissingVODs implements DatabaseCheck {
             ],
         });
         const matchesWithoutShoutcaster = await Match.find({
-            select: ["playerOne", "playerTwo", "competition", "round"],
+            select: ["uuid", "playerOne", "playerTwo", "competition", "round"],
             where: [
                 {
                     shoutcasters: IsNull(),

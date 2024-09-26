@@ -1,50 +1,23 @@
 import "reflect-metadata";
-import { DataSource } from "typeorm";
-import { Match } from "./model/Match";
-import { Player, PlayerAccoladeSubscriber } from "./model/Player";
-import { useLogger } from "@nuxt/kit";
-import { GenericRecord, MapRecord } from "./model/Record";
-import { Competition, CompetitionPlacement } from "./model/Competition";
-import { User } from "./model/User";
-import LeaderboardController, {
-    LeaderboardDatabaseListener,
-} from "./controller/LeaderboardController";
-import { PlayerStatisticDatabaseListener } from "./controller/PlayerStatisticController";
-
-const logger = useLogger("rrstats:database");
+import LeaderboardController from "./controller/LeaderboardController";
+import DatabaseConnector from "./controller/DatabaseConnnector";
+import { setFunctionTimersEnabled } from "~/utils/FunctionTimer";
 
 export default defineNitroPlugin(async (nitroApp) => {
-    logger.info("Connecting to database");
+    const config = useRuntimeConfig();
+    setFunctionTimersEnabled(config.enableFunctionTimings);
 
-    const db = new DataSource({
-        type: "sqlite",
-        database: useRuntimeConfig().database,
-        entities: [
-            Match,
-            Player,
-            GenericRecord,
-            MapRecord,
-            Competition,
-            CompetitionPlacement,
-            User,
-        ],
-        subscribers: [
-            PlayerAccoladeSubscriber,
-            LeaderboardDatabaseListener,
-            PlayerStatisticDatabaseListener,
-        ],
-        synchronize: true,
-    });
-    await db.initialize();
-    logger.info("Connected to database.");
+    const database = new DatabaseConnector(
+        config.databaseType,
+        config.database,
+    );
 
+    await database.initialize();
     await LeaderboardController.recalculate();
-    useLogger("rrstats:leaderboards").log("Recalculated leaderboards");
 
     nitroApp.hooks.hook("close", async () => {
-        if (db.isInitialized) {
-            logger.info("Closing database connection");
-            await db.destroy();
+        if (database.isInitialized()) {
+            await database.destroy();
         }
     });
 });

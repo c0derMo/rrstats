@@ -31,7 +31,7 @@
                     :rows="filteredMapRecords"
                     :enable-sorting="false"
                     :rows-per-page="[25, 50, 100]"
-                    :items-per-page="25"
+                    :selected-rows-per-page="25"
                 >
                     <template #header-more>
                         <ButtonComponent @click="newMapRecord()">
@@ -42,24 +42,21 @@
                         </ButtonComponent>
                     </template>
 
-                    <template #map="{ value }">
-                        {{ getMap(value as HitmanMap)!.name }}
+                    <template #map="{ value }: { value: HitmanMap }">
+                        {{ getMap(value)!.name }}
                     </template>
                     <template #timestamp="{ value }">
                         {{
-                            DateTime.fromMillis(value as number)
+                            DateTime.fromMillis(value)
                                 .setLocale(useLocale().value)
                                 .toLocaleString(DateTime.DATETIME_FULL)
                         }}
                     </template>
                     <template #player="{ value }">
-                        {{
-                            playerLookupTable[value as string] ??
-                            `unknown player: ${value}`
-                        }}
+                        {{ playerLookup.get(value) }}
                     </template>
                     <template #time="{ value }">
-                        {{ secondsToTime(value as number) }}
+                        {{ secondsToTime(value) }}
                     </template>
                     <template #more="{ row, index }">
                         <ButtonComponent @click="mapRecordToEdit = row">
@@ -101,7 +98,7 @@
                     :rows="filteredGenericRecords"
                     :enable-sorting="false"
                     :rows-per-page="[25, 50, 100]"
-                    :items-per-page="25"
+                    :selected-rows-per-page="25"
                 >
                     <template #header-more>
                         <ButtonComponent @click="newGenericRecord()">
@@ -114,24 +111,20 @@
 
                     <template #timestamp="{ value }">
                         {{
-                            DateTime.fromMillis(value as number)
+                            DateTime.fromMillis(value)
                                 .setLocale(useLocale().value)
                                 .toLocaleString(DateTime.DATETIME_FULL)
                         }}
                     </template>
-                    <template #players="{ value }">
+                    <template #players="{ value }: { value: string[] }">
                         {{
-                            (value as string[])
-                                .map(
-                                    (player) =>
-                                        playerLookupTable[player] ??
-                                        `unknown player: ${player}`,
-                                )
+                            value
+                                .map((player) => playerLookup.get(player))
                                 .join(", ")
                         }}
                     </template>
                     <template #time="{ value }">
-                        {{ secondsToTime(value as number) }}
+                        {{ secondsToTime(value) }}
                     </template>
                     <template #more="{ row, index }">
                         <ButtonComponent @click="genericRecordToEdit = row">
@@ -175,9 +168,11 @@ const genericRecords: Ref<IGenericRecord[]> = ref([]);
 const mapFilter = ref(-1);
 const genericFilter = ref("");
 const currentlyDeleting = ref(-1);
-const playerLookupTable: Ref<Record<string, string>> = ref({});
 const genericRecordToEdit: Ref<IGenericRecord | null> = ref(null);
 const mapRecordToEdit: Ref<IMapRecord | null> = ref(null);
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
 
 const mapFilterOptions = computed(() => {
     return [
@@ -262,7 +257,7 @@ async function deleteRecord(
 ) {
     currentlyDeleting.value = index;
 
-    await useFetch("/api/records/", {
+    await $fetch("/api/records/", {
         method: "delete",
         body: record,
         query: { type: type },
@@ -272,33 +267,11 @@ async function deleteRecord(
     currentlyDeleting.value = -1;
 }
 
-async function updatePlayerLookupTable() {
-    const playerQuery = await useFetch("/api/player/lookup");
-
-    if (
-        playerQuery.status.value !== "success" ||
-        playerQuery.data.value == null
-    ) {
-        return;
-    }
-
-    playerLookupTable.value = playerQuery.data.value as Record<string, string>;
-}
-
 async function updateLists() {
-    const recordQuery = await useFetch("/api/records/list");
-    if (
-        recordQuery.status.value !== "success" ||
-        recordQuery.data.value == null
-    ) {
-        return;
-    }
-
-    mapRecords.value = recordQuery.data.value.mapRecords as IMapRecord[];
-    genericRecords.value = recordQuery.data.value
-        .genericRecords as IGenericRecord[];
+    const recordQuery = await $fetch("/api/records/list");
+    mapRecords.value = recordQuery.mapRecords;
+    genericRecords.value = recordQuery.genericRecords;
 }
 
 await updateLists();
-await updatePlayerLookupTable();
 </script>

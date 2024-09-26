@@ -12,6 +12,7 @@ export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
     name = "Winrate on own-map-picks";
     hasMaps = false;
     secondaryFilter = "Own-map-picks played";
+    defaultSecondaryFilter = 5;
 
     calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
         const playedMaps: Record<string, { played: number; won: number }> = {};

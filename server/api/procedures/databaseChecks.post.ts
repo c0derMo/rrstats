@@ -1,8 +1,15 @@
 import { AuthController } from "~/server/controller/AuthController";
-import DatabaseCheckController from "~/server/controller/DatabaseCheckController";
+import DatabaseCheckController, {
+    type CheckResult,
+} from "~/server/controller/DatabaseCheckController";
+import consola from "consola";
 
-export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+export default defineEventHandler<Promise<CheckResult[]>>(async (event) => {
+    const body = await readBody<{
+        checks?: string[];
+        ignoredCompetitions?: string[];
+        knownIssues?: string;
+    }>(event);
     const session = await AuthController.useSession(event);
 
     if (!(await AuthController.isAuthenticated(session.data.discordId))) {
@@ -20,12 +27,12 @@ export default defineEventHandler(async (event) => {
 
     try {
         return await DatabaseCheckController.runChecks(
-            body.checks as string[],
-            (body.ignoredCompetitions as string[]) ?? [],
-            (body.knownIssues as string) ?? "",
+            body.checks,
+            body.ignoredCompetitions ?? [],
+            body.knownIssues ?? "",
         );
     } catch (e) {
-        console.log(e);
+        consola.error(e);
         return [
             {
                 name: "Checks failed",

@@ -1,5 +1,9 @@
 <template>
-    <DialogComponent dialog-class="w-3/5">
+    <DialogComponent
+        dialog-class="w-3/5"
+        :open="showDialog"
+        @closed="$emit('close')"
+    >
         <CardComponent class="max-h-screen">
             <div class="flex flex-col gap-5">
                 <DropdownComponent
@@ -73,30 +77,35 @@
 </template>
 
 <script setup lang="ts">
+import type { IMatch } from "~/utils/interfaces/IMatch";
 import {
     GenericRecordType,
     type IGenericRecord,
 } from "~/utils/interfaces/IRecord";
 
-const props = defineProps({
-    record: {
-        type: Object as PropType<IGenericRecord>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    record: IGenericRecord;
+}>();
 
-const emits = defineEmits(["close"]);
+defineEmits<{
+    close: [];
+}>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
+const showDialog = ref(true);
 const recordData: Ref<IGenericRecord> = toRef(props.record);
 const isSaving = ref(false);
 const possibleMatches: Ref<{ text: string; value: string }[]> = ref([]);
 const playersInvalid = ref(false);
 const players = ref("");
-const playerToUUIDTable: Ref<Record<string, string>> = ref({});
-const uuidToPlayerTable: Ref<Record<string, string>> = ref({});
 const isTimeInvalid = ref(Array(recordData.value.maps.length).fill(false));
+const playerLookup = usePlayers();
+
+await playerLookup.queryAll();
+players.value = recordData.value.players
+    .map((p) => playerLookup.get(p))
+    .join(", ");
 
 const mapHeaders = [
     { title: "Map", key: "map" },
@@ -117,7 +126,7 @@ const totalTime = computed(() => {
 async function checkPlayersAndUpdateMatches() {
     playersInvalid.value = false;
     players.value.split(",").forEach((player) => {
-        if (playerToUUIDTable.value[player.trim()] == null) {
+        if (playerLookup.getUUID(player.trim()) == null) {
             playersInvalid.value = true;
         }
     });
@@ -127,25 +136,18 @@ async function checkPlayersAndUpdateMatches() {
 
     recordData.value.players = players.value
         .split(",")
-        .map((player) => playerToUUIDTable.value[player.trim()]);
+        .map((player) => playerLookup.getUUID(player.trim()));
 
-    const matchRequest = await useFetch("/api/matches/versus", {
+    const matchRequest = await $fetch<IMatch[]>("/api/matches", {
         query: { players: recordData.value.players },
     });
-    if (
-        matchRequest.data.value == null ||
-        matchRequest.status.value !== "success"
-    ) {
-        return;
-    }
-
-    possibleMatches.value = matchRequest.data.value.map((match) => {
+    possibleMatches.value = matchRequest.map((match) => {
         return {
-            text: `${match.competition} ${match.round} ${
-                uuidToPlayerTable.value[match.playerOne]
-            } ${match.playerOneScore} - ${match.playerTwoScore} ${
-                uuidToPlayerTable.value[match.playerTwo]
-            }`,
+            text: `${match.competition} ${match.round} ${playerLookup.get(
+                match.playerOne,
+            )} ${match.playerOneScore} - ${match.playerTwoScore} ${playerLookup.get(
+                match.playerTwo,
+            )}`,
             value: match.uuid,
         };
     });
@@ -199,35 +201,12 @@ async function save() {
     }
 
     isSaving.value = false;
-    emits("close");
+    showDialog.value = false;
 }
 
 function close() {
-    emits("close");
+    showDialog.value = false;
 }
 
-async function loadPlayers() {
-    const playersRequest = await useFetch("/api/player/lookup");
-    if (
-        playersRequest.data.value == null ||
-        playersRequest.status.value !== "success"
-    ) {
-        return;
-    }
-
-    uuidToPlayerTable.value = playersRequest.data.value as Record<
-        string,
-        string
-    >;
-    for (const uuid in uuidToPlayerTable.value) {
-        playerToUUIDTable.value[uuidToPlayerTable.value[uuid]] = uuid;
-    }
-
-    players.value = recordData.value.players
-        .map((player) => uuidToPlayerTable.value[player])
-        .join(", ");
-}
-
-await loadPlayers();
 await checkPlayersAndUpdateMatches();
 </script>

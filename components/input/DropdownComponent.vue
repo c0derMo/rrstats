@@ -13,12 +13,15 @@
             class="w-full"
             @click="showDropdown = !showDropdown"
         >
-            <div class="text-nowrap min-h-6">
-                {{
-                    buttonText ??
-                    (convertedItems.find((i) => i.value === modelValue)?.text ||
-                        modelValue)
-                }}
+            <div class="text-nowrap flex flex-nowrap min-h-6">
+                <span class="flex-grow">
+                    {{
+                        buttonText ??
+                        (convertedItems.find((i) => i.value === modelValue)
+                            ?.text ||
+                            modelValue)
+                    }}
+                </span>
                 <FontAwesomeIcon
                     v-if="buttonText === null"
                     :icon="['fas', 'chevron-down']"
@@ -29,26 +32,32 @@
                 />
             </div>
         </ButtonComponent>
-        <div class="relative">
-            <div
-                v-if="showDropdown"
-                ref="dropdown"
-                class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full"
-                :style="shouldDropUp ? dropupHeight : dropdownHeight"
-            >
+        <ClientOnly>
+            <div class="relative">
                 <div
-                    v-for="(item, idx) of convertedItems"
-                    :key="idx"
-                    class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600 min-h-4"
-                    @click="
-                        $emit('update:modelValue', item.value);
-                        showDropdown = false;
-                    "
+                    ref="dropdown"
+                    class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full scale-y-0 opacity-0 transition-all"
+                    :class="{
+                        'scale-y-100 opacity-100': showDropdown,
+                        'origin-top': !shouldDropUp,
+                        'origin-bottom': shouldDropUp,
+                    }"
+                    :style="shouldDropUp ? dropupHeight : dropdownHeight"
                 >
-                    {{ item.text }}
+                    <div
+                        v-for="(item, idx) of convertedItems"
+                        :key="idx"
+                        class="px-5 py-2 transition hover:bg-neutral-300 dark:hover:bg-neutral-600 min-h-4"
+                        @click="
+                            $emit('update:modelValue', item.value);
+                            showDropdown = false;
+                        "
+                    >
+                        {{ item.text }}
+                    </div>
                 </div>
             </div>
-        </div>
+        </ClientOnly>
     </div>
 </template>
 
@@ -58,25 +67,22 @@ interface ExtendedOption {
     value: unknown;
 }
 
-const props = defineProps({
-    items: {
-        type: Array as () => number[] | string[] | ExtendedOption[],
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        items: number[] | string[] | ExtendedOption[];
+        modelValue?: number | string;
+        buttonText?: string | null;
+        buttonClass?: string;
+    }>(),
+    {
+        modelValue: undefined,
+        buttonText: null,
+        buttonClass: "",
     },
-    modelValue: {
-        type: [String, Number],
-        default: undefined,
-    },
-    buttonText: {
-        type: String,
-        default: null,
-    },
-    buttonClass: {
-        type: String,
-        default: "",
-    },
-});
-defineEmits(["update:modelValue"]);
+);
+defineEmits<{
+    "update:modelValue": [value: string | number | unknown];
+}>();
 
 const showDropdown = ref(false);
 const element: Ref<HTMLElement | null> = ref(null);

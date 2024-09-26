@@ -104,21 +104,20 @@
             </CardComponent>
 
             <div class="flex 2xl:flex-row gap-5 flex-col-reverse">
-                <CardComponent class="2xl:w-fit w-full overflow-x-visible">
+                <CardComponent class="2xl:w-3/12 w-full overflow-x-visible">
                     <TabbedContainer
                         :tabs="['Competitions', 'Opponents', 'Records']"
                     >
                         <template #Competitions>
                             <CompetitionsTable
-                                :placements="player?.placements"
-                                :competitions="player?.competitions"
+                                :placements="placements"
+                                :competitions="competitions"
                             />
                         </template>
                         <template #Opponents>
                             <OpponentsTable
-                                :matches="player?.matches || []"
+                                :matches="matches"
                                 :local-player="player?.uuid || ''"
-                                :opponents="player?.opponents || {}"
                             />
                         </template>
                         <template #Records>
@@ -132,8 +131,7 @@
                         class="mb-2 absolute top-0 left-0"
                     />
                     <MatchList
-                        :matches="player?.matches as IMatch[]"
-                        :players="player?.opponents"
+                        :matches="matches"
                         :local-player="player?.uuid || ''"
                     />
                 </CardComponent>
@@ -145,18 +143,17 @@
                 >
                     <template #Maps>
                         <PlayerMapList
-                            :matches="player?.matches || []"
+                            :matches="matches || []"
                             :local-player="player?.uuid || ''"
                             :competitions="competitions || []"
                         />
                     </template>
                     <template #[tH]>
-                        <PlaytimeHeatmap :matches="player?.matches || []" />
+                        <PlaytimeHeatmap :matches="matches || []" />
                     </template>
                     <template #[pB]>
                         <PersonalBestTable
                             :local-player="player?.uuid || ''"
-                            :players="player?.opponents"
                             :statistics="statistics"
                         />
                     </template>
@@ -168,6 +165,7 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
+import type { ICompetition } from "~/utils/interfaces/ICompetition";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 import { emptyStatistics } from "~/utils/interfaces/IPlayer";
 
@@ -179,20 +177,29 @@ useHead({
 
 const tH = "Time Heatmap";
 const pB = "Personal Bests";
-const player = (
-    await useFetch(
-        `/api/player/?player=${route.params.player}&initialLoad=true`,
-    )
-).data;
-const competitions = (await useFetch("/api/competitions/list")).data;
-const avatar = (
-    await useFetch(`/api/player/avatar?player=${route.params.player}`)
-).data;
+const { data: player } = await useFetch(
+    `/api/player/?player=${route.params.player}&initialLoad=true`,
+);
+const { data: competitions } = await useFetch<ICompetition[]>(
+    "/api/competitions/list",
+);
+const { data: avatar } = await useFetch(
+    `/api/player/avatar?player=${route.params.player}`,
+);
+const { data: statistics } = await useFetch(
+    `/api/player/statistics?player=${player.value?.uuid}`,
+    { default: emptyStatistics },
+);
+const { data: matches } = await useFetch<IMatch[]>(
+    `/api/matches?player=${player.value?.uuid}`,
+    { default: () => [] },
+);
+const { data: placements } = await useFetch(
+    `/api/competitions/placements?player=${player.value?.uuid}`,
+    { default: () => [] },
+);
+
 const stillLoading = ref(player.value?.shouldRetry ?? false);
-const statistics = ref(emptyStatistics());
-statistics.value =
-    (await useFetch(`/api/player/statistics?player=${player.value?.uuid}`)).data
-        ?.value ?? statistics.value;
 
 const wtl = computed(() => {
     return `${statistics.value.winTieLoss.w}-${statistics.value.winTieLoss.t}-${statistics.value.winTieLoss.l}`;

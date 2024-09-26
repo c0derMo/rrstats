@@ -3,7 +3,6 @@
         <MatchDetailsDialog
             v-if="matchToShow != null"
             :match="matchToShow"
-            :opponents="data?.players || {}"
             @click-outside="matchToShow = null"
         />
         <CompetitionBackground
@@ -29,7 +28,6 @@
                 v-if="competition?.groupsConfig != null"
                 :groups-info="competition.groupsConfig"
                 :matches="sortedMatches"
-                :players="data?.players ?? {}"
             />
 
             <div
@@ -49,47 +47,34 @@
                 :rows="sortedMatches"
                 :enable-sorting="false"
                 :rows-per-page="[10, 25, 50, 100]"
-                :items-per-page="25"
+                :selected-rows-per-page="25"
             >
                 <template #timestamp="{ value }">
                     {{
-                        DateTime.fromMillis(value as number)
+                        DateTime.fromMillis(value)
                             .setLocale(useLocale().value)
                             .toLocaleString(DateTime.DATETIME_MED)
                     }}
                 </template>
 
                 <template #playerOne="{ value }">
-                    <PlayerLinkTag
-                        :player="
-                            data?.players[value as string] ??
-                            `Unknown player: ${value}`
-                        "
-                    />
+                    <PlayerLinkTag :player="players.get(value)" />
                 </template>
 
                 <template #score="{ row }">
-                    <span class="whitespace-nowrap"
-                        >{{ row.playerOneScore }} -
-                        {{ row.playerTwoScore }}</span
-                    >
+                    <span class="whitespace-nowrap">
+                        {{ row.playerOneScore }} - {{ row.playerTwoScore }}
+                    </span>
                 </template>
 
                 <template #playerTwo="{ value }">
-                    <PlayerLinkTag
-                        :player="
-                            data?.players[value as string] ??
-                            `Unknown player: ${value}`
-                        "
-                    />
+                    <PlayerLinkTag :player="players.get(value)" />
                 </template>
 
-                <template #bans="{ row }">
+                <template #bans="{ row }: { row: IMatch }">
                     <div class="flex flex-wrap">
                         <TooltipComponent
-                            v-for="(
-                                ban, idx
-                            ) in row.bannedMaps as RRBannedMap[]"
+                            v-for="(ban, idx) in row.bannedMaps"
                             :key="idx"
                         >
                             <MapTag :map="getMap(ban.map)!" />
@@ -102,10 +87,18 @@
                     </div>
                 </template>
 
-                <template #playedMaps="{ value, row }">
+                <template
+                    #playedMaps="{
+                        value,
+                        row,
+                    }: {
+                        value: RRMap[];
+                        row: IMatch;
+                    }"
+                >
                     <div class="flex flex-wrap">
                         <TooltipComponent
-                            v-for="(play, idx) in value as RRMap[]"
+                            v-for="(play, idx) in value"
                             :key="idx"
                         >
                             <MapTag :map="getMap(play.map)!" />
@@ -119,7 +112,15 @@
                     </div>
                 </template>
 
-                <template #shoutcasters="{ value, row }">
+                <template
+                    #shoutcasters="{
+                        value,
+                        row,
+                    }: {
+                        value: string[];
+                        row: IMatch;
+                    }"
+                >
                     <a
                         v-if="value !== null"
                         :href="
@@ -132,7 +133,7 @@
                                 row.vodLink != null && row.vodLink.length > 0,
                         }"
                     >
-                        {{ (value as string[]).join(", ") }}
+                        {{ value.join(", ") }}
                     </a>
 
                     <template v-for="(vod, idx) of row.vodLink" :key="idx">
@@ -140,8 +141,9 @@
                             v-if="idx > 0"
                             class="underline text-blue-600 dark:text-blue-400 ml-1"
                             :href="vod"
-                            >(Part {{ idx + 1 }})</a
                         >
+                            (Part {{ idx + 1 }})
+                        </a>
                     </template>
                 </template>
 
@@ -185,54 +187,56 @@ const headers = [
 ];
 
 const tournament = useRoute().query.tournament;
-const data = ref(
-    (await useFetch("/api/matches", { query: { tournament } })).data,
-);
-const competition = (
-    await useFetch("/api/competitions", {
-        query: { tag: tournament, initialLoad: true },
-    })
-).data as Ref<(ICompetition & { shouldRetry: boolean }) | null>;
+const { data: matches } = await useFetch<IMatch[]>("/api/matches", {
+    query: { tournament },
+});
+const { data: competition } = await useFetch<
+    (ICompetition & { shouldRetry: boolean }) | null
+>("/api/competitions", {
+    query: { tag: tournament, initialLoad: true },
+});
 
 const stillLoading = ref(competition.value?.shouldRetry ?? false);
+const players = usePlayers();
+await players.queryFromMatches(matches.value ?? []);
 
 useHead({
     title: `${competition.value?.name} - RRStats`,
 });
 
 const sortedMatches = computed(() => {
-    if (data.value === null) {
+    if (matches.value === null) {
         return [];
     }
-    return [...data.value.matches].sort((a, b) => b.timestamp - a.timestamp);
+    return [...matches.value].sort((a, b) => b.timestamp - a.timestamp);
 });
 
 function getMapPicker(map: RRMap | RRBannedMap, match: IMatch): string {
     if (map.picked === ChoosingPlayer.RANDOM) return "Random";
     if (map.picked === ChoosingPlayer.PLAYER_ONE)
-        return data.value?.players[match.playerOne] ?? "Unknown";
+        return players.get(match.playerOne, "Unknown");
     if (map.picked === ChoosingPlayer.PLAYER_TWO)
-        return data.value?.players[match.playerTwo] ?? "Unknown";
+        return players.get(match.playerTwo, "Unknown");
     return "Unknown";
 }
 
 function getMapWinner(map: RRMap, match: IMatch): string {
     if (map.winner === WinningPlayer.DRAW) return "Draw";
     if (map.winner === WinningPlayer.PLAYER_ONE)
-        return data.value?.players[match.playerOne] ?? "Unknown";
+        return players.get(match.playerOne, "Unknown");
     if (map.winner === WinningPlayer.PLAYER_TWO)
-        return data.value?.players[match.playerTwo] ?? "Unknown";
+        return players.get(match.playerTwo, "Unknown");
     return "Unknown";
 }
 
 onMounted(async () => {
     if (competition.value?.shouldRetry) {
         await $fetch("/api/competitions", { query: { tag: tournament } });
-        const matchRequest = await $fetch("/api/matches", {
+        const matchRequest = await $fetch<IMatch[]>("/api/matches", {
             query: { tournament },
         });
 
-        data.value = matchRequest;
+        matches.value = matchRequest;
         stillLoading.value = false;
     }
 });

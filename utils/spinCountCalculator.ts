@@ -13,6 +13,14 @@ const ILLEGAL_METHODS = [
     "Explosive (Weapon)",
 ];
 
+const debug = false;
+
+function printIfDebug(message: unknown) {
+    if (debug) {
+        console.log(message);
+    }
+}
+
 export function calculatePossibleSpinAmount(
     disguises: string[],
     methods: Record<string, string[]>,
@@ -29,12 +37,12 @@ export function calculatePossibleSpinAmount(
         amountOfDisguiseCombinations *= disguises.length - i;
     }
 
-    console.log(`Amount of targets: ${targetAmount}`);
-    console.log(`Amount of disguises: ${disguises.length}`);
-    console.log(`Amount of disguise options: ${amountOfDisguiseCombinations}`);
+    printIfDebug(`Amount of targets: ${targetAmount}`);
+    printIfDebug(`Amount of disguises: ${disguises.length}`);
+    printIfDebug(`Amount of disguise options: ${amountOfDisguiseCombinations}`);
 
     const amountOfNTKOCombinations = Math.pow(2, targetAmount);
-    console.log(`Amount of NTKO options: ${amountOfNTKOCombinations}`);
+    printIfDebug(`Amount of NTKO options: ${amountOfNTKOCombinations}`);
 
     const validMethods = Object.values(methods).map((methods) => {
         return methods
@@ -42,20 +50,20 @@ export function calculatePossibleSpinAmount(
             .filter((method) => !ILLEGAL_METHODS.includes(method));
     });
 
-    console.log(
+    printIfDebug(
         `Amount of valid options for each target: ${validMethods.map(
             (methods) => methods.length,
         )}`,
     );
     for (const target of validMethods) {
-        console.log(target);
+        printIfDebug(target);
     }
 
     let amountOfMethodCombinations = validMethods
         .map((m) => m.length)
         .reduce((prev, cur) => prev * cur, 1);
 
-    console.log(
+    printIfDebug(
         `Initial guess as to how many options there are: ${amountOfMethodCombinations}`,
     );
 
@@ -72,7 +80,7 @@ export function calculatePossibleSpinAmount(
         });
 
         for (const option of flipOptions) {
-            console.log(`Checking option ${option}`);
+            printIfDebug(`Checking option ${option}`);
             let intersection = validMethods.reduce(
                 (prev, cur) => union(prev, cur),
                 [],
@@ -81,27 +89,27 @@ export function calculatePossibleSpinAmount(
 
             for (let i = 0; i < targetAmount; i++) {
                 if (option[i]) {
-                    console.log(`Adding ${i} to the intersection`);
+                    printIfDebug(`Adding ${i} to the intersection`);
                     // Option i is true -> part of intersection
                     intersection = intersect(intersection, validMethods[i]);
                 } else {
-                    console.log(`Adding ${i} to the other options`);
+                    printIfDebug(`Adding ${i} to the other options`);
                     // Option i is false -> part of other elements
                     otherOptions *= validMethods[i].length;
                 }
             }
-            console.log(`Length of intersection: ${intersection.length}`);
-            console.log(`Other options: ${otherOptions}`);
+            printIfDebug(`Length of intersection: ${intersection.length}`);
+            printIfDebug(`Other options: ${otherOptions}`);
 
             amountOfMethodCombinations -= intersection.length * otherOptions;
         }
     }
 
-    console.log(
+    printIfDebug(
         `Resulting guess as to how many options there are: ${amountOfMethodCombinations}`,
     );
 
-    console.log(`Time taken: ${startTime.diffNow().toHuman()}`);
+    printIfDebug(`Time taken: ${startTime.diffNow().toHuman()}`);
 
     return {
         disguises: amountOfDisguiseCombinations,

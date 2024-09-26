@@ -9,6 +9,7 @@ export class PlayerSpecificMapWinrate implements LeaderboardPlayerStatistic {
     name = "Winrate on specific map";
     hasMaps = true;
     secondaryFilter = "Spins played";
+    defaultSecondaryFilter = 5;
 
     calculate(
         players: IPlayer[],

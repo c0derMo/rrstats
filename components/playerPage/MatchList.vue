@@ -2,7 +2,6 @@
     <MatchDetailsDialog
         v-if="matchToShow != null"
         :match="matchToShow"
-        :opponents="players"
         @click-outside="matchToShow = null"
     />
 
@@ -37,20 +36,16 @@
             </template>
 
             <template #players="{ row }">
-                <a :href="`/${players[row.playerOne]}`">
+                <a :href="`/${players.get(row.playerOne)}`">
                     {{ row.playerOneScore }} -
-                    {{
-                        players[row.playerOne] ||
-                        `Unknown player (${row.playerOne})`
-                    }}</a
-                ><br />
-                vs<br />
-                <a :href="`/${players[row.playerOne]}`">
+                    {{ players.get(row.playerOne) }}
+                </a>
+                <br />
+                vs
+                <br />
+                <a :href="`/${players.get(row.playerOne)}`">
                     {{ row.playerTwoScore }} -
-                    {{
-                        players[row.playerTwo] ||
-                        `Unknown player (${row.playerTwo})`
-                    }}
+                    {{ players.get(row.playerTwo) }}
                 </a>
             </template>
 
@@ -100,19 +95,11 @@
             </template>
 
             <template #playerOne="{ value }">
-                <PlayerLinkTag
-                    :player="
-                        players[value as string] ?? `Unknown player: ${value}`
-                    "
-                />
+                <PlayerLinkTag :player="players.get(value)" />
             </template>
 
             <template #playerTwo="{ value }">
-                <PlayerLinkTag
-                    :player="
-                        players[value as string] ?? `Unknown player: ${value}`
-                    "
-                />
+                <PlayerLinkTag :player="players.get(value)" />
             </template>
 
             <template #score="{ row }">
@@ -123,19 +110,19 @@
                 />
             </template>
 
-            <template #playedMaps="{ value, row }">
+            <template
+                #playedMaps="{ value, row }: { value: RRMap[]; row: IMatch }"
+            >
                 <TooltipComponent v-for="(map, idx) of value" :key="idx">
                     <MapTag
-                        :map="getMap((map as RRMap).map)!"
-                        :draw="(map as RRMap).winner === WinningPlayer.DRAW"
-                        :won="
-                            getLocalWinningPlayer(row) === (map as RRMap).winner
-                        "
+                        :map="getMap(map.map)!"
+                        :draw="map.winner === WinningPlayer.DRAW"
+                        :won="getLocalWinningPlayer(row) === map.winner"
                         class="ml-2"
                     />
 
                     <template #tooltip>
-                        Map: {{ getMap((map as RRMap).map)?.name }}<br />
+                        Map: {{ getMap(map.map)?.name }}<br />
                         Picked by: {{ getMapPicker(map, row) }}<br />
                         Won by: {{ getMapWinner(map, row) }}
                     </template>
@@ -185,22 +172,18 @@ const mobileHeaders = [
 const matchToShow: Ref<IMatch | null> = ref(null);
 const searchFilter = ref("");
 
-const props = defineProps({
-    matches: {
-        type: Array<IMatch>,
-        required: false,
-        default: [],
+const props = withDefaults(
+    defineProps<{
+        matches?: IMatch[];
+        localPlayer: string;
+    }>(),
+    {
+        matches: () => [],
     },
-    players: {
-        type: Object as PropType<Record<string, string>>,
-        required: false,
-        default: () => {},
-    },
-    localPlayer: {
-        type: String,
-        required: true,
-    },
-});
+);
+
+const players = usePlayers();
+await players.queryFromMatches(props.matches);
 
 const filteredSortedMatches = computed(() => {
     return props.matches
@@ -209,8 +192,8 @@ const filteredSortedMatches = computed(() => {
 
             const searchableValues = [
                 m.competition,
-                props.players[m.playerOne],
-                props.players[m.playerTwo],
+                players.get(m.playerOne),
+                players.get(m.playerTwo),
                 m.round,
                 ...m.playedMaps.map((map) => getMap(map.map)!.abbreviation),
             ];
@@ -231,18 +214,18 @@ function getLocalWinningPlayer(match: IMatch): WinningPlayer {
 function getMapPicker(map: RRMap, match: IMatch): string {
     if (map.picked === ChoosingPlayer.RANDOM) return "Random";
     if (map.picked === ChoosingPlayer.PLAYER_ONE)
-        return props.players[match.playerOne];
+        return players.get(match.playerOne);
     if (map.picked === ChoosingPlayer.PLAYER_TWO)
-        return props.players[match.playerTwo];
+        return players.get(match.playerTwo);
     return "Unknown";
 }
 
 function getMapWinner(map: RRMap, match: IMatch): string {
     if (map.winner === WinningPlayer.DRAW) return "Draw";
     if (map.winner === WinningPlayer.PLAYER_ONE)
-        return props.players[match.playerOne];
+        return players.get(match.playerOne);
     if (map.winner === WinningPlayer.PLAYER_TWO)
-        return props.players[match.playerTwo];
+        return players.get(match.playerTwo);
     return "Unknown";
 }
 

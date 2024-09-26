@@ -9,17 +9,19 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    time: {
-        type: Number,
-        default: 15000,
+const props = withDefaults(
+    defineProps<{
+        time?: number;
+        type?: string;
+    }>(),
+    {
+        time: 15000,
+        type: "",
     },
-    type: {
-        type: String,
-        default: "",
-    },
-});
-const emits = defineEmits(["close"]);
+);
+const emits = defineEmits<{
+    close: [];
+}>();
 
 const timer = ref(props.time);
 const closed = ref(false);

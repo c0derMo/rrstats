@@ -3,8 +3,9 @@ import { AuthController } from "~/server/controller/AuthController";
 import { Match } from "~/server/model/Match";
 import { Player } from "~/server/model/Player";
 import type { IMatch } from "~/utils/interfaces/IMatch";
+import type { PlayerResponse } from "../APITypes";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<PlayerResponse>(async (event) => {
     const authHeader = getRequestHeader(event, "authorization");
 
     if (!(await AuthController.isValidAPIKey(authHeader))) {

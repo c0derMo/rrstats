@@ -18,19 +18,14 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-    title: {
-        type: String,
-        required: true,
+withDefaults(
+    defineProps<{
+        title: string;
+        subtitle?: string;
+        target: string;
+    }>(),
+    {
+        subtitle: "",
     },
-    subtitle: {
-        type: String,
-        required: false,
-        default: "",
-    },
-    target: {
-        type: String,
-        required: true,
-    },
-});
+);
 </script>

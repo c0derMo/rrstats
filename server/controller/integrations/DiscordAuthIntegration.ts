@@ -1,4 +1,5 @@
 import { User } from "../../model/User";
+import consola from "consola";
 
 interface DiscordUser {
     id: string;
@@ -71,8 +72,8 @@ export default class DiscordAuthIntegration {
             );
             token = tokenRequest.access_token;
         } catch (e) {
-            console.log(e);
-            console.log((e as { data: string }).data);
+            consola.error(e);
+            consola.error((e as { data: string }).data);
             throw new Error("Error in token request");
         }
 
@@ -84,8 +85,8 @@ export default class DiscordAuthIntegration {
             );
             discordId = userReqeust.id;
         } catch (e) {
-            console.log(e);
-            console.log((e as { data: string }).data);
+            consola.error(e);
+            consola.error((e as { data: string }).data);
             throw new Error("Error in user request");
         }
 

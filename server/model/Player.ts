@@ -34,6 +34,7 @@ export class Player extends BaseEntity implements IPlayer {
     @Column("boolean", { nullable: true })
     hasCustomTitle?: boolean;
 
+    @Index()
     @Column("boolean", { nullable: true })
     excludedFromSearch?: boolean;
 

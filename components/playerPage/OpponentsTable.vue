@@ -10,20 +10,12 @@
 import type { IMatch } from "~/utils/interfaces/IMatch";
 import MatchCollection from "~/utils/playerStatistics/MatchCollection";
 
-const props = defineProps({
-    matches: {
-        type: Object as PropType<IMatch[]>,
-        required: true,
-    },
-    localPlayer: {
-        type: String,
-        required: true,
-    },
-    opponents: {
-        type: Object as PropType<Record<string, string>>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    matches: IMatch[];
+    localPlayer: string;
+}>();
+
+const players = usePlayers();
 
 const headers = [
     { key: "Opponent", title: "Opponent", disableSort: true },
@@ -67,7 +59,7 @@ const rows = computed(() => {
         );
         const wtl = collection.wtl();
         result.push({
-            Opponent: props.opponents[opponent],
+            Opponent: players.get(opponent),
             Matches: wtl.w + wtl.t + wtl.l,
             wtl: `${wtl.w}-${wtl.t}-${wtl.l}`,
         });

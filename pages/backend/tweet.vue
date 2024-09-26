@@ -10,7 +10,9 @@
             <DropdownComponent
                 :items="dropdownableRecords"
                 button-text="Add record template"
-                @update:model-value="(v) => addRecordTemplate(v)"
+                @update:model-value="
+                    (v) => addRecordTemplate(v as IGenericRecord | IMapRecord)
+                "
             />
 
             <div class="flex flex-row gap-2">
@@ -64,11 +66,11 @@ interface PreviousRecord {
 }
 
 const recentRecords: Ref<(IGenericRecord | IMapRecord)[]> = ref([]);
-const recordPlayers: Ref<Record<string, string>> = ref({});
 const tweets: Ref<string[]> = ref([""]);
 const tweeting = ref(false);
 const success = ref(false);
 const error = ref(false);
+const playerLookup = usePlayers();
 
 definePageMeta({
     layout: "backend",
@@ -83,13 +85,13 @@ const dropdownableRecords = computed(() => {
             return {
                 text: `${getMap(mapRecord.map)!.name}: ${secondsToTime(
                     mapRecord.time,
-                )} by ${recordPlayers.value[mapRecord.player]}`,
+                )} by ${playerLookup.get(mapRecord.player)}`,
                 value: record,
             };
         } else {
             const genericRecord = record as IGenericRecord;
             const players = genericRecord.players
-                .map((p) => recordPlayers.value[p])
+                .map((p) => playerLookup.get(p))
                 .join(", ");
             return {
                 text: `${genericRecord.record}: ${secondsToTime(
@@ -106,12 +108,12 @@ async function addRecordTemplate(record: IGenericRecord | IMapRecord) {
     if (Object.hasOwn(record, "player")) {
         const mapRecord = record as IMapRecord;
         recordString = getMap(mapRecord.map)!.name;
-        players = recordPlayers.value[mapRecord.player];
+        players = playerLookup.get(mapRecord.player);
     } else {
         const genericRecord = record as IGenericRecord;
         recordString = genericRecord.record;
         players = genericRecord.players
-            .map((p) => recordPlayers.value[p])
+            .map((p) => playerLookup.get(p))
             .join(" and ");
     }
 
@@ -174,44 +176,21 @@ async function tweet() {
     success.value = false;
     error.value = false;
 
-    const tweetQuery = await useFetch("/api/procedures/tweet", {
-        method: "POST",
-        body: tweets,
-    });
-
-    if (
-        tweetQuery.status.value !== "success" ||
-        tweetQuery.data.value == null
-    ) {
-        error.value = true;
-    } else if (tweetQuery.data.value === true) {
-        success.value = true;
-    } else {
+    try {
+        const tweetQuery = await $fetch("/api/procedures/tweet", {
+            method: "POST",
+            body: tweets,
+        });
+        if (tweetQuery === true) {
+            success.value = true;
+        } else {
+            error.value = true;
+        }
+    } catch {
         error.value = true;
     }
 
     tweeting.value = false;
-}
-
-async function fetchPlayerNames(playerUuids: string[]): Promise<string[]> {
-    const lookupQuery = await useFetch("/api/player/lookup", {
-        query: { players: playerUuids },
-    });
-
-    if (
-        lookupQuery.status.value !== "success" ||
-        lookupQuery.data.value == null
-    ) {
-        return [];
-    }
-
-    const lookupTable = lookupQuery.data.value as Record<string, string>;
-    const players: string[] = [];
-    for (const player of playerUuids) {
-        players.push(lookupTable[player]);
-    }
-
-    return players;
 }
 
 async function fetchPreviousRecord(
@@ -223,16 +202,17 @@ async function fetchPreviousRecord(
     } else {
         query = { generic: (record as IGenericRecord).record };
     }
-    const historyQuery = await useFetch("/api/records/history", { query });
 
-    if (
-        historyQuery.status.value !== "success" ||
-        historyQuery.data.value == null
-    ) {
+    let records: (IMapRecord | IGenericRecord)[];
+    try {
+        records = await $fetch<(IMapRecord | IGenericRecord)[]>(
+            "/api/records/history",
+            { query },
+        );
+    } catch {
         return [];
     }
 
-    const records = historyQuery.data.value as (IMapRecord | IGenericRecord)[];
     if (records.length <= 1) {
         return [];
     }
@@ -243,11 +223,11 @@ async function fetchPreviousRecord(
         const nextRecord = records.pop() as IMapRecord | IGenericRecord;
         let players: string[];
         if (Object.hasOwn(nextRecord, "player")) {
-            players = await fetchPlayerNames([
+            players = await playerLookup.queryAndGet([
                 (nextRecord as IMapRecord).player,
             ]);
         } else {
-            players = await fetchPlayerNames(
+            players = await playerLookup.queryAndGet(
                 (nextRecord as IGenericRecord).players,
             );
         }
@@ -264,20 +244,9 @@ async function fetchPreviousRecord(
 }
 
 async function fetchRecentRecords() {
-    const recordQuery = await useFetch("/api/records");
+    const recordQuery = await $fetch("/api/records");
 
-    if (
-        recordQuery.status.value !== "success" ||
-        recordQuery.data.value == null
-    ) {
-        return;
-    }
-
-    recordPlayers.value = recordQuery.data.value.players;
-    recentRecords.value = [
-        ...recordQuery.data.value.maps,
-        ...recordQuery.data.value.generic,
-    ];
+    recentRecords.value = [...recordQuery.maps, ...recordQuery.generic];
 }
 
 await fetchRecentRecords();

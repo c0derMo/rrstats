@@ -1,5 +1,9 @@
 <template>
-    <DialogComponent dialog-class="w-3/5">
+    <DialogComponent
+        dialog-class="w-3/5"
+        :open="showDialog"
+        @closed="$emit('close')"
+    >
         <CardComponent class="overflow-y-auto flex flex-col gap-3 max-h-screen">
             <TabbedContainer :tabs="['Basic', 'Groups', 'Placements']">
                 <template #Basic>
@@ -93,21 +97,18 @@ import type {
     IGroupSettings,
 } from "~/utils/interfaces/ICompetition";
 
-const props = defineProps({
-    competition: {
-        type: Object as PropType<ICompetition>,
-        required: true,
-    },
-    placements: {
-        type: Object as PropType<ICompetitionPlacement[]>,
-        required: true,
-    },
-});
+const props = defineProps<{
+    competition: ICompetition;
+    placements: ICompetitionPlacement[];
+}>();
 
-const emits = defineEmits(["close"]);
+defineEmits<{
+    close: [];
+}>();
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
+const showDialog = ref(true);
 const compData = toRef(props.competition);
 const placementsData = toRef(props.placements);
 const groupsEnabled = ref(compData.value.groupsConfig != null);
@@ -147,10 +148,10 @@ async function save() {
     }
 
     isSaving.value = false;
-    emits("close");
+    showDialog.value = false;
 }
 
 function close() {
-    emits("close");
+    showDialog.value = false;
 }
 </script>

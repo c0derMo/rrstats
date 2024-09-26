@@ -7,28 +7,21 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    map: {
-        type: Object as PropType<HitmanMapInfo>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        map: HitmanMapInfo;
+        fullName?: boolean;
+        narrow?: boolean;
+        won?: boolean;
+        draw?: boolean;
+    }>(),
+    {
+        fullName: false,
+        narrow: false,
+        won: undefined,
+        draw: false,
     },
-    fullName: {
-        type: Boolean,
-        default: false,
-    },
-    narrow: {
-        type: Boolean,
-        default: false,
-    },
-    won: {
-        type: Boolean,
-        default: undefined,
-    },
-    draw: {
-        type: Boolean,
-        default: false,
-    },
-});
+);
 
 const text = computed(() => {
     if (props.fullName) {

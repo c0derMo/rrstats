@@ -1,6 +1,5 @@
 import { In } from "typeorm";
 import { Match } from "~/server/model/Match";
-import { Player } from "~/server/model/Player";
 import { GenericRecord, MapRecord } from "~/server/model/Record";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 import type {
@@ -10,7 +9,13 @@ import type {
 } from "~/utils/interfaces/IRecord";
 import type { HitmanMap } from "~/utils/mapUtils";
 
-export default defineEventHandler(async () => {
+export default defineEventHandler<
+    Promise<{
+        maps: IMapRecord[];
+        generic: IGenericRecord[];
+        matches: Record<string, IMatch>;
+    }>
+>(async () => {
     const genericRecordTypes = await GenericRecord.find({ select: ["record"] });
     const mapsWithRecords = await MapRecord.find({ select: ["map"] });
 
@@ -63,23 +68,9 @@ export default defineEventHandler(async () => {
         matchMap[match.uuid] = match;
     }
 
-    // Query all related players
-    const playerUUIDs = matchesRaw
-        .map((m) => m.playerOne)
-        .concat(matchesRaw.map((m) => m.playerTwo));
-    const playersRaw = await Player.find({
-        where: { uuid: In(playerUUIDs) },
-        select: ["uuid", "primaryName"],
-    });
-    const playerMap: Record<string, string> = {};
-    for (const player of playersRaw) {
-        playerMap[player.uuid] = player.primaryName;
-    }
-
     return {
         maps: mapRecords,
         generic: genericRecords,
         matches: matchMap,
-        players: playerMap,
     };
 });

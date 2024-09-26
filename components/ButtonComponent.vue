@@ -26,21 +26,21 @@
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(["click"]);
-const props = defineProps({
-    loading: {
-        type: Boolean,
-        default: false,
+const emits = defineEmits<{
+    click: [];
+}>();
+const props = withDefaults(
+    defineProps<{
+        loading?: boolean;
+        disableHover?: boolean;
+        confirmButton?: boolean;
+    }>(),
+    {
+        loading: false,
+        disableHover: false,
+        confirmButton: false,
     },
-    disableHover: {
-        type: Boolean,
-        default: false,
-    },
-    confirmButton: {
-        type: Boolean,
-        default: false,
-    },
-});
+);
 
 const cooldown = ref(0);
 const cooldownTimer: Ref<NodeJS.Timeout | undefined> = ref(undefined);

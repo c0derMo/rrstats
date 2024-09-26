@@ -1,13 +1,15 @@
 <template>
     <DialogComponent
         dialog-class="min-w-[45%]"
-        @click-outside="$emit('clickOutside')"
+        :open="dialogOpen"
+        @click-outside="dialogOpen = false"
+        @closed="$emit('clickOutside')"
     >
         <CardComponent class="max-h-screen flex flex-col gap-5">
             <h1 class="text-3xl flex flex-row md:gap-10 gap-1">
                 <div class="flex-1 text-right">
                     <Tag :color="getPlayerColor(1)">
-                        {{ opponents[match.playerOne] }}
+                        {{ players.get(match.playerOne) }}
                     </Tag>
                 </div>
                 <span
@@ -18,7 +20,7 @@
                 >
                 <div class="flex-1 text-left">
                     <Tag :color="getPlayerColor(2)">
-                        {{ opponents[match.playerTwo] }}
+                        {{ players.get(match.playerTwo) }}
                     </Tag>
                 </div>
             </h1>
@@ -63,6 +65,13 @@
                     </span>
                     <span v-else> Shoutcast not available </span>
                 </div>
+            </div>
+
+            <div
+                v-if="match.notes != null && match.notes !== ''"
+                class="italic text-center"
+            >
+                {{ match.notes }}
             </div>
 
             <div
@@ -114,10 +123,19 @@
                             {{ getPlayerName(map.winner, "Draw") }}
                         </Tag>
                         <span v-if="map.forfeit">(Won by forfeit)</span>
+                        <span v-if="map.unscored">(Unscored)</span>
                     </div>
                     <div v-if="map.spin != null" class="col-span-3">
                         <TextualSpin :spin="map.spin" />
                     </div>
+
+                    <div
+                        v-if="map.notes != null && map.notes !== ''"
+                        class="col-span-3 text-center italic"
+                    >
+                        {{ map.notes }}
+                    </div>
+
                     <div
                         class="col-span-3 border-b border-gray-500 pb-3 mb-3 text-center"
                     >
@@ -127,17 +145,39 @@
                                 ? durationToLocale(map.timeTaken * 1000)
                                 : "unknown"
                         }}
-                        <Tag v-if="isMapPB(idx)" narrow color="purple"
-                            >Personal best ({{
+                        <Tag v-if="isMapPB(idx)" narrow color="purple">
+                            Personal best ({{
                                 getPlayerName(map.winner, "unknown")
-                            }})</Tag
+                            }})
+                        </Tag>
+                        <Tag
+                            v-if="wrStatus[idx] === RecordStatus.CURRENT"
+                            narrow
+                            color="#cb8900"
                         >
+                            Current record
+                        </Tag>
+                        <Tag
+                            v-if="wrStatus[idx] === RecordStatus.FORMER"
+                            narrow
+                            color="#926711"
+                        >
+                            Former record
+                        </Tag>
                     </div>
                 </template>
             </div>
-            <ButtonComponent @click="$emit('clickOutside')"
-                >Close</ButtonComponent
-            >
+
+            <div v-if="!allMapTimes.includes(-1)" class="text-center">
+                Total match RTA:
+                {{
+                    durationToLocale(
+                        allMapTimes.reduce((prev, cur) => prev + cur, 0) * 1000,
+                    )
+                }}
+            </div>
+
+            <ButtonComponent @click="dialogOpen = false">Close</ButtonComponent>
         </CardComponent>
     </DialogComponent>
 </template>
@@ -150,25 +190,34 @@ import {
 } from "~/utils/interfaces/IMatch";
 import { DateTime, Duration } from "luxon";
 
-defineEmits(["clickOutside"]);
+enum RecordStatus {
+    NONE,
+    FORMER,
+    CURRENT,
+}
 
-const props = defineProps({
-    match: {
-        type: Object as PropType<IMatch>,
-        required: true,
-    },
-    opponents: {
-        type: Object as PropType<Record<string, string>>,
-        required: true,
-    },
-});
+defineEmits<{
+    clickOutside: [];
+}>();
 
-const playerOneStatistics = (
-    await useFetch(`/api/player/statistics?player=${props.match.playerOne}`)
-).data;
-const playerTwoStatistics = (
-    await useFetch(`/api/player/statistics?player=${props.match.playerTwo}`)
-).data;
+const props = defineProps<{
+    match: IMatch;
+}>();
+
+const dialogOpen = ref(true);
+const players = usePlayers();
+
+await players.queryPlayers([props.match.playerOne, props.match.playerTwo]);
+
+const { data: playerOneStatistics } = await useFetch(
+    `/api/player/statistics?player=${props.match.playerOne}`,
+);
+const { data: playerTwoStatistics } = await useFetch(
+    `/api/player/statistics?player=${props.match.playerTwo}`,
+);
+const wrStatus = ref<RecordStatus[]>(
+    props.match.playedMaps.map((_) => RecordStatus.NONE),
+);
 
 const playerOneBans = computed(() => {
     return props.match.bannedMaps.filter(
@@ -188,10 +237,10 @@ function getPlayerName(
     switch (player) {
         case ChoosingPlayer.PLAYER_ONE:
         case WinningPlayer.PLAYER_ONE:
-            return props.opponents[props.match.playerOne] || "unknown";
+            return players.get(props.match.playerOne, "unknown");
         case ChoosingPlayer.PLAYER_TWO:
         case WinningPlayer.PLAYER_TWO:
-            return props.opponents[props.match.playerTwo] || "unknown";
+            return players.get(props.match.playerTwo, "unknown");
         case ChoosingPlayer.RANDOM:
         case WinningPlayer.DRAW:
             return randomDrawOption;
@@ -238,4 +287,30 @@ function isMapPB(mapIdx: number): boolean {
     }
     return false;
 }
+
+const allMapTimes = computed(() => {
+    return props.match.playedMaps.map((map) => map.timeTaken);
+});
+
+onBeforeMount(async () => {
+    await Promise.all(
+        props.match.playedMaps.map((m, idx) => {
+            return new Promise<void>((resolve) => {
+                $fetch("/api/records/history", { query: { map: m.map } }).then(
+                    (data) => {
+                        const recordIndex = data.findIndex(
+                            (r) => r.match === props.match.uuid,
+                        );
+                        if (recordIndex === data.length - 1) {
+                            wrStatus.value[idx] = RecordStatus.CURRENT;
+                        } else if (recordIndex > 0) {
+                            wrStatus.value[idx] = RecordStatus.FORMER;
+                        }
+                        resolve();
+                    },
+                );
+            });
+        }),
+    );
+});
 </script>

@@ -2,18 +2,17 @@
     <MatchDetailsDialog
         v-if="detailedMatch != null"
         :match="detailedMatch"
-        :opponents="players"
         @click-outside="detailedMatch = null"
     />
     <RecordHistoryDialog
         v-if="historyMap != null"
         :map="historyMap"
-        @click-outside="historyMap = null"
+        @closed="historyMap = null"
     />
 
     <TableComponent :headers="headers" :rows="sortedRecords">
         <template #map="{ value }">
-            <MapTag :map="getMap(value as number)!" full-name />
+            <MapTag :map="getMap(value)!" full-name />
         </template>
 
         <template #spin="{ row }">
@@ -23,46 +22,45 @@
         </template>
 
         <template #time="{ value }">
-            {{ secondsToTime(value as number) }}
+            {{ secondsToTime(value) }}
         </template>
 
         <template #player="{ value }">
-            <PlayerLinkTag
-                :player="players[value as string] ?? `Unknown player: ${value}`"
-            />
+            <PlayerLinkTag :player="players.get(value)" />
         </template>
 
         <template #match="{ row, value }">
             <a
-                v-if="matches[value as string] != null"
+                v-if="matches[value] != null"
                 :href="
-                    matches[value as string].vodLink != null
-                        ? matches[value as string].vodLink![0]
+                    matches[value].vodLink != null
+                        ? matches[value].vodLink![0]
                         : ''
                 "
                 :class="{
-                    'underline text-blue-500':
-                        matches[value as string].vodLink != null,
+                    'underline text-blue-500': matches[value].vodLink != null,
                 }"
             >
-                {{ matches[value as string].competition }}
-                {{ matches[value as string].round }}
-                <span v-if="matches[value as string].playerOne === row.player"
-                    >vs {{ players[matches[value as string].playerTwo] }}</span
+                {{ matches[value].competition }}
+                {{ matches[value].round }}
+                <span v-if="matches[value].playerOne === row.player"
+                    >vs {{ players.get(matches[value].playerTwo) }}</span
                 >
-                <span v-if="matches[value as string].playerTwo === row.player"
-                    >vs {{ players[matches[value as string].playerOne] }}</span
+                <span v-if="matches[value].playerTwo === row.player"
+                    >vs {{ players.get(matches[value].playerOne) }}</span
                 >
             </a>
         </template>
 
         <template #more="{ row }">
-            <ButtonComponent @click="historyMap = row.map">
-                <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
-            </ButtonComponent>
-            <ButtonComponent @click="detailedMatch = matches[row.match]">
-                <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
-            </ButtonComponent>
+            <div class="flex flex-nowrap">
+                <ButtonComponent @click="historyMap = row.map">
+                    <FontAwesomeIcon :icon="['fas', 'chart-line']" size="xs" />
+                </ButtonComponent>
+                <ButtonComponent @click="detailedMatch = matches[row.match]">
+                    <FontAwesomeIcon :icon="['fas', 'ellipsis-h']" size="xs" />
+                </ButtonComponent>
+            </div>
         </template>
     </TableComponent>
 </template>
@@ -83,22 +81,19 @@ const headers = [
 const detailedMatch: Ref<IMatch | null> = ref(null);
 const historyMap: Ref<number | null> = ref(null);
 
-const props = defineProps({
-    records: {
-        type: Array<IMapRecord>,
-        required: true,
+const props = withDefaults(
+    defineProps<{
+        records: IMapRecord[];
+        matches?: Record<string, IMatch>;
+    }>(),
+    {
+        players: () => ({}),
+        matches: () => ({}),
     },
-    players: {
-        type: Object as PropType<Record<string, string>>,
-        required: false,
-        default: () => {},
-    },
-    matches: {
-        type: Object as PropType<Record<string, IMatch>>,
-        required: false,
-        default: () => {},
-    },
-});
+);
+
+const players = usePlayers();
+await players.queryFromMatches(Object.values(props.matches));
 
 const sortedRecords = computed(() => {
     return [...props.records].sort(

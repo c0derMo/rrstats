@@ -6,7 +6,7 @@
     >
         <template #record="{ row }">
             <span v-if="'map' in row">
-                {{ getMap(row.map)!.name }}
+                {{ getMap(row.map!)!.name }}
             </span>
             <span v-if="'record' in row">
                 {{ row.record }}
@@ -14,7 +14,7 @@
         </template>
 
         <template #time="{ value }">
-            {{ secondsToTime(value as number) }}
+            {{ secondsToTime(value) }}
         </template>
 
         <template #record_duration="{ row }">
@@ -37,12 +37,9 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 
-const props = defineProps({
-    player: {
-        type: String,
-        required: true,
-    },
-});
+const props = defineProps<{
+    player: string;
+}>();
 
 const headers = [
     { key: "record", title: "Record" },
@@ -50,9 +47,9 @@ const headers = [
     { key: "record_duration", title: "Record duration" },
 ];
 
-const records = (
-    await useFetch("/api/records/player", { query: { player: props.player } })
-).data;
+const { data: records } = await useFetch("/api/records/player", {
+    query: { player: props.player },
+});
 
 records.value?.sort((a, b) => {
     if (a.brokenAt === -1 && b.brokenAt !== -1) {

@@ -1,5 +1,5 @@
 <template>
-    <DialogComponent @click-outside="$emit('decline')">
+    <DialogComponent :animate-on-show="false" @click-outside="$emit('decline')">
         <CardComponent class="fixed right-3 top-10 text-sm">
             <h1 class="font-bold text-base">Just one second</h1>
 
@@ -16,5 +16,8 @@
 </template>
 
 <script setup lang="ts">
-defineEmits(["consent", "decline"]);
+defineEmits<{
+    consent: [];
+    decline: [];
+}>();
 </script>

@@ -53,15 +53,17 @@ import { MapPlayed } from "./leaderboardStatistics/map/Played";
 import { MapRNG } from "./leaderboardStatistics/map/RNG";
 import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
 import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
-import FunctionTimer from "~/utils/FunctionTimer";
+import { Log } from "~/utils/FunctionTimer";
+import consola from "consola";
 
-interface StatisticData<T extends string> {
+export interface StatisticData<T extends string> {
     name: string;
     type: T;
     hasMaps?: boolean;
     mapOptional?: boolean;
     secondaryFilter?: string;
     explanatoryText?: string;
+    defaultSecondaryFilter?: number;
 }
 
 interface GenericLeaderboardStatistic<T extends string, R>
@@ -81,15 +83,17 @@ export interface LeaderboardCountryStatistic
 export interface LeaderboardMapStatistic
     extends GenericLeaderboardStatistic<"map", LeaderboardMapEntry> {}
 
-type LeaderboardStatistic =
+export type LeaderboardStatistic =
     | LeaderboardPlayerStatistic
     | LeaderboardCountryStatistic
     | LeaderboardMapStatistic;
 
-type LeaderboardEntry =
+export type LeaderboardEntry =
     | LeaderboardPlayerEntry
     | LeaderboardCountryEntry
     | LeaderboardMapEntry;
+
+const logger = consola.withTag("rrstats:leaderboards");
 
 export default class LeaderboardController {
     private static cache: Record<
@@ -147,12 +151,11 @@ export default class LeaderboardController {
         } finally {
             LeaderboardController.calculationPromise = null;
         }
+        logger.info("Leaderboards recalculated.");
     }
 
+    @Log("LeaderboardController._recalculate")
     private static async _recalculate(): Promise<void> {
-        const timer = new FunctionTimer(
-            "LeaderboardControlller._recalculate()",
-        );
         // Empty the cache
         LeaderboardController.cache = {};
 
@@ -178,7 +181,6 @@ export default class LeaderboardController {
             );
             LeaderboardController.cache[statistic.name] = result;
         }
-        timer.finish();
     }
 
     public static async getCategories(): Promise<{
@@ -197,6 +199,7 @@ export default class LeaderboardController {
                         secondaryFilter: stat.secondaryFilter,
                         type: "player",
                         explanatoryText: stat.explanatoryText,
+                        defaultSecondaryFilter: stat.defaultSecondaryFilter,
                     };
                 }),
             country: LeaderboardController.statistics
@@ -209,6 +212,7 @@ export default class LeaderboardController {
                         secondaryFilter: stat.secondaryFilter,
                         type: "country",
                         explanatoryText: stat.explanatoryText,
+                        defaultSecondaryFilter: stat.defaultSecondaryFilter,
                     };
                 }),
             map: LeaderboardController.statistics
@@ -221,6 +225,7 @@ export default class LeaderboardController {
                         secondaryFilter: stat.secondaryFilter,
                         type: "map",
                         explanatoryText: stat.explanatoryText,
+                        defaultSecondaryFilter: stat.defaultSecondaryFilter,
                     };
                 }),
         };

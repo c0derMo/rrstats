@@ -59,12 +59,9 @@
 <script setup lang="ts">
 import type { NuxtError } from "#app";
 
-const props = defineProps({
-    error: {
-        type: Object as () => NuxtError,
-        required: true,
-    },
-});
+const props = defineProps<{
+    error: NuxtError;
+}>();
 
 const errorTitles = [
     "You shouldn't be here.",

@@ -33,24 +33,24 @@
 </template>
 
 <script setup lang="ts">
-const emits = defineEmits(["confirm", "input"]);
-const props = defineProps({
-    suggestions: {
-        type: Array<string>,
-        required: false,
-        default: [],
+const emits = defineEmits<{
+    confirm: [value: string];
+    input: [value: string];
+    defocus: [];
+    focus: [];
+}>();
+const props = withDefaults(
+    defineProps<{
+        suggestions?: string[];
+        placeholder?: string;
+        defaultText?: string;
+    }>(),
+    {
+        suggestions: () => [],
+        placeholder: "",
+        defaultText: "",
     },
-    placeholder: {
-        type: String,
-        required: false,
-        default: "",
-    },
-    defaultText: {
-        type: String,
-        required: false,
-        default: "",
-    },
-});
+);
 
 const value = ref(props.defaultText);
 const selectedSuggestion = ref(0);
@@ -129,5 +129,13 @@ watch(currentSuggestions, (newValue) => {
 
 watch(value, () => {
     emits("input", value.value);
+});
+
+watch(isFocussed, (value) => {
+    if (value) {
+        emits("focus");
+    } else {
+        emits("defocus");
+    }
 });
 </script>

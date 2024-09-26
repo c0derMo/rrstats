@@ -2,8 +2,9 @@ import { In } from "typeorm";
 import { AuthController } from "~/server/controller/AuthController";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
 import { Player } from "~/server/model/Player";
+import type { AccoladeResponse } from "../APITypes";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<AccoladeResponse>(async (event) => {
     const authHeader = getRequestHeader(event, "authorization");
 
     if (!(await AuthController.isValidAPIKey(authHeader))) {

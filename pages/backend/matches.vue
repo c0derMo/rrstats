@@ -30,7 +30,7 @@
             :rows="matchesToShow"
             :enable-sorting="false"
             :rows-per-page="[10, 25, 50]"
-            :items-per-page="10"
+            :selected-rows-per-page="10"
         >
             <template #header-more>
                 <ButtonComponent @click="newMatch()">
@@ -42,7 +42,7 @@
             </template>
 
             <template #playerOne="{ value }">
-                {{ playerLookupTable[value as string] }}
+                {{ playerLookup.get(value) }}
             </template>
 
             <template #score="{ row }">
@@ -50,7 +50,7 @@
             </template>
 
             <template #playerTwo="{ value }">
-                {{ playerLookupTable[value as string] }}
+                {{ playerLookup.get(value) }}
             </template>
 
             <template #more="{ row }">
@@ -83,11 +83,13 @@ definePageMeta({
 });
 
 const matches: Ref<IMatch[]> = ref([]);
-const playerLookupTable: Ref<Record<string, string>> = ref({});
+const playerLookup = usePlayers();
 const matchToShow: Ref<IMatch | null> = ref(null);
 const search = ref("");
 const filter: Ref<string[]> = ref([]);
 const hitmapsOverlayUrl = ref("");
+
+await playerLookup.queryAll();
 
 const headers = [
     { key: "competition", title: "Competition" },
@@ -104,9 +106,9 @@ const matchesToShow = computed(() => {
     if (search.value !== "") {
         result = result.filter((match) => {
             if (match.competition.includes(search.value)) return true;
-            if (playerLookupTable.value[match.playerOne].includes(search.value))
+            if (playerLookup.get(match.playerOne).includes(search.value))
                 return true;
-            if (playerLookupTable.value[match.playerTwo].includes(search.value))
+            if (playerLookup.get(match.playerTwo).includes(search.value))
                 return true;
             if (match.round.includes(search.value)) return true;
             if (match.uuid.includes(search.value)) return true;
@@ -117,12 +119,12 @@ const matchesToShow = computed(() => {
 
     if (filter.value.includes("No VOD")) {
         result = result.filter((match) => {
-            return match.vodLink == null;
+            return match.vodLink == null || match.vodLink.length <= 0;
         });
     }
     if (filter.value.includes("No Shoutcasters")) {
         result = result.filter((match) => {
-            return match.shoutcasters == null || match.shoutcasters.length > 0;
+            return match.shoutcasters == null || match.shoutcasters.length <= 0;
         });
     }
     if (filter.value.includes("No Spin")) {
@@ -151,7 +153,7 @@ function newMatch() {
 }
 
 async function deleteMatch(uuid: string) {
-    await useFetch("/api/matches", {
+    await $fetch("/api/matches", {
         method: "DELETE",
         body: { uuid },
     });
@@ -159,31 +161,10 @@ async function deleteMatch(uuid: string) {
     await updateList();
 }
 
-async function updatePlayers() {
-    const playerQuery = await useFetch("/api/player/lookup");
-
-    if (
-        playerQuery.status.value !== "success" ||
-        playerQuery.data.value == null
-    ) {
-        return;
-    }
-
-    playerLookupTable.value = playerQuery.data.value as Record<string, string>;
-}
-
 async function updateList() {
-    const matchQuery = await useFetch("/api/matches/list");
-    if (
-        matchQuery.status.value !== "success" ||
-        matchQuery.data.value == null
-    ) {
-        return;
-    }
-
-    matches.value = matchQuery.data.value;
+    const matchQuery = await $fetch("/api/matches/raw");
+    matches.value = matchQuery;
 }
 
 await updateList();
-await updatePlayers();
 </script>

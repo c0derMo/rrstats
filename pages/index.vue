@@ -3,11 +3,7 @@
         <CompetitionBackground
             :competitions="
                 competitions
-                    ?.filter(
-                        (m) =>
-                            m.backgroundImage !== undefined &&
-                            m.backgroundImage !== null,
-                    )
+                    ?.filter((m) => m.backgroundImage != null)
                     .map((m) => m.backgroundImage) as string[]
             "
         />
@@ -67,14 +63,16 @@
                         button-class="border-0"
                         button-text="Tournaments"
                         :items="competitionsDropdown"
-                        @update:model-value="selectTournament"
+                        @update:model-value="
+                            (v) => selectTournament(v as string)
+                        "
                     />
                 </div>
 
                 <AutocompleteComponent
                     placeholder="Player"
                     class="w-full xl:w-[600px] text-lg mt-3"
-                    :suggestions="players || []"
+                    :suggestions="players?.map((p) => p.primaryName) || []"
                     @confirm="(p) => navigateTo(`/${p}`)"
                 />
             </CardComponent>
@@ -111,9 +109,9 @@ useHead({
     title: "RRStats",
 });
 
-const players = (await useFetch("/api/player/list")).data as Ref<string[]>;
-const competitions = (await useFetch("/api/competitions/list")).data;
-const numbers = (await useFetch("/api/onlyNumbers")).data;
+const { data: players } = await useFetch("/api/player/list");
+const { data: competitions } = await useFetch("/api/competitions/list");
+const { data: numbers } = await useFetch("/api/onlyNumbers");
 
 const competitionsDropdown = computed(() => {
     if (competitions.value === null) {

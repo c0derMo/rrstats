@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
-import FunctionTimer from "~/utils/FunctionTimer";
+import { Log } from "~/utils/FunctionTimer";
 import type { HitmanMapInfo } from "~/utils/mapUtils";
+import consola from "consola";
 
 interface CacheEntry {
     disguises: string[];
@@ -27,6 +28,8 @@ interface HitmapsDisguise {
     order: number;
     suit: boolean;
 }
+
+const logger = consola.withTag("rrstats:hitmaps_spins");
 
 export default class HitmapsSpinIntegration {
     private static cache: Map<string, CacheEntry> = new Map();
@@ -59,10 +62,8 @@ export default class HitmapsSpinIntegration {
         return HitmapsSpinIntegration.cache.get(map.slug)!.killMethods;
     }
 
+    @Log("HitmapsSpinIntegration.refetch")
     private static async refetch(map: HitmanMapInfo): Promise<void> {
-        const timer = new FunctionTimer(
-            `HitmapsSpinIntegration.refetch(${map.map})`,
-        );
         const season = "hitman" + (map.season > 1 ? map.season : "");
         const locationName = map.name
             .toLowerCase()
@@ -84,10 +85,10 @@ export default class HitmapsSpinIntegration {
                 "Suit",
             ];
         } catch (e) {
-            console.error(
+            logger.error(
                 `The following error occured while fetching disguises for ${map.name}:`,
             );
-            console.error(e);
+            logger.error(e);
         }
 
         for (const target of map.targets) {
@@ -112,10 +113,10 @@ export default class HitmapsSpinIntegration {
                 killConditions[target.name] =
                     HitmapsSpinIntegration.buildKillMethods(rawKillMethods);
             } catch (e) {
-                console.error(
+                logger.error(
                     `The following error occured while fetching kill methods for ${target.name}:`,
                 );
-                console.error(e);
+                logger.error(e);
             }
         }
 
@@ -124,7 +125,6 @@ export default class HitmapsSpinIntegration {
             killMethods: killConditions,
             lastFetched: DateTime.now(),
         });
-        timer.finish();
     }
 
     private static buildKillMethods(raw: HitmapsKillCondition[]): string[] {
