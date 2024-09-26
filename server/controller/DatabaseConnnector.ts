@@ -45,6 +45,7 @@ export default class DatabaseConnector {
                   ]
                 : undefined,
             synchronize: true,
+            parseInt8: dbType === "postgres" ? true : undefined
         } as DataSourceOptions);
     }
 
@@ -74,7 +75,7 @@ export default class DatabaseConnector {
 
     async dropDatabase() {
         await this.db.dropDatabase();
-        logger.success("Dropped database.");
+        logger.success("Dropped database");
     }
 
     async synchronize() {

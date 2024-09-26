@@ -7,6 +7,7 @@ import {
     BeforeInsert,
     BeforeUpdate,
     AfterLoad,
+    Index,
 } from "typeorm";
 import type { IMatch, RRBannedMap } from "~/utils/interfaces/IMatch";
 import { PlayedMap } from "./PlayedMap";
@@ -15,6 +16,7 @@ import { PlayedMap } from "./PlayedMap";
 export class Match extends BaseEntity implements IMatch {
     @PrimaryGeneratedColumn("uuid")
     uuid: string;
+    @Index()
     @Column("text", { nullable: true })
     hitmapsMatchId: string;
     @Column("int8")

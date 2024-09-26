@@ -14,7 +14,7 @@ export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
 
     let queryBuilder = PlayedMap.createQueryBuilder("played_map")
         .where("played_map.spin IS NOT NULL")
-        .andWhere('played_map.spin != ""')
+        .andWhere("played_map.spin != ''")
         .innerJoinAndSelect("played_map.match", "match");
 
     if (query.map != null && query.map >= 0) {

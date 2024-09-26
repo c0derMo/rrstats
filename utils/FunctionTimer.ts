@@ -30,10 +30,6 @@ export function setFunctionTimersEnabled(enabled: boolean) {
 }
 
 export function Log(functionName: string, includeArguments?: boolean) {
-    if (!functionTimersEnabled) {
-        return () => {};
-    }
-
     return function (
         target: unknown,
         propertyKey: string,
@@ -46,6 +42,9 @@ export function Log(functionName: string, includeArguments?: boolean) {
         const _method = descriptor.value;
 
         descriptor.value = async function (...args: unknown[]) {
+            if (!functionTimersEnabled) {
+                return await _method.apply(this, args);
+            }
             let logName = functionName;
             if (includeArguments) {
                 logName += `(${args.join(", ")})`;
@@ -56,8 +55,9 @@ export function Log(functionName: string, includeArguments?: boolean) {
             }
 
             const timer = new FunctionTimer(logName);
-            await _method.apply(this, args);
+            const returnValue = await _method.apply(this, args);
             timer.finish();
+            return returnValue;
         };
     };
 }
