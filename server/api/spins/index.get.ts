@@ -1,6 +1,5 @@
 import { PlayedMap } from "~/server/model/PlayedMap";
-import take from "lodash/take";
-import drop from "lodash/drop";
+import ld from "lodash";
 
 export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
     const query = getQuery<{
@@ -45,7 +44,7 @@ export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
         const actualFilter = JSON.parse(query.filter);
         spins = filterSpins(spins, actualFilter);
         count = spins.length;
-        spins = take(drop(spins, query.skip), query.take);
+        spins = ld.take(ld.drop(spins, query.skip), query.take);
     }
 
     setResponseHeader(event, "X-Count", count);
