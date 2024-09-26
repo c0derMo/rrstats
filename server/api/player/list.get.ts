@@ -1,4 +1,4 @@
-import { Not } from "typeorm";
+import { IsNull } from "typeorm";
 import { AuthController } from "~/server/controller/AuthController";
 import { Player } from "~/server/model/Player";
 import type { IPlayer } from "~/utils/interfaces/IPlayer";
@@ -25,7 +25,10 @@ export default defineEventHandler<
 
     const rawPlayers = await Player.find({
         select: ["primaryName"],
-        where: { excludedFromSearch: Not(true) },
+        where: [
+            { excludedFromSearch: false },
+            { excludedFromSearch: IsNull() },
+        ],
     });
 
     return rawPlayers;

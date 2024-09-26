@@ -3,6 +3,8 @@ import consola from "consola";
 
 const logger = consola.withTag("rrstats:timings");
 
+let functionTimersEnabled = false;
+
 export default class FunctionTimer {
     private start: DateTime;
     private name: string;
@@ -23,8 +25,12 @@ export default class FunctionTimer {
     }
 }
 
+export function setFunctionTimersEnabled(enabled: boolean) {
+    functionTimersEnabled = enabled;
+}
+
 export function Log(functionName: string, includeArguments?: boolean) {
-    if (!useRuntimeConfig().enableFunctionTimings) {
+    if (!functionTimersEnabled) {
         return () => {};
     }
 

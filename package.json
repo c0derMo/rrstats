@@ -10,7 +10,9 @@
         "postinstall": "nuxt prepare",
         "prettier": "prettier . --write",
         "lint": "eslint .",
-        "typecheck": "nuxt typecheck"
+        "typecheck": "nuxt typecheck",
+        "script": "tsx --tsconfig ./server/tsconfig.json",
+        "sqlite2pg": "tsx --tsconfig ./server/tsconfig.json ./server/scripts/2024-09-26-sqliteToPG.ts"
     },
     "devDependencies": {
         "@fast-csv/format": "^5.0.0",
@@ -30,6 +32,7 @@
         "object-hash": "^3.0.0",
         "prettier": "^3.3.3",
         "sass": "^1.77.8",
+        "tsx": "^4.19.1",
         "vue": "^3.3.4",
         "vue-router": "^4.4.3"
     },
@@ -42,6 +45,7 @@
         "chart.js": "^4.4.3",
         "lodash": "^4.17.21",
         "luxon": "^3.5.0",
+        "pg": "^8.13.0",
         "reflect-metadata": "^0.1.14",
         "sqlite3": "^5.1.7",
         "twitter-api-v2": "^1.17.2",

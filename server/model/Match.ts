@@ -17,7 +17,7 @@ export class Match extends BaseEntity implements IMatch {
     uuid: string;
     @Column("text", { nullable: true })
     hitmapsMatchId: string;
-    @Column("integer")
+    @Column("int8")
     timestamp: number;
 
     @Column("text")

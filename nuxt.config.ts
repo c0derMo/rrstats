@@ -15,6 +15,7 @@ export default defineNuxtConfig({
         twitterTokenSecret: "",
         publicOrigin: "http://localhost:3000",
         database: "rrstats.db",
+        databaseType: "sqlite",
         enableFunctionTimings: false,
         enableRouteTimings: false,
     },

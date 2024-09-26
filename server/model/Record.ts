@@ -8,7 +8,7 @@ import type { HitmanMap } from "~/utils/mapUtils";
 
 @Entity()
 export class GenericRecord extends BaseEntity implements IGenericRecord {
-    @PrimaryColumn("integer")
+    @PrimaryColumn("int8")
     timestamp: number;
     @PrimaryColumn("text")
     record: GenericRecordType;
@@ -25,7 +25,7 @@ export class GenericRecord extends BaseEntity implements IGenericRecord {
 
 @Entity()
 export class MapRecord extends BaseEntity implements IMapRecord {
-    @PrimaryColumn("integer")
+    @PrimaryColumn("int8")
     timestamp: number;
     @PrimaryColumn("integer")
     map: HitmanMap;
