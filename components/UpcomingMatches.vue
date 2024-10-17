@@ -26,21 +26,23 @@
             </template>
 
             <template #bans="{ row }">
-                <TooltipComponent v-for="(ban, idx) in row.bans" :key="idx">
-                    <MapTag :map="getMapBySlug(ban.map)!" />
+                <template v-if="row.bans.length != 0">
+                    <TooltipComponent v-for="(ban, idx) in row.bans" :key="idx">
+                        <MapTag :map="getMapBySlug(ban.map)!" />
 
-                    <template #tooltip>
-                        Map: {{ getMapBySlug(ban.map)!.name }}<br />
-                        Banned by:
-                        {{
-                            getMapPicker(
-                                ban.picked,
-                                row.playerOne,
-                                row.playerTwo,
-                            )
-                        }}
-                    </template>
-                </TooltipComponent>
+                        <template #tooltip>
+                            Map: {{ getMapBySlug(ban.map)!.name }}<br />
+                            Banned by:
+                            {{
+                                getMapPicker(
+                                    ban.picked,
+                                    row.playerOne,
+                                    row.playerTwo,
+                                )
+                            }}
+                        </template>
+                    </TooltipComponent>
+                </template>
             </template>
 
             <template #maps="{ row }">

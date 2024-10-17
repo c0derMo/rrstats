@@ -112,7 +112,6 @@ const emits = defineEmits<{
 
 const settings = toRef(props.groupSettings);
 const selectedGroup = ref("");
-const playerNameToUUIDs: Ref<Record<string, string>> = ref({});
 const playersInGroups: Ref<string[][]> = ref([]);
 const playersIncorrect: Ref<boolean[][]> = ref([]);
 const positionOverrides: Ref<string[][]> = ref([]);
@@ -165,12 +164,13 @@ function checkAndEmit() {
         settings.value.groups[i].positionOverrides = {};
 
         for (let j = 0; j < settings.value.groups[i].players.length; j++) {
-            settings.value.groups[i].players[j] =
-                playerNameToUUIDs.value[playersInGroups.value[i][j]];
+            settings.value.groups[i].players[j] = playerLookup.getUUID(
+                playersInGroups.value[i][j],
+            );
 
             if (positionOverrides.value[i][j] !== "-- none --") {
                 settings.value.groups[i].positionOverrides[j] =
-                    playerNameToUUIDs.value[positionOverrides.value[i][j]];
+                    playerLookup.getUUID(positionOverrides.value[i][j]);
             }
         }
     }
@@ -179,7 +179,8 @@ function checkAndEmit() {
 }
 
 function tryLookupPlayer(player: string, group: number, index: number) {
-    if (playerNameToUUIDs.value[player] != undefined) {
+    const playerUUID = playerLookup.getUUID(player, "unknown player");
+    if (playerUUID !== "unknown player") {
         playersIncorrect.value[group][index] = false;
         checkAndEmit();
     } else {
