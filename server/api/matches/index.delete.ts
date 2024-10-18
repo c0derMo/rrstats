@@ -1,5 +1,6 @@
 import { AuthController } from "~/server/controller/AuthController";
 import { Match } from "~/server/model/Match";
+import { PlayedMap } from "~/server/model/PlayedMap";
 import { IPermission } from "~/utils/interfaces/IUser";
 
 export default defineEventHandler(async (event) => {
@@ -30,6 +31,11 @@ export default defineEventHandler(async (event) => {
         uuid: body.uuid,
     });
     if (matchToRemove != null) {
-        await matchToRemove.remove();
+        await PlayedMap.delete({
+            match: matchToRemove,
+        });
+        await Match.delete({
+            uuid: body.uuid,
+        });
     }
 });

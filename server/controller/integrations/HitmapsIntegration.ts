@@ -10,7 +10,6 @@ import {
     type RRBannedMap,
 } from "~/utils/interfaces/IMatch";
 import { Competition } from "~/server/model/Competition";
-import type { IGroup } from "~/utils/interfaces/ICompetition";
 import { Log } from "~/utils/FunctionTimer";
 import { PlayedMap } from "~/server/model/PlayedMap";
 import consola from "consola";
@@ -28,15 +27,73 @@ export interface HitmapsTournamentMatch {
         challongeName: string;
         countryCode: string;
     }[];
-    gameModeMatchId: string;
+    gameModeMatchId: string | null;
     maps: {
         competitorId: number;
         competitorName: string;
         selectionType: "Ban" | "Pick" | "Random";
         mapSlug: string;
+        mapStartedAt?: string;
+        resultVerifiedAt?: string;
+        winnerFinishedAt?: string;
+        winnerDiscordId?: string;
+        mapJson?: string;
+        roundType: string;
+        state: string;
     }[];
     platform: string;
     round: number | null;
+    rrstatsLookupId?: string;
+}
+
+interface GameModeMatchIdHitmapsTournamentMatch extends HitmapsTournamentMatch {
+    gameModeMatchId: string;
+}
+
+interface NewHitmapsTournamentMatch extends HitmapsTournamentMatch {
+    maps: {
+        competitorId: number;
+        competitorName: string;
+        selectionType: "Ban" | "Pick" | "Random";
+        mapSlug: string;
+        mapStartedAt: string;
+        resultVerifiedAt?: string;
+        winnerFinishedAt?: string;
+        winnerDiscordId?: string;
+        mapJson: string;
+        roundType: string;
+        state: string;
+    }[];
+}
+
+interface HitmapsMapJson {
+    type?: "KILL";
+    target: {
+        name: string;
+        tileUrl: string;
+    };
+    killMethod: {
+        name: string;
+        tileUrl: string;
+        chosen?: boolean;
+        selectedVariant: string | null;
+    };
+    disguise: {
+        name: string;
+        tileUrl: string;
+        chosen?: boolean;
+    };
+    complications: {
+        name: string;
+        description: string;
+        tileUrl: string;
+    }[];
+}
+
+interface AdditionalMatchInfo {
+    mapWinners: (WinningPlayer | null)[];
+    spinTimes: number[];
+    spins: (Spin | null)[];
 }
 
 export interface HitmapsMatch {
@@ -182,10 +239,22 @@ export default class HitmapsIntegration {
         matches: HitmapsTournamentMatch[],
         tournamentSlug: string,
     ) {
+        matches.forEach((m) => {
+            let lookupId = m.gameModeMatchId;
+            if (lookupId == null) {
+                lookupId = String(m.id);
+            }
+            m.rrstatsLookupId = lookupId;
+        });
+
         // Avoid adding duplicate matches
         const existingMatches = await Match.find({
             where: {
-                hitmapsMatchId: In(matches.map((m) => m.gameModeMatchId)),
+                hitmapsMatchId: In(
+                    matches.map((m) => {
+                        return m.rrstatsLookupId;
+                    }),
+                ),
             },
             select: ["hitmapsMatchId"],
         });
@@ -195,199 +264,357 @@ export default class HitmapsIntegration {
             return;
         }
 
-        const matchesToQuery = matches
-            .filter(
-                (rawMatch) =>
-                    rawMatch.gameModeMatchId !==
-                    "00000000-0000-0000-0000-000000000000",
-            )
-            .filter((rawMatch) => {
-                return !existingMatches.some(
-                    (m) => m.hitmapsMatchId === rawMatch.gameModeMatchId,
-                );
-            });
-
-        if (matchesToQuery.length <= 0) {
-            return;
-        }
-
-        const hitmapsMatches = await this.fetchHitmapsMatches(
-            matchesToQuery.map((m) => m.gameModeMatchId),
+        const filteredMatches = HitmapsIntegration.filterAndSort(
+            matches,
+            existingMatches,
         );
-
         const competition = await Competition.findOneBy({
             tag: tournamentSlug,
         });
 
-        matchesToQuery.sort((a, b) => {
+        // New Matches
+        for (const newMatch of filteredMatches.newVersion) {
+            const additionalInfo = HitmapsIntegration.transformNewMatch(
+                newMatch,
+                competition,
+            );
+            await HitmapsIntegration.handleMatch(
+                newMatch,
+                additionalInfo,
+                tournamentSlug,
+                competition,
+            );
+        }
+
+        // Old Matches
+        const hitmapsMatches = await this.fetchHitmapsMatches(
+            filteredMatches.matchId.map((m) => m.gameModeMatchId),
+        );
+
+        for (const newMatch of filteredMatches.matchId) {
+            const fullMatch = hitmapsMatches.find(
+                (m) => m.matchupId === newMatch.gameModeMatchId,
+            );
+            if (!fullMatch) {
+                logger.error(
+                    `Got hitmaps tournament match without detailed information: ${newMatch.gameModeMatchId}`,
+                );
+                continue;
+            }
+            const additionalInfo = HitmapsIntegration.transformOldMatch(
+                newMatch,
+                fullMatch,
+                competition,
+            );
+            await HitmapsIntegration.handleMatch(
+                newMatch,
+                additionalInfo,
+                tournamentSlug,
+                competition,
+            );
+        }
+    }
+
+    private static transformOldMatch(
+        match: GameModeMatchIdHitmapsTournamentMatch,
+        fullMatch: HitmapsMatch,
+        competition: Competition | null,
+    ): AdditionalMatchInfo {
+        const result = {
+            spinTimes: [],
+            mapPickers: [],
+            mapWinners: [],
+            spins: [],
+        } as AdditionalMatchInfo;
+
+        let pickIndex = 0;
+
+        for (const map of match.maps) {
+            if (map.selectionType === "Ban") {
+                result.spinTimes.push(-1);
+                result.mapWinners.push(null);
+                result.spins.push(null);
+                continue;
+            }
+
+            let pickedMap = fullMatch.mapSelections[pickIndex];
+            while (!pickedMap.complete) {
+                pickIndex++;
+                pickedMap = fullMatch.mapSelections[pickIndex];
+            }
+
+            if (pickedMap.winnerName === match.competitors[0].challongeName) {
+                result.mapWinners.push(WinningPlayer.PLAYER_ONE);
+            } else if (
+                pickedMap.winnerName === match.competitors[1].challongeName
+            ) {
+                result.mapWinners.push(WinningPlayer.PLAYER_TWO);
+            } else {
+                result.mapWinners.push(WinningPlayer.DRAW);
+            }
+
+            let spinTime = competition?.matchTimeoutTime ?? -1;
+            if (pickedMap.mapStartedAt != null) {
+                const startingTime = DateTime.fromISO(pickedMap.mapStartedAt);
+                if (pickedMap.winnerFinishedAt != null) {
+                    const endingTime = DateTime.fromISO(
+                        pickedMap.winnerFinishedAt,
+                    );
+                    spinTime = Math.abs(
+                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    );
+                } else if (pickedMap.resultVerifiedAt != null) {
+                    const endingTime = DateTime.fromISO(
+                        pickedMap.resultVerifiedAt,
+                    );
+                    spinTime = Math.abs(
+                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    );
+                }
+            }
+            result.spinTimes.push(spinTime);
+            result.spins.push(pickedMap.spin);
+        }
+
+        return result;
+    }
+
+    private static transformNewMatch(
+        match: NewHitmapsTournamentMatch,
+        competition: Competition | null,
+    ): AdditionalMatchInfo {
+        const result = {
+            spinTimes: [],
+            mapPickers: [],
+            mapWinners: [],
+            spins: [],
+        } as AdditionalMatchInfo;
+
+        for (const map of match.maps) {
+            if (map.selectionType === "Ban") {
+                result.spinTimes.push(-1);
+                result.mapWinners.push(null);
+                result.spins.push(null);
+                continue;
+            }
+
+            if (map.winnerDiscordId === match.competitors[0].discordId) {
+                result.mapWinners.push(WinningPlayer.PLAYER_ONE);
+            } else if (map.winnerDiscordId === match.competitors[1].discordId) {
+                result.mapWinners.push(WinningPlayer.PLAYER_TWO);
+            } else {
+                result.mapWinners.push(WinningPlayer.DRAW);
+            }
+
+            let spinTime = competition?.matchTimeoutTime ?? -1;
+            if (map.mapStartedAt != null) {
+                const startingTime = DateTime.fromISO(map.mapStartedAt);
+                if (map.winnerFinishedAt != null) {
+                    const endingTime = DateTime.fromISO(map.winnerFinishedAt);
+                    spinTime = Math.abs(
+                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    );
+                } else if (map.resultVerifiedAt != null) {
+                    const endingTime = DateTime.fromISO(map.resultVerifiedAt);
+                    spinTime = Math.abs(
+                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    );
+                }
+            }
+            result.spinTimes.push(spinTime);
+
+            const spin = {
+                mission: {
+                    slug: map.mapSlug,
+                    publicIdPrefix: -1,
+                    targets: getMapBySlug(map.mapSlug)!.targets,
+                },
+                targetConditions: [],
+                additionalObjectives: [],
+            } as Spin;
+            for (const target of JSON.parse(map.mapJson) as HitmapsMapJson[]) {
+                if (target.type !== "KILL") {
+                    logger.warn(`Non-kill target received: ${target.type}`);
+                }
+                delete target.type;
+                delete target.killMethod.chosen;
+                delete target.disguise.chosen;
+                spin.targetConditions.push(target);
+            }
+            result.spins.push(spin);
+        }
+
+        return result;
+    }
+
+    private static async handleMatch(
+        match: HitmapsTournamentMatch,
+        additionalInfo: AdditionalMatchInfo,
+        tournamentSlug: string,
+        competition: Competition | null,
+    ) {
+        const newMatch = new Match();
+        newMatch.hitmapsMatchId = match.rrstatsLookupId!;
+        newMatch.timestamp = DateTime.fromISO(
+            match.matchScheduledAt,
+        ).toMillis();
+        newMatch.playerOne = await this.createOrFindPlayer(
+            match.competitors[0].discordId,
+            match.competitors[0].challongeName.trim(),
+            match.competitors[0].countryCode,
+        );
+        newMatch.playerTwo = await this.createOrFindPlayer(
+            match.competitors[1].discordId,
+            match.competitors[1].challongeName.trim(),
+            match.competitors[1].countryCode,
+        );
+
+        let playerOneScore = 0;
+        let playerTwoScore = 0;
+        const picks: PlayedMap[] = [];
+        const bans: RRBannedMap[] = [];
+
+        for (const mapIndex in match.maps) {
+            const map = match.maps[mapIndex];
+
+            let picker = ChoosingPlayer.RANDOM;
+            if (map.competitorName === match.competitors[0].challongeName) {
+                picker = ChoosingPlayer.PLAYER_ONE;
+            } else if (
+                map.competitorName === match.competitors[1].challongeName
+            ) {
+                picker = ChoosingPlayer.PLAYER_TWO;
+            }
+
+            if (map.selectionType === "Ban") {
+                bans.push({
+                    map: getMapBySlug(map.mapSlug)?.map ?? HitmanMap.PARIS,
+                    picked: picker,
+                });
+            } else if (
+                map.selectionType === "Pick" ||
+                map.selectionType === "Random"
+            ) {
+                if (
+                    additionalInfo.mapWinners[mapIndex] ===
+                    WinningPlayer.PLAYER_ONE
+                ) {
+                    playerOneScore += 2;
+                } else if (
+                    additionalInfo.mapWinners[mapIndex] ===
+                    WinningPlayer.PLAYER_TWO
+                ) {
+                    playerTwoScore += 2;
+                } else {
+                    playerOneScore += 1;
+                    playerTwoScore += 1;
+                }
+
+                const dbMap = new PlayedMap();
+                dbMap.map = getMapBySlug(map.mapSlug)?.map ?? HitmanMap.PARIS;
+                dbMap.winner = additionalInfo.mapWinners[mapIndex]!;
+                dbMap.picked = picker;
+                dbMap.spin = additionalInfo.spins[mapIndex]!;
+                dbMap.timeTaken = additionalInfo.spinTimes[mapIndex];
+                dbMap.index = picks.length;
+                await dbMap.save();
+
+                picks.push(dbMap);
+            }
+        }
+
+        newMatch.playedMaps = picks;
+        newMatch.bannedMaps = bans;
+        newMatch.playerOneScore = playerOneScore;
+        newMatch.playerTwoScore = playerTwoScore;
+        newMatch.competition = tournamentSlug;
+        newMatch.round = "";
+        if (match.round != null) {
+            if (match.round < 0) {
+                newMatch.round = `LB Round ${-match.round}`;
+            } else {
+                newMatch.round = `Round ${match.round}`;
+            }
+        }
+
+        if (competition?.groupsConfig != null) {
+            const group = competition.groupsConfig.groups.find((group) => {
+                return (
+                    group.players.includes(newMatch.playerOne) &&
+                    group.players.includes(newMatch.playerTwo)
+                );
+            });
+            if (group != null) {
+                const matchCount = await Match.countBy({
+                    competition: competition.tag,
+                    playerOne: newMatch.playerOne,
+                    playerTwo: newMatch.playerTwo,
+                });
+                if (
+                    matchCount <=
+                    competition.groupsConfig.matchesBetweenPlayers - 1
+                ) {
+                    newMatch.round = group.groupName;
+                }
+            }
+        }
+
+        if (match.platform !== "All") {
+            newMatch.platform = match.platform;
+        }
+
+        await newMatch.save();
+    }
+
+    private static filterAndSort(
+        matches: HitmapsTournamentMatch[],
+        existingMatches: Match[],
+    ): {
+        matchId: GameModeMatchIdHitmapsTournamentMatch[];
+        newVersion: NewHitmapsTournamentMatch[];
+    } {
+        const result = {
+            matchId: [] as GameModeMatchIdHitmapsTournamentMatch[],
+            newVersion: [] as NewHitmapsTournamentMatch[],
+        };
+
+        const existingMatchIds = existingMatches.map((m) => m.hitmapsMatchId);
+
+        let remainingMatches = matches.filter(
+            (v) => !existingMatchIds.includes(v.rrstatsLookupId!),
+        );
+
+        for (const match of remainingMatches) {
+            if (
+                match.maps.every((map) => {
+                    return map.mapStartedAt != null && map.mapJson != null;
+                })
+            ) {
+                result.newVersion.push(match as NewHitmapsTournamentMatch);
+                continue;
+            }
+
+            if (
+                match.gameModeMatchId != null &&
+                match.gameModeMatchId !== "00000000-0000-0000-0000-000000000000"
+            ) {
+                result.matchId.push(
+                    match as GameModeMatchIdHitmapsTournamentMatch,
+                );
+            }
+        }
+
+        result.matchId.sort((a, b) => {
+            return DateTime.fromISO(a.matchScheduledAt)
+                .diff(DateTime.fromISO(b.matchScheduledAt))
+                .as("milliseconds");
+        });
+        result.newVersion.sort((a, b) => {
             return DateTime.fromISO(a.matchScheduledAt)
                 .diff(DateTime.fromISO(b.matchScheduledAt))
                 .as("milliseconds");
         });
 
-        for (const newMatch of matchesToQuery) {
-            const fullMatch = hitmapsMatches.find(
-                (m) => m.matchupId === newMatch.gameModeMatchId,
-            );
-            if (!fullMatch)
-                throw new Error(
-                    "Got Hitmaps tournament match without detailed information",
-                );
-
-            const match = new Match();
-            match.hitmapsMatchId = newMatch.gameModeMatchId;
-            match.timestamp = DateTime.fromISO(
-                newMatch.matchScheduledAt,
-            ).toMillis();
-
-            // Figuring out players
-            const playerOne = {
-                name: fullMatch.participants[0].name.trim(),
-                discordId: "",
-            };
-            const playerTwo = {
-                name: fullMatch.participants[1].name.trim(),
-                discordId: "",
-            };
-            playerOne.discordId = newMatch.competitors.find(
-                (c) => c.challongeName.trim() === playerOne.name,
-            )!.discordId;
-            playerTwo.discordId = newMatch.competitors.find(
-                (c) => c.challongeName.trim() === playerTwo.name,
-            )!.discordId;
-            match.playerOne = await this.createOrFindPlayer(
-                playerOne.discordId,
-                playerOne.name,
-            );
-            match.playerTwo = await this.createOrFindPlayer(
-                playerTwo.discordId,
-                playerTwo.name,
-            );
-
-            let p1Score = 0;
-            let p2Score = 0;
-            const picks: PlayedMap[] = [];
-            const bans: RRBannedMap[] = [];
-
-            for (const mapIdx in fullMatch.mapSelections) {
-                const map = fullMatch.mapSelections[mapIdx];
-                if (!map.complete) continue;
-
-                let winner = WinningPlayer.DRAW;
-                if (map.winnerName === fullMatch.participants[0].name) {
-                    winner = WinningPlayer.PLAYER_ONE;
-                    p1Score += 2;
-                } else if (map.winnerName === fullMatch.participants[1].name) {
-                    winner = WinningPlayer.PLAYER_TWO;
-                    p2Score += 2;
-                } else {
-                    p1Score += 1;
-                    p2Score += 1;
-                }
-
-                let pickedBy = ChoosingPlayer.RANDOM;
-                if (map.chosenByName === fullMatch.participants[0].name)
-                    pickedBy = ChoosingPlayer.PLAYER_ONE;
-                if (map.chosenByName === fullMatch.participants[1].name)
-                    pickedBy = ChoosingPlayer.PLAYER_TWO;
-
-                let spinTime = competition?.matchTimeoutTime ?? -1;
-                if (map.mapStartedAt != null) {
-                    const startingTime = DateTime.fromISO(map.mapStartedAt);
-                    if (map.winnerFinishedAt != null) {
-                        const endingTime = DateTime.fromISO(
-                            map.winnerFinishedAt,
-                        );
-                        spinTime = Math.abs(
-                            Math.floor(
-                                startingTime.diff(endingTime).as("seconds"),
-                            ),
-                        );
-                    } else if (map.resultVerifiedAt != null) {
-                        const endingTime = DateTime.fromISO(
-                            map.resultVerifiedAt,
-                        );
-                        spinTime = Math.abs(
-                            Math.floor(
-                                startingTime.diff(endingTime).as("seconds"),
-                            ),
-                        );
-                    }
-                }
-
-                const dbMap = new PlayedMap();
-                dbMap.map =
-                    getMapBySlug(map.hitmapsSlug)?.map ?? HitmanMap.PARIS;
-                dbMap.winner = winner;
-                dbMap.picked = pickedBy;
-                dbMap.spin = map.spin;
-                dbMap.timeTaken = spinTime;
-                dbMap.index = parseInt(mapIdx);
-                await dbMap.save();
-
-                picks.push(dbMap);
-            }
-
-            for (const map of newMatch.maps) {
-                if (map.selectionType !== "Ban") continue;
-
-                let picked = ChoosingPlayer.RANDOM;
-                if (map.competitorId === newMatch.competitors[0].id)
-                    picked = ChoosingPlayer.PLAYER_ONE;
-                if (map.competitorId === newMatch.competitors[1].id)
-                    picked = ChoosingPlayer.PLAYER_TWO;
-
-                bans.push({
-                    map: getMapBySlug(map.mapSlug)?.map ?? HitmanMap.PARIS,
-                    picked,
-                });
-            }
-
-            match.playedMaps = picks;
-            match.bannedMaps = bans;
-            match.playerOneScore = p1Score;
-            match.playerTwoScore = p2Score;
-
-            match.competition = tournamentSlug;
-            match.round = "";
-            if (newMatch.round !== null && newMatch.round !== undefined) {
-                if (newMatch.round < 0) {
-                    match.round = `LB Round ${-newMatch.round}`;
-                } else {
-                    match.round = `Round ${newMatch.round}`;
-                }
-            }
-
-            if (competition?.groupsConfig != null) {
-                let playersGroup: IGroup | null = null;
-                for (const group of competition.groupsConfig.groups) {
-                    if (
-                        group.players.includes(match.playerOne) &&
-                        group.players.includes(match.playerTwo)
-                    ) {
-                        playersGroup = group;
-                    }
-                }
-                if (playersGroup != null) {
-                    const matchCount = await Match.countBy({
-                        competition: competition.tag,
-                        playerOne: match.playerOne,
-                        playerTwo: match.playerTwo,
-                    });
-                    if (
-                        matchCount <=
-                        competition.groupsConfig.matchesBetweenPlayers - 1
-                    ) {
-                        match.round = playersGroup.groupName;
-                    }
-                }
-            }
-
-            if (newMatch.platform !== "All") {
-                match.platform = newMatch.platform;
-            }
-
-            await match.save();
-        }
+        return result;
     }
 }

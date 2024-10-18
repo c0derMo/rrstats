@@ -258,7 +258,7 @@ async function requery() {
     asyncIsQuerying.value = true;
     asyncItems.value = await props.queryFunction(
         Math.max(0, startIndex.value - 1),
-        endIndex.value - startIndex.value,
+        selectedRowsPerPage.value,
         sortingBy.value?.key ?? null,
         sortingOrder.value,
     );

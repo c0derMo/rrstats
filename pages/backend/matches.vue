@@ -166,5 +166,7 @@ async function updateList() {
     matches.value = matchQuery;
 }
 
-await updateList();
+onBeforeMount(async () => {
+    await updateList();
+});
 </script>

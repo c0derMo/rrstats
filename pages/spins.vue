@@ -45,6 +45,12 @@
                                                 (filterMethods[target] = val)
                                         "
                                         @defocus="requeryAndForceGet"
+                                        @confirm="
+                                            (val) => {
+                                                filterMethods[target] = val;
+                                                requeryAndForceGet();
+                                            }
+                                        "
                                     />
                                 </div>
                                 <div class="w-1/3">
@@ -56,6 +62,12 @@
                                                 (filterDisguises[target] = val)
                                         "
                                         @defocus="requeryAndForceGet"
+                                        @confirm="
+                                            (val) => {
+                                                filterDisguises[target] = val;
+                                                requeryAndForceGet();
+                                            }
+                                        "
                                     />
                                 </div>
                             </div>
