@@ -237,6 +237,7 @@ onMounted(async () => {
         });
 
         matches.value = matchRequest;
+        await players.queryFromMatches(matches.value ?? []);
         stillLoading.value = false;
     }
 });

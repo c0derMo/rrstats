@@ -179,7 +179,7 @@ async function tweet() {
     try {
         const tweetQuery = await $fetch("/api/procedures/tweet", {
             method: "POST",
-            body: tweets,
+            body: tweets.value,
         });
         if (tweetQuery === true) {
             success.value = true;
@@ -223,12 +223,10 @@ async function fetchPreviousRecord(
         const nextRecord = records.pop() as IMapRecord | IGenericRecord;
         let players: string[];
         if (Object.hasOwn(nextRecord, "player")) {
-            players = await playerLookup.queryAndGet([
-                (nextRecord as IMapRecord).player,
-            ]);
+            players = [playerLookup.get((nextRecord as IMapRecord).player)];
         } else {
-            players = await playerLookup.queryAndGet(
-                (nextRecord as IGenericRecord).players,
+            players = (nextRecord as IGenericRecord).players.map((p) =>
+                playerLookup.get(p),
             );
         }
         previousRecords.push({

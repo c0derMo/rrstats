@@ -45,7 +45,7 @@ export default class PlayerStatisticController {
         return stats;
     }
 
-    @Log("PlayerStatisticConteoller.calculate")
+    @Log("PlayerStatisticController.calculate")
     private static async calculate(uuid: string) {
         const matches = await Match.find({
             where: [{ playerOne: uuid }, { playerTwo: uuid }],

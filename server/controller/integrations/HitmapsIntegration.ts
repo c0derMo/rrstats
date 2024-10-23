@@ -360,15 +360,15 @@ export default class HitmapsIntegration {
                     const endingTime = DateTime.fromISO(
                         pickedMap.winnerFinishedAt,
                     );
-                    spinTime = Math.abs(
-                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    spinTime = Math.floor(
+                        Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
                 } else if (pickedMap.resultVerifiedAt != null) {
                     const endingTime = DateTime.fromISO(
                         pickedMap.resultVerifiedAt,
                     );
-                    spinTime = Math.abs(
-                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    spinTime = Math.floor(
+                        Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
                 }
             }
@@ -411,13 +411,13 @@ export default class HitmapsIntegration {
                 const startingTime = DateTime.fromISO(map.mapStartedAt);
                 if (map.winnerFinishedAt != null) {
                     const endingTime = DateTime.fromISO(map.winnerFinishedAt);
-                    spinTime = Math.abs(
-                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    spinTime = Math.floor(
+                        Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
                 } else if (map.resultVerifiedAt != null) {
                     const endingTime = DateTime.fromISO(map.resultVerifiedAt);
-                    spinTime = Math.abs(
-                        Math.floor(startingTime.diff(endingTime).as("seconds")),
+                    spinTime = Math.floor(
+                        Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
                 }
             }
@@ -580,7 +580,7 @@ export default class HitmapsIntegration {
 
         const existingMatchIds = existingMatches.map((m) => m.hitmapsMatchId);
 
-        let remainingMatches = matches.filter(
+        const remainingMatches = matches.filter(
             (v) => !existingMatchIds.includes(v.rrstatsLookupId!),
         );
 

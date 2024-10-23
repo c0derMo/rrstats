@@ -20,7 +20,6 @@ import {
     type InsertEvent,
     type UpdateEvent,
 } from "typeorm";
-import { DateTime } from "luxon";
 import { PlayerWinrate } from "./leaderboardStatistics/player/Winrate";
 import { PlayerMapWinrate } from "./leaderboardStatistics/player/MapWinrate";
 import { CountryPlayers } from "./leaderboardStatistics/country/Players";
@@ -55,6 +54,7 @@ import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
 import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
 import { Log } from "~/utils/FunctionTimer";
 import consola from "consola";
+import { PlayedMap } from "../model/PlayedMap";
 
 export interface StatisticData<T extends string> {
     name: string;
@@ -269,8 +269,6 @@ export default class LeaderboardController {
 
 @EventSubscriber()
 export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
-    private lastDatabaseWrite: DateTime;
-    private timerStart: DateTime;
     private invalidationTimer: NodeJS.Timeout | null = null;
 
     afterInsert(event: InsertEvent<unknown>): void {
@@ -287,28 +285,23 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
                 entity instanceof Player ||
                 entity instanceof Match ||
                 entity instanceof CompetitionPlacement ||
-                entity instanceof Competition
+                entity instanceof Competition ||
+                entity instanceof PlayedMap
             )
         ) {
             return;
         }
 
-        this.lastDatabaseWrite = DateTime.now();
-        if (this.invalidationTimer === null) {
-            this.timerStart = DateTime.now();
-            this.invalidationTimer = setInterval(() => {
-                const startDiff = Math.abs(
-                    this.timerStart.diffNow().toMillis(),
-                );
-                const lastWriteDiff = Math.abs(
-                    this.lastDatabaseWrite.diffNow().toMillis(),
-                );
-                if (startDiff > 1000 || lastWriteDiff > 100) {
-                    void LeaderboardController.recalculate();
-                    clearInterval(this.invalidationTimer as NodeJS.Timeout);
-                    this.invalidationTimer = null;
-                }
-            }, 50);
+        if (this.invalidationTimer != null) {
+            clearTimeout(this.invalidationTimer);
         }
+
+        this.invalidationTimer = setTimeout(this.timerExpiry, 10000);
+    }
+
+    private timerExpiry() {
+        void LeaderboardController.recalculate();
+        clearTimeout(this.invalidationTimer!);
+        this.invalidationTimer = null;
     }
 }
