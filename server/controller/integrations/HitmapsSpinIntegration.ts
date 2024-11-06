@@ -74,51 +74,21 @@ export default class HitmapsSpinIntegration {
         let disguises: string[] = [];
         const killConditions: Record<string, string[]> = {};
 
-        try {
-            const rawDisguises = await $fetch<{ disguises: HitmapsDisguise[] }>(
-                `https://api.hitmaps.com/api/games/${season}/locations/${locationName}/missions/${slug}/disguises`,
-            );
-            disguises = [
-                ...rawDisguises.disguises
-                    .filter((disguise) => !disguise.suit)
-                    .map((disguise) => disguise.name),
-                "Suit",
-            ];
-        } catch (e) {
-            logger.error(
-                `The following error occured while fetching disguises for ${map.name}:`,
-            );
-            logger.error(e);
-        }
+        const disguiseQuery = HitmapsSpinIntegration.queryDisguises(season, locationName, slug, map)
+        disguiseQuery.then((d) => {
+            disguises = d;
+        })
+        const promises: Promise<unknown>[] = [disguiseQuery];
 
         for (const target of map.targets) {
-            try {
-                const rawKillMethods = await $fetch<HitmapsKillCondition[]>(
-                    "https://rouletteapi.hitmaps.com/api/spins/kill-conditions",
-                    {
-                        query: {
-                            missionGame: season,
-                            missionLocation: locationName,
-                            missionSlug: slug,
-                            specificDisguises: true,
-                            specificMelee: true,
-                            specificFirearms: true,
-                            specificAccidents: true,
-                            impossibleOrDifficultKills: true,
-                            targetName: target.name,
-                        },
-                    },
-                );
-
-                killConditions[target.name] =
-                    HitmapsSpinIntegration.buildKillMethods(rawKillMethods);
-            } catch (e) {
-                logger.error(
-                    `The following error occured while fetching kill methods for ${target.name}:`,
-                );
-                logger.error(e);
-            }
+            const req = HitmapsSpinIntegration.queryKillMethods(season, locationName, slug, map, target.name);
+            req.then((km) => {
+                killConditions[target.name] = km;
+            });
+            promises.push(req);
         }
+
+        await Promise.all(promises);
 
         HitmapsSpinIntegration.cache.set(map.slug, {
             disguises,
@@ -143,5 +113,54 @@ export default class HitmapsSpinIntegration {
                 }
             })
             .reduce((cur, prev) => [...cur, ...prev], []);
+    }
+
+    private static async queryDisguises(season: string, locationName: string, slug: string, map: HitmanMapInfo): Promise<string[]> {
+        try {
+            const rawDisguises = await $fetch<{ disguises: HitmapsDisguise[] }>(
+                `https://api.hitmaps.com/api/games/${season}/locations/${locationName}/missions/${slug}/disguises`,
+            );
+            return [
+                ...rawDisguises.disguises
+                    .filter((disguise) => !disguise.suit)
+                    .map((disguise) => disguise.name),
+                "Suit",
+            ];
+        } catch (e) {
+            logger.error(
+                `The following error occured while fetching disguises for ${map.name}:`,
+            );
+            logger.error(e);
+        }
+        return [];
+    }
+
+    private static async queryKillMethods(season: string, locationName: string, slug: string, map: HitmanMapInfo, targetName: string): Promise<string[]> {
+        try {
+            const rawKillMethods = await $fetch<HitmapsKillCondition[]>(
+                "https://rouletteapi.hitmaps.com/api/spins/kill-conditions",
+                {
+                    query: {
+                        missionGame: season,
+                        missionLocation: locationName,
+                        missionSlug: slug,
+                        specificDisguises: true,
+                        specificMelee: true,
+                        specificFirearms: true,
+                        specificAccidents: true,
+                        impossibleOrDifficultKills: true,
+                        targetName: targetName,
+                    },
+                },
+            );
+
+            return HitmapsSpinIntegration.buildKillMethods(rawKillMethods);
+        } catch (e) {
+            logger.error(
+                `The following error occured while fetching kill methods for ${targetName}:`,
+            );
+            logger.error(e);
+        }
+        return [];
     }
 }
