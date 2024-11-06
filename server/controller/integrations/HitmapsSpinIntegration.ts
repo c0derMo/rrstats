@@ -74,14 +74,25 @@ export default class HitmapsSpinIntegration {
         let disguises: string[] = [];
         const killConditions: Record<string, string[]> = {};
 
-        const disguiseQuery = HitmapsSpinIntegration.queryDisguises(season, locationName, slug, map)
+        const disguiseQuery = HitmapsSpinIntegration.queryDisguises(
+            season,
+            locationName,
+            slug,
+            map,
+        );
         disguiseQuery.then((d) => {
             disguises = d;
-        })
+        });
         const promises: Promise<unknown>[] = [disguiseQuery];
 
         for (const target of map.targets) {
-            const req = HitmapsSpinIntegration.queryKillMethods(season, locationName, slug, map, target.name);
+            const req = HitmapsSpinIntegration.queryKillMethods(
+                season,
+                locationName,
+                slug,
+                map,
+                target.name,
+            );
             req.then((km) => {
                 killConditions[target.name] = km;
             });
@@ -115,7 +126,12 @@ export default class HitmapsSpinIntegration {
             .reduce((cur, prev) => [...cur, ...prev], []);
     }
 
-    private static async queryDisguises(season: string, locationName: string, slug: string, map: HitmanMapInfo): Promise<string[]> {
+    private static async queryDisguises(
+        season: string,
+        locationName: string,
+        slug: string,
+        map: HitmanMapInfo,
+    ): Promise<string[]> {
         try {
             const rawDisguises = await $fetch<{ disguises: HitmapsDisguise[] }>(
                 `https://api.hitmaps.com/api/games/${season}/locations/${locationName}/missions/${slug}/disguises`,
@@ -135,7 +151,13 @@ export default class HitmapsSpinIntegration {
         return [];
     }
 
-    private static async queryKillMethods(season: string, locationName: string, slug: string, map: HitmanMapInfo, targetName: string): Promise<string[]> {
+    private static async queryKillMethods(
+        season: string,
+        locationName: string,
+        slug: string,
+        map: HitmanMapInfo,
+        targetName: string,
+    ): Promise<string[]> {
         try {
             const rawKillMethods = await $fetch<HitmapsKillCondition[]>(
                 "https://rouletteapi.hitmaps.com/api/spins/kill-conditions",

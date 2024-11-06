@@ -49,7 +49,8 @@
                                             :suggestions="killMethods[target]"
                                             @input="
                                                 (val) =>
-                                                    (filterMethods[target] = val)
+                                                    (filterMethods[target] =
+                                                        val)
                                             "
                                             @defocus="requeryAndForceGet"
                                             @confirm="
@@ -66,12 +67,14 @@
                                             :suggestions="disguises"
                                             @input="
                                                 (val) =>
-                                                    (filterDisguises[target] = val)
+                                                    (filterDisguises[target] =
+                                                        val)
                                             "
                                             @defocus="requeryAndForceGet"
                                             @confirm="
                                                 (val) => {
-                                                    filterDisguises[target] = val;
+                                                    filterDisguises[target] =
+                                                        val;
                                                     requeryAndForceGet();
                                                 }
                                             "
@@ -229,21 +232,18 @@ async function getSpins(
         filterObject = undefined;
     }
 
-    const request = await $fetch
-        .raw("/api/spins", {
-            query: {
-                map: selectedMap.value >= 0 ? selectedMap.value : undefined,
-                skip: skip,
-                take: take,
-                orderBy: newOrderBy,
-                sortingOrder: newSortingOrder,
-                filter: filterObject,
-            },
-        });
-    
-    amountSpins.value = parseInt(
-        request.headers.get("X-Count") ?? "0"
-    );
+    const request = await $fetch.raw("/api/spins", {
+        query: {
+            map: selectedMap.value >= 0 ? selectedMap.value : undefined,
+            skip: skip,
+            take: take,
+            orderBy: newOrderBy,
+            sortingOrder: newSortingOrder,
+            filter: filterObject,
+        },
+    });
+
+    amountSpins.value = parseInt(request.headers.get("X-Count") ?? "0");
     return request._data ?? [];
 }
 
