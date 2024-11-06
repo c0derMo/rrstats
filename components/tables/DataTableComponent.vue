@@ -257,7 +257,7 @@ async function requery() {
     }
     asyncIsQuerying.value = true;
     asyncItems.value = await props.queryFunction(
-        Math.max(0, startIndex.value - 1),
+        Math.max(0, startIndex.value),
         selectedRowsPerPage.value,
         sortingBy.value?.key ?? null,
         sortingOrder.value,
@@ -268,18 +268,18 @@ async function requery() {
 async function nextPage() {
     if (selectedPage.value < amountOfItems.value / selectedRowsPerPage.value) {
         selectedPage.value++;
-    }
-    if (isAsync.value) {
-        await requery();
+        if (isAsync.value) {
+            await requery();
+        }
     }
 }
 
 async function previousPage() {
     if (selectedPage.value > 1) {
         selectedPage.value--;
-    }
-    if (isAsync.value) {
-        await requery();
+        if (isAsync.value) {
+            await requery();
+        }
     }
 }
 

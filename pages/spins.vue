@@ -28,49 +28,57 @@
                 <template #Spins>
                     <template v-if="selectedMap >= 0">
                         <div class="flex flex-col gap-2">
-                            <div
-                                v-for="(target, idx) in targets"
-                                :key="idx"
-                                class="flex flex-row gap-5 w-full"
-                            >
-                                <div class="font-bold w-1/6 text-right">
-                                    {{ target }}
+                            <template v-if="queryingFilters">
+                                <FontAwesomeIcon
+                                    :icon="['fa', 'spinner']"
+                                    class="animate-spin text-5xl m-auto w-full h-full"
+                                />
+                            </template>
+                            <template v-else>
+                                <div
+                                    v-for="(target, idx) in targets"
+                                    :key="idx"
+                                    class="flex flex-row gap-5 w-full"
+                                >
+                                    <div class="font-bold w-1/6 text-right">
+                                        {{ target }}
+                                    </div>
+                                    <div class="w-1/3">
+                                        <AutocompleteComponent
+                                            placeholder="Kill Method"
+                                            :suggestions="killMethods[target]"
+                                            @input="
+                                                (val) =>
+                                                    (filterMethods[target] = val)
+                                            "
+                                            @defocus="requeryAndForceGet"
+                                            @confirm="
+                                                (val) => {
+                                                    filterMethods[target] = val;
+                                                    requeryAndForceGet();
+                                                }
+                                            "
+                                        />
+                                    </div>
+                                    <div class="w-1/3">
+                                        <AutocompleteComponent
+                                            placeholder="Disguise"
+                                            :suggestions="disguises"
+                                            @input="
+                                                (val) =>
+                                                    (filterDisguises[target] = val)
+                                            "
+                                            @defocus="requeryAndForceGet"
+                                            @confirm="
+                                                (val) => {
+                                                    filterDisguises[target] = val;
+                                                    requeryAndForceGet();
+                                                }
+                                            "
+                                        />
+                                    </div>
                                 </div>
-                                <div class="w-1/3">
-                                    <AutocompleteComponent
-                                        placeholder="Kill Method"
-                                        :suggestions="killMethods[target]"
-                                        @input="
-                                            (val) =>
-                                                (filterMethods[target] = val)
-                                        "
-                                        @defocus="requeryAndForceGet"
-                                        @confirm="
-                                            (val) => {
-                                                filterMethods[target] = val;
-                                                requeryAndForceGet();
-                                            }
-                                        "
-                                    />
-                                </div>
-                                <div class="w-1/3">
-                                    <AutocompleteComponent
-                                        placeholder="Disguise"
-                                        :suggestions="disguises"
-                                        @input="
-                                            (val) =>
-                                                (filterDisguises[target] = val)
-                                        "
-                                        @defocus="requeryAndForceGet"
-                                        @confirm="
-                                            (val) => {
-                                                filterDisguises[target] = val;
-                                                requeryAndForceGet();
-                                            }
-                                        "
-                                    />
-                                </div>
-                            </div>
+                            </template>
                         </div>
                     </template>
 
@@ -179,15 +187,10 @@ const tableHeaders = [
 const selectedMap = ref(-1);
 const detailedMatch: Ref<IMatch | null> = ref(null);
 const loadingUuid = ref("");
-const spins = ref<IPlayedMap[]>([]);
-const spinStartingIndex = ref(0);
 const itemsPerPage = ref(10);
-const orderingBy = ref<string | null>(null);
-const sortingOrder = ref<"ASC" | "DESC" | null>(null);
-const queryQueue = ref<number[]>([]);
-const currentlyQuerying = ref<Promise<void> | null>(null);
 const triggerReGet = ref(0);
 const amountSpins = ref(0);
+const queryingFilters = ref(false);
 const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
@@ -198,108 +201,50 @@ const killMethods: Ref<Record<string, string[]>> = ref({});
 const filterDisguises: Ref<Record<string, string>> = ref({});
 const filterMethods: Ref<Record<string, string>> = ref({});
 
-async function querySpins(startIndex?: number) {
-    if (startIndex == null) {
-        startIndex = spinStartingIndex.value + itemsPerPage.value;
-    }
-    if (currentlyQuerying.value != null) {
-        queryQueue.value.push(startIndex);
-        await currentlyQuerying.value;
-        return;
-    }
-    currentlyQuerying.value = new Promise<void>((resolve) => {
-        let filterObject = {} as
-            | Record<string, { disguise: string | null; method: string | null }>
-            | undefined;
-
-        for (const target of targets.value) {
-            if (
-                (filterDisguises.value[target] != null &&
-                    filterDisguises.value[target] !== "") ||
-                (filterMethods.value[target] != null &&
-                    filterMethods.value[target] !== "")
-            ) {
-                filterObject![target] = {
-                    disguise: filterDisguises.value[target],
-                    method: filterMethods.value[target],
-                };
-            }
-        }
-
-        if (Object.keys(filterObject!).length === 0) {
-            filterObject = undefined;
-        }
-
-        $fetch
-            .raw("/api/spins", {
-                query: {
-                    map: selectedMap.value >= 0 ? selectedMap.value : undefined,
-                    skip: Math.max(0, startIndex! - itemsPerPage.value),
-                    take: itemsPerPage.value * 3,
-                    orderBy: orderingBy.value,
-                    sortingOrder: sortingOrder.value,
-                    filter: filterObject,
-                },
-            })
-            .then((spinRequest) => {
-                amountSpins.value = parseInt(
-                    spinRequest.headers.get("X-Count") ?? "0",
-                );
-                spins.value = spinRequest._data as IPlayedMap[];
-                spinStartingIndex.value = startIndex!;
-                resolve();
-            });
-    });
-
-    await currentlyQuerying.value;
-    currentlyQuerying.value = null;
-
-    if (queryQueue.value.length != 0) {
-        const nextQuery = queryQueue.value.splice(0, 1)[0];
-        await querySpins(nextQuery);
-    }
-}
-
 async function getSpins(
     skip: number,
     take: number,
     newOrderBy: string | null,
     newSortingOrder: "ASC" | "DESC" | null,
 ) {
-    let mustRequery = false;
-    if (
-        newOrderBy !== orderingBy.value ||
-        newSortingOrder !== sortingOrder.value
-    ) {
-        orderingBy.value = newOrderBy;
-        sortingOrder.value = newSortingOrder;
-        mustRequery = true;
+    let filterObject = {} as
+        | Record<string, { disguise: string | null; method: string | null }>
+        | undefined;
+
+    for (const target of targets.value) {
+        if (
+            (filterDisguises.value[target] != null &&
+                filterDisguises.value[target] !== "") ||
+            (filterMethods.value[target] != null &&
+                filterMethods.value[target] !== "")
+        ) {
+            filterObject![target] = {
+                disguise: filterDisguises.value[target],
+                method: filterMethods.value[target],
+            };
+        }
     }
 
-    if (take !== itemsPerPage.value) {
-        itemsPerPage.value = take;
+    if (Object.keys(filterObject!).length === 0) {
+        filterObject = undefined;
     }
 
-    if (
-        skip < spinStartingIndex.value ||
-        skip + take > spinStartingIndex.value + spins.value.length
-    ) {
-        mustRequery = true;
-    }
-
-    if (mustRequery) {
-        await querySpins(skip);
-    }
-
-    const result = spins.value.slice(
-        skip - spinStartingIndex.value,
-        skip - spinStartingIndex.value + take,
+    const request = await $fetch
+        .raw("/api/spins", {
+            query: {
+                map: selectedMap.value >= 0 ? selectedMap.value : undefined,
+                skip: skip,
+                take: take,
+                orderBy: newOrderBy,
+                sortingOrder: newSortingOrder,
+                filter: filterObject,
+            },
+        });
+    
+    amountSpins.value = parseInt(
+        request.headers.get("X-Count") ?? "0"
     );
-
-    if (!mustRequery) {
-        void querySpins(skip);
-    }
-    return result;
+    return request._data ?? [];
 }
 
 async function updateSpins() {
@@ -310,6 +255,7 @@ async function updateSpins() {
         filterMethods.value[target] = "";
     }
 
+    queryingFilters.value = true;
     try {
         if (selectedMap.value >= 0) {
             const conditionsRequest = await $fetch("/api/spins/filters", {
@@ -323,14 +269,15 @@ async function updateSpins() {
         }
     } catch (e) {
         console.warn("Updating spins failed");
+        queryingFilters.value = false;
         return;
     }
 
+    queryingFilters.value = false;
     await requeryAndForceGet();
 }
 
 async function requeryAndForceGet() {
-    await querySpins();
     triggerReGet.value += 1;
 }
 
@@ -379,5 +326,4 @@ async function showMatch(uuid: string) {
 }
 
 watch(selectedMap, updateSpins);
-await querySpins();
 </script>
