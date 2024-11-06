@@ -2,8 +2,11 @@ import "reflect-metadata";
 import LeaderboardController from "./controller/LeaderboardController";
 import DatabaseConnector from "./controller/DatabaseConnnector";
 import { setFunctionTimersEnabled } from "~/utils/FunctionTimer";
+import { VERSION } from "./version";
 
 export default defineNitroPlugin(async (nitroApp) => {
+    console.log(`Starting rrstats with commit hash ${VERSION}`);
+
     const config = useRuntimeConfig();
     setFunctionTimersEnabled(config.enableFunctionTimings);
 
