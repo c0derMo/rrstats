@@ -30,7 +30,7 @@ export type HitmanMapInfo = {
     abbreviation: string;
     color: string;
     slug: string;
-    map: HitmanMap;
+    map: HitmanMap | OptionalMap.NO_MAP;
     name: string;
     backgroundImage: string;
     season: number;
@@ -488,6 +488,16 @@ const maps: HitmanMapInfo[] = [
             },
         ],
     },
+    {
+        map: OptionalMap.NO_MAP,
+        abbreviation: "---",
+        color: "#525252",
+        slug: "",
+        name: "Unknown",
+        backgroundImage: "",
+        season: -1,
+        targets: [],
+    },
 ];
 
 function findByAttribute(
@@ -510,9 +520,14 @@ export const getMapByName = (name: string): HitmanMapInfo | undefined => {
 };
 
 export const getAllMaps = (): HitmanMap[] => {
-    return maps.map((m) => m.map);
+    return maps
+        .filter((m) => m.map !== OptionalMap.NO_MAP)
+        .map((m) => m.map) as HitmanMap[];
 };
 
 export const getMapsBySeason = (season: number): HitmanMap[] => {
-    return maps.filter((m) => m.season === season).map((m) => m.map);
+    return maps
+        .filter((m) => m.map !== OptionalMap.NO_MAP)
+        .filter((m) => m.season === season)
+        .map((m) => m.map) as HitmanMap[];
 };

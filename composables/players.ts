@@ -32,6 +32,10 @@ export const usePlayers = () => {
             await queryPlayers(otherQuery);
         }
 
+        if (toQuery.length <= 0) {
+            return;
+        }
+
         const lookupRequest = await $fetch("/api/player/lookup", {
             query: { players: toQuery },
         });

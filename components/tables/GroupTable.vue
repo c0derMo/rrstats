@@ -65,7 +65,7 @@ const props = withDefaults(
 );
 
 const playerLookup = usePlayers();
-playerLookup.queryPlayers(props.players.map((p) => p.name));
+await playerLookup.queryPlayers(props.players.map((p) => p.name));
 
 const sortedPlayers = computed(() => {
     const preSort = [...props.players].sort((a, b) => b.points - a.points);

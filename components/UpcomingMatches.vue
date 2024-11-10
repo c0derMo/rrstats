@@ -28,10 +28,10 @@
             <template #bans="{ row }">
                 <template v-if="row.bans.length != 0">
                     <TooltipComponent v-for="(ban, idx) in row.bans" :key="idx">
-                        <MapTag :map="getMapBySlug(ban.map)!" />
+                        <MapTag :map="ban.map!" />
 
                         <template #tooltip>
-                            Map: {{ getMapBySlug(ban.map)!.name }}<br />
+                            Map: {{ ban.map!.name }}<br />
                             Banned by:
                             {{
                                 getMapPicker(
@@ -47,10 +47,10 @@
 
             <template #maps="{ row }">
                 <TooltipComponent v-for="(map, idx) in row.maps" :key="idx">
-                    <MapTag :map="getMapBySlug(map.map)!" />
+                    <MapTag :map="map.map!" />
 
                     <template #tooltip>
-                        Map: {{ getMapBySlug(map.map)!.name }}<br />
+                        Map: {{ map.map!.name }}<br />
                         Picked by:
                         {{
                             getMapPicker(
@@ -157,7 +157,7 @@ const displayedMatches = computed(() => {
                 .filter((map) => map.selectionType === "Ban")
                 .map((ban) => {
                     return {
-                        map: ban.mapSlug,
+                        map: getMapBySlug(ban.mapSlug ?? ""),
                         picked: parseMapPicker(
                             ban.competitorId,
                             playerOneId,
@@ -173,7 +173,7 @@ const displayedMatches = computed(() => {
                 )
                 .map((pick) => {
                     return {
-                        map: pick.mapSlug,
+                        map: getMapBySlug(pick.mapSlug ?? ""),
                         picked: parseMapPicker(
                             pick.competitorId,
                             playerOneId,
