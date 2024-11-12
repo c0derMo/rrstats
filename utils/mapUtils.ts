@@ -280,6 +280,28 @@ const maps: HitmanMapInfo[] = [
         ],
     },
     {
+        map: HitmanMap.AMBROSE_ISLAND,
+        abbreviation: "AMB",
+        color: "#70cab2",
+        slug: "shadows-in-the-water",
+        name: "Ambrose Island",
+        backgroundImage:
+            "https://media.hitmaps.com/img/hitman3/locations/location_rocky/rocky_background.jpg",
+        season: 2,
+        targets: [
+            {
+                name: "Noel Crest",
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/rocky_noel_crest.jpg",
+            },
+            {
+                name: 'Sinhi "Akka" Venthan',
+                tileUrl:
+                    "https://media.hitmaps.com/img/hitman3/actors/rocky_sinhi_akka_venthan.jpg",
+            },
+        ],
+    },
+    {
         map: HitmanMap.ISLE_OF_SGAIL,
         abbreviation: "SGA",
         color: "#9e9b9b",
@@ -463,28 +485,6 @@ const maps: HitmanMapInfo[] = [
                 name: "Tamara Vidal",
                 tileUrl:
                     "https://media.hitmaps.com/img/hitman3/actors/elegant_vidal.jpg",
-            },
-        ],
-    },
-    {
-        map: HitmanMap.AMBROSE_ISLAND,
-        abbreviation: "AMB",
-        color: "#70cab2",
-        slug: "shadows-in-the-water",
-        name: "Ambrose Island",
-        backgroundImage:
-            "https://media.hitmaps.com/img/hitman3/locations/location_rocky/rocky_background.jpg",
-        season: 3,
-        targets: [
-            {
-                name: "Noel Crest",
-                tileUrl:
-                    "https://media.hitmaps.com/img/hitman3/actors/rocky_noel_crest.jpg",
-            },
-            {
-                name: 'Sinhi "Akka" Venthan',
-                tileUrl:
-                    "https://media.hitmaps.com/img/hitman3/actors/rocky_sinhi_akka_venthan.jpg",
             },
         ],
     },
