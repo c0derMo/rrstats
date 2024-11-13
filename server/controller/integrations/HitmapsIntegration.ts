@@ -168,7 +168,9 @@ export default class HitmapsIntegration {
             );
             await this.parseHitmapsTournament(request.matches, competitionSlug);
             this.cache.set(hitmapsSlug, Date.now());
-        } catch {
+        } catch(e) {
+            logger.log("The following error occured while parsing hitmaps tournaments:");
+            logger.log(e);
             return;
         }
     }
@@ -391,7 +393,7 @@ export default class HitmapsIntegration {
         } as AdditionalMatchInfo;
 
         for (const map of match.maps) {
-            if (map.selectionType === "Ban") {
+            if (map.selectionType === "Ban" || map.state !== "Complete") {
                 result.spinTimes.push(-1);
                 result.mapWinners.push(null);
                 result.spins.push(null);
@@ -488,13 +490,17 @@ export default class HitmapsIntegration {
 
             if (map.selectionType === "Ban") {
                 bans.push({
-                    map: getMapBySlug(map.mapSlug)?.map ?? HitmanMap.PARIS,
+                    map: (getMapBySlug(map.mapSlug)?.map as HitmanMap) ?? HitmanMap.PARIS,
                     picked: picker,
                 });
             } else if (
                 map.selectionType === "Pick" ||
                 map.selectionType === "Random"
             ) {
+                if (map.state !== "Complete") {
+                    continue;
+                }
+
                 if (
                     additionalInfo.mapWinners[mapIndex] ===
                     WinningPlayer.PLAYER_ONE
@@ -511,7 +517,7 @@ export default class HitmapsIntegration {
                 }
 
                 const dbMap = new PlayedMap();
-                dbMap.map = getMapBySlug(map.mapSlug)?.map ?? HitmanMap.PARIS;
+                dbMap.map = (getMapBySlug(map.mapSlug)?.map as HitmanMap) ?? HitmanMap.PARIS;
                 dbMap.winner = additionalInfo.mapWinners[mapIndex]!;
                 dbMap.picked = picker;
                 dbMap.spin = additionalInfo.spins[mapIndex]!;
@@ -586,7 +592,9 @@ export default class HitmapsIntegration {
 
         for (const match of remainingMatches) {
             if (
-                match.maps.every((map) => {
+                match.maps.filter((map) => {
+                    return map.selectionType !== "Ban" && map.state === "Complete"
+                }).every((map) => {
                     return map.mapStartedAt != null && map.mapJson != null;
                 })
             ) {
