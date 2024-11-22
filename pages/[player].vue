@@ -139,7 +139,7 @@
 
             <CardComponent class="!overflow-visible">
                 <TabbedContainer
-                    :tabs="['Maps', 'Time Heatmap', 'Personal Bests']"
+                    :tabs="['Maps', 'Time Heatmap', 'Personal Bests', 'Achievements']"
                 >
                     <template #Maps>
                         <PlayerMapList
@@ -156,6 +156,10 @@
                             :local-player="player?.uuid || ''"
                             :statistics="statistics"
                         />
+                    </template>
+
+                    <template #Achievements>
+                        <AchievementsGrid />
                     </template>
                 </TabbedContainer>
             </CardComponent>
