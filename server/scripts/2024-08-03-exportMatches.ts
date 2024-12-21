@@ -7,6 +7,7 @@ import { Player } from "../model/Player";
 import MapperService from "../controller/MapperService";
 import { getMap } from "~/utils/mapUtils";
 import { writeFile } from "node:fs/promises";
+import { PlayedMap } from "../model/PlayedMap";
 
 function formatSpin(s: Spin) {
     return s.targetConditions
@@ -34,7 +35,7 @@ async function main() {
     const dataSource = new DataSource({
         type: "sqlite",
         database: "rrstats.db",
-        entities: [Match, Player],
+        entities: [Match, PlayedMap, Player],
     });
 
     await dataSource.initialize();
@@ -54,7 +55,7 @@ async function main() {
         maxMapCount = Math.max(maxMapCount, match.playedMaps.length);
         const result = {
             competition: match.competition,
-            date: DateTime.fromMillis(match.timestamp).toISODate(),
+            date: DateTime.fromMillis(match.timestamp).toISO({ includeOffset: false, suppressMilliseconds: true, includePrefix: false }),
             platform: match.platform,
             round: match.round,
             player1: playerLookupMap[match.playerOne],
