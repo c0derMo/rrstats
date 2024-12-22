@@ -4,6 +4,11 @@
         :match="matchToShow"
         @click-outside="matchToShow = null"
     />
+    <DownloadPlayerCSVDialog
+        v-if="showDownload"
+        :player="localPlayer"
+        @closed="showDownload = false"
+    />
 
     <div class="w-4/5 mx-auto">
         <TextInputComponent
@@ -80,6 +85,12 @@
             :rows="filteredSortedMatches"
             :enable-sorting="false"
         >
+            <template #header-more>
+                <ButtonComponent @click="showDownload = true">
+                    <FontAwesomeIcon :icon="['fas', 'download']" size="xs" />
+                </ButtonComponent>
+            </template>
+
             <template #round="{ value, row }">
                 <TooltipComponent>
                     {{ value }}
@@ -171,6 +182,7 @@ const mobileHeaders = [
 
 const matchToShow: Ref<IMatch | null> = ref(null);
 const searchFilter = ref("");
+const showDownload = ref(false);
 
 const props = withDefaults(
     defineProps<{
