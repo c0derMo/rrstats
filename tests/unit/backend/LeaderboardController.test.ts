@@ -8,7 +8,7 @@ let database: DatabaseConnector;
 beforeEach(async () => {
     database = new DatabaseConnector(
         "sqlite",
-        "./test/test_db_post_2024.db",
+        "./tests/test_db_post_2024.db",
         false
     );
     await database.initialize();
@@ -25,10 +25,10 @@ test('Performance: Leaderboard recalculation', async () => {
 
 test('Correct top entry: winrate', async () => {
     await LeaderboardController.recalculate();
-    const players = await LeaderboardController.getEntries("winrate");
+    const players = await LeaderboardController.getEntries("Winrate");
     expect(players[0]).toEqual({
-        player: "sleazeball",
-        sortingScore: 100.00,
+        player: "28542412-14b1-4635-87fc-8e89a1a09a1a",
+        sortingScore: 1,
         displayScore: "100.00%",
         secondaryScore: 1
     });

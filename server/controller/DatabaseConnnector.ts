@@ -1,9 +1,9 @@
+import "reflect-metadata";
 import {
     DataSource,
     type DataSourceOptions,
     type EntityManager,
 } from "typeorm";
-import "reflect-metadata";
 import { GenericRecord, MapRecord } from "../model/Record";
 import { Competition, CompetitionPlacement } from "../model/Competition";
 import { PlayedMap } from "../model/PlayedMap";
