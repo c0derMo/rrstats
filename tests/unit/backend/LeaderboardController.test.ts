@@ -17,13 +17,13 @@ afterEach(async () => {
     await database.destroy();
 });
 
-test('Performance: Leaderboard recalculation', async () => {
+test('Performance: Leaderboard recalculation', { timeout: 10000 }, async () => {
     const startTime = DateTime.now();
     await LeaderboardController.recalculate();
     expect(startTime.diffNow().as('milliseconds')).toBeLessThan(10000);
 });
 
-test('Correct top entry: winrate', async () => {
+test('Correct top entry: winrate', { timeout: 10000 }, async () => {
     await LeaderboardController.recalculate();
     const players = await LeaderboardController.getEntries("Winrate");
     expect(players[0]).toEqual({

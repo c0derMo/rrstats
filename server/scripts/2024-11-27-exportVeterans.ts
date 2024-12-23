@@ -4,7 +4,6 @@ import { PlayedMap } from "../model/PlayedMap";
 import { Player } from "../model/Player";
 import { Competition, CompetitionPlacement } from "../model/Competition";
 import PlayerStatisticController from "../controller/PlayerStatisticController";
-import { DateTime } from "luxon";
 
 async function main() {
     const dataSource = new DataSource({
@@ -16,14 +15,14 @@ async function main() {
     await dataSource.initialize();
     console.log("Database connection established.");
 
-    const matches = await Match.find({
-        where: {
-            competition: In(["RR13", "RR14", "RR15", "RRWC2024"])
-        },
-        select: ["playerOne", "playerTwo", "uuid"],
-    });
+    // const matches = await Match.find({
+    //     where: {
+    //         competition: In(["RR13", "RR14", "RR15", "RRWC2024"])
+    //     },
+    //     select: ["playerOne", "playerTwo", "uuid"],
+    // });
 
-    const allPlayers = matches.map((match) => [match.playerOne, match.playerTwo]).reduce((l, r) => [...l, ...r], []);
+    // const allPlayers = matches.map((match) => [match.playerOne, match.playerTwo]).reduce((l, r) => [...l, ...r], []);
 
     // const players = await Player.find({ where: { uuid: In(allPlayers) }});
 
