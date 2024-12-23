@@ -26,3 +26,5 @@ logs
 *.db
 *.csv
 !tests/*.db
+
+coverage
