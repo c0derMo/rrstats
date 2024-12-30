@@ -13,6 +13,7 @@ import {
 import { DateTime } from "luxon";
 import { Player } from "../model/Player";
 import { Log } from "~/utils/FunctionTimer";
+import EloController from "./EloController";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();
@@ -79,6 +80,7 @@ export default class PlayerStatisticController {
             mapsWon: matchCollection.mapWinAmount(),
             perMapWinrate: matchCollection.perMapWinrate(),
             mapPBs: matchCollection.mapPBs(),
+            elo: EloController.getInstance().getEloOfPlayer(uuid),
         });
     }
 }
