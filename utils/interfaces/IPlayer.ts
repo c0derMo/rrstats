@@ -39,7 +39,7 @@ export type IPlayerStatistics = {
     perMapWinrate: number[];
     mapPBs: { match: IMatch | null; map: number }[];
     h2hVsOpponent?: { w: number; t: number; l: number };
-    elo: number;
+    eloProgression: { timestamp: number; elo: number }[];
 };
 
 export function emptyStatistics(): IPlayerStatistics {
@@ -66,6 +66,6 @@ export function emptyStatistics(): IPlayerStatistics {
         mapPBs: getAllMaps().map(() => {
             return { match: null, map: -1 };
         }),
-        elo: 1000,
+        eloProgression: [],
     };
 }

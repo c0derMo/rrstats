@@ -80,7 +80,8 @@ export default class PlayerStatisticController {
             mapsWon: matchCollection.mapWinAmount(),
             perMapWinrate: matchCollection.perMapWinrate(),
             mapPBs: matchCollection.mapPBs(),
-            elo: EloController.getInstance().getEloOfPlayer(uuid),
+            eloProgression:
+                EloController.getInstance().getEloProgressionOfPlayer(uuid),
         });
     }
 }

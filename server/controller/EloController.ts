@@ -4,15 +4,22 @@ import ld from "lodash";
 import consola from "consola";
 import { Log } from "~/utils/FunctionTimer";
 import { DefaultedMap } from "~/utils/DefaultedMap";
+import { DateTime } from "luxon";
 
 const logger = consola.withTag("rrstats:elo");
+const DAY_IN_MS = 86400000;
+
+interface EloInfo {
+    timestamp: number;
+    elo: number;
+}
 
 export default class EloController {
-    private competitionList: string[] = [];
+    private competitionList: Competition[] = [];
     private rookieMatches: Record<string, number> = {};
     private lastTournament: Record<string, string> = {};
     private returneeMatches: Record<string, number> = {};
-    private eloCache: Record<string, number[]> = {};
+    private eloCache: Record<string, EloInfo[]> = {};
     private playedTournaments: DefaultedMap<string, string[]> =
         new DefaultedMap(() => []);
 
@@ -34,7 +41,7 @@ export default class EloController {
                 startingTimestamp: "ASC",
             },
         });
-        this.competitionList = competitions.map((comp) => comp.tag);
+        this.competitionList = competitions;
     }
 
     public async getEloOfMatch(match: Match): Promise<number[]> {
@@ -48,8 +55,8 @@ export default class EloController {
             match.playerTwo,
         );
 
-        const playerOneElo = ld.last(this.eloCache[match.playerOne])!;
-        const playerTwoElo = ld.last(this.eloCache[match.playerTwo])!;
+        const playerOneElo = ld.last(this.eloCache[match.playerOne])!.elo;
+        const playerTwoElo = ld.last(this.eloCache[match.playerTwo])!.elo;
 
         const expectedA =
             1 / (1 + Math.pow(10, (playerTwoElo - playerOneElo) / 400));
@@ -66,8 +73,8 @@ export default class EloController {
             actualA = 0;
         }
 
-        const eloChangeA = (matchK + playerOneK) * (actualA - expectedA);
-        const eloChangeB = (matchK + playerTwoK) * (actualB - expectedB);
+        const eloChangeA = round((matchK + playerOneK) * (actualA - expectedA));
+        const eloChangeB = round((matchK + playerTwoK) * (actualB - expectedB));
 
         return [eloChangeA, eloChangeB];
     }
@@ -100,13 +107,7 @@ export default class EloController {
         }
 
         for (const player in this.eloCache) {
-            const decayedElo = this.calculateDecay(
-                ld.last(this.eloCache[player])!,
-                this.playedTournaments.get(player),
-            );
-            if (decayedElo !== ld.last(this.eloCache[player])) {
-                this.eloCache[player].push(decayedElo);
-            }
+            this.checkForDecay(player);
         }
 
         logger.log("Updated the elo of %d matches.", updatedMatches);
@@ -114,95 +115,121 @@ export default class EloController {
 
     async recalculateMatch(match: Match) {
         if (this.eloCache[match.playerOne] == null) {
-            this.eloCache[match.playerOne] = [1000];
+            this.eloCache[match.playerOne] = [
+                { elo: 1000, timestamp: match.timestamp - DAY_IN_MS },
+            ];
         }
         if (this.eloCache[match.playerTwo] == null) {
-            this.eloCache[match.playerTwo] = [1000];
+            this.eloCache[match.playerTwo] = [
+                { elo: 1000, timestamp: match.timestamp - DAY_IN_MS },
+            ];
         }
         if (
             !this.playedTournaments
                 .get(match.playerOne)
                 .includes(match.competition)
         ) {
-            if (this.playedTournaments.get(match.playerOne).length > 0) {
-                const decayedElo = this.calculateDecay(
-                    ld.last(this.eloCache[match.playerOne])!,
-                    this.playedTournaments.get(match.playerOne),
-                    match.competition,
-                );
-                if (decayedElo !== ld.last(this.eloCache[match.playerOne])) {
-                    this.eloCache[match.playerOne].push(decayedElo);
-                }
-            }
-            this.playedTournaments.get(match.playerOne).push(match.competition);
+            this.checkForDecay(match.playerOne, match.competition);
         }
         if (
             !this.playedTournaments
                 .get(match.playerTwo)
                 .includes(match.competition)
         ) {
-            if (this.playedTournaments.get(match.playerTwo).length > 0) {
-                const decayedElo = this.calculateDecay(
-                    ld.last(this.eloCache[match.playerTwo])!,
-                    this.playedTournaments.get(match.playerTwo),
-                    match.competition,
-                );
-                if (decayedElo !== ld.last(this.eloCache[match.playerTwo])) {
-                    this.eloCache[match.playerTwo].push(decayedElo);
-                }
-            }
-            this.playedTournaments.get(match.playerTwo).push(match.competition);
+            this.checkForDecay(match.playerTwo, match.competition);
         }
 
         const updatedElo = await this.getEloOfMatch(match);
         let isUpdated = false;
-        if (!ld.isEqual(match.eloChange, updatedElo)) {
+        if (
+            match.eloChange[0] !== updatedElo[0] ||
+            match.eloChange[1] !== updatedElo[1]
+        ) {
             match.eloChange = updatedElo;
             await match.save();
             isUpdated = true;
         }
 
-        this.eloCache[match.playerOne].push(
-            round(ld.last(this.eloCache[match.playerOne])! + updatedElo[0]),
-        );
-        this.eloCache[match.playerTwo].push(
-            round(ld.last(this.eloCache[match.playerTwo])! + updatedElo[1]),
-        );
+        this.eloCache[match.playerOne].push({
+            elo: round(
+                ld.last(this.eloCache[match.playerOne])!.elo + updatedElo[0],
+            ),
+            timestamp: match.timestamp,
+        });
+        this.eloCache[match.playerTwo].push({
+            elo: round(
+                ld.last(this.eloCache[match.playerTwo])!.elo + updatedElo[1],
+            ),
+            timestamp: match.timestamp,
+        });
         return isUpdated;
     }
 
     getEloOfPlayer(playerUUID: string) {
-        return ld.last(this.eloCache[playerUUID]) ?? 1000;
+        return ld.last(this.eloCache[playerUUID])?.elo ?? 1000;
     }
 
     getEloProgressionOfPlayer(playerUUID: string) {
-        return [...(this.eloCache[playerUUID] ?? 1000)];
+        return [
+            ...(this.eloCache[playerUUID] ?? [
+                { elo: 1000, timestamp: DateTime.now().toMillis() },
+            ]),
+        ];
     }
 
-    calculateDecay(
+    private checkForDecay(player: string, competition?: string) {
+        if (this.playedTournaments.get(player).length > 0) {
+            const lastElo = ld.last(this.eloCache[player])!;
+            const decayedElo = this.calculateDecay(
+                lastElo.elo,
+                this.playedTournaments.get(player),
+                competition,
+            );
+            if (decayedElo.length > 0) {
+                this.eloCache[player].push(...decayedElo);
+            }
+        }
+
+        if (competition != null) {
+            this.playedTournaments.get(player).push(competition);
+        }
+    }
+
+    private calculateDecay(
         elo: number,
         previousTournaments: string[],
         currentTournament?: string,
-    ): number {
+    ): EloInfo[] {
         let resultingElo = elo;
         let startingIndex = this.competitionList.length;
         if (currentTournament != null) {
             startingIndex = this.competitionList.findIndex(
-                (tournament) => currentTournament === tournament,
+                (tournament) => currentTournament === tournament.tag,
             );
         }
 
-        let i = 1;
+        const decays: EloInfo[] = [];
+
+        let decayAmount = 0;
         while (
             !previousTournaments.includes(
-                this.competitionList[startingIndex - i],
+                this.competitionList[startingIndex - decayAmount - 1].tag,
             ) &&
-            startingIndex - i >= 0
+            startingIndex - decayAmount - 1 >= 0
         ) {
-            resultingElo = this.getDecayedElo(i, resultingElo);
-            i += 1;
+            decayAmount += 1;
         }
-        return resultingElo;
+
+        for (let i = 0; i < decayAmount; i++) {
+            resultingElo = this.getDecayedElo(i + 1, resultingElo);
+            decays.push({
+                elo: resultingElo,
+                timestamp:
+                    this.competitionList[startingIndex - decayAmount + i]
+                        .startingTimestamp - DAY_IN_MS,
+            });
+        }
+        return decays;
     }
 
     getDecayedElo(skippedTournaments: number, elo: number): number {
@@ -305,10 +332,10 @@ export default class EloController {
         tourneyTwo: string,
     ): number {
         const tournamentOneIndex = this.competitionList.findIndex(
-            (tournament) => tournament === tourneyOne,
+            (tournament) => tournament.tag === tourneyOne,
         );
         const tournamentTwoIndex = this.competitionList.findIndex(
-            (tournament) => tournament === tourneyTwo,
+            (tournament) => tournament.tag === tourneyTwo,
         );
         return Math.abs(tournamentOneIndex - tournamentTwoIndex);
     }

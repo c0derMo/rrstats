@@ -54,8 +54,6 @@
                     </span>
                 </div>
 
-                <br />
-
                 <div
                     class="flex gap-3"
                     :class="{
@@ -108,7 +106,18 @@
                     </span>
                 </div>
 
-                <br />
+                <div
+                    class="flex gap-5"
+                    :class="{
+                        'flex-row': !reverse,
+                        'flex-row-reverse': reverse,
+                    }"
+                >
+                    <span class="flex-grow font-light">Elo Rating</span>
+                    <span :class="getAheadBehindClass(getElo)">
+                        {{ getElo(Player.SELF) }}
+                    </span>
+                </div>
 
                 <div
                     class="flex gap-3"
@@ -186,6 +195,7 @@
 
 <script setup lang="ts">
 import type { IPlayer, IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import ld from "lodash";
 
 enum Player {
     SELF,
@@ -289,6 +299,15 @@ function getH2HWR(player: Player): number {
         return (h2h.w + 0.5 * h2h.t) / (h2h.w + h2h.l + h2h.l);
     }
     return 0.5;
+}
+
+function getElo(player: Player): number {
+    if (player === Player.SELF) {
+        return ld.last(props.playerStatistics.eloProgression)?.elo ?? 1000;
+    } else if (player === Player.COMPARISON) {
+        return ld.last(props.comparingStatistics?.eloProgression)?.elo ?? 1000;
+    }
+    return 1000;
 }
 
 function getRRAmount(player: Player): number {

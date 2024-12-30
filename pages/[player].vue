@@ -89,6 +89,12 @@
                 <div
                     class="flex-grow text-center md:border-x border-neutral-500"
                 >
+                    Elo rating:
+                    {{ ld.last(statistics?.eloProgression)?.elo ?? 1000 }}
+                </div>
+                <div
+                    class="flex-grow text-center md:border-x border-neutral-500"
+                >
                     Maps played:
                     {{ statistics?.mapCount }}
                 </div>
@@ -139,7 +145,12 @@
 
             <CardComponent class="!overflow-visible">
                 <TabbedContainer
-                    :tabs="['Maps', 'Time Heatmap', 'Personal Bests']"
+                    :tabs="[
+                        'Maps',
+                        'Time Heatmap',
+                        'Personal Bests',
+                        'Elo Progression',
+                    ]"
                 >
                     <template #Maps>
                         <PlayerMapList
@@ -157,6 +168,12 @@
                             :statistics="statistics"
                         />
                     </template>
+                    <template #[eP]>
+                        <EloGraph
+                            :player-statistics="statistics"
+                            :player="player?.primaryName ?? ''"
+                        />
+                    </template>
                 </TabbedContainer>
             </CardComponent>
         </div>
@@ -168,6 +185,7 @@ import { DateTime } from "luxon";
 import type { ICompetition } from "~/utils/interfaces/ICompetition";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 import { emptyStatistics } from "~/utils/interfaces/IPlayer";
+import ld from "lodash";
 
 const route = useRoute();
 
@@ -177,6 +195,7 @@ useHead({
 
 const tH = "Time Heatmap";
 const pB = "Personal Bests";
+const eP = "Elo Progression";
 const { data: player } = await useFetch(
     `/api/player/?player=${route.params.player}&initialLoad=true`,
 );

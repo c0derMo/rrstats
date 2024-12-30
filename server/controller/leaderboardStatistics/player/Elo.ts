@@ -10,9 +10,7 @@ export class PlayerElo implements LeaderboardPlayerStatistic {
     explanatoryText =
         "Elo score based on In4Fun's formula. Note: Players playing on multiple platforms are combined here, which may cause inconsistencies with In4Fun's Elo sheet.";
 
-    calculate(
-        players: IPlayer[],
-    ): LeaderboardPlayerEntry[] {
+    calculate(players: IPlayer[]): LeaderboardPlayerEntry[] {
         const result: LeaderboardPlayerEntry[] = [];
 
         for (const player of players) {
