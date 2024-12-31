@@ -8,7 +8,7 @@ beforeAll(async () => {
     database = new DatabaseConnector(
         "sqlite",
         "./tests/test_db_post_2024.db",
-        false
+        false,
     );
     await database.initialize();
     await LeaderboardController.recalculate();
@@ -18,7 +18,7 @@ afterAll(async () => {
     await database.destroy();
 });
 
-test('Appearances', async () => {
+test("Appearances", async () => {
     const maps = await LeaderboardController.getEntries("Appearances");
 
     expect(maps.length).toBe(19);
@@ -26,7 +26,10 @@ test('Appearances', async () => {
     expect(maps[0]).toEqual({
         map: "Haven Island",
         sortingScore: 645,
-        tournamentBreakdown: [55, 36, 31, 38, 68, 17, 24, 23, 72, 27, 27, 42, 65, 40, 36, 0, 23, 8, 7, 6],
+        tournamentBreakdown: [
+            55, 36, 31, 38, 68, 17, 24, 23, 72, 27, 27, 42, 65, 40, 36, 0, 23,
+            8, 7, 6,
+        ],
     });
     expect(maps[1]).toMatchObject({
         map: "Colorado",
@@ -43,7 +46,7 @@ test('Appearances', async () => {
     });
 });
 
-test('Banned', async () => {
+test("Banned", async () => {
     const maps = await LeaderboardController.getEntries("Banned");
 
     expect(maps.length).toBe(19);
@@ -51,7 +54,10 @@ test('Banned', async () => {
     expect(maps[0]).toEqual({
         map: "Mumbai",
         sortingScore: 209,
-        tournamentBreakdown: [8, 18, 21, 16, 10, 9, 10, 9, 8, 13, 16, 13, 7, 21, 27, 0, 1, 2, 0, 0],
+        tournamentBreakdown: [
+            8, 18, 21, 16, 10, 9, 10, 9, 8, 13, 16, 13, 7, 21, 27, 0, 1, 2, 0,
+            0,
+        ],
     });
     expect(maps[1]).toMatchObject({
         map: "Santa Fortuna",
@@ -68,7 +74,7 @@ test('Banned', async () => {
     });
 });
 
-test('Picked', async () => {
+test("Picked", async () => {
     const maps = await LeaderboardController.getEntries("Picked");
 
     expect(maps.length).toBe(19);
@@ -76,7 +82,10 @@ test('Picked', async () => {
     expect(maps[0]).toEqual({
         map: "Sapienza",
         sortingScore: 362,
-        tournamentBreakdown: [30, 13, 20, 16, 25, 8, 11, 14, 26, 15, 14, 25, 42, 19, 21, 0, 27, 13, 14, 9],
+        tournamentBreakdown: [
+            30, 13, 20, 16, 25, 8, 11, 14, 26, 15, 14, 25, 42, 19, 21, 0, 27,
+            13, 14, 9,
+        ],
     });
     expect(maps[1]).toMatchObject({
         map: "Hokkaido",
@@ -93,7 +102,7 @@ test('Picked', async () => {
     });
 });
 
-test('Played', async () => {
+test("Played", async () => {
     const maps = await LeaderboardController.getEntries("Played");
 
     expect(maps.length).toBe(19);
@@ -101,7 +110,10 @@ test('Played', async () => {
     expect(maps[0]).toEqual({
         map: "Sapienza",
         sortingScore: 516,
-        tournamentBreakdown: [52, 19, 27, 32, 37, 13, 20, 20, 46, 21, 18, 37, 51, 20, 22, 0, 37, 16, 19, 9],
+        tournamentBreakdown: [
+            52, 19, 27, 32, 37, 13, 20, 20, 46, 21, 18, 37, 51, 20, 22, 0, 37,
+            16, 19, 9,
+        ],
     });
     expect(maps[1]).toMatchObject({
         map: "Miami",
@@ -118,7 +130,7 @@ test('Played', async () => {
     });
 });
 
-test('Played as random map', async () => {
+test("Played as random map", async () => {
     const maps = await LeaderboardController.getEntries("Played as random map");
 
     expect(maps.length).toBe(19);
@@ -126,7 +138,9 @@ test('Played as random map', async () => {
     expect(maps[0]).toEqual({
         map: "Whittleton Creek",
         sortingScore: 161,
-        tournamentBreakdown: [17, 6, 8, 8, 12, 8, 9, 9, 16, 5, 9, 8, 14, 2, 3, 0, 6, 0, 7, 14],
+        tournamentBreakdown: [
+            17, 6, 8, 8, 12, 8, 9, 9, 16, 5, 9, 8, 14, 2, 3, 0, 6, 0, 7, 14,
+        ],
     });
     expect(maps[1]).toMatchObject({
         map: "Paris",

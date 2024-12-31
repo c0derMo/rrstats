@@ -28,36 +28,57 @@ async function main() {
 
     const players = await Player.find();
     console.log(`Loaded ${players.length} players.`);
-    const playerLookup = MapperService.createStringMapFromList(players, 'uuid', 'primaryName');
+    const playerLookup = MapperService.createStringMapFromList(
+        players,
+        "uuid",
+        "primaryName",
+    );
 
-    const placementProgression: DefaultedMap<string, CompPlacements> = new DefaultedMap(() => {
-        return {
-            RR10: null,
-            RR11: null,
-            RR12: null,
-            RRWC2023: null,
-            RR13: null,
-            RR14: null,
-            RR15: null,
-        }
-    })
+    const placementProgression: DefaultedMap<string, CompPlacements> =
+        new DefaultedMap(() => {
+            return {
+                RR10: null,
+                RR11: null,
+                RR12: null,
+                RRWC2023: null,
+                RR13: null,
+                RR14: null,
+                RR15: null,
+            };
+        });
 
-    const placements = await CompetitionPlacement.find({ where: {
-        competition: In(["RR10", "RR11", "RR12", "RRWC2023", "RR13", "RR14", "RR15"])
-    }});
+    const placements = await CompetitionPlacement.find({
+        where: {
+            competition: In([
+                "RR10",
+                "RR11",
+                "RR12",
+                "RRWC2023",
+                "RR13",
+                "RR14",
+                "RR15",
+            ]),
+        },
+    });
     console.log(`Loaded ${placements.length} placements`);
 
     for (const placement of placements) {
         const player = playerLookup[placement.player];
         const previousPlacements = placementProgression.get(player);
-        previousPlacements[placement.competition as Competitions] = placement.placement ?? null;
-        if (placement.competition === "RRWC2023" && placement.placement == null) {
+        previousPlacements[placement.competition as Competitions] =
+            placement.placement ?? null;
+        if (
+            placement.competition === "RRWC2023" &&
+            placement.placement == null
+        ) {
             previousPlacements.RRWC2023 = "gs";
         }
         placementProgression.set(player, previousPlacements);
     }
 
-    for (const [player, placements] of placementProgression.getAll().entries()) {
+    for (const [player, placements] of placementProgression
+        .getAll()
+        .entries()) {
         let result = player + ";";
         result += (placements.RR10 ?? "") + ";";
         result += (placements.RR11 ?? "") + ";";
@@ -65,7 +86,7 @@ async function main() {
         result += (placements.RRWC2023 ?? "") + ";";
         result += (placements.RR13 ?? "") + ";";
         result += (placements.RR14 ?? "") + ";";
-        result += (placements.RR15 ?? "");
+        result += placements.RR15 ?? "";
         console.log(result);
     }
 

@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 
-test('DefaultedMap general usage', () => {
+test("DefaultedMap general usage", () => {
     const map = new DefaultedMap<string, number>(() => 0);
 
     expect(map.get("a")).toBe(0);
@@ -27,7 +27,7 @@ test('DefaultedMap general usage', () => {
     expect(mapperFunc).toHaveBeenNthCalledWith(2, "b", 0);
 });
 
-test('getSumOfValues', () => {
+test("getSumOfValues", () => {
     const map = new DefaultedMap<string, number>(() => 0);
 
     map.set("a", 12);

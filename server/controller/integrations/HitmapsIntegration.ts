@@ -168,8 +168,10 @@ export default class HitmapsIntegration {
             );
             await this.parseHitmapsTournament(request.matches, competitionSlug);
             this.cache.set(hitmapsSlug, Date.now());
-        } catch(e) {
-            logger.log("The following error occured while parsing hitmaps tournaments:");
+        } catch (e) {
+            logger.log(
+                "The following error occured while parsing hitmaps tournaments:",
+            );
             logger.log(e);
             return;
         }
@@ -490,7 +492,9 @@ export default class HitmapsIntegration {
 
             if (map.selectionType === "Ban") {
                 bans.push({
-                    map: (getMapBySlug(map.mapSlug)?.map as HitmanMap) ?? HitmanMap.PARIS,
+                    map:
+                        (getMapBySlug(map.mapSlug)?.map as HitmanMap) ??
+                        HitmanMap.PARIS,
                     picked: picker,
                 });
             } else if (
@@ -517,7 +521,9 @@ export default class HitmapsIntegration {
                 }
 
                 const dbMap = new PlayedMap();
-                dbMap.map = (getMapBySlug(map.mapSlug)?.map as HitmanMap) ?? HitmanMap.PARIS;
+                dbMap.map =
+                    (getMapBySlug(map.mapSlug)?.map as HitmanMap) ??
+                    HitmanMap.PARIS;
                 dbMap.winner = additionalInfo.mapWinners[mapIndex]!;
                 dbMap.picked = picker;
                 dbMap.spin = additionalInfo.spins[mapIndex]!;
@@ -592,11 +598,16 @@ export default class HitmapsIntegration {
 
         for (const match of remainingMatches) {
             if (
-                match.maps.filter((map) => {
-                    return map.selectionType !== "Ban" && map.state === "Complete"
-                }).every((map) => {
-                    return map.mapStartedAt != null && map.mapJson != null;
-                })
+                match.maps
+                    .filter((map) => {
+                        return (
+                            map.selectionType !== "Ban" &&
+                            map.state === "Complete"
+                        );
+                    })
+                    .every((map) => {
+                        return map.mapStartedAt != null && map.mapJson != null;
+                    })
             ) {
                 result.newVersion.push(match as NewHitmapsTournamentMatch);
                 continue;

@@ -26,7 +26,27 @@ async function main() {
 
     // const players = await Player.find({ where: { uuid: In(allPlayers) }});
 
-    const players = await Player.find({ where: { primaryName: In(["In4Fun", "Frote7", "Yannini", "Ducker", "IlikeHitman", "Pigiero", "davidredsox", "Cabben", "T_Nort23" ,"Fuzk", "Some Random Person", "Rommel of the Far East", "GuLe", "Redfox", "Gorg"]) }});
+    const players = await Player.find({
+        where: {
+            primaryName: In([
+                "In4Fun",
+                "Frote7",
+                "Yannini",
+                "Ducker",
+                "IlikeHitman",
+                "Pigiero",
+                "davidredsox",
+                "Cabben",
+                "T_Nort23",
+                "Fuzk",
+                "Some Random Person",
+                "Rommel of the Far East",
+                "GuLe",
+                "Redfox",
+                "Gorg",
+            ]),
+        },
+    });
 
     console.log(`Loaded ${players.length} players.`);
 
@@ -38,7 +58,9 @@ async function main() {
         }
 
         // if (DateTime.fromMillis(stats.debutMatch.timestamp).year === 2020) {
-            console.log(`${player.primaryName}: ${stats.winTieLoss.w}/${stats.matchCount} (${stats.winrate}); ${stats.mapsWon.reduce((l,r) => l+r,0)}/${stats.mapsPlayed.reduce((l,r) => l+r,0)} (${stats.mapWinrate}; ${stats.bestPlacement} best, ${stats.averagePlacement} avg)`)
+        console.log(
+            `${player.primaryName}: ${stats.winTieLoss.w}/${stats.matchCount} (${stats.winrate}); ${stats.mapsWon.reduce((l, r) => l + r, 0)}/${stats.mapsPlayed.reduce((l, r) => l + r, 0)} (${stats.mapWinrate}; ${stats.bestPlacement} best, ${stats.averagePlacement} avg)`,
+        );
         // }
     }
 

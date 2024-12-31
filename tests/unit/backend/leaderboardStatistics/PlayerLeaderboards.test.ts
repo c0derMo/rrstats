@@ -8,7 +8,7 @@ beforeAll(async () => {
     database = new DatabaseConnector(
         "sqlite",
         "./tests/test_db_post_2024.db",
-        false
+        false,
     );
     await database.initialize();
     await LeaderboardController.recalculate();
@@ -18,8 +18,10 @@ afterAll(async () => {
     await database.destroy();
 });
 
-test('Average RR Placement', async () => {
-    const players = await LeaderboardController.getEntries("Average RR Placement");
+test("Average RR Placement", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Average RR Placement",
+    );
 
     expect(players.length).toBe(217);
 
@@ -50,7 +52,7 @@ test('Average RR Placement', async () => {
     });
 });
 
-test('Elo rating', async () => {
+test("Elo rating", async () => {
     const players = await LeaderboardController.getEntries("Elo rating");
 
     expect(players.length).toBe(235);
@@ -78,8 +80,10 @@ test('Elo rating', async () => {
     });
 });
 
-test('Grand Final Appearances', async () => {
-    const players = await LeaderboardController.getEntries("Grand Final Appearances");
+test("Grand Final Appearances", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Grand Final Appearances",
+    );
 
     expect(players.length).toBe(27);
 
@@ -111,7 +115,7 @@ test('Grand Final Appearances', async () => {
     });
 });
 
-test('Maps played', async () => {
+test("Maps played", async () => {
     const players = await LeaderboardController.getEntries("Maps played");
 
     expect(players.length).toBe(237);
@@ -139,7 +143,7 @@ test('Maps played', async () => {
     });
 });
 
-test('Maps won', async () => {
+test("Maps won", async () => {
     const players = await LeaderboardController.getEntries("Maps won");
 
     expect(players.length).toBe(237);
@@ -167,8 +171,10 @@ test('Maps won', async () => {
     });
 });
 
-test('Most maps won in a row', async () => {
-    const players = await LeaderboardController.getEntries("Most maps won in a row");
+test("Most maps won in a row", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Most maps won in a row",
+    );
 
     expect(players.length).toBe(159);
 
@@ -195,7 +201,7 @@ test('Most maps won in a row', async () => {
     });
 });
 
-test('Map Winrate', async () => {
+test("Map Winrate", async () => {
     const players = await LeaderboardController.getEntries("Map Winrate");
 
     expect(players.length).toBe(236);
@@ -204,19 +210,19 @@ test('Map Winrate', async () => {
         player: playerNamesToUUIDs["sleazeball"],
         displayScore: "100.00%",
         sortingScore: 1,
-        secondaryScore: 2
+        secondaryScore: 2,
     });
     expect(players[1]).toEqual({
         player: playerNamesToUUIDs["Tysonfoodsco"],
         displayScore: "75.00%",
         sortingScore: 0.75,
-        secondaryScore: 8
+        secondaryScore: 8,
     });
     expect(players[2]).toEqual({
         player: playerNamesToUUIDs["Dein Nomos"],
         displayScore: "71.82%",
         sortingScore: 0.7181818181818181,
-        secondaryScore: 165
+        secondaryScore: 165,
     });
 
     expect(players[235]).toEqual({
@@ -227,7 +233,7 @@ test('Map Winrate', async () => {
     });
 });
 
-test('Matches casted', async () => {
+test("Matches casted", async () => {
     const players = await LeaderboardController.getEntries("Matches casted");
 
     expect(players.length).toBe(77);
@@ -255,7 +261,7 @@ test('Matches casted', async () => {
     });
 });
 
-test('Matches played', async () => {
+test("Matches played", async () => {
     const players = await LeaderboardController.getEntries("Matches played");
 
     expect(players.length).toBe(237);
@@ -283,7 +289,7 @@ test('Matches played', async () => {
     });
 });
 
-test('Matches won', async () => {
+test("Matches won", async () => {
     const players = await LeaderboardController.getEntries("Matches won");
 
     expect(players.length).toBe(237);
@@ -311,8 +317,10 @@ test('Matches won', async () => {
     });
 });
 
-test('Most matches won in a row', async () => {
-    const players = await LeaderboardController.getEntries("Most matches won in a row");
+test("Most matches won in a row", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Most matches won in a row",
+    );
 
     expect(players.length).toBe(126);
 
@@ -339,7 +347,7 @@ test('Most matches won in a row', async () => {
     });
 });
 
-test('Reverse sweeps', async () => {
+test("Reverse sweeps", async () => {
     const players = await LeaderboardController.getEntries("Reverse sweeps");
 
     expect(players.length).toBe(19);
@@ -367,8 +375,10 @@ test('Reverse sweeps', async () => {
     });
 });
 
-test('Roulette Rivals Participations', async () => {
-    const players = await LeaderboardController.getEntries("Roulette Rivals Participations");
+test("Roulette Rivals Participations", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Roulette Rivals Participations",
+    );
 
     expect(players.length).toBe(236);
 
@@ -395,8 +405,10 @@ test('Roulette Rivals Participations', async () => {
     });
 });
 
-test('RRWC Participations', async () => {
-    const players = await LeaderboardController.getEntries("RRWC Participations");
+test("RRWC Participations", async () => {
+    const players = await LeaderboardController.getEntries(
+        "RRWC Participations",
+    );
 
     expect(players.length).toBe(145);
 
@@ -423,8 +435,11 @@ test('RRWC Participations', async () => {
     });
 });
 
-test('Winning streak on a map - all maps', async () => {
-    const players = await LeaderboardController.getEntries("Winning streak on a map", OptionalMap.NO_MAP);
+test("Winning streak on a map - all maps", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Winning streak on a map",
+        OptionalMap.NO_MAP,
+    );
 
     expect(players.length).toBe(1048);
 
@@ -451,8 +466,11 @@ test('Winning streak on a map - all maps', async () => {
     });
 });
 
-test('Winning streak on a map - Paris', async () => {
-    const players = await LeaderboardController.getEntries("Winning streak on a map", HitmanMap.PARIS);
+test("Winning streak on a map - Paris", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Winning streak on a map",
+        HitmanMap.PARIS,
+    );
 
     expect(players.length).toBe(65);
 
@@ -479,8 +497,11 @@ test('Winning streak on a map - Paris', async () => {
     });
 });
 
-test('Spins played on specific map - Sapienza', async () => {
-    const players = await LeaderboardController.getEntries("Spins played on specific map", HitmanMap.SAPIENZA);
+test("Spins played on specific map - Sapienza", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Spins played on specific map",
+        HitmanMap.SAPIENZA,
+    );
 
     expect(players.length).toBe(180);
 
@@ -507,8 +528,11 @@ test('Spins played on specific map - Sapienza', async () => {
     });
 });
 
-test('Winrate on specific map - Marrakesh', async () => {
-    const players = await LeaderboardController.getEntries("Winrate on specific map", HitmanMap.MARRAKESH);
+test("Winrate on specific map - Marrakesh", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Winrate on specific map",
+        HitmanMap.MARRAKESH,
+    );
 
     expect(players.length).toBe(161);
 
@@ -539,7 +563,7 @@ test('Winrate on specific map - Marrakesh', async () => {
     });
 });
 
-test('Sweeps', async () => {
+test("Sweeps", async () => {
     const players = await LeaderboardController.getEntries("Sweeps");
 
     expect(players.length).toBe(146);
@@ -567,8 +591,9 @@ test('Sweeps', async () => {
     });
 });
 
-test('Sweeps (6+ points)', async () => {
-    const players = await LeaderboardController.getEntries("Sweeps (6+ points)");
+test("Sweeps (6+ points)", async () => {
+    const players =
+        await LeaderboardController.getEntries("Sweeps (6+ points)");
 
     expect(players.length).toBe(97);
 
@@ -595,7 +620,7 @@ test('Sweeps (6+ points)', async () => {
     });
 });
 
-test('Winrate', async () => {
+test("Winrate", async () => {
     const players = await LeaderboardController.getEntries("Winrate");
 
     expect(players.length).toBe(235);
@@ -616,7 +641,7 @@ test('Winrate', async () => {
         player: playerNamesToUUIDs["GKPunk"],
         displayScore: "84.62%",
         sortingScore: 0.8461538461538461,
-        secondaryScore: 13
+        secondaryScore: 13,
     });
 
     expect(players[234]).toEqual({
@@ -627,8 +652,10 @@ test('Winrate', async () => {
     });
 });
 
-test('Winrate on opponent-map-picks', async () => {
-    const players = await LeaderboardController.getEntries("Winrate on opponent-map-picks");
+test("Winrate on opponent-map-picks", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Winrate on opponent-map-picks",
+    );
 
     expect(players.length).toBe(235);
 
@@ -648,7 +675,7 @@ test('Winrate on opponent-map-picks', async () => {
         player: playerNamesToUUIDs["Crimson"],
         displayScore: "100.00%",
         sortingScore: 1,
-        secondaryScore: 2
+        secondaryScore: 2,
     });
 
     expect(players[234]).toEqual({
@@ -659,8 +686,10 @@ test('Winrate on opponent-map-picks', async () => {
     });
 });
 
-test('Winrate on own-map-picks', async () => {
-    const players = await LeaderboardController.getEntries("Winrate on own-map-picks");
+test("Winrate on own-map-picks", async () => {
+    const players = await LeaderboardController.getEntries(
+        "Winrate on own-map-picks",
+    );
 
     expect(players.length).toBe(236);
 
@@ -680,7 +709,7 @@ test('Winrate on own-map-picks', async () => {
         player: playerNamesToUUIDs["Vendetta"],
         displayScore: "100.00%",
         sortingScore: 1,
-        secondaryScore: 2
+        secondaryScore: 2,
     });
 
     expect(players[235]).toEqual({
@@ -692,39 +721,39 @@ test('Winrate on own-map-picks', async () => {
 });
 
 const playerNamesToUUIDs: Record<string, string> = {
-    "Ibbe": "f93ed1b8-d423-4768-b68b-30ad8e2f9905",
+    Ibbe: "f93ed1b8-d423-4768-b68b-30ad8e2f9905",
     "David Strong": "52f9a138-8ef0-42df-a214-f077766c9d75",
-    "DaniButa": "db15be62-f05a-4300-b067-4cbba706f998",
-    "virtualDream": "33865cf5-bcc5-42e6-ad80-2737cf236aef",
-    "Scruffy": "382f3619-14c0-41fc-9ea8-c6cf05a29238",
-    "Phanium": "58a21881-628e-4f73-9cea-7a4d59c622ed",
-    "In4Fun": "564c9a2f-88df-46fa-9b93-9b1b9e5fd0d7",
-    "Pac": "575f9f9e-c95b-4332-b033-153cfc13dc08",
-    "Ducker": "e1f828ca-92a8-4ce5-9616-017ec8221063",
+    DaniButa: "db15be62-f05a-4300-b067-4cbba706f998",
+    virtualDream: "33865cf5-bcc5-42e6-ad80-2737cf236aef",
+    Scruffy: "382f3619-14c0-41fc-9ea8-c6cf05a29238",
+    Phanium: "58a21881-628e-4f73-9cea-7a4d59c622ed",
+    In4Fun: "564c9a2f-88df-46fa-9b93-9b1b9e5fd0d7",
+    Pac: "575f9f9e-c95b-4332-b033-153cfc13dc08",
+    Ducker: "e1f828ca-92a8-4ce5-9616-017ec8221063",
     "The Rieper 47": "a0eccd64-36d1-4a02-8c1b-89262d444162",
-    "Frote7": "5e11e928-efee-4b6a-8687-1a38cbb2268e",
-    "Yannini": "cc613517-4f0d-4a18-aa7e-4fd56c12cc26",
+    Frote7: "5e11e928-efee-4b6a-8687-1a38cbb2268e",
+    Yannini: "cc613517-4f0d-4a18-aa7e-4fd56c12cc26",
     "minecraft legend": "def62eaf-1619-4d37-b77a-2885ae97bb34",
-    "Los_pepos": "b53d767b-5927-40fb-a431-49a95d4b7797",
+    Los_pepos: "b53d767b-5927-40fb-a431-49a95d4b7797",
     "Harmaa.-": "89ebb4c1-ede3-4a41-bf80-c2b94510969a",
-    "sleazeball": "28542412-14b1-4635-87fc-8e89a1a09a1a",
-    "Tysonfoodsco": "eb27c4f0-a040-49ab-ba4d-8e29f9184186",
+    sleazeball: "28542412-14b1-4635-87fc-8e89a1a09a1a",
+    Tysonfoodsco: "eb27c4f0-a040-49ab-ba4d-8e29f9184186",
     "Dein Nomos": "874cf8b0-19ce-44e4-8d3c-7e38786cd5d7",
-    "Dope": "4673dc0e-c502-43c3-8207-c2defcb95605",
-    "gekko": "05daa459-d687-4a0b-97a8-65f57bfb49d4",
-    "Dynaso": "040e2cb0-5426-4414-8ca0-37848473b076",
-    "Parapluie": "756979d8-6990-4f13-9c6a-3d3f3fd87b08",
-    "davidredsox": "af9ee04e-7361-4015-8f43-a54434bf5467",
-    "Alph": "e9abc4d9-5aa5-4e3a-a578-db163f5c1caf",
-    "T_Nort23": "a18b6c0c-ab63-4a26-b004-9b831cce05c0",
-    "HOUSEN": "808d15b8-2f4e-451e-a567-dff777a61312",
-    "pokeredface": "fd51227a-3921-432e-a275-5b7876a1ea15",
-    "ORO": "95398450-c142-4795-a9db-10a93fea13a0",
-    "BernardoOne": "436e4037-f2a7-4494-a9ad-4a10977ed981",
-    "AlexHiller": "baf03138-e842-43a3-82ff-dbf3bafbd583",
-    "GKPunk": "77d7524f-7e13-47df-8659-f46722d1c530",
-    "Frisbeehound": "28ca1ff9-0937-4fc8-8e91-a5f117829bac",
-    "Crimson": "618fd579-e8ed-4a0f-85f0-8f9f2a0525e0",
-    "Scroob": "1b024b85-89ef-4aff-82ce-0da3edab78b9",
-    "Vendetta": "ecd8930c-763c-47ea-a851-308d8c6ac3c0",
-}
+    Dope: "4673dc0e-c502-43c3-8207-c2defcb95605",
+    gekko: "05daa459-d687-4a0b-97a8-65f57bfb49d4",
+    Dynaso: "040e2cb0-5426-4414-8ca0-37848473b076",
+    Parapluie: "756979d8-6990-4f13-9c6a-3d3f3fd87b08",
+    davidredsox: "af9ee04e-7361-4015-8f43-a54434bf5467",
+    Alph: "e9abc4d9-5aa5-4e3a-a578-db163f5c1caf",
+    T_Nort23: "a18b6c0c-ab63-4a26-b004-9b831cce05c0",
+    HOUSEN: "808d15b8-2f4e-451e-a567-dff777a61312",
+    pokeredface: "fd51227a-3921-432e-a275-5b7876a1ea15",
+    ORO: "95398450-c142-4795-a9db-10a93fea13a0",
+    BernardoOne: "436e4037-f2a7-4494-a9ad-4a10977ed981",
+    AlexHiller: "baf03138-e842-43a3-82ff-dbf3bafbd583",
+    GKPunk: "77d7524f-7e13-47df-8659-f46722d1c530",
+    Frisbeehound: "28ca1ff9-0937-4fc8-8e91-a5f117829bac",
+    Crimson: "618fd579-e8ed-4a0f-85f0-8f9f2a0525e0",
+    Scroob: "1b024b85-89ef-4aff-82ce-0da3edab78b9",
+    Vendetta: "ecd8930c-763c-47ea-a851-308d8c6ac3c0",
+};

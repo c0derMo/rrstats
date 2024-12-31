@@ -2,7 +2,12 @@
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
     typescript: { shim: false },
-    modules: ["@nuxtjs/tailwindcss", "@nuxt/eslint", "@nuxtjs/robots", "@nuxt/test-utils/module"],
+    modules: [
+        "@nuxtjs/tailwindcss",
+        "@nuxt/eslint",
+        "@nuxtjs/robots",
+        "@nuxt/test-utils/module",
+    ],
     components: [{ path: "~/components", pathPrefix: false }],
 
     runtimeConfig: {

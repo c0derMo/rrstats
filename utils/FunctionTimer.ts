@@ -56,7 +56,7 @@ export function Log(functionName: string, includeArguments?: boolean) {
 
             const timer = new FunctionTimer(logName);
             const returnValue = _method.apply(this, args);
-            if (_method.constructor.name === 'AsyncFunction') {
+            if (_method.constructor.name === "AsyncFunction") {
                 (returnValue as Promise<unknown>).then(() => timer.finish());
             } else {
                 timer.finish();

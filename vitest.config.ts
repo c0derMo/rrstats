@@ -1,4 +1,4 @@
-import { defineVitestConfig } from '@nuxt/test-utils/config';
+import { defineVitestConfig } from "@nuxt/test-utils/config";
 
 export default defineVitestConfig({
     esbuild: {
@@ -9,9 +9,18 @@ export default defineVitestConfig({
         },
     },
     test: {
-        environment: 'nuxt',
+        environment: "nuxt",
         coverage: {
-            include: ['components/**/*.vue', 'composables/**/*.vue', 'layouts/**/*.vue', 'middleware/**/*.vue', 'pages/**/*.vue', 'plugins/**/*.ts', 'server/**/*.ts', 'utils/**/*.ts']
-        }
-    }
+            include: [
+                "components/**/*.vue",
+                "composables/**/*.vue",
+                "layouts/**/*.vue",
+                "middleware/**/*.vue",
+                "pages/**/*.vue",
+                "plugins/**/*.ts",
+                "server/**/*.ts",
+                "utils/**/*.ts",
+            ],
+        },
+    },
 });

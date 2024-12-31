@@ -2,22 +2,21 @@ import { afterEach, beforeEach, expect, test, vi, type Mock } from "vitest";
 import consola from "consola";
 import { DateTime } from "luxon";
 
-vi.mock('consola', () => {
+vi.mock("consola", () => {
     const logFn = vi.fn();
 
     const consola = {
         default: {
             withTag: vi.fn().mockImplementation(() => {
                 return {
-                    log: logFn
-                }
-            })
-        }
+                    log: logFn,
+                };
+            }),
+        },
     };
 
     return consola;
 });
-
 
 let _ogDtNow: () => DateTime;
 let dtNowFunc: Mock;
@@ -31,9 +30,9 @@ beforeEach(() => {
 
 afterEach(() => {
     DateTime.now = _ogDtNow;
-})
+});
 
-test('FunctionTimer', () => {
+test("FunctionTimer", () => {
     const dtNow = _ogDtNow();
     dtNowFunc.mockReturnValueOnce(dtNow);
     const ft = new FunctionTimer("Testing name");
@@ -68,7 +67,7 @@ class TestClass {
     }
 }
 
-test('Log Decorator', () => {
+test("Log Decorator", () => {
     const c = new TestClass();
 
     const dtNow = _ogDtNow();
@@ -84,17 +83,23 @@ test('Log Decorator', () => {
 
     expect(c.testOne()).toBe(false);
     expect(consola.withTag("").log).toHaveBeenCalledTimes(1);
-    expect(consola.withTag("").log).toHaveBeenLastCalledWith("Test Logger(): 300ms");
-    
+    expect(consola.withTag("").log).toHaveBeenLastCalledWith(
+        "Test Logger(): 300ms",
+    );
+
     dtNowFunc.mockReturnValueOnce(dtNow);
     dtNowFunc.mockReturnValueOnce(dtPlus300);
     expect(c.testTwo(true)).toBe(true);
     expect(consola.withTag("").log).toHaveBeenCalledTimes(2);
-    expect(consola.withTag("").log).toHaveBeenLastCalledWith("Test Logger with arguments shown(true): 300ms");
+    expect(consola.withTag("").log).toHaveBeenLastCalledWith(
+        "Test Logger with arguments shown(true): 300ms",
+    );
 
     dtNowFunc.mockReturnValueOnce(dtNow);
     dtNowFunc.mockReturnValueOnce(dtPlus300);
     expect(c.testThree(true)).toBe(true);
     expect(consola.withTag("").log).toHaveBeenCalledTimes(3);
-    expect(consola.withTag("").log).toHaveBeenLastCalledWith("Test Logger with arguments hidden(...): 300ms");
+    expect(consola.withTag("").log).toHaveBeenLastCalledWith(
+        "Test Logger with arguments hidden(...): 300ms",
+    );
 });
