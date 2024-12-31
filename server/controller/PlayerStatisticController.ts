@@ -10,10 +10,10 @@ import {
     type InsertEvent,
     type UpdateEvent,
 } from "typeorm";
-import { DateTime } from "luxon";
 import { Player } from "../model/Player";
 import { Log } from "~/utils/FunctionTimer";
 import EloController from "./EloController";
+import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();
@@ -90,9 +90,9 @@ export default class PlayerStatisticController {
 export class PlayerStatisticDatabaseListener
     implements EntitySubscriberInterface
 {
-    private lastDatabaseWrite: DateTime;
-    private timerStart: DateTime;
-    private invalidationTimer: NodeJS.Timeout | null = null;
+    private functionCaller = new DebouncedInvalidationFunction(
+        PlayerStatisticController.clearCache,
+    );
 
     afterInsert(event: InsertEvent<unknown>): void {
         this.invalidateLeaderboard(event.entity);
@@ -114,22 +114,6 @@ export class PlayerStatisticDatabaseListener
             return;
         }
 
-        this.lastDatabaseWrite = DateTime.now();
-        if (this.invalidationTimer === null) {
-            this.timerStart = DateTime.now();
-            this.invalidationTimer = setInterval(() => {
-                const startDiff = Math.abs(
-                    this.timerStart.diffNow().toMillis(),
-                );
-                const lastWriteDiff = Math.abs(
-                    this.lastDatabaseWrite.diffNow().toMillis(),
-                );
-                if (startDiff > 1000 || lastWriteDiff > 100) {
-                    void PlayerStatisticController.clearCache();
-                    clearInterval(this.invalidationTimer as NodeJS.Timeout);
-                    this.invalidationTimer = null;
-                }
-            }, 50);
-        }
+        this.functionCaller.call();
     }
 }

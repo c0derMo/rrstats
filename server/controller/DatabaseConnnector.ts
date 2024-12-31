@@ -12,6 +12,7 @@ import { PlayerStatisticDatabaseListener } from "./PlayerStatisticController";
 import { Match } from "../model/Match";
 import { User } from "../model/User";
 import consola from "consola";
+import { EloDatabaseListener } from "./EloController";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -42,6 +43,7 @@ export default class DatabaseConnector {
                       PlayerAccoladeSubscriber,
                       LeaderboardDatabaseListener,
                       PlayerStatisticDatabaseListener,
+                      EloDatabaseListener,
                   ]
                 : undefined,
             synchronize: true,

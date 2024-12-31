@@ -5,6 +5,14 @@ import consola from "consola";
 import { Log } from "~/utils/FunctionTimer";
 import { DefaultedMap } from "~/utils/DefaultedMap";
 import { DateTime } from "luxon";
+import {
+    EventSubscriber,
+    type EntitySubscriberInterface,
+    type InsertEvent,
+    type UpdateEvent,
+} from "typeorm";
+import { Player } from "../model/Player";
+import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 
 const logger = consola.withTag("rrstats:elo");
 const DAY_IN_MS = 86400000;
@@ -22,6 +30,7 @@ export default class EloController {
     private eloCache: Record<string, EloInfo[]> = {};
     private playedTournaments: DefaultedMap<string, string[]> =
         new DefaultedMap(() => []);
+    private currentlyRecalculating: Promise<void> | null = null;
 
     private static instance: EloController | null = null;
 
@@ -80,15 +89,28 @@ export default class EloController {
     }
 
     @Log("EloController.recalculateAllElos")
-    public async recalculateAllElos() {
+    public async recalculateAllElos(): Promise<void> {
+        if (this.currentlyRecalculating != null) {
+            return this.currentlyRecalculating;
+        }
+        this.currentlyRecalculating = this._recalculateAllElos();
+        await this.currentlyRecalculating;
+        this.currentlyRecalculating = null;
+    }
+
+    private async _recalculateAllElos() {
         if (this.competitionList.length === 0) {
             logger.warn(
                 "EloController.recalculateAllElos called with empty competition list",
             );
         }
 
+        // Reset everything
         this.eloCache = {};
         this.playedTournaments = new DefaultedMap(() => []);
+        this.returneeMatches = {};
+        this.lastTournament = {};
+        this.rookieMatches = {};
 
         const matches = await Match.find({
             order: { timestamp: "ASC" },
@@ -355,5 +377,34 @@ function round(toRound: number): number {
         return i % 2 == 0 ? i : i + 1;
     } else {
         return Math.round(n);
+    }
+}
+
+@EventSubscriber()
+export class EloDatabaseListener implements EntitySubscriberInterface {
+    private functionCaller = new DebouncedInvalidationFunction(() =>
+        EloController.getInstance().recalculateAllElos(),
+    );
+
+    afterInsert(event: InsertEvent<unknown>): void {
+        this.invalidateElo(event.entity);
+    }
+
+    afterUpdate(event: UpdateEvent<unknown>): void {
+        this.invalidateElo(event.entity);
+    }
+
+    private invalidateElo(entity: unknown) {
+        if (
+            !(
+                entity instanceof Player ||
+                entity instanceof Match ||
+                entity instanceof Competition
+            )
+        ) {
+            return;
+        }
+
+        this.functionCaller.call();
     }
 }
