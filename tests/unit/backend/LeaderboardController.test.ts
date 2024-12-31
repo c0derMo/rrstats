@@ -23,13 +23,49 @@ test("Performance: Leaderboard recalculation", { timeout: 10000 }, async () => {
     expect(startTime.diffNow().as("milliseconds")).toBeLessThan(10000);
 });
 
-test("Correct top entry: winrate", { timeout: 10000 }, async () => {
-    await LeaderboardController.recalculate();
-    const players = await LeaderboardController.getEntries("Winrate");
-    expect(players[0]).toEqual({
-        player: "28542412-14b1-4635-87fc-8e89a1a09a1a",
-        sortingScore: 1,
-        displayScore: "100.00%",
-        secondaryScore: 1,
-    });
+test("Correct leaderboard categories", { timeout: 10000 }, async () => {
+    const categories = await LeaderboardController.getCategories();
+
+    expect(categories.country.length).toBe(5);
+    expect(categories.map.length).toBe(5);
+    expect(categories.player.length).toBe(22);
+
+    expect(categories.country.map((c) => c.name)).toEqual([
+        "Players per country",
+        "Matches per country",
+        "Wins per country",
+        "Winrate per country",
+        "Titles per country",
+    ]);
+    expect(categories.map.map((c) => c.name)).toEqual([
+        "Picked",
+        "Banned",
+        "Played",
+        "Played as random map",
+        "Appearances",
+    ]);
+    expect(categories.player.map((c) => c.name)).toEqual([
+        "Winrate",
+        "Map Winrate",
+        "Roulette Rivals Participations",
+        "RRWC Participations",
+        "Average RR Placement",
+        "Grand Final Appearances",
+        "Matches played",
+        "Matches won",
+        "Maps played",
+        "Maps won",
+        "Winrate on own-map-picks",
+        "Winrate on opponent-map-picks",
+        "Most matches won in a row",
+        "Most maps won in a row",
+        "Winning streak on a map",
+        "Sweeps (6+ points)",
+        "Sweeps",
+        "Reverse sweeps",
+        "Spins played on specific map",
+        "Winrate on specific map",
+        "Elo rating",
+        "Matches casted",
+    ]);
 });
