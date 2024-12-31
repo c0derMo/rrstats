@@ -10,6 +10,7 @@ export default defineVitestConfig({
     },
     test: {
         environment: "nuxt",
+        include: ["tests/unit/**/*.test.ts"],
         coverage: {
             include: [
                 "components/**/*.vue",
@@ -22,5 +23,6 @@ export default defineVitestConfig({
                 "utils/**/*.ts",
             ],
         },
+        watch: false,
     },
 });
