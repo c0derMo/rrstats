@@ -1,31 +1,33 @@
-import { expect, test } from "vitest";
+import { expect, test, describe } from "vitest";
 
-test("StreakCounter general usage", () => {
-    const counter = new StreakCounter();
+describe("StreakCounter", () => {
+    test("StreakCounter general usage", () => {
+        const counter = new StreakCounter();
 
-    expect(counter.getLongestStreak()).toBe(0);
+        expect(counter.getLongestStreak()).toBe(0);
 
-    counter.increaseStreak();
-    counter.increaseStreak();
+        counter.increaseStreak();
+        counter.increaseStreak();
 
-    expect(counter.getLongestStreak()).toBe(2);
+        expect(counter.getLongestStreak()).toBe(2);
 
-    counter.resetStreak();
+        counter.resetStreak();
 
-    expect(counter.getLongestStreak()).toBe(2);
+        expect(counter.getLongestStreak()).toBe(2);
 
-    counter.increaseStreak();
+        counter.increaseStreak();
 
-    expect(counter.getLongestStreak()).toBe(2);
+        expect(counter.getLongestStreak()).toBe(2);
 
-    counter.increaseStreak();
-    counter.increaseStreak();
-    counter.increaseStreak();
-    counter.increaseStreak();
+        counter.increaseStreak();
+        counter.increaseStreak();
+        counter.increaseStreak();
+        counter.increaseStreak();
 
-    expect(counter.getLongestStreak()).toBe(5);
+        expect(counter.getLongestStreak()).toBe(5);
 
-    counter.resetStreak();
+        counter.resetStreak();
 
-    expect(counter.getLongestStreak()).toBe(5);
+        expect(counter.getLongestStreak()).toBe(5);
+    });
 });
