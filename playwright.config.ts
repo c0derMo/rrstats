@@ -15,9 +15,9 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: "npm run dev",
+        command: "node .output/server/index.mjs",
         env: {
-            NUXT_DATABASE: "tests/test_db_post_2024.db",
+            NUXT_DATABASE: "./tests/test_db_post_2024.db",
             NUXT_ENABLE_FUNCTION_TIMINGS: "false",
             NUXT_ENABLE_ROUTE_TIMINGS: "false",
         },

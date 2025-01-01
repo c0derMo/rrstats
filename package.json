@@ -14,7 +14,6 @@
         "script": "tsx --tsconfig ./server/tsconfig.json",
         "test:unit": "vitest",
         "test:e2e": "playwright test",
-        "test": "npm run test:unit && npm run test:playwright",
         "sqlite2pg": "tsx --tsconfig ./server/tsconfig.json ./server/scripts/2024-09-26-sqliteToPG.ts"
     },
     "devDependencies": {
