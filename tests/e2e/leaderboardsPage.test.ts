@@ -1,12 +1,5 @@
-import { test, expect, type Locator } from "@playwright/test";
-
-async function expectTableRow(locator: Locator, row: string[]) {
-    for (const idx in row) {
-        await expect(locator.locator("td").nth(parseInt(idx))).toContainText(
-            row[idx],
-        );
-    }
-}
+import { test, expect } from "@playwright/test";
+import { expectTableRow } from "./testUtils";
 
 test.describe("Leaderboards Page", () => {
     test("Correct categories", async ({ page }) => {

@@ -1,12 +1,5 @@
-import { test, expect, type Locator } from "@playwright/test";
-
-async function expectTableRow(locator: Locator, row: string[]) {
-    for (const idx in row) {
-        await expect(locator.locator("td").nth(parseInt(idx))).toContainText(
-            row[idx],
-        );
-    }
-}
+import { test, expect } from "@playwright/test";
+import { expectTableRow } from "./testUtils";
 
 test.describe("Player Page", () => {
     test("Correct stats on top of page", async ({ page }) => {
@@ -146,6 +139,7 @@ test.describe("Player Page", () => {
             "In4Fun",
             "4 - 8",
             "The Rieper 47",
+            ["DUB", "SAP", "CHO", "COL", "HOK", "AMB"],
         ]);
         await expectTableRow(table.locator("tbody").nth(2), [
             "RRWC2024",
@@ -153,6 +147,7 @@ test.describe("Player Page", () => {
             "In4Fun",
             "10 - 6",
             "quatilyti",
+            ["BER", "HOK", "COL", "HAV", "DAR", "MAR", "SGA", "BKK"],
         ]);
         await expectTableRow(table.locator("tbody").nth(4), [
             "RRWC2024",
@@ -160,6 +155,7 @@ test.describe("Player Page", () => {
             "In4Fun",
             "8 - 6",
             "Peter Dutton MP",
+            ["SF", "MIA", "SAP", "DAR", "MEN", "MUM", "PAR"],
         ]);
     });
 });
