@@ -18,13 +18,15 @@ async function main() {
     const matches = await Match.find({
         where: { shoutcasters: ILike(`%${OLD_NAME}%`) },
         relations: {
-            playedMaps: false
-        }
+            playedMaps: false,
+        },
     });
     console.log(`Loaded ${matches.length} matches.`);
 
     for (const match of matches) {
-        const shoutcasterIndex = match.shoutcasters!.findIndex((s) => s === OLD_NAME);
+        const shoutcasterIndex = match.shoutcasters!.findIndex(
+            (s) => s === OLD_NAME,
+        );
         if (shoutcasterIndex < 0) {
             console.log(`Shoutcaster not found in match ${match.uuid}`);
         } else {

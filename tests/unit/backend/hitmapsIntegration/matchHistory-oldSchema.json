@@ -1,0 +1,89 @@
+{
+    "matches": [
+        {
+            "id": 2059,
+            "challongeMatchId": 365499497,
+            "matchScheduledAt": "2024-05-11T14:00:00Z",
+            "matchCompletedAt": "2024-05-11T15:08:34Z",
+            "competitors": [
+                {
+                    "id": 992,
+                    "bracketId": 35,
+                    "discordId": "292699566782939137",
+                    "challongePlayerId": 230058385,
+                    "challongeName": "CurryMaker",
+                    "countryCode": "DE"
+                },
+                {
+                    "id": 1021,
+                    "bracketId": 35,
+                    "discordId": "898701013136080957",
+                    "challongePlayerId": 230794866,
+                    "challongeName": "Apricope",
+                    "countryCode": "US"
+                }
+            ],
+            "gameModeMatchId": "a7d655fc-49b6-48a6-9ab8-8a28e40d4614",
+            "platform": "All",
+            "round": 1,
+            "maps": [
+                {
+                    "competitorId": 992,
+                    "competitorName": "CurryMaker",
+                    "selectionType": "Ban",
+                    "mapSlug": "end-of-an-era",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                },
+                {
+                    "competitorId": 1021,
+                    "competitorName": "Apricope",
+                    "selectionType": "Ban",
+                    "mapSlug": "club-27",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                },
+                {
+                    "competitorId": 992,
+                    "competitorName": "CurryMaker",
+                    "selectionType": "Pick",
+                    "mapSlug": "the-farewell",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                },
+                {
+                    "competitorId": 1021,
+                    "competitorName": "Apricope",
+                    "selectionType": "Pick",
+                    "mapSlug": "chasing-a-ghost",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                },
+                {
+                    "selectionType": "Random",
+                    "mapSlug": "finish-line",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                },
+                {
+                    "selectionType": "Random",
+                    "mapSlug": "world-of-tomorrow",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                },
+                {
+                    "selectionType": "Random",
+                    "mapSlug": "on-top-of-the-world",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                },
+                {
+                    "selectionType": "Random",
+                    "mapSlug": "situs-inversus",
+                    "roundType": "roulette-rivals",
+                    "state": ""
+                }
+            ]
+        }
+    ]
+}

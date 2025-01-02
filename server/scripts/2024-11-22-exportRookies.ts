@@ -26,7 +26,9 @@ async function main() {
             continue;
         }
         if (DateTime.fromMillis(stats.debutMatch.timestamp).year === 2024) {
-            console.log(`${player.primaryName}: ${stats.winTieLoss.w}/${stats.matchCount} (${stats.winrate}); ${stats.mapsWon.reduce((l,r) => l+r,0)}/${stats.mapsPlayed.reduce((l,r) => l+r,0)} (${stats.mapWinrate}; ${stats.bestPlacement} best, ${stats.averagePlacement} avg)`)
+            console.log(
+                `${player.primaryName}: ${stats.winTieLoss.w}/${stats.matchCount} (${stats.winrate}); ${stats.mapsWon.reduce((l, r) => l + r, 0)}/${stats.mapsPlayed.reduce((l, r) => l + r, 0)} (${stats.mapWinrate}; ${stats.bestPlacement} best, ${stats.averagePlacement} avg)`,
+            );
         }
     }
 

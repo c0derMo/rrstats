@@ -55,7 +55,11 @@ async function main() {
         maxMapCount = Math.max(maxMapCount, match.playedMaps.length);
         const result = {
             competition: match.competition,
-            date: DateTime.fromMillis(match.timestamp).toISO({ includeOffset: false, suppressMilliseconds: true, includePrefix: false }),
+            date: DateTime.fromMillis(match.timestamp).toISO({
+                includeOffset: false,
+                suppressMilliseconds: true,
+                includePrefix: false,
+            }),
             platform: match.platform,
             round: match.round,
             player1: playerLookupMap[match.playerOne],
