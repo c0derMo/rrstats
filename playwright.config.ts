@@ -7,6 +7,7 @@ export default defineConfig({
     reporter: "html",
     use: {
         baseURL: "http://localhost:3000",
+        timezoneId: "Europe/Berlin",
     },
     projects: [
         {
