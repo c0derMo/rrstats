@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, test, expect, describe } from "vitest";
 import DatabaseConnector from "~/server/controller/DatabaseConnnector";
+import EloController from "~/server/controller/EloController";
 import LeaderboardController from "~/server/controller/LeaderboardController";
 
 let database: DatabaseConnector;
@@ -12,6 +13,8 @@ describe("Player Leaderboards", () => {
             false,
         );
         await database.initialize();
+        await EloController.getInstance().fetchCompetitions();
+        await EloController.getInstance().recalculateAllElos();
         await LeaderboardController.recalculate();
     });
 
@@ -56,28 +59,28 @@ describe("Player Leaderboards", () => {
     test("Elo rating", async () => {
         const players = await LeaderboardController.getEntries("Elo rating");
 
-        expect(players.length).toBe(235);
+        expect(players.length).toBe(237);
 
         expect(players[0]).toEqual({
             player: playerNamesToUUIDs["Scruffy"],
-            displayScore: "1424",
-            sortingScore: 1424,
+            displayScore: "1458",
+            sortingScore: 1458,
         });
         expect(players[1]).toEqual({
             player: playerNamesToUUIDs["Phanium"],
-            displayScore: "1322",
-            sortingScore: 1322,
+            displayScore: "1350",
+            sortingScore: 1350,
         });
         expect(players[2]).toEqual({
-            player: playerNamesToUUIDs["In4Fun"],
-            displayScore: "1300",
-            sortingScore: 1300,
+            player: playerNamesToUUIDs["Music Inc"],
+            displayScore: "1336",
+            sortingScore: 1336,
         });
 
-        expect(players[234]).toEqual({
-            player: playerNamesToUUIDs["Pac"],
-            displayScore: "828",
-            sortingScore: 828,
+        expect(players[236]).toEqual({
+            player: playerNamesToUUIDs["Max Masters"],
+            displayScore: "706",
+            sortingScore: 706,
         });
     });
 
@@ -733,7 +736,6 @@ const playerNamesToUUIDs: Record<string, string> = {
     Scruffy: "382f3619-14c0-41fc-9ea8-c6cf05a29238",
     Phanium: "58a21881-628e-4f73-9cea-7a4d59c622ed",
     In4Fun: "564c9a2f-88df-46fa-9b93-9b1b9e5fd0d7",
-    Pac: "575f9f9e-c95b-4332-b033-153cfc13dc08",
     Ducker: "e1f828ca-92a8-4ce5-9616-017ec8221063",
     "The Rieper 47": "a0eccd64-36d1-4a02-8c1b-89262d444162",
     Frote7: "5e11e928-efee-4b6a-8687-1a38cbb2268e",
@@ -761,4 +763,6 @@ const playerNamesToUUIDs: Record<string, string> = {
     Crimson: "618fd579-e8ed-4a0f-85f0-8f9f2a0525e0",
     Scroob: "1b024b85-89ef-4aff-82ce-0da3edab78b9",
     Vendetta: "ecd8930c-763c-47ea-a851-308d8c6ac3c0",
+    "Max Masters": "5335e4c1-a6e6-4cc2-9310-e4ee8cb07708",
+    "Music Inc": "3bc6b8e6-39a7-427c-984e-a2272e94b72e",
 };

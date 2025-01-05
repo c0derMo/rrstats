@@ -16,6 +16,7 @@ test.describe("Player Page", () => {
         await expect(winrateStats).toContainText("Debut: 4/15/2020 (RR2)");
 
         await expect(page.getByText("Best RR Placement: 1st")).toBeVisible();
+        await expect(page.getByText("Elo rating: 1323")).toBeVisible();
         await expect(page.getByText("Maps played: 444")).toBeVisible();
         await expect(page.getByText("Matches played: 124")).toBeVisible();
         await expect(page.getByText("W-T-L: 96-1-27")).toBeVisible();
