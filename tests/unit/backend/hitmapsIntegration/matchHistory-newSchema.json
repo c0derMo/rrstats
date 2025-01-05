@@ -1,0 +1,75 @@
+{
+    "matches": [
+        {
+            "id": 3379,
+            "challongeMatchId": null,
+            "matchScheduledAt": "2024-10-18T13:30:00Z",
+            "matchCompletedAt": "2024-10-18T14:12:16Z",
+            "competitors": [
+                {
+                    "id": 2107,
+                    "bracketId": 37,
+                    "discordId": "664320213700968478",
+                    "challongePlayerId": null,
+                    "challongeName": "Parapluie",
+                    "countryCode": "CA"
+                },
+                {
+                    "id": 2132,
+                    "bracketId": 37,
+                    "discordId": "203595409623351296",
+                    "challongePlayerId": null,
+                    "challongeName": "Dein Nomos",
+                    "countryCode": "ID"
+                }
+            ],
+            "gameModeMatchId": "3f34b025-42d5-41e2-b4e6-11e0ad37b6fa",
+            "maps": [
+                {
+                    "mapStartedAt": "2024-10-18T13:30:00",
+                    "resultVerifiedAt": "2024-10-18T13:36:09.2298418",
+                    "winnerFinishedAt": "2024-10-18T13:35:15.8623726",
+                    "winnerDiscordId": "203595409623351296",
+                    "mapJson": "[{\"type\":\"KILL\",\"target\":{\"name\":\"Don Archibald Yates\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/actors/elegant_yates.jpg\"},\"killMethod\":{\"name\":\"Injected Poison\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_injected_poison.jpg\",\"chosen\":false,\"selectedVariant\":null},\"disguise\":{\"name\":\"Head of Security\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/unlockables/outfit_16df6808-97ac-4c3a-8d4b-7ddacfc8a7ea_0.jpg\",\"chosen\":false},\"complications\":[]},{\"type\":\"KILL\",\"target\":{\"name\":\"Tamara Vidal\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/actors/elegant_vidal.jpg\"},\"killMethod\":{\"name\":\"Electrocution\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_accident_electric.jpg\",\"chosen\":false,\"selectedVariant\":null},\"disguise\":{\"name\":\"Corvo Black\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/unlockables/outfit_214b2143-3277-44cd-b20f-344747fc23d9_0.jpg\",\"chosen\":false},\"complications\":[]}]",
+                    "competitorId": 2132,
+                    "competitorName": "Dein Nomos",
+                    "selectionType": "Pick",
+                    "mapSlug": "the-farewell",
+                    "roundType": "roulette-rivals",
+                    "state": "Complete",
+                    "winnerId": null
+                },
+                {
+                    "mapStartedAt": "2024-10-18T13:40:00",
+                    "resultVerifiedAt": null,
+                    "winnerFinishedAt": null,
+                    "winnerDiscordId": null,
+                    "mapJson": "[{\"type\":\"KILL\",\"target\":{\"name\":\"Viktor Novikov\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/actors/showstopper_viktor_novikov.jpg\"},\"killMethod\":{\"name\":\"SMG\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_smg.jpg\",\"chosen\":false,\"selectedVariant\":null},\"disguise\":{\"name\":\"Chef\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/unlockables/outfit_26ae3261-2a1d-49b2-8cab-d626d0887836_0.jpg\",\"chosen\":false},\"complications\":[]},{\"type\":\"KILL\",\"target\":{\"name\":\"Dalia Margolis\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/actors/showstopper_dahlia_margolis.jpg\"},\"killMethod\":{\"name\":\"Drowning\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_accident_drown.jpg\",\"chosen\":false,\"selectedVariant\":null},\"disguise\":{\"name\":\"Sheikh Salman Al-Ghazali\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/unlockables/outfit_a8ecd823-6e08-4cfe-a04d-816d387fcf0c_0.jpg\",\"chosen\":false},\"complications\":[]}]",
+                    "competitorId": 2107,
+                    "competitorName": "Parapluie",
+                    "selectionType": "Pick",
+                    "mapSlug": "the-showstopper",
+                    "roundType": "roulette-rivals",
+                    "state": "Complete",
+                    "winnerId": null
+                },
+                {
+                    "mapStartedAt": "2024-10-18T13:57:00",
+                    "resultVerifiedAt": "2024-10-18T14:11:12.9783108",
+                    "winnerFinishedAt": "2024-10-18T14:10:40.9700075",
+                    "winnerDiscordId": "203595409623351296",
+                    "mapJson": "[{\"type\":\"KILL\",\"target\":{\"name\":\"Wazir Kale\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/actors/mongoose_wazir_kale_identified.jpg\"},\"killMethod\":{\"name\":\"Falling Object\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_accident_suspended_object.jpg\",\"chosen\":false,\"selectedVariant\":null},\"disguise\":{\"name\":\"Painter\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/unlockables/outfit_81f55bbc-a120-4757-a778-b73fd775d1a4_0.jpg\",\"chosen\":false},\"complications\":[]},{\"type\":\"KILL\",\"target\":{\"name\":\"Vanya Shah\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/actors/mongoose_vanya_shah.jpg\"},\"killMethod\":{\"name\":\"Pistol\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_pistol.jpg\",\"chosen\":false,\"selectedVariant\":null},\"disguise\":{\"name\":\"Lead Actor\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/unlockables/outfit_446ace07-c9c6-49fc-b157-fa58e812fcef_0.jpg\",\"chosen\":false},\"complications\":[]},{\"type\":\"KILL\",\"target\":{\"name\":\"Dawood Rangan\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/actors/mongoose_dawood_rangan.jpg\"},\"killMethod\":{\"name\":\"SMG\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_smg.jpg\",\"chosen\":false,\"selectedVariant\":null},\"disguise\":{\"name\":\"Dancer\",\"tileUrl\":\"https://media.hitmaps.com/img/hitman3/unlockables/outfit_88adef78-2a19-45fb-9c95-988e82c056f1_0.jpg\",\"chosen\":false},\"complications\":[]}]",
+                    "competitorId": null,
+                    "competitorName": null,
+                    "selectionType": "Random",
+                    "mapSlug": "chasing-a-ghost",
+                    "roundType": "roulette-rivals",
+                    "state": "Complete",
+                    "winnerId": null
+                }
+            ],
+            "platform": "All",
+            "round": null
+        }
+    ]
+}

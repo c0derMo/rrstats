@@ -249,10 +249,12 @@ export default class LeaderboardController {
             if (map == null) {
                 return [];
             } else if (map === OptionalMap.NO_MAP) {
-                return LeaderboardController.cache[category] as Record<
-                    HitmanMap | OptionalMap,
-                    LeaderboardEntry[]
-                >[OptionalMap.NO_MAP];
+                return (
+                    LeaderboardController.cache[category] as Record<
+                        HitmanMap | OptionalMap,
+                        LeaderboardEntry[]
+                    >
+                )[OptionalMap.NO_MAP];
             } else {
                 return (
                     LeaderboardController.cache[category] as Record<

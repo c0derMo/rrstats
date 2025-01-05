@@ -16,17 +16,24 @@ async function main() {
 
     const players = await Player.find();
     console.log(`Loaded ${players.length} players.`);
-    const competitions = await Competition.find({ where: { officialCompetition: true }, order: { startingTimestamp: 'ASC' } });
+    const competitions = await Competition.find({
+        where: { officialCompetition: true },
+        order: { startingTimestamp: "ASC" },
+    });
     console.log(`Loaded ${competitions.length} competitions.`);
     const placements = await CompetitionPlacement.find();
     console.log(`Loaded ${placements.length} placements.`);
 
-    const playersPlacements: Record<string, Record<string, number | string>> = {};
+    const playersPlacements: Record<
+        string,
+        Record<string, number | string>
+    > = {};
     for (const placement of placements) {
         if (playersPlacements[placement.player] == null) {
             playersPlacements[placement.player] = {};
         }
-        playersPlacements[placement.player][placement.competition] = placement.placement ?? "GS";
+        playersPlacements[placement.player][placement.competition] =
+            placement.placement ?? "GS";
     }
 
     const rows: unknown[][] = [];
@@ -46,9 +53,7 @@ async function main() {
         rows.push(row);
     }
 
-    const headers = [
-        "PLAYER"
-    ];
+    const headers = ["PLAYER"];
     for (const comp of competitions) {
         headers.push(comp.tag.toUpperCase());
     }
