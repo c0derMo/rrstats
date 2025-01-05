@@ -2,6 +2,7 @@ import { expect, test, describe, beforeAll, afterAll } from "vitest";
 import CSVExportController from "~/server/controller/CSVExportController";
 import DatabaseConnector from "~/server/controller/DatabaseConnnector";
 import type { Stringifier } from "csv-stringify";
+import { Settings } from "luxon";
 
 let database: DatabaseConnector;
 
@@ -13,6 +14,8 @@ describe("CSVExportController", () => {
             false,
         );
         await database.initialize();
+
+        Settings.defaultZone = "Europe/Berlin";
     });
     afterAll(async () => {
         await database.destroy();
