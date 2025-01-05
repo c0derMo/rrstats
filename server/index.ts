@@ -3,6 +3,7 @@ import LeaderboardController from "./controller/LeaderboardController";
 import DatabaseConnector from "./controller/DatabaseConnnector";
 import { setFunctionTimersEnabled } from "~/utils/FunctionTimer";
 import { VERSION } from "./version";
+import EloController from "./controller/EloController";
 
 export default defineNitroPlugin(async (nitroApp) => {
     console.log(`Starting rrstats with commit hash ${VERSION}`);
@@ -16,6 +17,8 @@ export default defineNitroPlugin(async (nitroApp) => {
     );
 
     await database.initialize();
+    await EloController.getInstance().fetchCompetitions();
+    await EloController.getInstance().recalculateAllElos();
     await LeaderboardController.recalculate();
 
     nitroApp.hooks.hook("close", async () => {

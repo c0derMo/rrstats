@@ -55,6 +55,7 @@ import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWo
 import { Log } from "~/utils/FunctionTimer";
 import consola from "consola";
 import { PlayedMap } from "../model/PlayedMap";
+import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 
 export interface StatisticData<T extends string> {
     name: string;
@@ -271,7 +272,10 @@ export default class LeaderboardController {
 
 @EventSubscriber()
 export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
-    private invalidationTimer: NodeJS.Timeout | null = null;
+    private functionCaller = new DebouncedInvalidationFunction(
+        LeaderboardController.recalculate,
+        { maxWait: 10000, checkInterval: 100, inactivityWait: 2000 },
+    );
 
     afterInsert(event: InsertEvent<unknown>): void {
         this.invalidateLeaderboard(event.entity);
@@ -294,16 +298,6 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
             return;
         }
 
-        if (this.invalidationTimer != null) {
-            clearTimeout(this.invalidationTimer);
-        }
-
-        this.invalidationTimer = setTimeout(this.timerExpiry, 10000);
-    }
-
-    private timerExpiry() {
-        void LeaderboardController.recalculate();
-        clearTimeout(this.invalidationTimer!);
-        this.invalidationTimer = null;
+        this.functionCaller.call();
     }
 }

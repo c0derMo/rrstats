@@ -48,6 +48,9 @@ export class Match extends BaseEntity implements IMatch {
     @Column("text", { nullable: true })
     notes?: string;
 
+    @Column("simple-json", { default: "[]" })
+    eloChange: number[];
+
     @Column("simple-json", { nullable: true })
     shoutcasters?: string[];
     @Column("simple-json", { nullable: true })

@@ -18,6 +18,7 @@ const selectedFields = [
     "shoutcasters",
     "vodLink",
     "playedMaps",
+    "eloChange",
 ] as FindOptionsSelect<Match>;
 
 export default defineEventHandler<Promise<IMatch[] | IMatch | null>>(

@@ -26,7 +26,10 @@ logs
 *.db
 *.csv
 !tests/*.db
+*.db-shm
+*.db-wal
 
 coverage
 playwright-report
 test-results
+.database

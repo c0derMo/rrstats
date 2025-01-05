@@ -22,6 +22,8 @@ export type IMatch = {
 
     notes?: string;
 
+    eloChange: number[];
+
     shoutcasters?: string[];
     vodLink?: string[];
 };
