@@ -26,7 +26,7 @@ export default class DatabaseConnector {
         }
 
         this.db = new DataSource({
-            type: dbType,
+            type: dbType === "sqlite" ? "better-sqlite3" : dbType,
             database: dbType === "sqlite" ? database : undefined,
             url: dbType === "postgres" ? database : undefined,
             entities: [
@@ -49,6 +49,13 @@ export default class DatabaseConnector {
                 : undefined,
             synchronize: true,
             parseInt8: dbType === "postgres" ? true : undefined,
+            prepareDatabase:
+                dbType !== "sqlite"
+                    ? undefined
+                    : (db) => {
+                          logger.debug("Setting journal mode");
+                          db.pragma("journal_mode = WAL");
+                      },
         } as DataSourceOptions);
     }
 
