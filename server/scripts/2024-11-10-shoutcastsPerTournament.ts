@@ -17,8 +17,8 @@ async function main() {
     const matches = await Match.find({
         where: { competition: compToExport },
         relations: {
-            playedMaps: false
-        }
+            playedMaps: false,
+        },
     });
     console.log(`Loaded ${matches.length} matches.`);
 
@@ -35,8 +35,8 @@ async function main() {
         }
     }
 
-    console.log("====")
-    console.log("Stats:")
+    console.log("====");
+    console.log("Stats:");
 
     for (const caster in shoutcasters) {
         console.log(`${caster}:    ${shoutcasters[caster]}`);

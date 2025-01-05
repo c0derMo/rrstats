@@ -1,0 +1,333 @@
+{
+    "matches": [
+        {
+            "matchupId": "a7d655fc-49b6-48a6-9ab8-8a28e40d4614",
+            "participants": [
+                {
+                    "publicId": "29fe2e42ae61f289",
+                    "name": "CurryMaker",
+                    "avatarUrl": "https://cdn.discordapp.com/avatars/292699566782939137/56a2cca544958ce8e71a389bbef94acb.png?size=128",
+                    "lastPing": "2024-05-11T15:10:29.938Z",
+                    "completeTime": null,
+                    "forfeit": false
+                },
+                {
+                    "publicId": "562bee8f693e4858",
+                    "name": "Apricope",
+                    "avatarUrl": "https://cdn.discordapp.com/avatars/898701013136080957/dbd6bf91a8693ee29fe4076f40882851.png?size=128",
+                    "lastPing": "2024-05-11T15:10:34.605Z",
+                    "completeTime": null,
+                    "forfeit": false
+                }
+            ],
+            "mapSelections": [
+                {
+                    "id": 5128,
+                    "hitmapsSlug": "the-farewell",
+                    "chosenByName": "CurryMaker",
+                    "complete": true,
+                    "winnerName": "CurryMaker",
+                    "spin": {
+                        "mission": {
+                            "name": "The Farewell",
+                            "slug": "the-farewell",
+                            "variantSlug": "professional",
+                            "publicIdPrefix": 31,
+                            "targets": [
+                                {
+                                    "name": "Don Archibald Yates",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/elegant_yates.jpg"
+                                },
+                                {
+                                    "name": "Tamara Vidal",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/elegant_vidal.jpg"
+                                }
+                            ]
+                        },
+                        "targetConditions": [
+                            {
+                                "target": {
+                                    "name": "Don Archibald Yates",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/elegant_yates.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Grape Knife",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/item_perspective_2b1bd2af-554e-4ea7-a717-3f6d0eb0215f_0.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Mercenary",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_69d4d32b-0fc9-4fde-8817-fafd98c13365_0.jpg"
+                                },
+                                "complications": []
+                            },
+                            {
+                                "target": {
+                                    "name": "Tamara Vidal",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/elegant_vidal.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Combat Knife",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/item_perspective_2c037ef5-a01b-4532-8216-1d535193a837_0.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Winery Worker",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_bbdfca80-abef-4b43-953e-9a46c3eee2eb_0.jpg"
+                                },
+                                "complications": []
+                            }
+                        ],
+                        "additionalObjectives": []
+                    },
+                    "mapStartedAt": "2024-05-11T14:12:00.000Z",
+                    "winnerFinishedAt": "2024-05-11T14:21:16.441Z",
+                    "resultVerifiedAt": "2024-05-11T14:21:39.772Z"
+                },
+                {
+                    "id": 5129,
+                    "hitmapsSlug": "chasing-a-ghost",
+                    "chosenByName": "Apricope",
+                    "complete": true,
+                    "winnerName": "Apricope",
+                    "spin": {
+                        "mission": {
+                            "name": "",
+                            "slug": "chasing-a-ghost",
+                            "variantSlug": "professional",
+                            "publicIdPrefix": 13,
+                            "targets": [
+                                {
+                                    "name": "Wazir Kale",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/mongoose_wazir_kale_identified.jpg"
+                                },
+                                {
+                                    "name": "Vanya Shah",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/mongoose_vanya_shah.jpg"
+                                },
+                                {
+                                    "name": "Dawood Rangan",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/mongoose_dawood_rangan.jpg"
+                                }
+                            ]
+                        },
+                        "targetConditions": [
+                            {
+                                "target": {
+                                    "name": "Wazir Kale",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/mongoose_wazir_kale_identified.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Letter Opener",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/item_perspective_f1f89faf-a441-4492-b442-9a923b5ecfd1_0.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Laundry Foreman",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_eeefa90a-6665-4eb1-8bc9-3e08c222abae_0.jpg"
+                                },
+                                "complications": []
+                            },
+                            {
+                                "target": {
+                                    "name": "Vanya Shah",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/mongoose_vanya_shah.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Kitchen Knife",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/item_perspective_e17172cc-bf70-4df6-9828-d9856b1a24fd_0.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Thug",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_a2cef12c-77d6-4062-9596-cf9d1a47d1b5_0.jpg"
+                                },
+                                "complications": [
+                                    {
+                                        "name": "No Target Pacification",
+                                        "description": "If you pacify or subdue the target in any way, you immediately fail the spin.",
+                                        "tileUrl": "https://media.hitmaps.com/img/hitman3/contracts/gamechangers/gamechanger_global_nopacifications.jpg"
+                                    }
+                                ]
+                            },
+                            {
+                                "target": {
+                                    "name": "Dawood Rangan",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/mongoose_dawood_rangan.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Electrocution",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_accident_electric.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Tailor",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_b384ff35-9c38-4b08-ab0b-e333cfd7bc6a_0.jpg"
+                                },
+                                "complications": []
+                            }
+                        ],
+                        "additionalObjectives": []
+                    },
+                    "mapStartedAt": "2024-05-11T14:25:00.000Z",
+                    "winnerFinishedAt": "2024-05-11T14:39:45.147Z",
+                    "resultVerifiedAt": "2024-05-11T14:40:05.544Z"
+                },
+                {
+                    "id": 5130,
+                    "hitmapsSlug": "finish-line",
+                    "chosenByName": null,
+                    "complete": true,
+                    "winnerName": "Apricope",
+                    "spin": {
+                        "mission": {
+                            "name": "The Finish Line",
+                            "slug": "finish-line",
+                            "variantSlug": "professional",
+                            "publicIdPrefix": 11,
+                            "targets": [
+                                {
+                                    "name": "Sierra Knox",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/flamingo_sierra_knox.jpg"
+                                },
+                                {
+                                    "name": "Robert Knox",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/flamingo_robert_knox.jpg"
+                                }
+                            ]
+                        },
+                        "targetConditions": [
+                            {
+                                "target": {
+                                    "name": "Sierra Knox",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/flamingo_sierra_knox.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Pistol",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_pistol.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Aeon Driver",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_6fca97a0-cb80-4bd7-9a8f-106fa20a5d04_0.jpg"
+                                },
+                                "complications": []
+                            },
+                            {
+                                "target": {
+                                    "name": "Robert Knox",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/flamingo_robert_knox.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Electrocution",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_accident_electric.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Thwack Mechanic",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_4376850a-3a37-4ad3-a886-168d0e24aa20_0.jpg"
+                                },
+                                "complications": []
+                            }
+                        ],
+                        "additionalObjectives": []
+                    },
+                    "mapStartedAt": "2024-05-11T14:44:00.000Z",
+                    "winnerFinishedAt": "2024-05-11T14:56:46.268Z",
+                    "resultVerifiedAt": "2024-05-11T14:57:08.944Z"
+                },
+                {
+                    "id": 5131,
+                    "hitmapsSlug": "world-of-tomorrow",
+                    "chosenByName": null,
+                    "complete": true,
+                    "winnerName": "Apricope",
+                    "spin": {
+                        "mission": {
+                            "name": "World of Tomorrow",
+                            "slug": "world-of-tomorrow",
+                            "variantSlug": "professional",
+                            "publicIdPrefix": 3,
+                            "targets": [
+                                {
+                                    "name": "Silvio Caruso",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_silvio_caruso_briefing.jpg"
+                                },
+                                {
+                                    "name": "Francesca De Santis",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_francesca_de_santis.jpg"
+                                }
+                            ]
+                        },
+                        "targetConditions": [
+                            {
+                                "target": {
+                                    "name": "Silvio Caruso",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_silvio_caruso_briefing.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "Shotgun",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_shotgun.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Butler",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_81eed11b-eaa3-4fd3-97ba-e1e89dcca57e_0.jpg"
+                                },
+                                "complications": [
+                                    {
+                                        "name": "No Target Pacification",
+                                        "description": "If you pacify or subdue the target in any way, you immediately fail the spin.",
+                                        "tileUrl": "https://media.hitmaps.com/img/hitman3/contracts/gamechangers/gamechanger_global_nopacifications.jpg"
+                                    }
+                                ]
+                            },
+                            {
+                                "target": {
+                                    "name": "Francesca De Santis",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/actors/world_of_tomorrow_francesca_de_santis.jpg"
+                                },
+                                "killMethod": {
+                                    "name": "SMG",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/contractconditions/condition_killmethod_smg.jpg",
+                                    "selectedVariant": null
+                                },
+                                "disguise": {
+                                    "name": "Bohemian",
+                                    "tileUrl": "https://media.hitmaps.com/img/hitman3/unlockables/outfit_61b8f96e-4986-4f0a-ab95-dcdc69f51580_0.jpg"
+                                },
+                                "complications": []
+                            }
+                        ],
+                        "additionalObjectives": []
+                    },
+                    "mapStartedAt": "2024-05-11T15:01:00.000Z",
+                    "winnerFinishedAt": "2024-05-11T15:08:07.390Z",
+                    "resultVerifiedAt": "2024-05-11T15:08:32.429Z"
+                },
+                {
+                    "id": 5132,
+                    "hitmapsSlug": "on-top-of-the-world",
+                    "chosenByName": null,
+                    "complete": false,
+                    "winnerName": null,
+                    "spin": null,
+                    "mapStartedAt": null,
+                    "winnerFinishedAt": null,
+                    "resultVerifiedAt": null
+                },
+                {
+                    "id": 5133,
+                    "hitmapsSlug": "situs-inversus",
+                    "chosenByName": null,
+                    "complete": false,
+                    "winnerName": null,
+                    "spin": null,
+                    "mapStartedAt": null,
+                    "winnerFinishedAt": null,
+                    "resultVerifiedAt": null
+                }
+            ]
+        }
+    ]
+}

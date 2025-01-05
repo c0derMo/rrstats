@@ -41,9 +41,9 @@ export function Log(functionName: string, includeArguments?: boolean) {
 
         const _method = descriptor.value;
 
-        descriptor.value = async function (...args: unknown[]) {
+        descriptor.value = function (...args: unknown[]) {
             if (!functionTimersEnabled) {
-                return await _method.apply(this, args);
+                return _method.apply(this, args);
             }
             let logName = functionName;
             if (includeArguments) {
@@ -55,8 +55,12 @@ export function Log(functionName: string, includeArguments?: boolean) {
             }
 
             const timer = new FunctionTimer(logName);
-            const returnValue = await _method.apply(this, args);
-            timer.finish();
+            const returnValue = _method.apply(this, args);
+            if (_method.constructor.name === "AsyncFunction") {
+                (returnValue as Promise<unknown>).then(() => timer.finish());
+            } else {
+                timer.finish();
+            }
             return returnValue;
         };
     };

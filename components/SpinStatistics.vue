@@ -61,7 +61,7 @@
                     </TooltipComponent>
                 </div>
 
-                <span class="font-bold">Most repeated spin</span>
+                <span class="font-bold">Most repeated spin:</span>
                 <div>
                     <span>{{ data.mostRepeated.count }}x</span>
                     <span v-if="data.mostRepeated.spins.length > 1">
@@ -97,7 +97,7 @@
                 >
                 <span>{{ secondsToTime(data.averageLastYear) }}</span>
 
-                <span class="font-bold">Quickest spin</span>
+                <span class="font-bold">Quickest spin:</span>
                 <span>
                     <template v-if="data.quickest.length != 0">
                         <TextualSpin
@@ -122,7 +122,7 @@
                     </template>
                 </span>
 
-                <span class="font-bold">Slowest spin</span>
+                <span class="font-bold">Slowest spin:</span>
                 <span>
                     <template v-if="data.slowest.length != 0">
                         <TextualSpin

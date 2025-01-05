@@ -25,3 +25,8 @@ logs
 
 *.db
 *.csv
+!tests/*.db
+
+coverage
+playwright-report
+test-results

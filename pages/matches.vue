@@ -5,6 +5,11 @@
             :match="matchToShow"
             @click-outside="matchToShow = null"
         />
+        <DownloadCompetitionCSVDialog
+            v-if="showDownload"
+            :competition="competition?.tag ?? ''"
+            @closed="showDownload = false"
+        />
         <CompetitionBackground
             :competitions="[
                 competition?.backgroundImage || (tournament as string),
@@ -49,6 +54,15 @@
                 :rows-per-page="[10, 25, 50, 100]"
                 :selected-rows-per-page="25"
             >
+                <template #header-actions>
+                    <ButtonComponent @click="showDownload = true">
+                        <FontAwesomeIcon
+                            :icon="['fas', 'download']"
+                            size="xs"
+                        />
+                    </ButtonComponent>
+                </template>
+
                 <template #timestamp="{ value }">
                     {{
                         DateTime.fromMillis(value)
@@ -173,6 +187,7 @@ import {
 } from "~/utils/interfaces/IMatch";
 
 const matchToShow: Ref<IMatch | null> = ref(null);
+const showDownload = ref(false);
 
 const headers = [
     { title: "Date & Time", key: "timestamp" },
