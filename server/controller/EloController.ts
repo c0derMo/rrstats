@@ -10,6 +10,7 @@ import {
     type EntitySubscriberInterface,
     type InsertEvent,
     type UpdateEvent,
+    Not,
 } from "typeorm";
 import { Player } from "../model/Player";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
@@ -45,7 +46,7 @@ export default class EloController {
 
     async fetchCompetitions(): Promise<void> {
         const competitions = await Competition.find({
-            where: { officialCompetition: true },
+            where: { officialCompetition: true, updateWithHitmaps: Not(true) },
             order: {
                 startingTimestamp: "ASC",
             },
@@ -228,16 +229,19 @@ export default class EloController {
             startingIndex = this.competitionList.findIndex(
                 (tournament) => currentTournament === tournament.tag,
             );
+            if (startingIndex < 0) {
+                startingIndex = this.competitionList.length;
+            }
         }
 
         const decays: EloInfo[] = [];
 
         let decayAmount = 0;
         while (
+            startingIndex - decayAmount - 1 >= 0 &&
             !previousTournaments.includes(
                 this.competitionList[startingIndex - decayAmount - 1].tag,
-            ) &&
-            startingIndex - decayAmount - 1 >= 0
+            )
         ) {
             decayAmount += 1;
         }
