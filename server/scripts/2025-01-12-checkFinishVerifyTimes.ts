@@ -1,4 +1,7 @@
-import { HitmapsMatch, HitmapsTournamentMatch } from "../controller/integrations/HitmapsIntegration";
+import type {
+    HitmapsMatch,
+    HitmapsTournamentMatch,
+} from "../controller/integrations/HitmapsIntegration";
 import { ofetch } from "ofetch";
 
 interface GameModeMatchIdHitmapsTournamentMatch extends HitmapsTournamentMatch {
@@ -30,7 +33,9 @@ async function main() {
 
     const sorted = sort(matchHistory.matches);
 
-    console.log(`Queried ${matchHistory.matches.length} matches, ${sorted.matchId.length} old ones and ${sorted.newVersion.length} new ones`);
+    console.log(
+        `Queried ${matchHistory.matches.length} matches, ${sorted.matchId.length} old ones and ${sorted.newVersion.length} new ones`,
+    );
 
     const results: string[] = [];
 
@@ -42,9 +47,13 @@ async function main() {
 
             if (map.winnerFinishedAt == null) {
                 if (map.winnerDiscordId == null) {
-                    results.push(`${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.mapSlug} has no winner time, but ended in a draw.`);
+                    results.push(
+                        `${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.mapSlug} has no winner time, but ended in a draw.`,
+                    );
                 } else {
-                    results.push(`!! ${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.mapSlug} has no winner time, but didn't in a draw!`);
+                    results.push(
+                        `!! ${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.mapSlug} has no winner time, but didn't in a draw!`,
+                    );
                 }
             }
         }
@@ -52,10 +61,14 @@ async function main() {
 
     console.log("Handled new matches");
 
-    const detailedMatches = await fetchHitmapsMatches(sorted.matchId.map((m) => m.gameModeMatchId));
+    const detailedMatches = await fetchHitmapsMatches(
+        sorted.matchId.map((m) => m.gameModeMatchId),
+    );
 
     for (const match of sorted.matchId) {
-        const detailedMatch = detailedMatches.find((dm) => dm.matchupId === match.gameModeMatchId);
+        const detailedMatch = detailedMatches.find(
+            (dm) => dm.matchupId === match.gameModeMatchId,
+        );
         if (detailedMatch == null) {
             console.log(`MATCH ${match.id} HAS NO DETAILED MATCH`);
             continue;
@@ -67,9 +80,13 @@ async function main() {
             }
             if (map.winnerFinishedAt == null) {
                 if (map.winnerName == null) {
-                    results.push(`${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.hitmapsSlug} has no winner time, but ended in a draw.`);
+                    results.push(
+                        `${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.hitmapsSlug} has no winner time, but ended in a draw.`,
+                    );
                 } else {
-                    results.push(`!! ${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.hitmapsSlug} has no winner time, but didn't in a draw!`);
+                    results.push(
+                        `!! ${match.competitors[0].challongeName} - ${match.competitors[1].challongeName} - ${match.round}: Map ${map.hitmapsSlug} has no winner time, but didn't in a draw!`,
+                    );
                 }
             }
         }
@@ -82,9 +99,7 @@ async function main() {
     }
 }
 
-function sort(
-    matches: HitmapsTournamentMatch[]
-): {
+function sort(matches: HitmapsTournamentMatch[]): {
     matchId: GameModeMatchIdHitmapsTournamentMatch[];
     newVersion: NewHitmapsTournamentMatch[];
 } {
@@ -112,9 +127,7 @@ function sort(
             match.gameModeMatchId != null &&
             match.gameModeMatchId !== "00000000-0000-0000-0000-000000000000"
         ) {
-            result.matchId.push(
-                match as GameModeMatchIdHitmapsTournamentMatch,
-            );
+            result.matchId.push(match as GameModeMatchIdHitmapsTournamentMatch);
         }
     }
 
