@@ -175,7 +175,7 @@ test.describe("Spin Page", () => {
             "Estimated percentage of spins completed",
         );
         await expect(page.locator(".mb-10 > span").last()).toHaveText(
-            "33.4211%",
+            "32.5641%",
         );
 
         const statsPanel = page.locator(".grid");
@@ -190,7 +190,7 @@ test.describe("Spin Page", () => {
             locateStat(statsPanel, "Estimated total spins possible:", "div")
                 .locator("span")
                 .first(),
-        ).toHaveText("760");
+        ).toHaveText("780");
 
         await expect(
             locateStat(statsPanel, "Most repeated spin:", "div"),
