@@ -177,6 +177,23 @@
                 }}
             </div>
 
+            <div
+                v-if="match.eloChange.length >= 2"
+                class="flex flex-row justify-center gap-10"
+            >
+                <div class="text-right">
+                    <Tag narrow :color="getEloTag(0)">
+                        {{ match.eloChange[0] }}
+                    </Tag>
+                </div>
+                <div>Elo Change</div>
+                <div>
+                    <Tag narrow :color="getEloTag(1)">
+                        {{ match.eloChange[1] }}
+                    </Tag>
+                </div>
+            </div>
+
             <ButtonComponent @click="dialogOpen = false">Close</ButtonComponent>
         </CardComponent>
     </DialogComponent>
@@ -286,6 +303,16 @@ function isMapPB(mapIdx: number): boolean {
         );
     }
     return false;
+}
+
+function getEloTag(index: number): string {
+    if (props.match.eloChange[index] > 0) {
+        return "#4caf50";
+    } else if (props.match.eloChange[index] < 0) {
+        return "#f44336";
+    } else {
+        return "#d0c033";
+    }
 }
 
 const allMapTimes = computed(() => {

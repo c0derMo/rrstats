@@ -168,8 +168,10 @@ export default class HitmapsIntegration {
             );
             await this.parseHitmapsTournament(request.matches, competitionSlug);
             this.cache.set(hitmapsSlug, Date.now());
-        } catch(e) {
-            logger.log("The following error occured while parsing hitmaps tournaments:");
+        } catch (e) {
+            logger.log(
+                "The following error occured while parsing hitmaps tournaments:",
+            );
             logger.log(e);
             return;
         }
@@ -178,6 +180,9 @@ export default class HitmapsIntegration {
     private static async fetchHitmapsMatches(
         hitmapsMatchIds: string[],
     ): Promise<HitmapsMatch[]> {
+        if (hitmapsMatchIds.length <= 0) {
+            return [];
+        }
         if (hitmapsMatchIds.length > 200) {
             const listOne = hitmapsMatchIds.slice(0, 200);
             const listTwo = hitmapsMatchIds.slice(200);
@@ -324,7 +329,6 @@ export default class HitmapsIntegration {
     ): AdditionalMatchInfo {
         const result = {
             spinTimes: [],
-            mapPickers: [],
             mapWinners: [],
             spins: [],
         } as AdditionalMatchInfo;
@@ -340,9 +344,16 @@ export default class HitmapsIntegration {
             }
 
             let pickedMap = fullMatch.mapSelections[pickIndex];
-            while (!pickedMap.complete) {
+            while (
+                !pickedMap?.complete &&
+                pickIndex < fullMatch.mapSelections.length
+            ) {
                 pickIndex++;
                 pickedMap = fullMatch.mapSelections[pickIndex];
+            }
+
+            if (pickIndex >= fullMatch.mapSelections.length) {
+                break;
             }
 
             if (pickedMap.winnerName === match.competitors[0].challongeName) {
@@ -376,6 +387,7 @@ export default class HitmapsIntegration {
             }
             result.spinTimes.push(spinTime);
             result.spins.push(pickedMap.spin);
+            pickIndex++;
         }
 
         return result;
@@ -387,7 +399,6 @@ export default class HitmapsIntegration {
     ): AdditionalMatchInfo {
         const result = {
             spinTimes: [],
-            mapPickers: [],
             mapWinners: [],
             spins: [],
         } as AdditionalMatchInfo;
@@ -479,6 +490,17 @@ export default class HitmapsIntegration {
         for (const mapIndex in match.maps) {
             const map = match.maps[mapIndex];
 
+            if (
+                parseInt(mapIndex) >=
+                Math.min(
+                    additionalInfo.mapWinners.length,
+                    additionalInfo.spinTimes.length,
+                    additionalInfo.spins.length,
+                )
+            ) {
+                break;
+            }
+
             let picker = ChoosingPlayer.RANDOM;
             if (map.competitorName === match.competitors[0].challongeName) {
                 picker = ChoosingPlayer.PLAYER_ONE;
@@ -490,14 +512,16 @@ export default class HitmapsIntegration {
 
             if (map.selectionType === "Ban") {
                 bans.push({
-                    map: (getMapBySlug(map.mapSlug)?.map as HitmanMap) ?? HitmanMap.PARIS,
+                    map:
+                        (getMapBySlug(map.mapSlug)?.map as HitmanMap) ??
+                        HitmanMap.PARIS,
                     picked: picker,
                 });
             } else if (
                 map.selectionType === "Pick" ||
                 map.selectionType === "Random"
             ) {
-                if (map.state !== "Complete") {
+                if (map.state !== "Complete" && map.state !== "") {
                     continue;
                 }
 
@@ -517,7 +541,9 @@ export default class HitmapsIntegration {
                 }
 
                 const dbMap = new PlayedMap();
-                dbMap.map = (getMapBySlug(map.mapSlug)?.map as HitmanMap) ?? HitmanMap.PARIS;
+                dbMap.map =
+                    (getMapBySlug(map.mapSlug)?.map as HitmanMap) ??
+                    HitmanMap.PARIS;
                 dbMap.winner = additionalInfo.mapWinners[mapIndex]!;
                 dbMap.picked = picker;
                 dbMap.spin = additionalInfo.spins[mapIndex]!;
@@ -591,10 +617,13 @@ export default class HitmapsIntegration {
         );
 
         for (const match of remainingMatches) {
+            const filteredMaps = match.maps.filter((map) => {
+                return map.selectionType !== "Ban" && map.state === "Complete";
+            });
+
             if (
-                match.maps.filter((map) => {
-                    return map.selectionType !== "Ban" && map.state === "Complete"
-                }).every((map) => {
+                filteredMaps.length > 0 &&
+                filteredMaps.every((map) => {
                     return map.mapStartedAt != null && map.mapJson != null;
                 })
             ) {

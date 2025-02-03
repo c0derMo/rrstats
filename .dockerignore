@@ -8,3 +8,4 @@
 .prettierrc
 *.db
 readme.md
+/tests

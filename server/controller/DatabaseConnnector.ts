@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import {
     DataSource,
     type DataSourceOptions,
@@ -12,6 +13,7 @@ import { PlayerStatisticDatabaseListener } from "./PlayerStatisticController";
 import { Match } from "../model/Match";
 import { User } from "../model/User";
 import consola from "consola";
+import { EloDatabaseListener } from "./EloController";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -24,7 +26,7 @@ export default class DatabaseConnector {
         }
 
         this.db = new DataSource({
-            type: dbType,
+            type: dbType === "sqlite" ? "better-sqlite3" : dbType,
             database: dbType === "sqlite" ? database : undefined,
             url: dbType === "postgres" ? database : undefined,
             entities: [
@@ -42,10 +44,18 @@ export default class DatabaseConnector {
                       PlayerAccoladeSubscriber,
                       LeaderboardDatabaseListener,
                       PlayerStatisticDatabaseListener,
+                      EloDatabaseListener,
                   ]
                 : undefined,
             synchronize: true,
             parseInt8: dbType === "postgres" ? true : undefined,
+            prepareDatabase:
+                dbType !== "sqlite"
+                    ? undefined
+                    : (db) => {
+                          logger.debug("Setting journal mode");
+                          db.pragma("journal_mode = WAL");
+                      },
         } as DataSourceOptions);
     }
 

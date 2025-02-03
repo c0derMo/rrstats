@@ -13,6 +13,7 @@ import {
     PointElement,
     LineElement,
     Tooltip,
+    Legend,
     type Tick,
     type TooltipItem,
 } from "chart.js";
@@ -24,6 +25,7 @@ Chart.register(
     PointElement,
     LineElement,
     Tooltip,
+    Legend,
 );
 
 interface IProps {
@@ -39,6 +41,7 @@ interface IProps {
     tooltipLabelFunction?: (
         item: TooltipItem<"line">,
     ) => string | string[] | undefined;
+    legend?: boolean;
 }
 const props = defineProps<IProps>();
 
@@ -94,6 +97,10 @@ function makeChart() {
                         callbacks: {
                             label: props.tooltipLabelFunction,
                         },
+                    },
+                    legend: {
+                        display: props.legend != null,
+                        position: "bottom",
                     },
                 },
             },
