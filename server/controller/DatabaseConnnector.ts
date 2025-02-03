@@ -14,6 +14,8 @@ import { Match } from "../model/Match";
 import { User } from "../model/User";
 import consola from "consola";
 import { EloDatabaseListener } from "./EloController";
+import { Achievement } from "../model/Achievement";
+import { AchievementDatabaseListener } from "./AchievementController";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -38,6 +40,7 @@ export default class DatabaseConnector {
                 CompetitionPlacement,
                 User,
                 PlayedMap,
+                Achievement,
             ],
             subscribers: withSubscribers
                 ? [
@@ -45,6 +48,7 @@ export default class DatabaseConnector {
                       LeaderboardDatabaseListener,
                       PlayerStatisticDatabaseListener,
                       EloDatabaseListener,
+                      AchievementDatabaseListener,
                   ]
                 : undefined,
             synchronize: true,

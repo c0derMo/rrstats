@@ -178,7 +178,7 @@
                     </template>
 
                     <template #Achievements>
-                        <AchievementsGrid />
+                        <AchievementsGrid :player="player?.uuid ?? ''" />
                     </template>
                 </TabbedContainer>
             </CardComponent>
