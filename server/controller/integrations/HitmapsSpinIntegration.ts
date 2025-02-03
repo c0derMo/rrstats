@@ -170,6 +170,7 @@ export default class HitmapsSpinIntegration {
                         specificMelee: true,
                         specificFirearms: true,
                         specificAccidents: true,
+                        uniqueTargetKills: true,
                         impossibleOrDifficultKills: true,
                         targetName: targetName,
                     },
