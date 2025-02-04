@@ -1,7 +1,6 @@
 import { Log } from "~/utils/FunctionTimer";
 import { Achievement } from "../model/Achievement";
 import { Match } from "../model/Match";
-import { SpinTheWheel } from "./achievements/SpinTheWheel";
 import consola from "consola";
 import {
     type EntitySubscriberInterface,
@@ -10,17 +9,12 @@ import {
     type UpdateEvent,
 } from "typeorm";
 import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
-import { Globetrotter } from "./achievements/Globetrotter";
 import { Player } from "../model/Player";
+import { SpinTheWheel } from "./achievements/automatic/SpinTheWheel";
+import { Globetrotter } from "./achievements/automatic/Globetrotter";
+import { OneStone } from "./achievements/manual/OneStone";
 
-export enum AchievementTier {
-    BRONZE,
-    SILVER,
-    GOLD,
-    PLATINUM,
-}
-
-export interface AchievementData
+export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
     update(
         match: Match,
@@ -34,17 +28,25 @@ export interface AchievementData
     getDefaultData(): unknown;
 }
 
+export interface ManualAchievement
+    extends Omit<AchievementInfo, "achievedAt" | "progress"> {
+    manual: boolean;
+}
+
 const logger = consola.withTag("rrstats:database");
 
 export default class AchievementController {
-    private static readonly achievements: AchievementData[] = [
+    private static readonly automaticAchievements: AutomaticAchievement[] = [
         new SpinTheWheel(),
         new Globetrotter(),
+    ];
+    private static readonly manualAchievements: ManualAchievement[] = [
+        new OneStone(),
     ];
 
     public static async getAchievementOfPlayerOrCreate(
         player: string,
-        achievement: AchievementData,
+        achievement: AutomaticAchievement,
     ): Promise<Achievement> {
         let playerAchievement = await Achievement.findOneBy({
             player: player,
@@ -68,10 +70,19 @@ export default class AchievementController {
         const achievedAchievements = await Achievement.find({
             where: {
                 player: player,
+                verified: true,
             },
         });
 
-        return AchievementController.achievements.map((achievement) => {
+        const allAchievements: Omit<
+            AchievementInfo,
+            "progress" | "achievedAt"
+        >[] = [
+            ...AchievementController.automaticAchievements,
+            ...AchievementController.manualAchievements,
+        ];
+
+        return allAchievements.map((achievement) => {
             const result = {
                 name: achievement.name,
                 description: achievement.description,
@@ -95,7 +106,7 @@ export default class AchievementController {
     }
 
     public static async updateAchievements(match: Match): Promise<void> {
-        const promises = AchievementController.achievements.map((m) =>
+        const promises = AchievementController.automaticAchievements.map((m) =>
             (async () => {
                 const playerOneAchievement =
                     await AchievementController.getAchievementOfPlayerOrCreate(
@@ -131,7 +142,7 @@ export default class AchievementController {
             select: ["uuid"],
         });
 
-        const promises = AchievementController.achievements.map((m) =>
+        const promises = AchievementController.automaticAchievements.map((m) =>
             (async () => {
                 const playerAchievements: Record<string, Achievement> = {};
                 for (const player of allPlayers) {
@@ -150,6 +161,31 @@ export default class AchievementController {
         await Promise.allSettled(promises);
 
         logger.info("Achievements recalculated.");
+    }
+
+    public static async submitManualAchievement(
+        player: string,
+        achievement: string,
+        video: string,
+        notes?: string,
+    ): Promise<boolean> {
+        const manualAchievement = AchievementController.manualAchievements.find(
+            (a) => a.name === achievement,
+        );
+        if (manualAchievement == null) return false;
+
+        const submission = new Achievement();
+        submission.player = player;
+        submission.achievement = manualAchievement.name;
+        submission.achievedAt = Array(manualAchievement.levels).fill(0);
+        submission.progression = Array(manualAchievement.levels).fill(0);
+        submission.data = {
+            video,
+            notes,
+        };
+        submission.verified = false;
+        await submission.save();
+        return true;
     }
 }
 

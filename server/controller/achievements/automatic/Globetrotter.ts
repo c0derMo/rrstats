@@ -1,12 +1,10 @@
 import type { Match } from "~/server/model/Match";
-import {
-    type AchievementData,
-    AchievementTier,
-} from "../AchievementController";
+import { type AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
 import { type HitmanMap, getAllMaps } from "~/utils/mapUtils";
+import { AchievementTier } from "~/utils/interfaces/AchievementInfo";
 
-export class Globetrotter implements AchievementData {
+export class Globetrotter implements AutomaticAchievement {
     name = "Globetrotter";
     description = [
         "Play a spin on every roulette map",

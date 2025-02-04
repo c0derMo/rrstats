@@ -2,6 +2,7 @@
     <AchievementDetailDialog
         v-if="openedAchievement != null"
         :achievement="openedAchievement"
+        :player="player"
         @closed="openedAchievement = null"
     />
     <div class="grid grid-cols-6 gap-x-5 gap-y-2">

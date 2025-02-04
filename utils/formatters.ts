@@ -1,4 +1,5 @@
 import { Duration } from "luxon";
+import { AchievementTier } from "./interfaces/AchievementInfo";
 
 export function formatPlacement(placement?: number): string {
     if (placement == null) {
@@ -38,15 +39,15 @@ export function getPlacementTagColor(placement: number) {
     return "rgb(85, 85, 85)";
 }
 
-export function getColorOfTier(tier: number) {
+export function getColorOfTier(tier: AchievementTier | -1) {
     switch (tier) {
-        case 0:
+        case AchievementTier.BRONZE:
             return { color: "#ffcfc9" };
-        case 1:
+        case AchievementTier.SILVER:
             return { color: "#e7e7e7" };
-        case 2:
+        case AchievementTier.GOLD:
             return { color: "#ffe39c" };
-        case 3:
+        case AchievementTier.PLATINUM:
             return { color: "#bcfaf2" };
         default:
             return { color: "#4f4f4f" };

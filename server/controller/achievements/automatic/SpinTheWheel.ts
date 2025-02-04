@@ -1,11 +1,9 @@
 import type { Match } from "~/server/model/Match";
-import {
-    type AchievementData,
-    AchievementTier,
-} from "../AchievementController";
+import { type AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
+import { AchievementTier } from "~/utils/interfaces/AchievementInfo";
 
-export class SpinTheWheel implements AchievementData {
+export class SpinTheWheel implements AutomaticAchievement {
     name = "Spin the Wheel";
     description = [
         "Play 5 Maps",

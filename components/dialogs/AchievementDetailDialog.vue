@@ -22,7 +22,12 @@
                             class="!h-8"
                         />
                         <div>
-                            <div class="font-bold">Level {{ tier }}</div>
+                            <div
+                                v-if="achievement.levels > 1"
+                                class="font-bold"
+                            >
+                                Level {{ tier }}
+                            </div>
                             <div class="italic">
                                 {{ achievement.description[tier - 1] }}
                             </div>
@@ -59,9 +64,54 @@
                                 </div>
                             </div>
                         </div>
+                        <div v-else>not achieved</div>
                     </div>
                 </template>
             </div>
+
+            <template v-if="achievement.manual">
+                <div class="w-full border-b border-gray-600 my-6" />
+
+                <div
+                    v-if="achievement.achievedAt[achievement.levels - 1] <= 0"
+                    class="flex flex-col gap-2"
+                >
+                    <div class="text-center font-bold">
+                        Submit achievement completion:
+                    </div>
+                    <div>
+                        If you believe this player has completed the
+                        achievement, please link a video
+                        <span class="font-bold">with timestamp</span>
+                        of the completion below.<br />
+                        The achievement will be manually reviewed and added to
+                        the profile afterwards. This may take a bit of time.
+                    </div>
+                    <TextInputComponent
+                        v-model="completionLink"
+                        placeholder="Video with timestamp"
+                    />
+                    <TextInputComponent
+                        v-model="completionText"
+                        placeholder="Additional notes (optional)"
+                    />
+                    <div class="flex flex-row gap-3">
+                        <ButtonComponent :loading="loading" @click="submit">
+                            Submit
+                        </ButtonComponent>
+                        <span v-if="videoError" class="text-red-500">
+                            Please enter a valid URL into the video field.
+                        </span>
+                        <span v-if="submitError" class="text-red-500">
+                            There was an error with your submission. Please try
+                            again later.
+                        </span>
+                        <span v-if="submitSuccess" class="text-green-500">
+                            chievement successfully submitted!
+                        </span>
+                    </div>
+                </div>
+            </template>
         </CardComponent>
     </DialogComponent>
 </template>
@@ -70,8 +120,9 @@
 import { DateTime } from "luxon";
 import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
 
-defineProps<{
+const props = defineProps<{
     achievement: AchievementInfo;
+    player: string;
 }>();
 
 defineEmits<{
@@ -79,11 +130,49 @@ defineEmits<{
 }>();
 
 const dialogOpen = ref(true);
+const completionLink = ref("");
+const completionText = ref("");
+const loading = ref(false);
+const videoError = ref(false);
+const submitError = ref(false);
+const submitSuccess = ref(false);
 
 function getColorOfTierOrUnachieved(tier: number, achievedAt: number) {
     if (achievedAt <= 0) {
         return { color: "#4f4f4f" };
     }
     return getColorOfTier(tier);
+}
+
+async function submit() {
+    videoError.value = false;
+    submitError.value = false;
+    submitSuccess.value = false;
+    loading.value = true;
+
+    try {
+        new URL(completionLink.value);
+    } catch {
+        loading.value = false;
+        videoError.value = true;
+        return;
+    }
+
+    try {
+        await $fetch("/api/achievements/submit", {
+            method: "POST",
+            body: {
+                player: props.player,
+                achievement: props.achievement.name,
+                video: completionLink.value,
+                notes: completionText.value,
+            },
+        });
+        submitSuccess.value = true;
+    } catch {
+        submitError.value = true;
+    } finally {
+        loading.value = false;
+    }
 }
 </script>

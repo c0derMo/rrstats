@@ -33,6 +33,14 @@
             <FontAwesomeIcon :icon="['fa', 'medal']" />
         </BackendButton>
         <BackendButton
+            v-if="user?.permissions.includes(IPermission.EDIT_ACHIEVEMENTS)"
+            title="Achievements"
+            subtitle="View & approve achievements"
+            target="/backend/achievements"
+        >
+            <FontAwesomeIcon :icon="['fa', 'trophy']" />
+        </BackendButton>
+        <BackendButton
             v-if="user?.permissions.includes(IPermission.EDIT_USERS)"
             title="Users"
             subtitle="Edit backend users"

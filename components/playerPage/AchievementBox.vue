@@ -84,7 +84,7 @@
             </div>
 
             <div
-                v-if="achievedLevel >= 0"
+                v-if="achievedLevel >= 0 && achievement.levels > 1"
                 class="rounded-full bg-white w-4 h-4 absolute z-30 bottom-0 right-0 text-black text-xs"
             >
                 {{ numberToRoman(achievedLevel + 1) }}
@@ -139,8 +139,17 @@ const achievedLevel = computed(() => {
 });
 
 const title = computed(() => {
+    if (props.achievement.levels <= 1) {
+        return props.achievement.name;
+    }
     if (achievedLevel.value < 0) {
         return props.achievement.name;
+    } else if (achievedLevel.value === props.achievement.levels - 1) {
+        return (
+            props.achievement.name +
+            " " +
+            numberToRoman(props.achievement.levels)
+        );
     } else {
         return (
             props.achievement.name +
