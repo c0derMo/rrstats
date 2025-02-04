@@ -1,7 +1,10 @@
 import type { Match } from "~/server/model/Match";
 import { type AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
-import { AchievementTier } from "~/utils/interfaces/AchievementInfo";
+import {
+    AchievementCategory,
+    AchievementTier,
+} from "~/utils/interfaces/AchievementInfo";
 
 export class SpinTheWheel implements AutomaticAchievement {
     name = "Spin the Wheel";
@@ -23,7 +26,7 @@ export class SpinTheWheel implements AutomaticAchievement {
         AchievementTier.PLATINUM,
         AchievementTier.PLATINUM,
     ];
-    category = "Experience";
+    category = AchievementCategory.EXPERIENCE;
     levels = 7;
 
     public getDefaultData(): Record<string, number> {

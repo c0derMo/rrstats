@@ -3,7 +3,7 @@ export interface AchievementInfo {
     description: string[];
     tier: AchievementTier[];
     manual?: boolean;
-    category: string;
+    category: AchievementCategory;
     levels: number;
     achievedAt: number[];
     progress: number[];
@@ -14,6 +14,17 @@ export enum AchievementTier {
     SILVER,
     GOLD,
     PLATINUM,
+}
+
+export enum AchievementCategory {
+    EXPERIENCE = "Experience",
+    MAP = "Map",
+    MAP_SPECIFIC = "Map specific",
+    MATCH = "Match",
+    MISC = "Misc",
+    STREAK = "Streak",
+    TIME = "Time",
+    TOURNAMENT = "Tournament",
 }
 
 export interface SubmittedAchievement {

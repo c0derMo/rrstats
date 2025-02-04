@@ -1,5 +1,8 @@
 import { Duration } from "luxon";
-import { AchievementTier } from "./interfaces/AchievementInfo";
+import {
+    AchievementCategory,
+    AchievementTier,
+} from "./interfaces/AchievementInfo";
 
 export function formatPlacement(placement?: number): string {
     if (placement == null) {
@@ -78,5 +81,30 @@ export function numberToRoman(n: number) {
             return "X";
         default:
             return n.toString();
+    }
+}
+
+export function getColorOfAchievementCategory(
+    category: AchievementCategory,
+): string {
+    switch (category) {
+        case AchievementCategory.EXPERIENCE:
+            return "#d4edbc";
+        case AchievementCategory.MAP:
+            return "#ffcfc9";
+        case AchievementCategory.MAP_SPECIFIC:
+            return "#e6cff2";
+        case AchievementCategory.MATCH:
+            return "#ffe5a0";
+        case AchievementCategory.MISC:
+            return "#e6e6e6";
+        case AchievementCategory.STREAK:
+            return "#c9f3ed";
+        case AchievementCategory.TIME:
+            return "#c6dbe1";
+        case AchievementCategory.TOURNAMENT:
+            return "#bfe1f6";
+        default:
+            return "";
     }
 }

@@ -17,7 +17,9 @@
                     type="datetime-local"
                     placeholder="Datetime of achievement"
                 />
-                <ButtonComponent @click="verifyAchievement(achievementToVerify)">
+                <ButtonComponent
+                    @click="verifyAchievement(achievementToVerify)"
+                >
                     Verify
                 </ButtonComponent>
             </CardComponent>
@@ -148,13 +150,11 @@ const playerLookup = usePlayers();
 const player = ref("");
 const achievementToVerify = ref<ExtendedSubmittedAchievement | null>(null);
 const achievementDatetime = ref(
-    DateTime.now()
-        .set({ second: 0, millisecond: 0 })
-        .toISO({
-            suppressMilliseconds: true,
-            suppressSeconds: true,
-            includeOffset: false,
-        }),
+    DateTime.now().set({ second: 0, millisecond: 0 }).toISO({
+        suppressMilliseconds: true,
+        suppressSeconds: true,
+        includeOffset: false,
+    }),
 );
 const { data: unverifiedAchievements } = await useFetch<
     ExtendedSubmittedAchievement[]

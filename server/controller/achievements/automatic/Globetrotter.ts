@@ -2,7 +2,10 @@ import type { Match } from "~/server/model/Match";
 import { type AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
 import { type HitmanMap, getAllMaps } from "~/utils/mapUtils";
-import { AchievementTier } from "~/utils/interfaces/AchievementInfo";
+import {
+    AchievementCategory,
+    AchievementTier,
+} from "~/utils/interfaces/AchievementInfo";
 
 export class Globetrotter implements AutomaticAchievement {
     name = "Globetrotter";
@@ -16,7 +19,7 @@ export class Globetrotter implements AutomaticAchievement {
         AchievementTier.GOLD,
         AchievementTier.PLATINUM,
     ];
-    category = "Experience";
+    category = AchievementCategory.EXPERIENCE;
     levels = 3;
 
     public getDefaultData(): Record<HitmanMap, number> {
