@@ -149,6 +149,7 @@ function newMatch() {
         playerTwoScore: 0,
         round: "",
         timestamp: DateTime.now().toMillis(),
+        eloChange: [0, 0],
     };
 }
 

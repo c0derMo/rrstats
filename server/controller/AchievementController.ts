@@ -36,13 +36,11 @@ export interface ManualAchievement
 const logger = consola.withTag("rrstats:database");
 
 export default class AchievementController {
-    private static readonly automaticAchievements: AutomaticAchievement[] = [
+    static readonly automaticAchievements: AutomaticAchievement[] = [
         new SpinTheWheel(),
         new Globetrotter(),
     ];
-    private static readonly manualAchievements: ManualAchievement[] = [
-        new OneStone(),
-    ];
+    static readonly manualAchievements: ManualAchievement[] = [new OneStone()];
 
     public static async getAchievementOfPlayerOrCreate(
         player: string,

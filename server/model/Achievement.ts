@@ -1,7 +1,11 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
+import type { SubmittedAchievement } from "~/utils/interfaces/AchievementInfo";
 
 @Entity()
-export class Achievement<T = unknown> extends BaseEntity {
+export class Achievement<T = unknown>
+    extends BaseEntity
+    implements SubmittedAchievement
+{
     @PrimaryColumn("text")
     player: string;
     @PrimaryColumn("text")
@@ -12,8 +16,6 @@ export class Achievement<T = unknown> extends BaseEntity {
     progression: number[];
     @Column("simple-json")
     data: T;
-    @Column("text", { nullable: true })
-    link: string;
     @Column("boolean")
     verified: boolean;
 }

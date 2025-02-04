@@ -15,3 +15,11 @@ export enum AchievementTier {
     GOLD,
     PLATINUM,
 }
+
+export interface SubmittedAchievement {
+    player: string;
+    achievement: string;
+    achievedAt: number[];
+    progression: number[];
+    verified: boolean;
+}
