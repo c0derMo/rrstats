@@ -56,6 +56,7 @@ describe("LeaderboardController", () => {
             "RRWC Participations",
             "Average RR Placement",
             "Grand Final Appearances",
+            "Titles won",
             "Matches played",
             "Matches won",
             "Maps played",

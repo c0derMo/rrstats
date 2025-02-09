@@ -377,7 +377,10 @@ export default class HitmapsIntegration {
                     spinTime = Math.floor(
                         Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
-                } else if (pickedMap.resultVerifiedAt != null && ld.last(result.mapWinners) !== WinningPlayer.DRAW) {
+                } else if (
+                    pickedMap.resultVerifiedAt != null &&
+                    ld.last(result.mapWinners) !== WinningPlayer.DRAW
+                ) {
                     const endingTime = DateTime.fromISO(
                         pickedMap.resultVerifiedAt,
                     );
@@ -428,7 +431,10 @@ export default class HitmapsIntegration {
                     spinTime = Math.floor(
                         Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
-                } else if (map.resultVerifiedAt != null && ld.last(result.mapWinners) !== WinningPlayer.DRAW) {
+                } else if (
+                    map.resultVerifiedAt != null &&
+                    ld.last(result.mapWinners) !== WinningPlayer.DRAW
+                ) {
                     const endingTime = DateTime.fromISO(map.resultVerifiedAt);
                     spinTime = Math.floor(
                         Math.abs(startingTime.diff(endingTime).as("seconds")),

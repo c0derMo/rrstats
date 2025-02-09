@@ -606,13 +606,13 @@ describe("Player Leaderboards", () => {
 
         expect(players[0]).toEqual({
             player: playerNamesToUUIDs["Phanium"],
-            displayScore: "38",
-            sortingScore: 38,
+            displayScore: "40",
+            sortingScore: 40,
         });
         expect(players[1]).toEqual({
             player: playerNamesToUUIDs["In4Fun"],
-            displayScore: "34",
-            sortingScore: 34,
+            displayScore: "35",
+            sortingScore: 35,
         });
         expect(players[2]).toEqual({
             player: playerNamesToUUIDs["Yannini"],
@@ -622,6 +622,33 @@ describe("Player Leaderboards", () => {
 
         expect(players[96]).toEqual({
             player: playerNamesToUUIDs["Dynaso"],
+            displayScore: "1",
+            sortingScore: 1,
+        });
+    });
+
+    test("Titles won", async () => {
+        const players = await LeaderboardController.getEntries("Titles won");
+
+        expect(players.length).toBe(12);
+
+        expect(players[0]).toEqual({
+            player: playerNamesToUUIDs["Ducker"],
+            displayScore: "6",
+            sortingScore: 6,
+        });
+        expect(players[1]).toEqual({
+            player: playerNamesToUUIDs["Phanium"],
+            displayScore: "5",
+            sortingScore: 5,
+        });
+        expect(players[2]).toEqual({
+            player: playerNamesToUUIDs["Frote7"],
+            displayScore: "4",
+            sortingScore: 4,
+        });
+        expect(players[11]).toEqual({
+            player: playerNamesToUUIDs["TheTimeCube"],
             displayScore: "1",
             sortingScore: 1,
         });
@@ -765,4 +792,5 @@ const playerNamesToUUIDs: Record<string, string> = {
     Vendetta: "ecd8930c-763c-47ea-a851-308d8c6ac3c0",
     "Max Masters": "5335e4c1-a6e6-4cc2-9310-e4ee8cb07708",
     "Music Inc": "3bc6b8e6-39a7-427c-984e-a2272e94b72e",
+    TheTimeCube: "3d01bc25-7a1a-4111-b480-0486d0948649",
 };
