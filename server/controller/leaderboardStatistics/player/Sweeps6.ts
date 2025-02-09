@@ -14,13 +14,13 @@ export class PlayerSweeps6 implements LeaderboardPlayerStatistic {
         const playerMap: Record<string, number> = {};
 
         for (const match of matches) {
-            if (match.playerOneScore === 6 && match.playerTwoScore === 0) {
+            if (match.playerOneScore >= 6 && match.playerTwoScore === 0) {
                 if (playerMap[match.playerOne] == null)
                     playerMap[match.playerOne] = 0;
                 playerMap[match.playerOne] += 1;
             } else if (
                 match.playerOneScore === 0 &&
-                match.playerTwoScore === 6
+                match.playerTwoScore >= 6
             ) {
                 if (playerMap[match.playerTwo] == null)
                     playerMap[match.playerTwo] = 0;
