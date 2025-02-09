@@ -33,7 +33,7 @@ describe("LeaderboardController", () => {
 
         expect(categories.country.length).toBe(5);
         expect(categories.map.length).toBe(5);
-        expect(categories.player.length).toBe(22);
+        expect(categories.player.length).toBe(23);
 
         expect(categories.country.map((c) => c.name)).toEqual([
             "Players per country",
