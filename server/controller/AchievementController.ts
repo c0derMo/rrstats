@@ -13,6 +13,8 @@ import { Player } from "../model/Player";
 import { SpinTheWheel } from "./achievements/automatic/SpinTheWheel";
 import { Globetrotter } from "./achievements/automatic/Globetrotter";
 import { OneStone } from "./achievements/manual/OneStone";
+import NotificationController from "./NotificationController";
+import ld from "lodash";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -33,7 +35,12 @@ export interface ManualAchievement
     manual: boolean;
 }
 
-const logger = consola.withTag("rrstats:database");
+export interface ManualAchievementData {
+    video: string;
+    notes?: string;
+}
+
+const logger = consola.withTag("rrstats:achievements");
 
 export default class AchievementController {
     static readonly automaticAchievements: AutomaticAchievement[] = [
@@ -172,7 +179,7 @@ export default class AchievementController {
         );
         if (manualAchievement == null) return false;
 
-        const submission = new Achievement();
+        const submission = new Achievement<ManualAchievementData>();
         submission.player = player;
         submission.achievement = manualAchievement.name;
         submission.achievedAt = Array(manualAchievement.levels).fill(0);
@@ -183,6 +190,12 @@ export default class AchievementController {
         };
         submission.verified = false;
         await submission.save();
+
+        NotificationController.sendManualAchievementSubmissionNotification(
+            manualAchievement,
+            submission,
+        );
+
         return true;
     }
 }
@@ -201,5 +214,27 @@ export class AchievementDatabaseListener
 
     async afterUpdate(event: UpdateEvent<Match>): Promise<void> {
         await AchievementController.updateAchievements(event.databaseEntity);
+    }
+}
+
+@EventSubscriber()
+export class AchievementVerifyListener
+    implements EntitySubscriberInterface<Achievement>
+{
+    listenTo() {
+        return Achievement;
+    }
+
+    async afterUpdate(
+        event: UpdateEvent<Achievement<ManualAchievementData>>,
+    ): Promise<void> {
+        const merged = ld.merge({}, event.databaseEntity, event.entity);
+        if (
+            event.updatedColumns.some((v) => v.propertyPath === "verified") &&
+            merged.verified
+        ) {
+            NotificationController.updateManualAchievementVerified(merged);
+            logger.info("After update triggered");
+        }
     }
 }

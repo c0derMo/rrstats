@@ -5,7 +5,10 @@
         :player="player"
         @closed="openedAchievement = null"
     />
-    <template v-for="category of Object.values(AchievementCategory)" :key="category">
+    <template
+        v-for="category of Object.values(AchievementCategory)"
+        :key="category"
+    >
         <div
             class="flex flex-row gap-3 my-1 rounded-md hover:bg-gray-700 transition py-2 px-2"
             @click="toggleCategory(category)"

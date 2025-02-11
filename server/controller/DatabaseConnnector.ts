@@ -15,7 +15,10 @@ import { User } from "../model/User";
 import consola from "consola";
 import { EloDatabaseListener } from "./EloController";
 import { Achievement } from "../model/Achievement";
-import { AchievementDatabaseListener } from "./AchievementController";
+import {
+    AchievementDatabaseListener,
+    AchievementVerifyListener,
+} from "./AchievementController";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -49,6 +52,7 @@ export default class DatabaseConnector {
                       PlayerStatisticDatabaseListener,
                       EloDatabaseListener,
                       AchievementDatabaseListener,
+                      AchievementVerifyListener,
                   ]
                 : undefined,
             synchronize: true,

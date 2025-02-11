@@ -23,6 +23,7 @@ export default defineNuxtConfig({
         databaseType: "sqlite",
         enableFunctionTimings: false,
         enableRouteTimings: false,
+        discordWebhook: "",
     },
 
     nitro: {

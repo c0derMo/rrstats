@@ -46,7 +46,7 @@
                                 target="_blank"
                                 class="text-blue-300 underline"
                             >
-                                {{ value.video }}^
+                                {{ value.video }}
                             </a>
                             <span class="italic">{{ value.notes }}</span>
                         </div>
