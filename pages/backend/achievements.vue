@@ -24,6 +24,12 @@
                 </ButtonComponent>
             </CardComponent>
         </DialogComponent>
+        <AchievementEditor
+            v-if="achievementToEdit != null"
+            :achievement="achievementToEdit"
+            :player="playerLookup.getUUID(player, '')"
+            @close="closeEditor()"
+        />
 
         <div class="text-3xl bold my-5">Achievements</div>
 
@@ -68,9 +74,6 @@
                                 class="text-red-500"
                             />
                         </ButtonComponent>
-                        <ButtonComponent>
-                            <FontAwesomeIcon :icon="['fas', 'pen']" />
-                        </ButtonComponent>
                     </template>
                 </DataTableComponent>
             </template>
@@ -110,7 +113,10 @@
                                     :icon="['fas', 'magnifying-glass']"
                                 />
                             </ButtonComponent>
-                            <ButtonComponent>
+                            <ButtonComponent
+                                v-if="row.manual"
+                                @click="achievementToEdit = row"
+                            >
                                 <FontAwesomeIcon :icon="['fas', 'pen']" />
                             </ButtonComponent>
                         </template>
@@ -161,6 +167,7 @@ const { data: unverifiedAchievements } = await useFetch<
 >("/api/achievements/unverified", { default: () => [] });
 const playerAchievements = ref<AchievementInfo[]>([]);
 const viewedAchievement = ref<AchievementInfo | null>(null);
+const achievementToEdit = ref<AchievementInfo | null>(null);
 
 await playerLookup.queryAll();
 
@@ -208,6 +215,20 @@ async function rejectAchievement(achievement: SubmittedAchievement) {
         },
     });
     unverifiedAchievements.value = await $fetch(`/api/achievements/unverified`);
+}
+
+async function closeEditor() {
+    const uuid = playerLookup.getUUID(player.value, "");
+    if (uuid === "") {
+        achievementToEdit.value = null;
+        return;
+    }
+
+    const achievements = await $fetch(
+        `/api/achievements/player?player=${uuid}`,
+    );
+    playerAchievements.value = achievements;
+    achievementToEdit.value = null;
 }
 
 watch(player, async () => {
