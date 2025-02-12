@@ -5,8 +5,8 @@
         <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">
             <CardComponent class="md:w-72">
                 <TabbedContainer
+                    v-model:tab="selectedTab"
                     :tabs="['Players', 'Countries', 'Maps']"
-                    @change-tab="(tab) => (selectedTab = tab)"
                 />
 
                 <div
@@ -224,6 +224,15 @@ const expandedCountry = ref("");
 const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
+
+const route = useRoute();
+if (route.query.players === null) {
+    selectedTab.value = "Players";
+} else if (route.query.countries === null) {
+    selectedTab.value = "Countries";
+} else if (route.query.maps === null) {
+    selectedTab.value = "Maps";
+}
 
 const selectableMaps = computed(() => {
     const maps = getAllMaps().map((map) => {

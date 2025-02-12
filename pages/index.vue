@@ -49,11 +49,19 @@
                             Records
                         </ButtonComponent>
                     </NuxtLink>
-                    <NuxtLink to="/leaderboards">
-                        <ButtonComponent class="border-0">
-                            Leaderboards
-                        </ButtonComponent>
-                    </NuxtLink>
+                    <DropdownComponent
+                        button-class="border-0"
+                        button-text="Leaderboards"
+                        :items="[
+                            'Players',
+                            'Countries',
+                            'Maps',
+                            'Achievements',
+                        ]"
+                        @update:model-value="
+                            (v) => selectLeaderboard(v as string)
+                        "
+                    />
                     <NuxtLink to="/spins">
                         <ButtonComponent class="border-0">
                             Spins
@@ -124,5 +132,18 @@ const competitionsDropdown = computed(() => {
 
 function selectTournament(tournament: string) {
     navigateTo(`/matches?tournament=${tournament}`);
+}
+
+function selectLeaderboard(leaderboard: string) {
+    switch (leaderboard) {
+        case "Achievements":
+            return navigateTo("/achievements");
+        case "Players":
+            return navigateTo("/leaderboards?players");
+        case "Countries":
+            return navigateTo("/leaderboards?countries");
+        case "Maps":
+            return navigateTo("/leaderboards?maps");
+    }
 }
 </script>

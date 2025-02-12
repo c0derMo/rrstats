@@ -198,6 +198,65 @@ export default class AchievementController {
 
         return true;
     }
+
+    public static async getAchievementStatistics(): Promise<
+        Record<string, number[]>
+    > {
+        const result: Record<string, number[]> = {};
+        const totalPlayers = await Player.count();
+
+        const allAchievements: Omit<
+            AchievementInfo,
+            "progress" | "achievedAt"
+        >[] = [
+            ...AchievementController.automaticAchievements,
+            ...AchievementController.manualAchievements,
+        ];
+
+        for (const achievement of allAchievements) {
+            const completions: number[] = [];
+
+            const numPlayers = await Achievement.createQueryBuilder(
+                "achievement",
+            )
+                .where("verified = true")
+                .andWhere("achievement = :achievement", {
+                    achievement: achievement.name,
+                })
+                .andWhere("achievedAt LIKE :achieveLevel", {
+                    achieveLevel: `[${Array(achievement.levels).fill("%").join(",")}]`,
+                })
+                .getCount();
+
+            for (let i = 0; i < achievement.levels; i++) {
+                const achieveLevel = Array(achievement.levels)
+                    .fill(null)
+                    .map((_, idx) => {
+                        return achievement.levels - idx - 1 <= i ? "0" : "%";
+                    });
+
+                const completed = await Achievement.createQueryBuilder(
+                    "achievement",
+                )
+                    .where("verified = true")
+                    .andWhere("achievement = :achievement", {
+                        achievement: achievement.name,
+                    })
+                    .andWhere("achievedAt LIKE :achieveLevel", {
+                        achieveLevel: `[${achieveLevel.join(",")}]`,
+                    })
+                    .getCount();
+
+                completions.push(completed);
+            }
+
+            result[achievement.name] = completions.map((completed) => {
+                return (numPlayers - completed) / totalPlayers;
+            });
+        }
+
+        return result;
+    }
 }
 
 @EventSubscriber()
