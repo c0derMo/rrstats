@@ -15,6 +15,9 @@ import { Globetrotter } from "./achievements/automatic/Globetrotter";
 import { OneStone } from "./achievements/manual/OneStone";
 import NotificationController from "./NotificationController";
 import ld from "lodash";
+import { RoulettePlayer } from "./achievements/automatic/RoulettePlayer";
+import { ReturningRival } from "./achievements/automatic/ReturningRival";
+import { AgainstTheWorld } from "./achievements/automatic/AgainstTheWorld";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -44,8 +47,11 @@ const logger = consola.withTag("rrstats:achievements");
 
 export default class AchievementController {
     static readonly automaticAchievements: AutomaticAchievement[] = [
+        new RoulettePlayer(),
         new SpinTheWheel(),
         new Globetrotter(),
+        new ReturningRival(),
+        new AgainstTheWorld(),
     ];
     static readonly manualAchievements: ManualAchievement[] = [new OneStone()];
 

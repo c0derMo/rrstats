@@ -6,44 +6,43 @@ import {
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
 
-export class SpinTheWheel implements AutomaticAchievement {
-    name = "Spin the Wheel";
+export class AgainstTheWorld implements AutomaticAchievement {
+    name = "Against the World";
     description = [
-        "Play 5 Maps",
-        "Play 25 Maps",
-        "Play 50 Maps",
-        "Play 100 Maps",
-        "Play 200 Maps",
-        "Play 300 Maps",
-        "Play 400 Maps",
+        "Participate in a Roulette Rivals World Championship",
+        "Participate in 2 Roulette Rivals World Championships",
+        "Participate in 3 Roulette Rivals World Championships",
+        "Participate in 4 Roulette Rivals World Championships",
+        "Participate in 5 Roulette Rivals World Championships",
     ];
     tier = [
         AchievementTier.BRONZE,
-        AchievementTier.BRONZE,
-        AchievementTier.SILVER,
         AchievementTier.SILVER,
         AchievementTier.GOLD,
         AchievementTier.PLATINUM,
         AchievementTier.PLATINUM,
     ];
     category = AchievementCategory.EXPERIENCE;
-    levels = 7;
+    levels = 5;
 
-    public getDefaultData(): Record<string, number> {
-        return {};
+    public getDefaultData(): string[] {
+        return [];
     }
 
     async update(
         match: Match,
-        playerOneAchievement: Achievement<Record<string, number>>,
-        playerTwoAchievement: Achievement<Record<string, number>>,
+        playerOneAchievement: Achievement<string[]>,
+        playerTwoAchievement: Achievement<string[]>,
     ): Promise<void> {
-        const nonForfeitMapLength = match.playedMaps.filter(
-            (map) => !map.forfeit,
-        ).length;
-
-        playerOneAchievement.data[match.uuid] = nonForfeitMapLength;
-        playerTwoAchievement.data[match.uuid] = nonForfeitMapLength;
+        if (!match.competition.toLowerCase().includes("wc")) {
+            return;
+        }
+        if (!playerOneAchievement.data.includes(match.competition)) {
+            playerOneAchievement.data.push(match.competition);
+        }
+        if (!playerTwoAchievement.data.includes(match.competition)) {
+            playerTwoAchievement.data.push(match.competition);
+        }
 
         this.checkCondition(playerOneAchievement, match.timestamp);
         this.checkCondition(playerTwoAchievement, match.timestamp);
@@ -51,10 +50,10 @@ export class SpinTheWheel implements AutomaticAchievement {
 
     async recalculateAll(
         matches: Match[],
-        achievements: Record<string, Achievement<Record<string, number>>>,
+        achievements: Record<string, Achievement<string[]>>,
     ): Promise<void> {
         for (const player in achievements) {
-            achievements[player].data = {};
+            achievements[player].data = [];
         }
 
         for (const match of matches) {
@@ -67,18 +66,13 @@ export class SpinTheWheel implements AutomaticAchievement {
     }
 
     private checkCondition(
-        achievement: Achievement<Record<string, number>>,
+        achievement: Achievement<string[]>,
         achievementTimestamp: number,
     ) {
-        let sumOfMaps = 0;
-        for (const num of Object.values(achievement.data)) {
-            sumOfMaps += num;
-        }
-
-        const levelRequirements = [5, 25, 50, 100, 200, 300, 400];
+        const levelRequirements = [1, 2, 3, 4, 5];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
-            if (sumOfMaps >= levelRequirements[idx]) {
+            if (achievement.data.length >= levelRequirements[idx]) {
                 if (
                     achievement.achievedAt[idx] <= 0 ||
                     achievementTimestamp < achievement.achievedAt[idx]
@@ -91,7 +85,7 @@ export class SpinTheWheel implements AutomaticAchievement {
         }
 
         achievement.progression = levelRequirements.map((requirement) => {
-            return Math.min(1, sumOfMaps / requirement);
+            return Math.min(1, achievement.data.length / requirement);
         });
     }
 }

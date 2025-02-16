@@ -105,14 +105,14 @@ const expandedRows = ref<AchievementCategory[]>([
 
 // TODO: Remove this!
 const testingAchievements = computed(() => [
-    { ...achievements.value[0], achievedAt: [0, 0, 0, 0, 0, 0, 0] },
-    { ...achievements.value[0], achievedAt: [1, 0, 0, 0, 0, 0, 0] },
-    { ...achievements.value[0], achievedAt: [1, 1, 0, 0, 0, 0, 0] },
-    { ...achievements.value[0], achievedAt: [1, 1, 1, 0, 0, 0, 0] },
-    { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 0, 0, 0] },
-    { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 0, 0] },
-    { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 1, 0] },
-    { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 1, 1] },
+    // { ...achievements.value[0], achievedAt: [0, 0, 0, 0, 0, 0, 0] },
+    // { ...achievements.value[0], achievedAt: [1, 0, 0, 0, 0, 0, 0] },
+    // { ...achievements.value[0], achievedAt: [1, 1, 0, 0, 0, 0, 0] },
+    // { ...achievements.value[0], achievedAt: [1, 1, 1, 0, 0, 0, 0] },
+    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 0, 0, 0] },
+    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 0, 0] },
+    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 1, 0] },
+    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 1, 1] },
     ...achievements.value,
 ]);
 
