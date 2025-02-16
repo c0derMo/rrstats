@@ -47,7 +47,7 @@ export function getColorOfTier(tier: AchievementTier | -1) {
         case AchievementTier.BRONZE:
             return { color: "#ffcfc9" };
         case AchievementTier.SILVER:
-            return { color: "#e7e7e7" };
+            return { color: "#d0d0d0" };
         case AchievementTier.GOLD:
             return { color: "#ffe39c" };
         case AchievementTier.PLATINUM:

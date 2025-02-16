@@ -18,13 +18,13 @@ export enum AchievementTier {
 
 export enum AchievementCategory {
     EXPERIENCE = "Experience",
-    MAP = "Map",
-    MAP_SPECIFIC = "Map specific",
-    MATCH = "Match",
-    MISC = "Misc",
-    STREAK = "Streak",
-    TIME = "Time",
     TOURNAMENT = "Tournament",
+    MATCH = "Match",
+    MAP = "Map",
+    MAP_SPECIFIC = "Map-Specific",
+    TIME = "Time",
+    STREAK = "Streak",
+    MISC = "Miscellaneous",
 }
 
 export interface SubmittedAchievement {

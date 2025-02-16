@@ -16,7 +16,7 @@
                 <template #BackButton>
                     <FontAwesomeIcon
                         :icon="['fas', 'chevron-circle-left']"
-                        class="cursor-pointer text-white"
+                        class="cursor-pointer dark:text-white"
                         @click="$router.back()"
                     />
                 </template>
@@ -24,7 +24,7 @@
                 <template #HomeButton>
                     <FontAwesomeIcon
                         :icon="['fas', 'home']"
-                        class="cursor-pointer text-white"
+                        class="cursor-pointer dark:text-white"
                         @click="$router.push('/')"
                     />
                 </template>
@@ -33,7 +33,7 @@
                     <div class="flex flex-row mt-2">
                         <FontAwesomeIcon
                             :icon="['fas', 'sun']"
-                            class="text-white"
+                            class="dark:text-white"
                         />
                         <SwitchComponent
                             id="light-dark"
@@ -41,7 +41,7 @@
                         />
                         <FontAwesomeIcon
                             :icon="['fas', 'moon']"
-                            class="ml-3 text-white"
+                            class="ml-3 dark:text-white"
                         />
                     </div>
                 </template>

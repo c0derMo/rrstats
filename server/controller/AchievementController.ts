@@ -216,17 +216,10 @@ export default class AchievementController {
         for (const achievement of allAchievements) {
             const completions: number[] = [];
 
-            const numPlayers = await Achievement.createQueryBuilder(
-                "achievement",
-            )
-                .where("verified = true")
-                .andWhere("achievement = :achievement", {
-                    achievement: achievement.name,
-                })
-                .andWhere("achievedAt LIKE :achieveLevel", {
-                    achieveLevel: `[${Array(achievement.levels).fill("%").join(",")}]`,
-                })
-                .getCount();
+            const numPlayers = await Achievement.countBy({
+                verified: true,
+                achievement: achievement.name,
+            });
 
             for (let i = 0; i < achievement.levels; i++) {
                 const achieveLevel = Array(achievement.levels)

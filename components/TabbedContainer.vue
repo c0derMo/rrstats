@@ -1,30 +1,40 @@
 <template>
     <div class="relative">
-        <div class="flex relative h-min w-full">
-            <div
-                class="absolute w-full h-full bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded"
-            />
-            <div
-                class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded scale-y-75 transition-all duration-200"
-                :style="selectorStyle"
-            />
-            <div
-                ref="parentElement"
-                class="flex flex-row w-full gap-3 p-1 z-10"
-            >
+        <ClientOnly>
+            <div v-if="showFullBar" class="flex relative h-min w-full">
                 <div
-                    v-for="thisTab in tabs"
-                    :key="thisTab"
-                    :class="{
-                        'hover:!bg-opacity-40': selectedTab !== thisTab,
-                    }"
-                    class="flex-grow text-center py-1 rounded z-10 !bg-opacity-0 dark:bg-gray-700 bg-gray-100"
-                    @click="(e) => changeTab(thisTab, e)"
+                    class="absolute w-full h-full bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded"
+                />
+                <div
+                    class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded scale-y-75 transition-all duration-200"
+                    :style="selectorStyle"
+                />
+                <div
+                    ref="parentElement"
+                    class="flex flex-row w-full gap-3 p-1 z-10"
                 >
-                    {{ thisTab }}
+                    <div
+                        v-for="thisTab in tabs"
+                        :key="thisTab"
+                        :class="{
+                            'hover:!bg-opacity-40': selectedTab !== thisTab,
+                        }"
+                        class="flex-grow text-center py-1 rounded z-10 !bg-opacity-0 dark:bg-gray-700 bg-gray-100"
+                        @click="(e) => changeTab(thisTab, e)"
+                    >
+                        {{ thisTab }}
+                    </div>
                 </div>
             </div>
-        </div>
+            <div v-else class="flex relative h-min w-full">
+                <DropdownComponent
+                    class="w-full"
+                    :items="tabs"
+                    :model-value="selectedTab"
+                    @update:model-value="(e) => changeTab(e as string)"
+                />
+            </div>
+        </ClientOnly>
         <div class="mt-2">
             <template v-for="thisTab in tabs" :key="thisTab">
                 <div v-if="selectedTab === thisTab">
@@ -50,13 +60,19 @@ const selectedTab = ref(props.tab ?? props.tabs[0]);
 const tabElement = ref<HTMLDivElement | null>(null);
 const parentElement = ref<HTMLDivElement | null>(null);
 
+const showFullBar = computed(() => {
+    return props.tabs.length <= 4 || window?.innerWidth > 768;
+});
+
 const selectorStyle = computed(() => {
     return `width: ${(tabElement.value?.clientWidth ?? 2) - 2}px; left: ${(tabElement.value?.offsetLeft ?? 0) + 1}px`;
 });
 
-function changeTab(tab: string, event: MouseEvent) {
+function changeTab(tab: string, event?: MouseEvent) {
     selectedTab.value = tab;
-    tabElement.value = event.target as HTMLDivElement;
+    if (event != null) {
+        tabElement.value = event.target as HTMLDivElement;
+    }
 }
 
 watch(selectedTab, () => {
