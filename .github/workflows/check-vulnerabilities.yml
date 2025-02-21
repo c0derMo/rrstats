@@ -13,4 +13,4 @@ jobs:
               with:
                   node-version: "20"
             - name: Check for Vulnerabilities
-              run: npm audit
+              run: npm audit --audit-level high
