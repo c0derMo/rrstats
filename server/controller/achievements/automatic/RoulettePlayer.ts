@@ -29,21 +29,17 @@ export class RoulettePlayer implements AutomaticAchievement {
     category = AchievementCategory.EXPERIENCE;
     levels = 7;
 
-    public getDefaultData(): string[] {
-        return [];
+    public getDefaultData(): number {
+        return 0;
     }
 
     async update(
         match: Match,
-        playerOneAchievement: Achievement<string[]>,
-        playerTwoAchievement: Achievement<string[]>,
+        playerOneAchievement: Achievement<number>,
+        playerTwoAchievement: Achievement<number>,
     ): Promise<void> {
-        if (!playerOneAchievement.data.includes(match.uuid)) {
-            playerOneAchievement.data.push(match.uuid);
-        }
-        if (!playerTwoAchievement.data.includes(match.uuid)) {
-            playerTwoAchievement.data.push(match.uuid);
-        }
+        playerOneAchievement.data += 1;
+        playerTwoAchievement.data += 1;
 
         this.checkCondition(playerOneAchievement, match.timestamp);
         this.checkCondition(playerTwoAchievement, match.timestamp);
@@ -51,10 +47,10 @@ export class RoulettePlayer implements AutomaticAchievement {
 
     async recalculateAll(
         matches: Match[],
-        achievements: Record<string, Achievement<string[]>>,
+        achievements: Record<string, Achievement<number>>,
     ): Promise<void> {
         for (const player in achievements) {
-            achievements[player].data = [];
+            achievements[player].data = this.getDefaultData();
         }
 
         for (const match of matches) {
@@ -67,13 +63,13 @@ export class RoulettePlayer implements AutomaticAchievement {
     }
 
     private checkCondition(
-        achievement: Achievement<string[]>,
+        achievement: Achievement<number>,
         achievementTimestamp: number,
     ) {
         const levelRequirements = [1, 5, 10, 25, 50, 75, 100];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
-            if (achievement.data.length >= levelRequirements[idx]) {
+            if (achievement.data >= levelRequirements[idx]) {
                 if (
                     achievement.achievedAt[idx] <= 0 ||
                     achievementTimestamp < achievement.achievedAt[idx]
@@ -86,7 +82,7 @@ export class RoulettePlayer implements AutomaticAchievement {
         }
 
         achievement.progression = levelRequirements.map((requirement) => {
-            return Math.min(1, achievement.data.length / requirement);
+            return Math.min(1, achievement.data / requirement);
         });
     }
 }

@@ -262,6 +262,14 @@ export default class AchievementController {
 export class AchievementDatabaseListener
     implements EntitySubscriberInterface<Match>
 {
+    IGNORED_COLUMNS = [
+        "hitmapsMatchId",
+        "uuid",
+        "notes",
+        "shoutcasters",
+        "vodLink",
+    ];
+
     listenTo() {
         return Match;
     }
@@ -271,7 +279,14 @@ export class AchievementDatabaseListener
     }
 
     async afterUpdate(event: UpdateEvent<Match>): Promise<void> {
-        await AchievementController.updateAchievements(event.databaseEntity);
+        if (
+            event.updatedColumns.some(
+                (v) => !this.IGNORED_COLUMNS.includes(v.propertyPath),
+            )
+        ) {
+            logger.info("Updating achievements");
+            await AchievementController.recalculateAllAchievements();
+        }
     }
 }
 

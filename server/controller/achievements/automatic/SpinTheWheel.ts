@@ -29,21 +29,21 @@ export class SpinTheWheel implements AutomaticAchievement {
     category = AchievementCategory.EXPERIENCE;
     levels = 7;
 
-    public getDefaultData(): Record<string, number> {
-        return {};
+    public getDefaultData(): number {
+        return 0;
     }
 
     async update(
         match: Match,
-        playerOneAchievement: Achievement<Record<string, number>>,
-        playerTwoAchievement: Achievement<Record<string, number>>,
+        playerOneAchievement: Achievement<number>,
+        playerTwoAchievement: Achievement<number>,
     ): Promise<void> {
         const nonForfeitMapLength = match.playedMaps.filter(
             (map) => !map.forfeit,
         ).length;
 
-        playerOneAchievement.data[match.uuid] = nonForfeitMapLength;
-        playerTwoAchievement.data[match.uuid] = nonForfeitMapLength;
+        playerOneAchievement.data += nonForfeitMapLength;
+        playerTwoAchievement.data += nonForfeitMapLength;
 
         this.checkCondition(playerOneAchievement, match.timestamp);
         this.checkCondition(playerTwoAchievement, match.timestamp);
@@ -51,10 +51,10 @@ export class SpinTheWheel implements AutomaticAchievement {
 
     async recalculateAll(
         matches: Match[],
-        achievements: Record<string, Achievement<Record<string, number>>>,
+        achievements: Record<string, Achievement<number>>,
     ): Promise<void> {
         for (const player in achievements) {
-            achievements[player].data = {};
+            achievements[player].data = this.getDefaultData();
         }
 
         for (const match of matches) {
@@ -67,18 +67,13 @@ export class SpinTheWheel implements AutomaticAchievement {
     }
 
     private checkCondition(
-        achievement: Achievement<Record<string, number>>,
+        achievement: Achievement<number>,
         achievementTimestamp: number,
     ) {
-        let sumOfMaps = 0;
-        for (const num of Object.values(achievement.data)) {
-            sumOfMaps += num;
-        }
-
         const levelRequirements = [5, 25, 50, 100, 200, 300, 400];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
-            if (sumOfMaps >= levelRequirements[idx]) {
+            if (achievement.data >= levelRequirements[idx]) {
                 if (
                     achievement.achievedAt[idx] <= 0 ||
                     achievementTimestamp < achievement.achievedAt[idx]
@@ -91,7 +86,7 @@ export class SpinTheWheel implements AutomaticAchievement {
         }
 
         achievement.progression = levelRequirements.map((requirement) => {
-            return Math.min(1, sumOfMaps / requirement);
+            return Math.min(1, achievement.data / requirement);
         });
     }
 }
