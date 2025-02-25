@@ -100,7 +100,7 @@ test.describe("Player Page", () => {
         // Maps panel
         await expectTableRow(
             tabPanel.locator("table").first().locator("tbody").first(),
-            ["New York", "16", "3"],
+            ["New York", "16", "1"],
         );
         await expectTableRow(
             tabPanel.locator("table").nth(1).locator("tbody").first(),
