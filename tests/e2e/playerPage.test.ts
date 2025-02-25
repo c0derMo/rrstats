@@ -100,7 +100,7 @@ test.describe("Player Page", () => {
         // Maps panel
         await expectTableRow(
             tabPanel.locator("table").first().locator("tbody").first(),
-            ["New York", "16"],
+            ["New York", "16", "3"],
         );
         await expectTableRow(
             tabPanel.locator("table").nth(1).locator("tbody").first(),
@@ -108,7 +108,7 @@ test.describe("Player Page", () => {
         );
         await expectTableRow(
             tabPanel.locator("table").nth(2).locator("tbody").first(),
-            ["Berlin", "10"],
+            ["Berlin", "10", "3"],
         );
 
         // Personal bests panel

@@ -18,6 +18,8 @@ type CacheKey =
     | "maps"
     | "selfPickedMaps"
     | "selfBannedMaps"
+    | "opponentPickedMaps"
+    | "opponentBannedMaps"
     | "mapPlayed"
     | "mapWon"
     | "perMapWinrate"
@@ -142,6 +144,27 @@ export default class MatchCollection {
         });
     }
 
+    mapPickedAgainstAmount(): number[] {
+        return this.getCachedOrCalculate("opponentPickedMaps", () => {
+            const pickedAgainstAmounts = getAllMaps().map(() => 0);
+            const oppoPicks = this.matches
+                .map((match) => {
+                    const opponent =
+                        this.player === match.playerOne
+                            ? match.playerTwo
+                            : match.playerOne;
+                    return match.playedMaps.filter((map) =>
+                        wasMapPickedBy(opponent, match, map),
+                    );
+                })
+                .reduce((prev, cur) => [...prev, ...cur], []);
+            for (const pick of oppoPicks) {
+                pickedAgainstAmounts[pick.map] += 1;
+            }
+            return pickedAgainstAmounts;
+        });
+    }
+
     mapBanAmount(): number[] {
         return this.getCachedOrCalculate("selfBannedMaps", () => {
             const mapBanAmounts = getAllMaps().map(() => 0);
@@ -156,6 +179,27 @@ export default class MatchCollection {
                 mapBanAmounts[ban.map] += 1;
             }
             return mapBanAmounts;
+        });
+    }
+
+    mapBannedAgainstAmount(): number[] {
+        return this.getCachedOrCalculate("opponentBannedMaps", () => {
+            const bannedAgainstAmounts = getAllMaps().map(() => 0);
+            const oppoBans = this.matches
+                .map((match) => {
+                    const opponent =
+                        this.player === match.playerOne
+                            ? match.playerTwo
+                            : match.playerOne;
+                    return match.bannedMaps.filter((map) =>
+                        wasMapPickedBy(opponent, match, map),
+                    );
+                })
+                .reduce((prev, cur) => [...prev, ...cur], []);
+            for (const ban of oppoBans) {
+                bannedAgainstAmounts[ban.map] += 1;
+            }
+            return bannedAgainstAmounts;
         });
     }
 
