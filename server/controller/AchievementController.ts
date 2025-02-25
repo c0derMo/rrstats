@@ -18,6 +18,21 @@ import ld from "lodash";
 import { RoulettePlayer } from "./achievements/automatic/RoulettePlayer";
 import { ReturningRival } from "./achievements/automatic/ReturningRival";
 import { AgainstTheWorld } from "./achievements/automatic/AgainstTheWorld";
+import { GettingMileage } from "./achievements/automatic/GettingMileage";
+import { OpenSeason } from "./achievements/automatic/OpenSeason";
+import { PointsForYou } from "./achievements/automatic/PointsForYou";
+import {
+    CuttingEdge,
+    DressedForTheOccasion,
+    Kaboom,
+    OneOfAKind,
+    RememberNoPacify,
+    WaitingToHappen,
+    WhysItSpicy,
+    WorthAShot,
+} from "./achievements/automatic/ConditionAchievements";
+import { IHateThatMap } from "./achievements/automatic/IHateThatMap";
+import { ILoveThatMap } from "./achievements/automatic/ILoveThatMap";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -49,9 +64,23 @@ export default class AchievementController {
     static readonly automaticAchievements: AutomaticAchievement[] = [
         new RoulettePlayer(),
         new SpinTheWheel(),
+        new GettingMileage(),
+        new OpenSeason(),
         new Globetrotter(),
         new ReturningRival(),
         new AgainstTheWorld(),
+
+        new PointsForYou(),
+        new CuttingEdge(),
+        new DressedForTheOccasion(),
+        new Kaboom(),
+        new WaitingToHappen(),
+        new OneOfAKind(),
+        new RememberNoPacify(),
+        new WhysItSpicy(),
+        new WorthAShot(),
+        new IHateThatMap(),
+        new ILoveThatMap(),
     ];
     static readonly manualAchievements: ManualAchievement[] = [new OneStone()];
 
