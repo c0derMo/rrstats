@@ -78,6 +78,8 @@ export default class PlayerStatisticController {
             mapsBanned: matchCollection.mapBanAmount(),
             mapsPlayed: matchCollection.mapPlayAmount(),
             mapsWon: matchCollection.mapWinAmount(),
+            mapsPickedAgainst: matchCollection.mapPickedAgainstAmount(),
+            mapsBannedAgainst: matchCollection.mapBannedAgainstAmount(),
             perMapWinrate: matchCollection.perMapWinrate(),
             mapPBs: matchCollection.mapPBs(),
             eloProgression:

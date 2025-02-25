@@ -84,6 +84,7 @@ const mapSort = (a: unknown, b: unknown) => {
 const pickedHeaders = [
     { key: "Map", title: "Map", sort: mapSort },
     { key: "Picked", title: "Picked" },
+    { key: "Picked Against", title: "Picked Against" },
 ];
 const winrateHeaders = [
     { key: "Map", title: "Map", sort: mapSort },
@@ -94,6 +95,7 @@ const winrateHeaders = [
 const bannedHeaders = [
     { key: "Map", title: "Map", sort: mapSort },
     { key: "Banned", title: "Banned" },
+    { key: "Banned Against", title: "Banned Against" },
 ];
 
 const sortedCompetitions = computed(() => {
@@ -155,13 +157,15 @@ const filteredMatches = computed(() => {
 
 const pickedRows = computed(() => {
     const maps = filteredMatches.value.mapPickAmount();
+    const mapsPickedAgainst = filteredMatches.value.mapPickedAgainstAmount();
 
     const result = [];
     for (const map of getAllMaps()) {
-        if (maps[map] > 0) {
+        if (maps[map] > 0 || mapsPickedAgainst[map] > 0) {
             result.push({
                 Map: getMap(map)!.name,
                 Picked: maps[map],
+                "Picked Against": mapsPickedAgainst[map],
             });
         }
     }
@@ -171,13 +175,15 @@ const pickedRows = computed(() => {
 
 const bannedRows = computed(() => {
     const bans = filteredMatches.value.mapBanAmount();
+    const bannedAgainst = filteredMatches.value.mapBannedAgainstAmount();
 
     const result = [];
     for (const map of getAllMaps()) {
-        if (bans[map] > 0) {
+        if (bans[map] > 0 || bannedAgainst[map] > 0) {
             result.push({
                 Map: getMap(map)!.name,
                 Banned: bans[map],
+                "Banned Against": bannedAgainst[map],
             });
         }
     }
