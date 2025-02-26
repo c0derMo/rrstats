@@ -1,25 +1,26 @@
 import type { Match } from "~/server/model/Match";
 import { type AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
-import { type HitmanMap, getAllMaps } from "~/utils/mapUtils";
+import { HitmanMap, getAllMaps } from "~/utils/mapUtils";
 import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
+import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
-export class Globetrotter implements AutomaticAchievement {
-    name = "Globetrotter";
+export class GloballyInnovative implements AutomaticAchievement {
+    name = "Globally Innovative";
     description = [
-        "Play a spin on every roulette map",
-        "Play a spin on every roulette map 5 times",
-        "Play a spin on every roulette map 10 times",
+        "Win a spin on every map in a season",
+        "Win 5 spin on every map in a season",
+        "Win 10 spin on every map in a season",
     ];
     tier = [
         AchievementTier.SILVER,
         AchievementTier.GOLD,
         AchievementTier.PLATINUM,
     ];
-    category = AchievementCategory.EXPERIENCE;
+    category = AchievementCategory.MAP;
     levels = 3;
 
     public getDefaultData(): Record<HitmanMap, number> {
@@ -39,8 +40,11 @@ export class Globetrotter implements AutomaticAchievement {
             if (map.forfeit) {
                 continue;
             }
-            playerOneAchievement.data[map.map] += 1;
-            playerTwoAchievement.data[map.map] += 1;
+            if (map.winner === WinningPlayer.PLAYER_ONE) {
+                playerOneAchievement.data[map.map] += 1;
+            } else if (map.winner === WinningPlayer.PLAYER_TWO) {
+                playerTwoAchievement.data[map.map] += 1;
+            }
         }
 
         this.checkCondition(playerOneAchievement, match.timestamp);
@@ -68,12 +72,37 @@ export class Globetrotter implements AutomaticAchievement {
         achievement: Achievement<Record<HitmanMap, number>>,
         achievementTimestamp: number,
     ) {
-        const lowestMapPlayed = Math.min(...Object.values(achievement.data));
+        const season1 = Math.min(
+            achievement.data[HitmanMap.PARIS],
+            achievement.data[HitmanMap.SAPIENZA],
+            achievement.data[HitmanMap.MARRAKESH],
+            achievement.data[HitmanMap.BANGKOK],
+            achievement.data[HitmanMap.COLORADO],
+            achievement.data[HitmanMap.HOKKAIDO],
+        );
+        const season2 = Math.min(
+            achievement.data[HitmanMap.MIAMI],
+            achievement.data[HitmanMap.SANTA_FORTUNA],
+            achievement.data[HitmanMap.MUMBAI],
+            achievement.data[HitmanMap.WHITTLETON_CREEK],
+            achievement.data[HitmanMap.AMBROSE_ISLAND],
+            achievement.data[HitmanMap.ISLE_OF_SGAIL],
+            achievement.data[HitmanMap.NEW_YORK],
+            achievement.data[HitmanMap.HAVEN_ISLAND],
+        );
+        const season3 = Math.min(
+            achievement.data[HitmanMap.DUBAI],
+            achievement.data[HitmanMap.DARTMOOR],
+            achievement.data[HitmanMap.BERLIN],
+            achievement.data[HitmanMap.CHONGQING],
+            achievement.data[HitmanMap.MENDOZA],
+        );
+        const lowestSeasonWon = Math.min(season1, season2, season3);
 
         const levelRequirements = [1, 5, 10];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
-            if (lowestMapPlayed >= levelRequirements[idx]) {
+            if (lowestSeasonWon >= levelRequirements[idx]) {
                 if (achievement.achievedAt[idx] <= 0) {
                     achievement.achievedAt[idx] = achievementTimestamp;
                 }
@@ -83,11 +112,7 @@ export class Globetrotter implements AutomaticAchievement {
         }
 
         achievement.progression = levelRequirements.map((req) =>
-            Math.min(
-                1,
-                Object.values(achievement.data).filter((m) => m >= req).length /
-                    19,
-            ),
+            Math.min(1, lowestSeasonWon / req),
         );
     }
 }

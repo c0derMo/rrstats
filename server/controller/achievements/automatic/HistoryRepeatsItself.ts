@@ -6,20 +6,21 @@ import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
+import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
-export class Globetrotter implements AutomaticAchievement {
+export class HistoryRepeatsItself implements AutomaticAchievement {
     name = "Globetrotter";
     description = [
-        "Play a spin on every roulette map",
-        "Play a spin on every roulette map 5 times",
-        "Play a spin on every roulette map 10 times",
+        "Win 5 spins on the same map",
+        "Win 10 spins on the same map",
+        "Win 20 spins on the same map",
     ];
     tier = [
         AchievementTier.SILVER,
         AchievementTier.GOLD,
         AchievementTier.PLATINUM,
     ];
-    category = AchievementCategory.EXPERIENCE;
+    category = AchievementCategory.MAP;
     levels = 3;
 
     public getDefaultData(): Record<HitmanMap, number> {
@@ -39,8 +40,11 @@ export class Globetrotter implements AutomaticAchievement {
             if (map.forfeit) {
                 continue;
             }
-            playerOneAchievement.data[map.map] += 1;
-            playerTwoAchievement.data[map.map] += 1;
+            if (map.winner === WinningPlayer.PLAYER_ONE) {
+                playerOneAchievement.data[map.map] += 1;
+            } else if (map.winner === WinningPlayer.PLAYER_TWO) {
+                playerTwoAchievement.data[map.map] += 1;
+            }
         }
 
         this.checkCondition(playerOneAchievement, match.timestamp);
@@ -68,12 +72,12 @@ export class Globetrotter implements AutomaticAchievement {
         achievement: Achievement<Record<HitmanMap, number>>,
         achievementTimestamp: number,
     ) {
-        const lowestMapPlayed = Math.min(...Object.values(achievement.data));
+        const mostOnSameMap = Math.max(...Object.values(achievement.data));
 
-        const levelRequirements = [1, 5, 10];
+        const levelRequirements = [5, 10, 20];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
-            if (lowestMapPlayed >= levelRequirements[idx]) {
+            if (mostOnSameMap >= levelRequirements[idx]) {
                 if (achievement.achievedAt[idx] <= 0) {
                     achievement.achievedAt[idx] = achievementTimestamp;
                 }
@@ -83,11 +87,7 @@ export class Globetrotter implements AutomaticAchievement {
         }
 
         achievement.progression = levelRequirements.map((req) =>
-            Math.min(
-                1,
-                Object.values(achievement.data).filter((m) => m >= req).length /
-                    19,
-            ),
+            Math.min(1, mostOnSameMap / req),
         );
     }
 }

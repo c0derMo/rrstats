@@ -6,20 +6,21 @@ import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
+import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
-export class Globetrotter implements AutomaticAchievement {
-    name = "Globetrotter";
+export class WorldOfAssassination implements AutomaticAchievement {
+    name = "World of Assassination";
     description = [
-        "Play a spin on every roulette map",
-        "Play a spin on every roulette map 5 times",
-        "Play a spin on every roulette map 10 times",
+        "Win a spin on every map in the trilogy",
+        "Win 3 spins on every map in the trilogy",
+        "Win 6 spins on every map in the trilogy",
     ];
     tier = [
         AchievementTier.SILVER,
         AchievementTier.GOLD,
         AchievementTier.PLATINUM,
     ];
-    category = AchievementCategory.EXPERIENCE;
+    category = AchievementCategory.MAP;
     levels = 3;
 
     public getDefaultData(): Record<HitmanMap, number> {
@@ -39,8 +40,11 @@ export class Globetrotter implements AutomaticAchievement {
             if (map.forfeit) {
                 continue;
             }
-            playerOneAchievement.data[map.map] += 1;
-            playerTwoAchievement.data[map.map] += 1;
+            if (map.winner === WinningPlayer.PLAYER_ONE) {
+                playerOneAchievement.data[map.map] += 1;
+            } else if (map.winner === WinningPlayer.PLAYER_TWO) {
+                playerTwoAchievement.data[map.map] += 1;
+            }
         }
 
         this.checkCondition(playerOneAchievement, match.timestamp);
@@ -70,7 +74,7 @@ export class Globetrotter implements AutomaticAchievement {
     ) {
         const lowestMapPlayed = Math.min(...Object.values(achievement.data));
 
-        const levelRequirements = [1, 5, 10];
+        const levelRequirements = [1, 3, 6];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
             if (lowestMapPlayed >= levelRequirements[idx]) {

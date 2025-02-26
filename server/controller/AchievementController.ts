@@ -33,6 +33,14 @@ import {
 } from "./achievements/automatic/ConditionAchievements";
 import { IHateThatMap } from "./achievements/automatic/IHateThatMap";
 import { ILoveThatMap } from "./achievements/automatic/ILoveThatMap";
+import { HistoryRepeatsItself } from "./achievements/automatic/HistoryRepeatsItself";
+import { GloballyInnovative } from "./achievements/automatic/GloballyInnovative";
+import { WorldOfAssassination } from "./achievements/automatic/WorldOfAssassination";
+import { TheHouseEdge } from "./achievements/automatic/TheHouseEdge";
+import { AgainstAllOdds } from "./achievements/automatic/AgainstAllOdds";
+import { BeatTheHouse } from "./achievements/automatic/BeatTheHouse";
+import { NoWeaknesses } from "./achievements/automatic/NoWeaknesses";
+import { FallIntoPlace } from "./achievements/automatic/FallIntoPlace";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -81,6 +89,15 @@ export default class AchievementController {
         new WorthAShot(),
         new IHateThatMap(),
         new ILoveThatMap(),
+        new HistoryRepeatsItself(),
+        new GloballyInnovative(),
+        new WorldOfAssassination(),
+        new TheHouseEdge(),
+        new AgainstAllOdds(),
+        new BeatTheHouse(),
+        new NoWeaknesses(),
+
+        new FallIntoPlace(),
     ];
     static readonly manualAchievements: ManualAchievement[] = [new OneStone()];
 
