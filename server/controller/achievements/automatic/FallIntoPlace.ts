@@ -101,8 +101,8 @@ export class FallIntoPlace implements AutomaticAchievement {
         const placementsThisTournament = await this.getPlacementsInTournament(match.competition);
         const finalTimestampThisTournament = await this.getFinalTimestampOfTournament(match.competition, match.timestamp)
 
-        const placementOfPlayerOne = await this.getPlacementOfPlayerInTournament(match.playerOne, match.competition);
-        const placementOfPlayerTwo = await this.getPlacementOfPlayerInTournament(match.playerTwo, match.competition);
+        const placementOfPlayerOne = await this.getPlacementOfPlayerInTournament(match.competition, match.playerOne);
+        const placementOfPlayerTwo = await this.getPlacementOfPlayerInTournament(match.competition, match.playerTwo);
 
         if (placementOfPlayerOne != null) {
             this.checkSinglePlayer(

@@ -41,6 +41,9 @@ import { AgainstAllOdds } from "./achievements/automatic/AgainstAllOdds";
 import { BeatTheHouse } from "./achievements/automatic/BeatTheHouse";
 import { NoWeaknesses } from "./achievements/automatic/NoWeaknesses";
 import { FallIntoPlace } from "./achievements/automatic/FallIntoPlace";
+import { Champion } from "./achievements/automatic/Champion";
+import { WorldChampion } from "./achievements/automatic/WorldChampion";
+import { AllRounder } from "./achievements/automatic/AllRounder";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -98,6 +101,9 @@ export default class AchievementController {
         new NoWeaknesses(),
 
         new FallIntoPlace(),
+        new Champion(),
+        new WorldChampion(),
+        new AllRounder(),
     ];
     static readonly manualAchievements: ManualAchievement[] = [new OneStone()];
 
