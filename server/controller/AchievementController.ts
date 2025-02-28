@@ -45,6 +45,12 @@ import { Champion } from "./achievements/automatic/Champion";
 import { WorldChampion } from "./achievements/automatic/WorldChampion";
 import { AllRounder } from "./achievements/automatic/AllRounder";
 import { isReady } from "..";
+import { ChallengerDefender } from "./achievements/automatic/ChallengerDefender";
+import { TheCulling } from "./achievements/automatic/TheCulling";
+import { TitleContender } from "./achievements/automatic/TitleContender";
+import { Untouchable } from "./achievements/automatic/Untouchable";
+import { BeatenTheBest } from "./achievements/automatic/BeatenTheBest";
+import { RarifiedAir } from "./achievements/automatic/RarifiedAir";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -105,6 +111,12 @@ export default class AchievementController {
         new Champion(),
         new WorldChampion(),
         new AllRounder(),
+        new ChallengerDefender(),
+        new TheCulling(),
+        new TitleContender(),
+        new Untouchable(),
+        new BeatenTheBest(),
+        new RarifiedAir(),
     ];
     static readonly manualAchievements: ManualAchievement[] = [new OneStone()];
 

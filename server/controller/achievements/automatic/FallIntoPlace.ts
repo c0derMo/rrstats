@@ -45,17 +45,23 @@ export class FallIntoPlace implements AutomaticAchievement {
         }
     }
 
-    private async getPlacementsInTournament(tournament: string): Promise<number> {
+    private async getPlacementsInTournament(
+        tournament: string,
+    ): Promise<number> {
         this.invalidateCache();
         if (this.placementsInTournament[tournament] == null) {
-            this.placementsInTournament[tournament] = await CompetitionPlacement.countBy({
-                competition: tournament,
-            });
+            this.placementsInTournament[tournament] =
+                await CompetitionPlacement.countBy({
+                    competition: tournament,
+                });
         }
         return this.placementsInTournament[tournament];
     }
 
-    private async getPlacementOfPlayerInTournament(tournament: string, playerUUID: string): Promise<number | null> {
+    private async getPlacementOfPlayerInTournament(
+        tournament: string,
+        playerUUID: string,
+    ): Promise<number | null> {
         this.invalidateCache();
         if (this.placementOfPlayer[tournament] == null) {
             this.placementOfPlayer[tournament] = {};
@@ -65,12 +71,16 @@ export class FallIntoPlace implements AutomaticAchievement {
                 player: playerUUID,
                 competition: tournament,
             });
-            this.placementOfPlayer[tournament][playerUUID] = placementOfPlayer?.placement ?? null;
+            this.placementOfPlayer[tournament][playerUUID] =
+                placementOfPlayer?.placement ?? null;
         }
         return this.placementOfPlayer[tournament][playerUUID];
     }
 
-    private async getFinalTimestampOfTournament(tournament: string, defaultTimestamp: number): Promise<number> {
+    private async getFinalTimestampOfTournament(
+        tournament: string,
+        defaultTimestamp: number,
+    ): Promise<number> {
         this.invalidateCache();
         if (this.finalTimestampInTournament[tournament] == null) {
             const lastMatchThisTournament = await Match.findOne({
@@ -88,7 +98,8 @@ export class FallIntoPlace implements AutomaticAchievement {
             if (lastMatchThisTournament == null) {
                 return defaultTimestamp;
             }
-            this.finalTimestampInTournament[tournament] = lastMatchThisTournament.timestamp;
+            this.finalTimestampInTournament[tournament] =
+                lastMatchThisTournament.timestamp;
         }
         return this.finalTimestampInTournament[tournament];
     }
@@ -98,11 +109,25 @@ export class FallIntoPlace implements AutomaticAchievement {
         playerOneAchievement: Achievement<string[]>,
         playerTwoAchievement: Achievement<string[]>,
     ): Promise<void> {
-        const placementsThisTournament = await this.getPlacementsInTournament(match.competition);
-        const finalTimestampThisTournament = await this.getFinalTimestampOfTournament(match.competition, match.timestamp)
+        const placementsThisTournament = await this.getPlacementsInTournament(
+            match.competition,
+        );
+        const finalTimestampThisTournament =
+            await this.getFinalTimestampOfTournament(
+                match.competition,
+                match.timestamp,
+            );
 
-        const placementOfPlayerOne = await this.getPlacementOfPlayerInTournament(match.competition, match.playerOne);
-        const placementOfPlayerTwo = await this.getPlacementOfPlayerInTournament(match.competition, match.playerTwo);
+        const placementOfPlayerOne =
+            await this.getPlacementOfPlayerInTournament(
+                match.competition,
+                match.playerOne,
+            );
+        const placementOfPlayerTwo =
+            await this.getPlacementOfPlayerInTournament(
+                match.competition,
+                match.playerTwo,
+            );
 
         if (placementOfPlayerOne != null) {
             this.checkSinglePlayer(

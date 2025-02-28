@@ -288,12 +288,14 @@ export default class HitmapsIntegration {
                 newMatch,
                 competition,
             );
-            matchesToSave.push(await HitmapsIntegration.handleMatch(
-                newMatch,
-                additionalInfo,
-                tournamentSlug,
-                competition,
-            ));
+            matchesToSave.push(
+                await HitmapsIntegration.handleMatch(
+                    newMatch,
+                    additionalInfo,
+                    tournamentSlug,
+                    competition,
+                ),
+            );
         }
 
         // Old Matches
@@ -316,12 +318,14 @@ export default class HitmapsIntegration {
                 fullMatch,
                 competition,
             );
-            matchesToSave.push(await HitmapsIntegration.handleMatch(
-                newMatch,
-                additionalInfo,
-                tournamentSlug,
-                competition,
-            ));
+            matchesToSave.push(
+                await HitmapsIntegration.handleMatch(
+                    newMatch,
+                    additionalInfo,
+                    tournamentSlug,
+                    competition,
+                ),
+            );
         }
 
         matchesToSave.sort((a, b) => a.timestamp - b.timestamp);

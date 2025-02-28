@@ -5,21 +5,54 @@ import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
-import { CompetitionPlacement } from "~/server/model/Competition";
+import { Competition, CompetitionPlacement } from "~/server/model/Competition";
 import { DateTime } from "luxon";
+import { LessThan } from "typeorm";
 
-export class WorldChampion implements AutomaticAchievement {
-    name = "World Champion";
-    description = ["Win a Roulette Rivals World Championship"];
+export class ChallengerDefender implements AutomaticAchievement {
+    name = "Challenger & Defender";
+    description = ["Defend your title by winning two consecutive tournaments"];
     tier = [AchievementTier.PLATINUM];
     category = AchievementCategory.TOURNAMENT;
     levels = 1;
 
     placementOfPlayer: Record<string, Record<string, number | null>> = {};
+    tournamentBefore: Record<string, string | null> = {};
     lastCacheClear = 0;
 
     public getDefaultData(): string[] {
         return [];
+    }
+
+    private async getTournamentBefore(
+        tournament: string,
+    ): Promise<string | null> {
+        if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
+            this.placementOfPlayer = {};
+            this.tournamentBefore = {};
+            this.lastCacheClear = DateTime.now().toMillis();
+        }
+        if (this.tournamentBefore[tournament] == null) {
+            const currentTourneyStarting = await Competition.findOneBy({
+                tag: tournament,
+            });
+            if (currentTourneyStarting == null) {
+                return null;
+            }
+            const tourneyBefore = await Competition.findOne({
+                where: {
+                    startingTimestamp: LessThan(
+                        currentTourneyStarting.startingTimestamp,
+                    ),
+                    officialCompetition: true,
+                },
+                order: {
+                    startingTimestamp: "DESC",
+                },
+            });
+            this.tournamentBefore[tournament] = tourneyBefore?.tag ?? null;
+        }
+        return this.tournamentBefore[tournament];
     }
 
     private async getPlacementOfPlayerInTournament(
@@ -28,6 +61,7 @@ export class WorldChampion implements AutomaticAchievement {
     ): Promise<number | null> {
         if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
             this.placementOfPlayer = {};
+            this.tournamentBefore = {};
             this.lastCacheClear = DateTime.now().toMillis();
         }
         if (this.placementOfPlayer[tournament] == null) {
@@ -49,7 +83,10 @@ export class WorldChampion implements AutomaticAchievement {
         playerOneAchievement: Achievement<string[]>,
         playerTwoAchievement: Achievement<string[]>,
     ): Promise<void> {
-        if (!match.competition.toLowerCase().includes("rrwc")) {
+        const tournamentBefore = await this.getTournamentBefore(
+            match.competition,
+        );
+        if (tournamentBefore == null) {
             return;
         }
         const placementOfPlayerOne =
@@ -62,18 +99,28 @@ export class WorldChampion implements AutomaticAchievement {
                 match.competition,
                 match.playerTwo,
             );
+        const lastPlacementOfPlayerOne =
+            await this.getPlacementOfPlayerInTournament(
+                tournamentBefore,
+                match.playerOne,
+            );
+        const lastPlacementOfPlayerTwo =
+            await this.getPlacementOfPlayerInTournament(
+                tournamentBefore,
+                match.playerTwo,
+            );
 
         if (
-            placementOfPlayerOne != null &&
             placementOfPlayerOne === 1 &&
+            lastPlacementOfPlayerOne === 1 &&
             playerOneAchievement.achievedAt[0] <= 0
         ) {
             playerOneAchievement.achievedAt[0] = match.timestamp;
             playerOneAchievement.progression[0] = 1;
         }
         if (
-            placementOfPlayerTwo != null &&
             placementOfPlayerTwo === 1 &&
+            lastPlacementOfPlayerTwo === 1 &&
             playerTwoAchievement.achievedAt[0] <= 0
         ) {
             playerTwoAchievement.achievedAt[0] = match.timestamp;

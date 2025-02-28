@@ -1,5 +1,5 @@
-import { Match } from "~/server/model/Match";
-import { type AutomaticAchievement } from "../../AchievementController";
+import type { Match } from "~/server/model/Match";
+import type { AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
 import {
     AchievementCategory,
@@ -10,12 +10,8 @@ import { DateTime } from "luxon";
 
 export class Champion implements AutomaticAchievement {
     name = "Champion";
-    description = [
-        "Win a Roulette Rivals tournament",
-    ];
-    tier = [
-        AchievementTier.PLATINUM,
-    ];
+    description = ["Win a Roulette Rivals tournament"];
+    tier = [AchievementTier.PLATINUM];
     category = AchievementCategory.TOURNAMENT;
     levels = 1;
 
@@ -26,7 +22,10 @@ export class Champion implements AutomaticAchievement {
         return [];
     }
 
-    private async getPlacementOfPlayerInTournament(tournament: string, playerUUID: string): Promise<number | null> {
+    private async getPlacementOfPlayerInTournament(
+        tournament: string,
+        playerUUID: string,
+    ): Promise<number | null> {
         if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
             this.placementOfPlayer = {};
             this.lastCacheClear = DateTime.now().toMillis();
@@ -39,7 +38,8 @@ export class Champion implements AutomaticAchievement {
                 player: playerUUID,
                 competition: tournament,
             });
-            this.placementOfPlayer[tournament][playerUUID] = placementOfPlayer?.placement ?? null;
+            this.placementOfPlayer[tournament][playerUUID] =
+                placementOfPlayer?.placement ?? null;
         }
         return this.placementOfPlayer[tournament][playerUUID];
     }
@@ -52,14 +52,30 @@ export class Champion implements AutomaticAchievement {
         if (match.competition.toLowerCase().includes("rrwc")) {
             return;
         }
-        const placementOfPlayerOne = await this.getPlacementOfPlayerInTournament(match.competition, match.playerOne);
-        const placementOfPlayerTwo = await this.getPlacementOfPlayerInTournament(match.competition, match.playerTwo);
+        const placementOfPlayerOne =
+            await this.getPlacementOfPlayerInTournament(
+                match.competition,
+                match.playerOne,
+            );
+        const placementOfPlayerTwo =
+            await this.getPlacementOfPlayerInTournament(
+                match.competition,
+                match.playerTwo,
+            );
 
-        if (placementOfPlayerOne != null && placementOfPlayerOne === 1 && playerOneAchievement.achievedAt[0] <= 0) {
+        if (
+            placementOfPlayerOne != null &&
+            placementOfPlayerOne === 1 &&
+            playerOneAchievement.achievedAt[0] <= 0
+        ) {
             playerOneAchievement.achievedAt[0] = match.timestamp;
             playerOneAchievement.progression[0] = 1;
         }
-        if (placementOfPlayerTwo != null && placementOfPlayerTwo === 1 && playerTwoAchievement.achievedAt[0] <= 0) {
+        if (
+            placementOfPlayerTwo != null &&
+            placementOfPlayerTwo === 1 &&
+            playerTwoAchievement.achievedAt[0] <= 0
+        ) {
             playerTwoAchievement.achievedAt[0] = match.timestamp;
             playerTwoAchievement.progression[0] = 1;
         }

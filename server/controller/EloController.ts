@@ -400,10 +400,12 @@ export class EloDatabaseListener implements EntitySubscriberInterface {
     async beforeInsert(event: InsertEvent<unknown>): Promise<void> {
         if (event.entity instanceof Match) {
             const newerMatches = await Match.countBy({
-                timestamp: MoreThan(event.entity.timestamp)
+                timestamp: MoreThan(event.entity.timestamp),
             });
             if (newerMatches <= 0) {
-                await EloController.getInstance().recalculateMatch(event.entity);
+                await EloController.getInstance().recalculateMatch(
+                    event.entity,
+                );
                 this.matchesToIgnore.add(event.entity.uuid);
             }
         }

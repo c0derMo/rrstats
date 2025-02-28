@@ -4,9 +4,9 @@ import {
     EventSubscriber,
     type DataSourceOptions,
     type EntityManager,
-    EntitySubscriberInterface,
-    InsertEvent,
-    UpdateEvent,
+    type EntitySubscriberInterface,
+    type InsertEvent,
+    type UpdateEvent,
 } from "typeorm";
 import { GenericRecord, MapRecord } from "../model/Record";
 import { Competition, CompetitionPlacement } from "../model/Competition";
@@ -113,12 +113,16 @@ export default class DatabaseConnector {
 
 @EventSubscriber()
 class DatabaseInsertUpdateLogger implements EntitySubscriberInterface {
-    private readonly LOGGING_LEVEL: "full" | "event" | "none" = import.meta.dev ? "event" : "none";
+    private readonly LOGGING_LEVEL: "full" | "event" | "none" = import.meta.dev
+        ? "event"
+        : "none";
 
     afterInsert(event: InsertEvent<unknown>): void {
         switch (this.LOGGING_LEVEL) {
             case "full":
-                logger.log(`INSERT: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`);
+                logger.log(
+                    `INSERT: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`,
+                );
                 break;
             case "event":
                 logger.log(`INSERT: ${event.metadata.tableName}`);
@@ -130,7 +134,9 @@ class DatabaseInsertUpdateLogger implements EntitySubscriberInterface {
     afterUpdate(event: UpdateEvent<unknown>): void {
         switch (this.LOGGING_LEVEL) {
             case "full":
-                logger.log(`UPDATE: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`);
+                logger.log(
+                    `UPDATE: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`,
+                );
                 break;
             case "event":
                 logger.log(`UPDATE: ${event.metadata.tableName}`);

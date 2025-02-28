@@ -1,5 +1,5 @@
 import type { Match } from "~/server/model/Match";
-import { type AutomaticAchievement } from "../../AchievementController";
+import type { AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
 import {
     AchievementCategory,
@@ -8,7 +8,7 @@ import {
 import { WinningPlayer } from "~/utils/interfaces/IMatch";
 import { MapRecord } from "~/server/model/Record";
 import { LessThan } from "typeorm";
-import { HitmanMap } from "~/utils/mapUtils";
+import type { HitmanMap } from "~/utils/mapUtils";
 import { DateTime } from "luxon";
 
 export class BeatTheHouse implements AutomaticAchievement {
@@ -25,7 +25,10 @@ export class BeatTheHouse implements AutomaticAchievement {
         return false;
     }
 
-    private async isRecordHolder(map: HitmanMap, playerUUID: string): Promise<boolean | null> {
+    private async isRecordHolder(
+        map: HitmanMap,
+        playerUUID: string,
+    ): Promise<boolean | null> {
         if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
             this.recordHolders = {};
             this.lastCacheClear = DateTime.now().toMillis();
@@ -59,7 +62,7 @@ export class BeatTheHouse implements AutomaticAchievement {
             this.recordHolders[map][playerUUID] = false;
             return false;
         }
-        
+
         this.recordHolders[map][playerUUID] = true;
         return true;
     }
@@ -109,7 +112,7 @@ export class BeatTheHouse implements AutomaticAchievement {
             }
         }
     }
-    
+
     async recalculateAll(
         matches: Match[],
         achievements: Record<string, Achievement<boolean>>,

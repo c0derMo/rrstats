@@ -1,4 +1,4 @@
-import { Match } from "~/server/model/Match";
+import type { Match } from "~/server/model/Match";
 import { type AutomaticAchievement } from "../../AchievementController";
 import type { Achievement } from "~/server/model/Achievement";
 import {
@@ -13,9 +13,7 @@ export class AllRounder implements AutomaticAchievement {
     description = [
         "Win a Roulette Rivals and a Roulette Rivals World Championship",
     ];
-    tier = [
-        AchievementTier.PLATINUM,
-    ];
+    tier = [AchievementTier.PLATINUM];
     category = AchievementCategory.TOURNAMENT;
     levels = 1;
 
@@ -26,7 +24,10 @@ export class AllRounder implements AutomaticAchievement {
         return [false, false];
     }
 
-    private async getPlacementOfPlayerInTournament(tournament: string, playerUUID: string): Promise<number | null> {
+    private async getPlacementOfPlayerInTournament(
+        tournament: string,
+        playerUUID: string,
+    ): Promise<number | null> {
         if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
             this.placementOfPlayer = {};
             this.lastCacheClear = DateTime.now().toMillis();
@@ -39,7 +40,8 @@ export class AllRounder implements AutomaticAchievement {
                 player: playerUUID,
                 competition: tournament,
             });
-            this.placementOfPlayer[tournament][playerUUID] = placementOfPlayer?.placement ?? null;
+            this.placementOfPlayer[tournament][playerUUID] =
+                placementOfPlayer?.placement ?? null;
         }
         return this.placementOfPlayer[tournament][playerUUID];
     }
@@ -49,8 +51,16 @@ export class AllRounder implements AutomaticAchievement {
         playerOneAchievement: Achievement<boolean[]>,
         playerTwoAchievement: Achievement<boolean[]>,
     ): Promise<void> {
-        const placementOfPlayerOne = await this.getPlacementOfPlayerInTournament(match.competition, match.playerOne);
-        const placementOfPlayerTwo = await this.getPlacementOfPlayerInTournament(match.competition, match.playerTwo);
+        const placementOfPlayerOne =
+            await this.getPlacementOfPlayerInTournament(
+                match.competition,
+                match.playerOne,
+            );
+        const placementOfPlayerTwo =
+            await this.getPlacementOfPlayerInTournament(
+                match.competition,
+                match.playerTwo,
+            );
 
         if (placementOfPlayerOne != null && placementOfPlayerOne === 1) {
             if (match.competition.toLowerCase().includes("rrwc")) {
@@ -58,7 +68,10 @@ export class AllRounder implements AutomaticAchievement {
             } else {
                 playerOneAchievement.data[1] = true;
             }
-            if (playerOneAchievement.data.every((e) => e) && playerOneAchievement.achievedAt[0] <= 0) {
+            if (
+                playerOneAchievement.data.every((e) => e) &&
+                playerOneAchievement.achievedAt[0] <= 0
+            ) {
                 playerOneAchievement.achievedAt[0] = match.timestamp;
                 playerOneAchievement.progression[0] = 1;
             }
@@ -69,7 +82,10 @@ export class AllRounder implements AutomaticAchievement {
             } else {
                 playerTwoAchievement.data[1] = true;
             }
-            if (playerTwoAchievement.data.every((e) => e) && playerTwoAchievement.achievedAt[0] <= 0) {
+            if (
+                playerTwoAchievement.data.every((e) => e) &&
+                playerTwoAchievement.achievedAt[0] <= 0
+            ) {
                 playerTwoAchievement.achievedAt[0] = match.timestamp;
                 playerTwoAchievement.progression[0] = 1;
             }
