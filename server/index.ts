@@ -7,6 +7,12 @@ import EloController from "./controller/EloController";
 import AchievementController from "./controller/AchievementController";
 import NotificationController from "./controller/NotificationController";
 
+let fullyInitialized = false;
+
+export function isReady() {
+    return fullyInitialized;
+}
+
 export default defineNitroPlugin(async (nitroApp) => {
     console.log(`Starting rrstats with commit hash ${VERSION}`);
 
@@ -24,6 +30,8 @@ export default defineNitroPlugin(async (nitroApp) => {
     await LeaderboardController.recalculate();
     await AchievementController.recalculateAllAchievements();
     NotificationController.initialize();
+
+    fullyInitialized = true;
 
     nitroApp.hooks.hook("close", async () => {
         if (database.isInitialized()) {

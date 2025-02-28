@@ -279,18 +279,20 @@ export default class HitmapsIntegration {
             tag: tournamentSlug,
         });
 
+        const matchesToSave: Match[] = [];
+
         // New Matches
         for (const newMatch of filteredMatches.newVersion) {
             const additionalInfo = HitmapsIntegration.transformNewMatch(
                 newMatch,
                 competition,
             );
-            await HitmapsIntegration.handleMatch(
+            matchesToSave.push(await HitmapsIntegration.handleMatch(
                 newMatch,
                 additionalInfo,
                 tournamentSlug,
                 competition,
-            );
+            ));
         }
 
         // Old Matches
@@ -313,12 +315,18 @@ export default class HitmapsIntegration {
                 fullMatch,
                 competition,
             );
-            await HitmapsIntegration.handleMatch(
+            matchesToSave.push(await HitmapsIntegration.handleMatch(
                 newMatch,
                 additionalInfo,
                 tournamentSlug,
                 competition,
-            );
+            ));
+        }
+
+        matchesToSave.sort((a, b) => a.timestamp - b.timestamp);
+
+        for (const match of matchesToSave) {
+            await match.save();
         }
     }
 
@@ -465,7 +473,7 @@ export default class HitmapsIntegration {
         additionalInfo: AdditionalMatchInfo,
         tournamentSlug: string,
         competition: Competition | null,
-    ) {
+    ): Promise<Match> {
         const newMatch = new Match();
         newMatch.hitmapsMatchId = match.rrstatsLookupId!;
         newMatch.timestamp = DateTime.fromISO(
@@ -595,7 +603,7 @@ export default class HitmapsIntegration {
             newMatch.platform = match.platform;
         }
 
-        await newMatch.save();
+        return newMatch;
     }
 
     private static filterAndSort(

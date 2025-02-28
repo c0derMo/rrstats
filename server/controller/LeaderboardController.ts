@@ -56,6 +56,7 @@ import { Log } from "~/utils/FunctionTimer";
 import consola from "consola";
 import { PlayedMap } from "../model/PlayedMap";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
+import { isReady } from "..";
 
 export interface StatisticData<T extends string> {
     name: string;
@@ -286,6 +287,9 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
     }
 
     private invalidateLeaderboard(entity: unknown) {
+        if (!isReady()) {
+            return;
+        }
         if (
             !(
                 entity instanceof Player ||

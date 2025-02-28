@@ -9,7 +9,7 @@ import {
 import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
 export class HistoryRepeatsItself implements AutomaticAchievement {
-    name = "Globetrotter";
+    name = "History Repeats Itself";
     description = [
         "Win 5 spins on the same map",
         "Win 10 spins on the same map",

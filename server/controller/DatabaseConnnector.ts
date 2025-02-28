@@ -1,8 +1,12 @@
 import "reflect-metadata";
 import {
     DataSource,
+    EventSubscriber,
     type DataSourceOptions,
     type EntityManager,
+    EntitySubscriberInterface,
+    InsertEvent,
+    UpdateEvent,
 } from "typeorm";
 import { GenericRecord, MapRecord } from "../model/Record";
 import { Competition, CompetitionPlacement } from "../model/Competition";
@@ -53,6 +57,7 @@ export default class DatabaseConnector {
                       EloDatabaseListener,
                       AchievementDatabaseListener,
                       AchievementVerifyListener,
+                      DatabaseInsertUpdateLogger,
                   ]
                 : undefined,
             synchronize: true,
@@ -103,5 +108,35 @@ export default class DatabaseConnector {
 
     getManager(): EntityManager {
         return this.db.manager;
+    }
+}
+
+@EventSubscriber()
+class DatabaseInsertUpdateLogger implements EntitySubscriberInterface {
+    private readonly LOGGING_LEVEL: "full" | "event" | "none" = import.meta.dev ? "event" : "none";
+
+    afterInsert(event: InsertEvent<unknown>): void {
+        switch (this.LOGGING_LEVEL) {
+            case "full":
+                logger.log(`INSERT: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`);
+                break;
+            case "event":
+                logger.log(`INSERT: ${event.metadata.tableName}`);
+                break;
+            case "none":
+                break;
+        }
+    }
+    afterUpdate(event: UpdateEvent<unknown>): void {
+        switch (this.LOGGING_LEVEL) {
+            case "full":
+                logger.log(`UPDATE: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`);
+                break;
+            case "event":
+                logger.log(`UPDATE: ${event.metadata.tableName}`);
+                break;
+            case "none":
+                break;
+        }
     }
 }

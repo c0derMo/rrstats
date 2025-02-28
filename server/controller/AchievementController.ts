@@ -44,6 +44,7 @@ import { FallIntoPlace } from "./achievements/automatic/FallIntoPlace";
 import { Champion } from "./achievements/automatic/Champion";
 import { WorldChampion } from "./achievements/automatic/WorldChampion";
 import { AllRounder } from "./achievements/automatic/AllRounder";
+import { isReady } from "..";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -331,6 +332,9 @@ export class AchievementDatabaseListener
     }
 
     async afterUpdate(event: UpdateEvent<Match>): Promise<void> {
+        if (!isReady()) {
+            return;
+        }
         if (
             event.updatedColumns.some(
                 (v) => !this.IGNORED_COLUMNS.includes(v.propertyPath),
