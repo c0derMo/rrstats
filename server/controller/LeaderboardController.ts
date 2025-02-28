@@ -57,6 +57,7 @@ import consola from "consola";
 import { PlayedMap } from "../model/PlayedMap";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 import { isReady } from "..";
+import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
 
 export interface StatisticData<T extends string> {
     name: string;
@@ -115,6 +116,7 @@ export default class LeaderboardController {
         new PlayerRRWCAppearances(),
         new PlayerAveragePlacement(),
         new PlayerGFAppearances(),
+        new PlayerTitlesWon(),
         new PlayerMatchesPlayed(),
         new PlayerMatchesWon(),
         new PlayerMapsPlayed(),

@@ -54,6 +54,16 @@ describe("PlayerStatisticController", () => {
                 6, 2, 4, 1, 4, 4, 4, 6, 7, 2, 2, 5, 3, 6, 4, 10, 2, 7, 3,
             ]);
         expect
+            .soft(stats.mapsPickedAgainst)
+            .toEqual([
+                10, 9, 4, 6, 15, 12, 11, 7, 6, 6, 3, 1, 6, 8, 5, 15, 6, 12, 2,
+            ]);
+        expect
+            .soft(stats.mapsBannedAgainst)
+            .toEqual([
+                6, 1, 4, 10, 3, 2, 1, 3, 4, 4, 6, 9, 10, 3, 4, 3, 6, 2, 1,
+            ]);
+        expect
             .soft(stats.mapsPlayed)
             .toEqual([
                 24, 30, 12, 27, 31, 24, 30, 20, 17, 31, 22, 30, 25, 24, 17, 25,

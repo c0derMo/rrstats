@@ -13,6 +13,7 @@ import { Competition } from "~/server/model/Competition";
 import { Log } from "~/utils/FunctionTimer";
 import { PlayedMap } from "~/server/model/PlayedMap";
 import consola from "consola";
+import ld from "lodash";
 
 export interface HitmapsTournamentMatch {
     id: number;
@@ -384,7 +385,10 @@ export default class HitmapsIntegration {
                     spinTime = Math.floor(
                         Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
-                } else if (pickedMap.resultVerifiedAt != null) {
+                } else if (
+                    pickedMap.resultVerifiedAt != null &&
+                    ld.last(result.mapWinners) !== WinningPlayer.DRAW
+                ) {
                     const endingTime = DateTime.fromISO(
                         pickedMap.resultVerifiedAt,
                     );
@@ -435,7 +439,10 @@ export default class HitmapsIntegration {
                     spinTime = Math.floor(
                         Math.abs(startingTime.diff(endingTime).as("seconds")),
                     );
-                } else if (map.resultVerifiedAt != null) {
+                } else if (
+                    map.resultVerifiedAt != null &&
+                    ld.last(result.mapWinners) !== WinningPlayer.DRAW
+                ) {
                     const endingTime = DateTime.fromISO(map.resultVerifiedAt);
                     spinTime = Math.floor(
                         Math.abs(startingTime.diff(endingTime).as("seconds")),
