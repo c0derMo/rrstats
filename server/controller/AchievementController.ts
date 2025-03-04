@@ -51,6 +51,8 @@ import { TitleContender } from "./achievements/automatic/TitleContender";
 import { Untouchable } from "./achievements/automatic/Untouchable";
 import { BeatenTheBest } from "./achievements/automatic/BeatenTheBest";
 import { RarifiedAir } from "./achievements/automatic/RarifiedAir";
+import { RolfLured } from "./achievements/automatic/RolfLured";
+import { TheSmallFive } from "./achievements/automatic/TheSmallFive";
 
 export interface AutomaticAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -106,6 +108,9 @@ export default class AchievementController {
         new AgainstAllOdds(),
         new BeatTheHouse(),
         new NoWeaknesses(),
+
+        new RolfLured(),
+        new TheSmallFive(),
 
         new FallIntoPlace(),
         new Champion(),
