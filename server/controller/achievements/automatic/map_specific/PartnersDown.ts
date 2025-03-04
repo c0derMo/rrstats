@@ -41,17 +41,9 @@ export class PartnersDown extends AutomaticAchievement<number> {
         }
 
         if (darWin === dubWin && darWin === WinningPlayer.PLAYER_ONE) {
-            playerOneAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
+            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
         } else if (darWin === dubWin && darWin === WinningPlayer.PLAYER_TWO) {
-            playerTwoAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
+            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
         }
     }
 }

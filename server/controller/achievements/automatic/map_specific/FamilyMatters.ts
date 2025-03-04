@@ -41,17 +41,9 @@ export class FamilyMatters extends AutomaticAchievement<number> {
         }
 
         if (miaWin === sgaWin && miaWin === WinningPlayer.PLAYER_ONE) {
-            playerOneAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
+            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
         } else if (miaWin === sgaWin && miaWin === WinningPlayer.PLAYER_TWO) {
-            playerTwoAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
+            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
         }
     }
 }

@@ -11,7 +11,7 @@ const USA_MAPS = [
     HitmanMap.COLORADO,
     HitmanMap.MIAMI,
     HitmanMap.WHITTLETON_CREEK,
-    HitmanMap.NEW_YORK
+    HitmanMap.NEW_YORK,
 ];
 
 export class LandOfTheFree extends AutomaticAchievement<number> {
@@ -30,19 +30,15 @@ export class LandOfTheFree extends AutomaticAchievement<number> {
         playerOneAchievement: Achievement<number>,
         playerTwoAchievement: Achievement<number>,
     ): Promise<void> {
-        const played_usa_maps = new Set(match.playedMaps.filter((map) => !map.forfeit && USA_MAPS.includes(map.map)));
+        const played_usa_maps = new Set(
+            match.playedMaps.filter(
+                (map) => !map.forfeit && USA_MAPS.includes(map.map),
+            ),
+        );
 
         if (played_usa_maps.size >= 3) {
-            playerOneAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
-            playerTwoAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
+            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
         }
     }
 }

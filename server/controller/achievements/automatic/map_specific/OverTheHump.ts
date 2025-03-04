@@ -41,17 +41,9 @@ export class OverTheHump extends AutomaticAchievement<number> {
         }
 
         if (mumWin === sfWin && mumWin === WinningPlayer.PLAYER_ONE) {
-            playerOneAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
+            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
         } else if (mumWin === sfWin && mumWin === WinningPlayer.PLAYER_TWO) {
-            playerTwoAchievement.achieveIfNotAchieved(
-                match.timestamp,
-                0,
-                true,
-            );
+            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
         }
     }
 }
