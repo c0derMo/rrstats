@@ -18,4 +18,17 @@ export class Achievement<T = unknown>
     data: T;
     @Column("boolean")
     verified: boolean;
+
+    achieveIfNotAchieved(
+        timestamp: number,
+        level: number = 0,
+        setProgression: boolean = false,
+    ) {
+        if (this.achievedAt[level] <= 0) {
+            this.achievedAt[level] = timestamp;
+            if (setProgression) {
+                this.progression[level] = 1;
+            }
+        }
+    }
 }

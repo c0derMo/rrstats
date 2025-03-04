@@ -10,17 +10,21 @@ import {
 } from "typeorm";
 import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
 import { Player } from "../model/Player";
-import { SpinTheWheel } from "./achievements/automatic/SpinTheWheel";
-import { Globetrotter } from "./achievements/automatic/Globetrotter";
-import { OneStone } from "./achievements/manual/OneStone";
 import NotificationController from "./NotificationController";
 import ld from "lodash";
-import { RoulettePlayer } from "./achievements/automatic/RoulettePlayer";
-import { ReturningRival } from "./achievements/automatic/ReturningRival";
-import { AgainstTheWorld } from "./achievements/automatic/AgainstTheWorld";
-import { GettingMileage } from "./achievements/automatic/GettingMileage";
-import { OpenSeason } from "./achievements/automatic/OpenSeason";
-import { PointsForYou } from "./achievements/automatic/PointsForYou";
+import { isReady } from "..";
+
+import type { AutomaticAchievement } from "./achievements/automatic/AutomaticAchievement";
+
+import { SpinTheWheel } from "./achievements/automatic/experience/SpinTheWheel";
+import { Globetrotter } from "./achievements/automatic/experience/Globetrotter";
+import { OneStone } from "./achievements/manual/OneStone";
+import { RoulettePlayer } from "./achievements/automatic/experience/RoulettePlayer";
+import { ReturningRival } from "./achievements/automatic/experience/ReturningRival";
+import { AgainstTheWorld } from "./achievements/automatic/experience/AgainstTheWorld";
+import { GettingMileage } from "./achievements/automatic/experience/GettingMileage";
+import { OpenSeason } from "./achievements/automatic/experience/OpenSeason";
+import { PointsForYou } from "./achievements/automatic/map/PointsForYou";
 import {
     CuttingEdge,
     DressedForTheOccasion,
@@ -30,43 +34,28 @@ import {
     WaitingToHappen,
     WhysItSpicy,
     WorthAShot,
-} from "./achievements/automatic/ConditionAchievements";
-import { IHateThatMap } from "./achievements/automatic/IHateThatMap";
-import { ILoveThatMap } from "./achievements/automatic/ILoveThatMap";
-import { HistoryRepeatsItself } from "./achievements/automatic/HistoryRepeatsItself";
-import { GloballyInnovative } from "./achievements/automatic/GloballyInnovative";
-import { WorldOfAssassination } from "./achievements/automatic/WorldOfAssassination";
-import { TheHouseEdge } from "./achievements/automatic/TheHouseEdge";
-import { AgainstAllOdds } from "./achievements/automatic/AgainstAllOdds";
-import { BeatTheHouse } from "./achievements/automatic/BeatTheHouse";
-import { NoWeaknesses } from "./achievements/automatic/NoWeaknesses";
-import { FallIntoPlace } from "./achievements/automatic/FallIntoPlace";
-import { Champion } from "./achievements/automatic/Champion";
-import { WorldChampion } from "./achievements/automatic/WorldChampion";
-import { AllRounder } from "./achievements/automatic/AllRounder";
-import { isReady } from "..";
-import { ChallengerDefender } from "./achievements/automatic/ChallengerDefender";
-import { TheCulling } from "./achievements/automatic/TheCulling";
-import { TitleContender } from "./achievements/automatic/TitleContender";
-import { Untouchable } from "./achievements/automatic/Untouchable";
-import { BeatenTheBest } from "./achievements/automatic/BeatenTheBest";
-import { RarifiedAir } from "./achievements/automatic/RarifiedAir";
-import { RolfLured } from "./achievements/automatic/RolfLured";
-import { TheSmallFive } from "./achievements/automatic/TheSmallFive";
-
-export interface AutomaticAchievement
-    extends Omit<AchievementInfo, "achievedAt" | "progress"> {
-    update(
-        match: Match,
-        playerOneAchievement: Achievement,
-        playerTwoAchievement: Achievement,
-    ): Promise<void>;
-    recalculateAll(
-        matches: Match[],
-        achievements: Record<string, Achievement>,
-    ): Promise<void>;
-    getDefaultData(): unknown;
-}
+} from "./achievements/automatic/map/ConditionAchievements";
+import { IHateThatMap } from "./achievements/automatic/map/IHateThatMap";
+import { ILoveThatMap } from "./achievements/automatic/map/ILoveThatMap";
+import { HistoryRepeatsItself } from "./achievements/automatic/map/HistoryRepeatsItself";
+import { GloballyInnovative } from "./achievements/automatic/map/GloballyInnovative";
+import { WorldOfAssassination } from "./achievements/automatic/map/WorldOfAssassination";
+import { TheHouseEdge } from "./achievements/automatic/map/TheHouseEdge";
+import { AgainstAllOdds } from "./achievements/automatic/map/AgainstAllOdds";
+import { BeatTheHouse } from "./achievements/automatic/map/BeatTheHouse";
+import { NoWeaknesses } from "./achievements/automatic/map/NoWeaknesses";
+import { RolfLured } from "./achievements/automatic/map_specific/RolfLured";
+import { TheSmallFive } from "./achievements/automatic/map_specific/TheSmallFive";
+import { AllRounder } from "./achievements/automatic/tournament/AllRounder";
+import { BeatenTheBest } from "./achievements/automatic/tournament/BeatenTheBest";
+import { ChallengerDefender } from "./achievements/automatic/tournament/ChallengerDefender";
+import { Champion } from "./achievements/automatic/tournament/Champion";
+import { FallIntoPlace } from "./achievements/automatic/tournament/FallIntoPlace";
+import { RarifiedAir } from "./achievements/automatic/tournament/RarifiedAir";
+import { TheCulling } from "./achievements/automatic/tournament/TheCulling";
+import { TitleContender } from "./achievements/automatic/tournament/TitleContender";
+import { Untouchable } from "./achievements/automatic/tournament/Untouchable";
+import { WorldChampion } from "./achievements/automatic/tournament/WorldChampion";
 
 export interface ManualAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -81,7 +70,7 @@ export interface ManualAchievementData {
 const logger = consola.withTag("rrstats:achievements");
 
 export default class AchievementController {
-    static readonly automaticAchievements: AutomaticAchievement[] = [
+    static readonly automaticAchievements: AutomaticAchievement<unknown>[] = [
         new RoulettePlayer(),
         new SpinTheWheel(),
         new GettingMileage(),
@@ -127,7 +116,7 @@ export default class AchievementController {
 
     public static async getAchievementOfPlayerOrCreate(
         player: string,
-        achievement: AutomaticAchievement,
+        achievement: AutomaticAchievement<unknown>,
     ): Promise<Achievement> {
         let playerAchievement = await Achievement.findOneBy({
             player: player,
