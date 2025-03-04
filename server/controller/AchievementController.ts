@@ -56,6 +56,11 @@ import { TheCulling } from "./achievements/automatic/tournament/TheCulling";
 import { TitleContender } from "./achievements/automatic/tournament/TitleContender";
 import { Untouchable } from "./achievements/automatic/tournament/Untouchable";
 import { WorldChampion } from "./achievements/automatic/tournament/WorldChampion";
+import { PartnersDown } from "./achievements/automatic/map_specific/PartnersDown";
+import { ChrisX3 } from "./achievements/automatic/map_specific/ChrisX3";
+import { FamilyMatters } from "./achievements/automatic/map_specific/FamilyMatters";
+import { OverTheHump } from "./achievements/automatic/map_specific/OverTheHump";
+import { LandOfTheFree } from "./achievements/automatic/map_specific/LandOfTheFree";
 
 export interface ManualAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -100,6 +105,11 @@ export default class AchievementController {
 
         new RolfLured(),
         new TheSmallFive(),
+        new PartnersDown(),
+        new ChrisX3(),
+        new FamilyMatters(),
+        new OverTheHump(),
+        new LandOfTheFree(),
 
         new FallIntoPlace(),
         new Champion(),
