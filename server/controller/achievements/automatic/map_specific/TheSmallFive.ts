@@ -24,7 +24,7 @@ export class TheSmallFive extends AutomaticAchievement<number[]> {
     levels = 1;
 
     public getDefaultData(): number[] {
-        return Array(5).fill(-1);
+        return Array(5).fill(601);
     }
 
     async update(
@@ -47,14 +47,12 @@ export class TheSmallFive extends AutomaticAchievement<number[]> {
 
             if (
                 map.winner === WinningPlayer.PLAYER_ONE &&
-                (playerOneAchievement.data[idx] >= map.timeTaken ||
-                    playerOneAchievement.data[idx] < 0)
+                playerOneAchievement.data[idx] >= map.timeTaken
             ) {
                 playerOneAchievement.data[idx] = map.timeTaken;
             } else if (
                 map.winner === WinningPlayer.PLAYER_TWO &&
-                (playerTwoAchievement.data[idx] >= map.timeTaken ||
-                    playerTwoAchievement.data[idx] < 0)
+                playerTwoAchievement.data[idx] >= map.timeTaken
             ) {
                 playerTwoAchievement.data[idx] = map.timeTaken;
             }

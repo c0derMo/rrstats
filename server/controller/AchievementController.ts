@@ -61,6 +61,17 @@ import { ChrisX3 } from "./achievements/automatic/map_specific/ChrisX3";
 import { FamilyMatters } from "./achievements/automatic/map_specific/FamilyMatters";
 import { OverTheHump } from "./achievements/automatic/map_specific/OverTheHump";
 import { LandOfTheFree } from "./achievements/automatic/map_specific/LandOfTheFree";
+import { GiantKiller } from "./achievements/automatic/match/GiantKiller";
+import { BehemothKiller } from "./achievements/automatic/match/BehemothKiller";
+import { ApexPredator } from "./achievements/automatic/match/ApexPredator";
+import { BestServedCold } from "./achievements/automatic/match/BestServedCold";
+import { ComebackStory } from "./achievements/automatic/match/ComebackStory";
+import { Sweeper } from "./achievements/automatic/match/Sweeper";
+import { Reversal } from "./achievements/automatic/match/Reversal";
+import { TheRouletteRival } from "./achievements/automatic/match/TheRouletteRival";
+import { SpinToWin } from "./achievements/automatic/match/SpinToWin";
+import { WorldRenowned } from "./achievements/automatic/match/WorldRenowned";
+import { SkillBasedMatchmaking } from "./achievements/automatic/misc/SkillBasedMatchmaking";
 
 export interface ManualAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -110,6 +121,19 @@ export default class AchievementController {
         new FamilyMatters(),
         new OverTheHump(),
         new LandOfTheFree(),
+
+        new GiantKiller(),
+        new BehemothKiller(),
+        new ApexPredator(),
+        new BestServedCold(),
+        new ComebackStory(),
+        new Sweeper(),
+        new Reversal(),
+        new TheRouletteRival(),
+        new SpinToWin(),
+        new WorldRenowned(),
+
+        new SkillBasedMatchmaking(),
 
         new FallIntoPlace(),
         new Champion(),
