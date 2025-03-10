@@ -14,8 +14,8 @@ export class GloballyInnovative extends AutomaticAchievement<AchievementDataType
     name = "Globally Innovative";
     description = [
         "Win a spin on every map in a season",
-        "Win 5 spin on every map in a season",
-        "Win 10 spin on every map in a season",
+        "Win 5 spins on every map in a season",
+        "Win 10 spins on every map in a season",
     ];
     tier = [
         AchievementTier.SILVER,
@@ -82,7 +82,7 @@ export class GloballyInnovative extends AutomaticAchievement<AchievementDataType
             achievement.data[HitmanMap.CHONGQING],
             achievement.data[HitmanMap.MENDOZA],
         );
-        const lowestSeasonWon = Math.min(season1, season2, season3);
+        const lowestSeasonWon = Math.max(season1, season2, season3);
 
         const levelRequirements = [1, 5, 10];
 

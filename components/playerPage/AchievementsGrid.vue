@@ -28,52 +28,71 @@
                 />
                 <TextInputComponent v-model="search" placeholder="Search" />
                 <DropdownComponent v-model="sort" :items="sortingOptions" />
+                <SwitchComponent
+                    id="achievementsGroup"
+                    v-model="groupCategories"
+                    label="Group by categories"
+                />
             </div>
 
-            <template
-                v-for="category of Object.values(AchievementCategory)"
-                :key="category"
-            >
-                <div
-                    class="flex flex-row gap-3 my-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition py-2 px-2"
-                    @click="toggleCategory(category)"
+            <template v-if="groupCategories">
+                <template
+                    v-for="category of Object.values(AchievementCategory)"
+                    :key="category"
                 >
                     <div
-                        class="flex-grow border-b -translate-y-1/2 border-gray-600"
-                    />
-                    <Tag
-                        narrow
-                        :color="getColorOfAchievementCategory(category)"
-                        class="text-gray-800 italic"
-                        >{{ category }}</Tag
+                        class="flex flex-row gap-3 my-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition py-2 px-2"
+                        @click="toggleCategory(category)"
                     >
-                    <FontAwesomeIcon
-                        class="mt-1 transition"
-                        :icon="['fas', 'chevron-up']"
-                        :class="{
-                            'rotate-180': !expandedRows.includes(category),
-                        }"
-                    />
+                        <div
+                            class="flex-grow border-b -translate-y-1/2 border-gray-600"
+                        />
+                        <Tag
+                            narrow
+                            :color="getColorOfAchievementCategory(category)"
+                            class="text-gray-800 italic"
+                            >{{ category }}</Tag
+                        >
+                        <FontAwesomeIcon
+                            class="mt-1 transition"
+                            :icon="['fas', 'chevron-up']"
+                            :class="{
+                                'rotate-180': !expandedRows.includes(category),
+                            }"
+                        />
+                        <div
+                            class="flex-grow border-b -translate-y-1/2 border-gray-600"
+                        />
+                    </div>
                     <div
-                        class="flex-grow border-b -translate-y-1/2 border-gray-600"
-                    />
-                </div>
-                <div
-                    class="grid grid-cols-2 gap-x-5 gap-y-2 overflow-hidden transition-all max-h-[999px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
-                    :class="{
-                        '!max-h-0': !expandedRows.includes(category),
-                    }"
-                >
-                    <AchievementBox
-                        v-for="(achievement, key) of getAchievementsInCategory(
-                            category,
-                        )"
-                        :key="key"
-                        :achievement="achievement"
-                        @click="openedAchievement = achievement"
-                    />
-                </div>
+                        class="grid grid-cols-2 gap-x-5 gap-y-2 overflow-hidden transition-all max-h-[999px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+                        :class="{
+                            '!max-h-0': !expandedRows.includes(category),
+                        }"
+                    >
+                        <AchievementBox
+                            v-for="(
+                                achievement, key
+                            ) of getAchievementsInCategory(category)"
+                            :key="key"
+                            :achievement="achievement"
+                            @click="openedAchievement = achievement"
+                        />
+                    </div>
+                </template>
             </template>
+
+            <div
+                v-else
+                class="grid grid-cols-2 gap-x-5 gap-y-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 mt-5"
+            >
+                <AchievementBox
+                    v-for="(achievement, key) of filteredSortedAchievements"
+                    :key="key"
+                    :achievement="achievement"
+                    @click="openedAchievement = achievement"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -97,6 +116,7 @@ const sort = ref(sortingOptions[2]);
 const search = ref("");
 const hideCompleted = ref(false);
 const hideMissing = ref(false);
+const groupCategories = ref(true);
 
 const openedAchievement = ref<AchievementInfo | null>(null);
 const expandedRows = ref<AchievementCategory[]>([

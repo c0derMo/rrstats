@@ -1,12 +1,12 @@
-import type { Match } from "~/server/model/Match";
+import { Match } from "~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
 import type { Achievement } from "~/server/model/Achievement";
 import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
-import { CompetitionPlacement } from "~/server/model/Competition";
-import { DateTime } from "luxon";
+import { Competition, CompetitionPlacement } from "~/server/model/Competition";
+import { In } from "typeorm";
 
 export class AllRounder extends AutomaticAchievement<boolean[]> {
     name = "All-Rounder";
@@ -17,79 +17,67 @@ export class AllRounder extends AutomaticAchievement<boolean[]> {
     category = AchievementCategory.TOURNAMENT;
     levels = 1;
 
-    placementOfPlayer: Record<string, Record<string, number | null>> = {};
-    lastCacheClear = 0;
-
     public getDefaultData(): boolean[] {
         return [false, false];
     }
 
-    private async getPlacementOfPlayerInTournament(
-        tournament: string,
-        playerUUID: string,
-    ): Promise<number | null> {
-        if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
-            this.placementOfPlayer = {};
-            this.lastCacheClear = DateTime.now().toMillis();
-        }
-        if (this.placementOfPlayer[tournament] == null) {
-            this.placementOfPlayer[tournament] = {};
-        }
-        if (this.placementOfPlayer[tournament][playerUUID] === undefined) {
-            const placementOfPlayer = await CompetitionPlacement.findOne({
-                where: {
-                    player: playerUUID,
-                    competition: tournament,
-                },
-                order: {
-                    placement: "DESC",
-                },
-            });
-            this.placementOfPlayer[tournament][playerUUID] =
-                placementOfPlayer?.placement ?? null;
-        }
-        return this.placementOfPlayer[tournament][playerUUID];
+    async update(
+        _: Match,
+        _1: Achievement<boolean[]>,
+        _2: Achievement<boolean[]>,
+    ): Promise<void> {
+        // Do nothing - only placements are relevant to this achievement, not matches
     }
 
-    async update(
-        match: Match,
-        playerOneAchievement: Achievement<boolean[]>,
-        playerTwoAchievement: Achievement<boolean[]>,
-    ): Promise<void> {
-        const placementOfPlayerOne =
-            await this.getPlacementOfPlayerInTournament(
-                match.competition,
-                match.playerOne,
-            );
-        const placementOfPlayerTwo =
-            await this.getPlacementOfPlayerInTournament(
-                match.competition,
-                match.playerTwo,
-            );
-
-        if (placementOfPlayerOne != null && placementOfPlayerOne === 1) {
-            if (match.competition.toLowerCase().includes("rrwc")) {
-                playerOneAchievement.data[0] = true;
-            } else {
-                playerOneAchievement.data[1] = true;
-            }
-            if (playerOneAchievement.data.every((e) => e)) {
-                playerOneAchievement.achieveIfNotAchieved(
-                    match.timestamp,
-                    0,
-                    true,
-                );
-            }
+    public async recalculateAll(
+        matches: Match[],
+        achievements: Record<string, Achievement<boolean[]>>,
+    ) {
+        for (const player in achievements) {
+            achievements[player].data = this.getDefaultData();
+            achievements[player].achievedAt.fill(0);
+            achievements[player].progression.fill(0);
         }
-        if (placementOfPlayerTwo != null && placementOfPlayerTwo === 1) {
-            if (match.competition.toLowerCase().includes("rrwc")) {
-                playerTwoAchievement.data[0] = true;
+
+        const officialCompetitions = await Competition.find({
+            where: {
+                officialCompetition: true,
+            },
+        });
+        const winners = await CompetitionPlacement.find({
+            where: {
+                placement: 1,
+                competition: In(officialCompetitions.map((comp) => comp.tag)),
+            },
+        });
+
+        const lastMatchesOfComps: Record<string, number> = {};
+        for (const comp of officialCompetitions) {
+            const lastMatch = await Match.findOne({
+                where: {
+                    competition: comp.tag,
+                },
+                order: {
+                    timestamp: "DESC",
+                },
+            });
+            lastMatchesOfComps[comp.tag] =
+                lastMatch?.timestamp ?? comp.startingTimestamp;
+        }
+
+        for (const winner of winners) {
+            if (winner.competition.toLowerCase().includes("wc")) {
+                achievements[winner.player].data[0] = true;
             } else {
-                playerTwoAchievement.data[1] = true;
+                achievements[winner.player].data[1] = true;
             }
-            if (playerTwoAchievement.data.every((e) => e)) {
-                playerTwoAchievement.achieveIfNotAchieved(
-                    match.timestamp,
+
+            if (
+                achievements[winner.player].data[0] &&
+                achievements[winner.player].data[1]
+            ) {
+                achievements[winner.player].achieveIfNotAchieved(
+                    lastMatchesOfComps[winner.competition],
                     0,
                     true,
                 );

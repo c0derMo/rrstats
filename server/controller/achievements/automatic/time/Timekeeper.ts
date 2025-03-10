@@ -40,7 +40,7 @@ export class Timekeeper extends AutomaticAchievement<number> {
 
         const allRecords = await MapRecord.find({
             order: {
-                timestamp: "DESC",
+                timestamp: "ASC",
             },
         });
 

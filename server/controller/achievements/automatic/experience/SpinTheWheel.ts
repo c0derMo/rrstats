@@ -9,13 +9,13 @@ import {
 export class SpinTheWheel extends AutomaticAchievement<number> {
     name = "Spin the Wheel";
     description = [
-        "Play 5 Maps",
-        "Play 25 Maps",
-        "Play 50 Maps",
-        "Play 100 Maps",
-        "Play 200 Maps",
-        "Play 300 Maps",
-        "Play 400 Maps",
+        "Play 5 maps",
+        "Play 25 maps",
+        "Play 50 maps",
+        "Play 100 maps",
+        "Play 200 maps",
+        "Play 300 maps",
+        "Play 400 maps",
     ];
     tier = [
         AchievementTier.BRONZE,

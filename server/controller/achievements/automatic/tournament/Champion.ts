@@ -1,12 +1,12 @@
-import type { Match } from "~/server/model/Match";
+import { Match } from "~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
 import type { Achievement } from "~/server/model/Achievement";
 import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
-import { CompetitionPlacement } from "~/server/model/Competition";
-import { DateTime } from "luxon";
+import { Competition, CompetitionPlacement } from "~/server/model/Competition";
+import { In } from "typeorm";
 
 export class Champion extends AutomaticAchievement<string[]> {
     name = "Champion";
@@ -15,64 +15,65 @@ export class Champion extends AutomaticAchievement<string[]> {
     category = AchievementCategory.TOURNAMENT;
     levels = 1;
 
-    placementOfPlayer: Record<string, Record<string, number | null>> = {};
-    lastCacheClear = 0;
-
     public getDefaultData(): string[] {
         return [];
     }
 
-    private async getPlacementOfPlayerInTournament(
-        tournament: string,
-        playerUUID: string,
-    ): Promise<number | null> {
-        if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
-            this.placementOfPlayer = {};
-            this.lastCacheClear = DateTime.now().toMillis();
-        }
-        if (this.placementOfPlayer[tournament] == null) {
-            this.placementOfPlayer[tournament] = {};
-        }
-        if (this.placementOfPlayer[tournament][playerUUID] === undefined) {
-            const placementOfPlayer = await CompetitionPlacement.findOne({
-                where: {
-                    player: playerUUID,
-                    competition: tournament,
-                },
-                order: {
-                    placement: "DESC",
-                },
-            });
-            this.placementOfPlayer[tournament][playerUUID] =
-                placementOfPlayer?.placement ?? null;
-        }
-        return this.placementOfPlayer[tournament][playerUUID];
+    async update(
+        _: Match,
+        _1: Achievement<string[]>,
+        _2: Achievement<string[]>,
+    ): Promise<void> {
+        // Do nothing - only placements are relevant to this achievement, not matches
     }
 
-    async update(
-        match: Match,
-        playerOneAchievement: Achievement<string[]>,
-        playerTwoAchievement: Achievement<string[]>,
-    ): Promise<void> {
-        if (match.competition.toLowerCase().includes("rrwc")) {
-            return;
+    public async recalculateAll(
+        matches: Match[],
+        achievements: Record<string, Achievement<string[]>>,
+    ) {
+        for (const player in achievements) {
+            achievements[player].data = this.getDefaultData();
+            achievements[player].achievedAt.fill(0);
+            achievements[player].progression.fill(0);
         }
-        const placementOfPlayerOne =
-            await this.getPlacementOfPlayerInTournament(
-                match.competition,
-                match.playerOne,
-            );
-        const placementOfPlayerTwo =
-            await this.getPlacementOfPlayerInTournament(
-                match.competition,
-                match.playerTwo,
-            );
 
-        if (placementOfPlayerOne != null && placementOfPlayerOne === 1) {
-            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+        const officialCompetitions = await Competition.find({
+            where: {
+                officialCompetition: true,
+            },
+        });
+        const winners = await CompetitionPlacement.find({
+            where: {
+                placement: 1,
+                competition: In(officialCompetitions.map((comp) => comp.tag)),
+            },
+        });
+
+        const lastMatchesOfComps: Record<string, number> = {};
+        for (const comp of officialCompetitions) {
+            const lastMatch = await Match.findOne({
+                where: {
+                    competition: comp.tag,
+                },
+                order: {
+                    timestamp: "DESC",
+                },
+            });
+            lastMatchesOfComps[comp.tag] =
+                lastMatch?.timestamp ?? comp.startingTimestamp;
         }
-        if (placementOfPlayerTwo != null && placementOfPlayerTwo === 1) {
-            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+
+        for (const winner of winners) {
+            if (
+                achievements[winner.player].data[0] &&
+                achievements[winner.player].data[1]
+            ) {
+                achievements[winner.player].achieveIfNotAchieved(
+                    lastMatchesOfComps[winner.competition],
+                    0,
+                    true,
+                );
+            }
         }
     }
 }

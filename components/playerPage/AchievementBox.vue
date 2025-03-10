@@ -91,7 +91,7 @@
             </div>
         </div>
         <div>{{ title }}</div>
-        <div class="italic mb-3 min-h-12">{{ description }}</div>
+        <div class="italic mb-3 min-h-12 px-2">{{ description }}</div>
 
         <div v-if="completedAll" class="italic">
             Achieved at

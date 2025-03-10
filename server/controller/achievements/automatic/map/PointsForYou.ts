@@ -10,13 +10,13 @@ import { WinningPlayer } from "~/utils/interfaces/IMatch";
 export class PointsForYou extends AutomaticAchievement<number> {
     name = "Points for You";
     description = [
-        "Play a map",
-        "Play 5 map",
-        "Play 10 map",
-        "Play 25 map",
-        "Play 50 map",
-        "Play 100 map",
-        "Play 250 map",
+        "Win a map",
+        "Win 5 maps",
+        "Win 10 maps",
+        "Win 25 maps",
+        "Win 50 maps",
+        "Win 100 maps",
+        "Win 250 maps",
     ];
     tier = [
         AchievementTier.BRONZE,

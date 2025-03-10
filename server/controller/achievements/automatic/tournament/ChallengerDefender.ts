@@ -1,4 +1,4 @@
-import type { Match } from "~/server/model/Match";
+import { Match } from "~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
 import type { Achievement } from "~/server/model/Achievement";
 import {
@@ -6,8 +6,6 @@ import {
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
-import { DateTime } from "luxon";
-import { LessThan } from "typeorm";
 
 export class ChallengerDefender extends AutomaticAchievement<string[]> {
     name = "Challenger & Defender";
@@ -16,110 +14,80 @@ export class ChallengerDefender extends AutomaticAchievement<string[]> {
     category = AchievementCategory.TOURNAMENT;
     levels = 1;
 
-    placementOfPlayer: Record<string, Record<string, number | null>> = {};
-    tournamentBefore: Record<string, string | null> = {};
-    lastCacheClear = 0;
-
     public getDefaultData(): string[] {
         return [];
     }
 
-    private async getTournamentBefore(
-        tournament: string,
-    ): Promise<string | null> {
-        if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
-            this.placementOfPlayer = {};
-            this.tournamentBefore = {};
-            this.lastCacheClear = DateTime.now().toMillis();
-        }
-        if (this.tournamentBefore[tournament] == null) {
-            const currentTourneyStarting = await Competition.findOneBy({
-                tag: tournament,
-            });
-            if (currentTourneyStarting == null) {
-                return null;
-            }
-            const tourneyBefore = await Competition.findOne({
-                where: {
-                    startingTimestamp: LessThan(
-                        currentTourneyStarting.startingTimestamp,
-                    ),
-                    officialCompetition: true,
-                },
-                order: {
-                    startingTimestamp: "DESC",
-                },
-            });
-            this.tournamentBefore[tournament] = tourneyBefore?.tag ?? null;
-        }
-        return this.tournamentBefore[tournament];
-    }
-
-    private async getPlacementOfPlayerInTournament(
-        tournament: string,
-        playerUUID: string,
-    ): Promise<number | null> {
-        if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
-            this.placementOfPlayer = {};
-            this.tournamentBefore = {};
-            this.lastCacheClear = DateTime.now().toMillis();
-        }
-        if (this.placementOfPlayer[tournament] == null) {
-            this.placementOfPlayer[tournament] = {};
-        }
-        if (this.placementOfPlayer[tournament][playerUUID] === undefined) {
-            const placementOfPlayer = await CompetitionPlacement.findOne({
-                where: {
-                    player: playerUUID,
-                    competition: tournament,
-                },
-                order: {
-                    placement: "DESC",
-                },
-            });
-            this.placementOfPlayer[tournament][playerUUID] =
-                placementOfPlayer?.placement ?? null;
-        }
-        return this.placementOfPlayer[tournament][playerUUID];
-    }
-
     async update(
-        match: Match,
-        playerOneAchievement: Achievement<string[]>,
-        playerTwoAchievement: Achievement<string[]>,
+        _: Match,
+        _1: Achievement<string[]>,
+        _2: Achievement<string[]>,
     ): Promise<void> {
-        const tournamentBefore = await this.getTournamentBefore(
-            match.competition,
-        );
-        if (tournamentBefore == null) {
-            return;
+        // Do nothing - only placements are relevant to this achievement, not matches
+    }
+
+    public async recalculateAll(
+        matches: Match[],
+        achievements: Record<string, Achievement<string[]>>,
+    ) {
+        for (const player in achievements) {
+            achievements[player].data = this.getDefaultData();
+            achievements[player].achievedAt.fill(0);
+            achievements[player].progression.fill(0);
         }
-        const placementOfPlayerOne =
-            await this.getPlacementOfPlayerInTournament(
-                match.competition,
-                match.playerOne,
+
+        const officialCompetitions = await Competition.find({
+            where: {
+                officialCompetition: true,
+            },
+            order: {
+                startingTimestamp: "ASC",
+            },
+        });
+
+        let previousWinners = await CompetitionPlacement.find({
+            where: {
+                placement: 1,
+                competition: officialCompetitions[0].tag,
+            },
+        });
+
+        for (let idx = 1; idx < officialCompetitions.length; idx++) {
+            const currentWinners = await CompetitionPlacement.find({
+                where: {
+                    placement: 1,
+                    competition: officialCompetitions[idx].tag,
+                },
+            });
+
+            const prevWinnerPlayers = previousWinners.map(
+                (placement) => placement.player,
             );
-        const placementOfPlayerTwo =
-            await this.getPlacementOfPlayerInTournament(
-                match.competition,
-                match.playerTwo,
-            );
-        const lastPlacementOfPlayerOne =
-            await this.getPlacementOfPlayerInTournament(
-                tournamentBefore,
-                match.playerOne,
-            );
-        const lastPlacementOfPlayerTwo =
-            await this.getPlacementOfPlayerInTournament(
-                tournamentBefore,
-                match.playerTwo,
+            const curWinnerPlayers = currentWinners.map(
+                (placement) => placement.player,
             );
 
-        if (placementOfPlayerOne === 1 && lastPlacementOfPlayerOne === 1) {
-            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
-        }
-        if (placementOfPlayerTwo === 1 && lastPlacementOfPlayerTwo === 1) {
-            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            for (const player of curWinnerPlayers) {
+                if (prevWinnerPlayers.includes(player)) {
+                    const lastMatch = await Match.findOne({
+                        where: {
+                            competition: officialCompetitions[idx].tag,
+                        },
+                        order: {
+                            timestamp: "DESC",
+                        },
+                    });
+
+                    achievements[player].achieveIfNotAchieved(
+                        lastMatch?.timestamp ??
+                            officialCompetitions[idx].startingTimestamp,
+                        0,
+                        true,
+                    );
+                }
+            }
+
+            previousWinners = currentWinners;
         }
     }
 }
