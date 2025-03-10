@@ -31,4 +31,8 @@ export class Achievement<T = unknown>
             }
         }
     }
+
+    isFullyAchieved(): boolean {
+        return this.achievedAt[this.achievedAt.length - 1] > 0;
+    }
 }

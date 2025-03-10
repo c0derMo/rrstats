@@ -10,10 +10,10 @@ import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
 const THE_BIG_FIVE: Partial<Record<HitmanMap, number>> = {
     [HitmanMap.COLORADO]: 0,
-    [HitmanMap.SANTA_FORTUNA]: 0,
-    [HitmanMap.MUMBAI]: 0,
-    [HitmanMap.HAVEN_ISLAND]: 0,
-    [HitmanMap.BERLIN]: 0,
+    [HitmanMap.SANTA_FORTUNA]: 1,
+    [HitmanMap.MUMBAI]: 2,
+    [HitmanMap.HAVEN_ISLAND]: 3,
+    [HitmanMap.BERLIN]: 4,
 };
 
 export class TheSmallFive extends AutomaticAchievement<number[]> {

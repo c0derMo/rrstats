@@ -34,9 +34,14 @@ export class Champion extends AutomaticAchievement<string[]> {
             this.placementOfPlayer[tournament] = {};
         }
         if (this.placementOfPlayer[tournament][playerUUID] === undefined) {
-            const placementOfPlayer = await CompetitionPlacement.findOneBy({
-                player: playerUUID,
-                competition: tournament,
+            const placementOfPlayer = await CompetitionPlacement.findOne({
+                where: {
+                    player: playerUUID,
+                    competition: tournament,
+                },
+                order: {
+                    placement: "DESC",
+                },
             });
             this.placementOfPlayer[tournament][playerUUID] =
                 placementOfPlayer?.placement ?? null;

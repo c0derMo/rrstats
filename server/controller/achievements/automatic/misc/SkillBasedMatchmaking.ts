@@ -31,56 +31,46 @@ export class SkillBasedMatchmaking extends AutomaticAchievement<number> {
         playerOneAchievement: Achievement<number>,
         playerTwoAchievement: Achievement<number>,
     ): Promise<void> {
-        const p1EloChanges =
-            EloController.getInstance().getEloProgressionOfPlayer(
-                match.playerOne,
-            );
-        const p2EloChanges =
-            EloController.getInstance().getEloProgressionOfPlayer(
-                match.playerTwo,
-            );
+        this.checkOnePlayer(playerOneAchievement);
+        this.checkOnePlayer(playerTwoAchievement);
+    }
 
-        const p1EloAfterThisMatch = p1EloChanges.findLast(
-            (point) => point.timestamp <= match.timestamp,
-        );
-        const p2EloAfterThisMatch = p2EloChanges.findLast(
-            (point) => point.timestamp <= match.timestamp,
-        );
-
-        if (p1EloAfterThisMatch?.elo != null) {
-            this.checkCondition(
-                playerOneAchievement,
-                p1EloAfterThisMatch.elo,
-                match.timestamp,
-            );
-        }
-        if (p2EloAfterThisMatch?.elo != null) {
-            this.checkCondition(
-                playerTwoAchievement,
-                p2EloAfterThisMatch.elo,
-                match.timestamp,
-            );
+    public async recalculateAll(
+        matches: Match[],
+        achievements: Record<string, Achievement<number>>,
+    ): Promise<void> {
+        for (const player in achievements) {
+            achievements[player].data = this.getDefaultData();
+            achievements[player].achievedAt.fill(0);
+            achievements[player].progression.fill(0);
+            this.checkOnePlayer(achievements[player]);
         }
     }
 
-    private checkCondition(
-        achievement: Achievement<number>,
-        elo: number,
-        timestamp: number,
-    ) {
+    private checkOnePlayer(achievement: Achievement<number>) {
         const levelRequirements = [1100, 1200, 1300];
 
-        for (let i = 0; i < this.levels; i++) {
-            if (elo >= levelRequirements[i]) {
-                achievement.achieveIfNotAchieved(timestamp, i);
+        const eloProgression =
+            EloController.getInstance().getEloProgressionOfPlayer(
+                achievement.player,
+            );
+
+        for (let idx = 0; idx < levelRequirements.length; idx++) {
+            const firstTimeAchieving = eloProgression.find(
+                (moment) => moment.elo >= levelRequirements[idx],
+            );
+            if (firstTimeAchieving != null) {
+                achievement.achieveIfNotAchieved(
+                    firstTimeAchieving.timestamp,
+                    idx,
+                );
             }
         }
 
-        achievement.progression = levelRequirements.map((req, i) => {
-            if (achievement.achievedAt[i] > 0) {
-                return 1;
-            }
-            return Math.min(1, elo / req);
-        });
+        const maxElo = Math.max(...eloProgression.map((moment) => moment.elo));
+
+        achievement.progression = levelRequirements.map((req) =>
+            Math.min(1, maxElo / req),
+        );
     }
 }

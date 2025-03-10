@@ -72,6 +72,22 @@ import { TheRouletteRival } from "./achievements/automatic/match/TheRouletteRiva
 import { SpinToWin } from "./achievements/automatic/match/SpinToWin";
 import { WorldRenowned } from "./achievements/automatic/match/WorldRenowned";
 import { SkillBasedMatchmaking } from "./achievements/automatic/misc/SkillBasedMatchmaking";
+import { Overtime } from "./achievements/automatic/match/Overtime";
+import { OnARoll } from "./achievements/automatic/streak/OnARoll";
+import { OnAStreak } from "./achievements/automatic/streak/OnAStreak";
+import { OnAMission } from "./achievements/automatic/streak/OnAMission";
+import { StayCation } from "./achievements/automatic/streak/StayCation";
+import { DoubleDown } from "./achievements/automatic/streak/DoubleDown";
+import { TheEncore } from "./achievements/automatic/streak/TheEncore";
+import { AFullCalendar } from "./achievements/automatic/streak/AFullCalendar";
+import { GuessWhosBack } from "./achievements/automatic/streak/GuessWhosBack";
+import { Speedrunner } from "./achievements/automatic/time/Speedrunner";
+import { TrilogySpeedrunner } from "./achievements/automatic/time/TrilogySpeedrunner";
+import { PerfectingTheCraft } from "./achievements/automatic/time/PerfectingTheCraft";
+import { ForTheRecord } from "./achievements/automatic/time/ForTheRecord";
+import { Timekeeper } from "./achievements/automatic/time/Timekeeper";
+import { ScratchedRecord } from "./achievements/automatic/time/ScratchedRecord";
+import { MasterOfNone } from "./achievements/automatic/time/MasterOfNone";
 
 export interface ManualAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -122,6 +138,7 @@ export default class AchievementController {
         new OverTheHump(),
         new LandOfTheFree(),
 
+        new Overtime(),
         new GiantKiller(),
         new BehemothKiller(),
         new ApexPredator(),
@@ -134,6 +151,23 @@ export default class AchievementController {
         new WorldRenowned(),
 
         new SkillBasedMatchmaking(),
+
+        new OnARoll(),
+        new OnAStreak(),
+        new OnAMission(),
+        new StayCation(),
+        new DoubleDown(),
+        new TheEncore(),
+        new AFullCalendar(),
+        new GuessWhosBack(),
+
+        new Speedrunner(),
+        new TrilogySpeedrunner(),
+        new PerfectingTheCraft(),
+        new ForTheRecord(),
+        new Timekeeper(),
+        new ScratchedRecord(),
+        new MasterOfNone(),
 
         new FallIntoPlace(),
         new Champion(),
@@ -222,6 +256,14 @@ export default class AchievementController {
                         match.playerTwo,
                         m,
                     );
+
+                if (
+                    playerOneAchievement.isFullyAchieved() &&
+                    playerTwoAchievement.isFullyAchieved()
+                ) {
+                    return;
+                }
+
                 await m.update(
                     match,
                     playerOneAchievement,
