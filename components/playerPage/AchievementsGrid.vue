@@ -103,21 +103,8 @@ const expandedRows = ref<AchievementCategory[]>([
     ...(Object.values(AchievementCategory) as AchievementCategory[]),
 ]);
 
-// TODO: Remove this!
-const testingAchievements = computed(() => [
-    // { ...achievements.value[0], achievedAt: [0, 0, 0, 0, 0, 0, 0] },
-    // { ...achievements.value[0], achievedAt: [1, 0, 0, 0, 0, 0, 0] },
-    // { ...achievements.value[0], achievedAt: [1, 1, 0, 0, 0, 0, 0] },
-    // { ...achievements.value[0], achievedAt: [1, 1, 1, 0, 0, 0, 0] },
-    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 0, 0, 0] },
-    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 0, 0] },
-    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 1, 0] },
-    // { ...achievements.value[0], achievedAt: [1, 1, 1, 1, 1, 1, 1] },
-    ...achievements.value,
-]);
-
 const filteredSortedAchievements = computed(() => {
-    let result = [...testingAchievements.value];
+    let result = [...achievements.value];
 
     if (hideMissing.value) {
         result = result.filter(

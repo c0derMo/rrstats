@@ -28,7 +28,7 @@
             </div>
 
             <CardComponent
-                class="overflow-x-visible mt-8 mb-2"
+                class="overflow-y-visible mt-8 mb-2"
                 :bg-opacity="80"
             >
                 <div
