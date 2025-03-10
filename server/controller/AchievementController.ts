@@ -88,6 +88,15 @@ import { ForTheRecord } from "./achievements/automatic/time/ForTheRecord";
 import { Timekeeper } from "./achievements/automatic/time/Timekeeper";
 import { ScratchedRecord } from "./achievements/automatic/time/ScratchedRecord";
 import { MasterOfNone } from "./achievements/automatic/time/MasterOfNone";
+import { ExpertlyDone } from "./achievements/manual/ExpertlyDone";
+import { DownToTheWire } from "./achievements/manual/DownToTheWire";
+import { UpToTheWire } from "./achievements/manual/UpToTheWire";
+import { TheWire } from "./achievements/manual/TheWire";
+import { GenerousBenefactor } from "./achievements/manual/GenerousBenefactor";
+import { TheConstant } from "./achievements/manual/TheConstant";
+import { RecordHolder } from "./achievements/manual/RecordHolder";
+import { RecordSmasher } from "./achievements/manual/RecordSmasher";
+import { ASeedToAvoid } from "./achievements/manual/ASeedToAvoid";
 
 export interface ManualAchievement
     extends Omit<AchievementInfo, "achievedAt" | "progress"> {
@@ -180,7 +189,22 @@ export default class AchievementController {
         new BeatenTheBest(),
         new RarifiedAir(),
     ];
-    static readonly manualAchievements: ManualAchievement[] = [new OneStone()];
+    static readonly manualAchievements: ManualAchievement[] = [
+        new ExpertlyDone(),
+
+        new OneStone(),
+        new DownToTheWire(),
+        new UpToTheWire(),
+        new TheWire(),
+        new GenerousBenefactor(),
+
+        new TheConstant(),
+
+        new RecordHolder(),
+        new RecordSmasher(),
+
+        new ASeedToAvoid(),
+    ];
 
     public static async getAchievementOfPlayerOrCreate(
         player: string,
