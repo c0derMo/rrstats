@@ -88,7 +88,7 @@ onMounted(() => {
         (parentElement.value?.children.item(0) as HTMLDivElement) ?? null;
 });
 
-onUpdated(() => {
+watch(() => props.tab, () => {
     const index = Math.max(
         0,
         props.tabs.findIndex((v) => v === props.tab),
