@@ -64,16 +64,11 @@ export class Champion extends AutomaticAchievement<string[]> {
         }
 
         for (const winner of winners) {
-            if (
-                achievements[winner.player].data[0] &&
-                achievements[winner.player].data[1]
-            ) {
-                achievements[winner.player].achieveIfNotAchieved(
-                    lastMatchesOfComps[winner.competition],
-                    0,
-                    true,
-                );
-            }
+            achievements[winner.player].achieveIfNotAchieved(
+                lastMatchesOfComps[winner.competition],
+                0,
+                true,
+            );
         }
     }
 }

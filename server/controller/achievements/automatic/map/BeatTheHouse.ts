@@ -8,8 +8,7 @@ import {
 import { WinningPlayer } from "~/utils/interfaces/IMatch";
 import { MapRecord } from "~/server/model/Record";
 import { LessThan } from "typeorm";
-import type { HitmanMap } from "~/utils/mapUtils";
-import { DateTime } from "luxon";
+import { getAllMaps, type HitmanMap } from "~/utils/mapUtils";
 
 export class BeatTheHouse extends AutomaticAchievement<boolean> {
     name = "Beat the House";
@@ -18,9 +17,6 @@ export class BeatTheHouse extends AutomaticAchievement<boolean> {
     category = AchievementCategory.MAP;
     levels = 1;
 
-    recordHolders: Record<number, Record<string, boolean>> = {};
-    lastCacheClear = 0;
-
     public getDefaultData(): boolean {
         return false;
     }
@@ -28,18 +24,7 @@ export class BeatTheHouse extends AutomaticAchievement<boolean> {
     private async isRecordHolder(
         map: HitmanMap,
         playerUUID: string,
-    ): Promise<boolean | null> {
-        if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
-            this.recordHolders = {};
-            this.lastCacheClear = DateTime.now().toMillis();
-        }
-        if (this.recordHolders[map] == null) {
-            this.recordHolders[map] = {};
-        }
-        if (this.recordHolders[map][playerUUID] != null) {
-            return this.recordHolders[map][playerUUID];
-        }
-
+    ): Promise<boolean> {
         const record = await MapRecord.findOne({
             where: {
                 map: map,
@@ -50,7 +35,6 @@ export class BeatTheHouse extends AutomaticAchievement<boolean> {
             },
         });
         if (record == null) {
-            this.recordHolders[map][playerUUID] = false;
             return false;
         }
 
@@ -59,19 +43,18 @@ export class BeatTheHouse extends AutomaticAchievement<boolean> {
             time: LessThan(record.time),
         });
         if (beatingRecords > 0) {
-            this.recordHolders[map][playerUUID] = false;
             return false;
         }
 
-        this.recordHolders[map][playerUUID] = true;
         return true;
     }
 
-    async update(
+    async handleMatch(
         match: Match,
         playerOneAchievement: Achievement<boolean>,
         playerTwoAchievement: Achievement<boolean>,
-    ): Promise<void> {
+        checkingFunction: (map: HitmanMap, player: string) => Promise<boolean>,
+    ) {
         for (const map of match.playedMaps) {
             if (map.forfeit) {
                 continue;
@@ -80,42 +63,107 @@ export class BeatTheHouse extends AutomaticAchievement<boolean> {
                 continue;
             }
 
-            if (
-                map.winner === WinningPlayer.PLAYER_ONE &&
-                playerOneAchievement.data
-            ) {
-                continue;
-            }
-            if (
-                map.winner === WinningPlayer.PLAYER_TWO &&
-                playerTwoAchievement.data
-            ) {
-                continue;
-            }
-
             const loser =
                 map.winner === WinningPlayer.PLAYER_ONE
                     ? match.playerTwo
                     : match.playerOne;
-            if (!this.isRecordHolder(map.map, loser)) {
+            if (!(await checkingFunction(map.map, loser))) {
                 continue;
             }
 
             if (map.winner === WinningPlayer.PLAYER_ONE) {
-                playerOneAchievement.data = true;
                 playerOneAchievement.achieveIfNotAchieved(
                     match.timestamp,
                     0,
                     true,
                 );
             } else if (map.winner === WinningPlayer.PLAYER_TWO) {
-                playerTwoAchievement.data = true;
                 playerTwoAchievement.achieveIfNotAchieved(
                     match.timestamp,
                     0,
                     true,
                 );
             }
+        }
+    }
+
+    async update(
+        match: Match,
+        playerOneAchievement: Achievement<boolean>,
+        playerTwoAchievement: Achievement<boolean>,
+    ): Promise<void> {
+        await this.handleMatch(
+            match,
+            playerOneAchievement,
+            playerTwoAchievement,
+            this.isRecordHolder,
+        );
+    }
+
+    public async recalculateAll(
+        matches: Match[],
+        achievements: Record<string, Achievement<boolean>>,
+    ) {
+        for (const player in achievements) {
+            achievements[player].data = this.getDefaultData();
+            achievements[player].achievedAt.fill(0);
+            achievements[player].progression.fill(0);
+        }
+
+        const allMapRecords = await MapRecord.find({
+            order: {
+                timestamp: "ASC",
+            },
+        });
+
+        const recordsPerMap: Record<
+            number,
+            { timestamp: number; players: string[] }[]
+        > = {};
+        for (const map of getAllMaps()) {
+            const recordsOfThisMap = allMapRecords.filter(
+                (record) => record.map === map,
+            );
+            const shortenedRecordsThisMap: {
+                timestamp: number;
+                players: string[];
+            }[] = [];
+            for (let idx = 0; idx < recordsOfThisMap.length; idx++) {
+                if (
+                    recordsOfThisMap[idx - 1]?.time ===
+                    recordsOfThisMap[idx].time
+                ) {
+                    shortenedRecordsThisMap.push({
+                        timestamp: recordsOfThisMap[idx].timestamp,
+                        players: [
+                            ...shortenedRecordsThisMap[
+                                shortenedRecordsThisMap.length - 1
+                            ].players,
+                            recordsOfThisMap[idx].player,
+                        ],
+                    });
+                } else {
+                    shortenedRecordsThisMap.push({
+                        timestamp: recordsOfThisMap[idx].timestamp,
+                        players: [recordsOfThisMap[idx].player],
+                    });
+                }
+            }
+            recordsPerMap[map] = shortenedRecordsThisMap;
+        }
+
+        for (const match of matches) {
+            await this.handleMatch(
+                match,
+                achievements[match.playerOne],
+                achievements[match.playerTwo],
+                async (map, player) => {
+                    const recordHolders = recordsPerMap[map].findLast(
+                        (record) => record.timestamp < match.timestamp,
+                    );
+                    return recordHolders?.players.includes(player) ?? false;
+                },
+            );
         }
     }
 }

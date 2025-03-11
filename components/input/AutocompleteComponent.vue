@@ -12,7 +12,7 @@
                 (isDropdownFocussed || isFocussed) &&
                 currentSuggestions.length > 0
             "
-            class="z-20 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm"
+            class="z-50 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm"
             @mouseenter="isDropdownFocussed = true"
             @mouseleave="isDropdownFocussed = false"
         >

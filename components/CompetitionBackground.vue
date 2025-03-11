@@ -15,17 +15,23 @@ const props = defineProps<{
 
 const chosenBackground = useState<string>("background");
 
-callOnce(() => {
+callOnce(selectBackground);
+
+function selectBackground() {
     const chosenBackgroundIndex = Math.floor(
         props.competitions.length * Math.random(),
     );
     chosenBackground.value = props.competitions[chosenBackgroundIndex];
-});
+}
 
 const bgStyle = computed(() => {
     if (chosenBackground.value == null || chosenBackground.value === "")
         return "";
 
     return `background-image: url(${chosenBackground.value})`;
+});
+
+onUpdated(() => {
+    selectBackground();
 });
 </script>

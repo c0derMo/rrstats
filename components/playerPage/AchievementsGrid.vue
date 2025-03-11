@@ -161,6 +161,13 @@ const filteredSortedAchievements = computed(() => {
                     return b.tier[currentStageB] - a.tier[currentStageA];
                 }
 
+                if (ld.last(a.achievedAt)! > 0 && ld.last(b.achievedAt)! <= 0) {
+                    return -1;
+                }
+                if (ld.last(b.achievedAt)! > 0 && ld.last(a.achievedAt)! <= 0) {
+                    return 1;
+                }
+
                 const completionRateA =
                     achievementCompletions.value[a.name]?.[currentStageA] ?? 0;
                 const completionRateB =

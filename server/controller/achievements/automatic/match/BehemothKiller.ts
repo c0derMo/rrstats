@@ -16,7 +16,7 @@ export class BehemothKiller extends AutomaticAchievement<number> {
     category = AchievementCategory.MATCH;
     levels = 1;
 
-    isChampionCache: Record<string, Record<string, boolean>> = {};
+    championsCache: Record<string, string[]> = {};
     previousTournamentCache: Record<string, string | false> = {};
     lastCacheClear = 0;
 
@@ -25,46 +25,45 @@ export class BehemothKiller extends AutomaticAchievement<number> {
         tournament: string,
     ): Promise<boolean> {
         if (DateTime.now().toMillis() - this.lastCacheClear > 60 * 1000) {
-            this.isChampionCache = {};
             this.previousTournamentCache = {};
+            this.championsCache = {};
             this.lastCacheClear = DateTime.now().toMillis();
         }
 
-        if (this.isChampionCache[playerUUID]?.[tournament] == null) {
-            if (this.previousTournamentCache[tournament] == null) {
-                const tourney = await Competition.findOneByOrFail({
-                    tag: tournament,
-                });
-                const previousTourney = await Competition.findOne({
-                    where: {
-                        startingTimestamp: LessThan(tourney.startingTimestamp),
-                        officialCompetition: true,
-                    },
-                    order: {
-                        startingTimestamp: "DESC",
-                    },
-                });
-                this.previousTournamentCache[tournament] =
-                    previousTourney?.tag ?? false;
-            }
-            if (this.previousTournamentCache[tournament] === false) {
-                return false;
-            }
-
-            if (this.isChampionCache[playerUUID] == null) {
-                this.isChampionCache[playerUUID] = {};
-            }
-
-            const hasWinPlacement = await CompetitionPlacement.countBy({
-                player: playerUUID,
-                competition: this.previousTournamentCache[tournament] as string,
-                placement: 1,
+        if (this.previousTournamentCache[tournament] == null) {
+            const tourney = await Competition.findOneByOrFail({
+                tag: tournament,
             });
-
-            this.isChampionCache[playerUUID][tournament] = hasWinPlacement > 0;
+            const previousTourney = await Competition.findOne({
+                where: {
+                    startingTimestamp: LessThan(tourney.startingTimestamp),
+                    officialCompetition: true,
+                },
+                order: {
+                    startingTimestamp: "DESC",
+                },
+            });
+            this.previousTournamentCache[tournament] =
+                previousTourney?.tag ?? false;
         }
 
-        return this.isChampionCache[playerUUID][tournament];
+        const previousTournament = this.previousTournamentCache[tournament];
+
+        if (previousTournament === false) {
+            return false;
+        }
+
+        if (this.championsCache[previousTournament] == null) {
+            const winnersOfComp = await CompetitionPlacement.findBy({
+                competition: previousTournament,
+                placement: 1,
+            });
+            this.championsCache[previousTournament] = winnersOfComp.map(
+                (player) => player.player,
+            );
+        }
+
+        return this.championsCache[previousTournament].includes(playerUUID);
     }
 
     public getDefaultData(): number {
