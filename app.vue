@@ -22,11 +22,12 @@
                 </template>
 
                 <template #HomeButton>
-                    <FontAwesomeIcon
-                        :icon="['fas', 'home']"
-                        class="cursor-pointer dark:text-white"
-                        @click="$router.push('/')"
-                    />
+                    <NuxtLink to="/">
+                        <FontAwesomeIcon
+                            :icon="['fas', 'home']"
+                            class="cursor-pointer dark:text-white"
+                        />
+                    </NuxtLink>
                 </template>
 
                 <template #DarkModeToggle>
