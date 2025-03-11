@@ -226,13 +226,19 @@ const playerLookup = usePlayers();
 await playerLookup.queryAll();
 
 const route = useRoute();
-if (route.query.players === null) {
-    selectedTab.value = "Players";
-} else if (route.query.countries === null) {
-    selectedTab.value = "Countries";
-} else if (route.query.maps === null) {
-    selectedTab.value = "Maps";
-}
+onMounted(async () => {
+    if (route.hash === "#players") {
+        selectedTab.value = "Players";
+        selectedCategory.value = playerCategories[0];
+    } else if (route.hash === "#countries") {
+        selectedTab.value = "Countries";
+        selectedCategory.value = countryCategories[0];
+    } else if (route.hash === "#maps") {
+        selectedTab.value = "Maps";
+        selectedCategory.value = mapCategories[0];
+    }
+    await loadLeaderboardData(true);
+});
 
 const selectableMaps = computed(() => {
     const maps = getAllMaps().map((map) => {
@@ -409,6 +415,4 @@ watch(selectedCategory, async () => {
 watch(selectedMap, async () => {
     await loadLeaderboardData(false);
 });
-
-await loadLeaderboardData(true);
 </script>

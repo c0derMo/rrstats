@@ -139,11 +139,11 @@ function selectLeaderboard(leaderboard: string) {
         case "Achievements":
             return navigateTo("/achievements");
         case "Players":
-            return navigateTo("/leaderboards?players");
+            return navigateTo("/leaderboards#players");
         case "Countries":
-            return navigateTo("/leaderboards?countries");
+            return navigateTo("/leaderboards#countries");
         case "Maps":
-            return navigateTo("/leaderboards?maps");
+            return navigateTo("/leaderboards#maps");
     }
 }
 </script>

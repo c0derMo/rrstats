@@ -1,40 +1,47 @@
 <template>
     <div class="relative">
-        <ClientOnly>
-            <div v-if="showFullBar" class="flex relative h-min w-full">
+        <div
+            class="md:flex relative h-min w-full"
+            :class="{ flex: tabs.length <= 4, hidden: tabs.length > 4 }"
+        >
+            <div
+                class="absolute w-full h-full bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded"
+            />
+            <div
+                class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded scale-y-75 transition-all duration-200"
+                :style="selectorStyle"
+            />
+            <div
+                ref="parentElement"
+                class="flex flex-row w-full gap-3 p-1 z-10"
+            >
                 <div
-                    class="absolute w-full h-full bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded"
-                />
-                <div
-                    class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded scale-y-75 transition-all duration-200"
-                    :style="selectorStyle"
-                />
-                <div
-                    ref="parentElement"
-                    class="flex flex-row w-full gap-3 p-1 z-10"
+                    v-for="thisTab in tabs"
+                    :key="thisTab"
+                    :class="{
+                        'hover:!bg-opacity-40': selectedTab !== thisTab,
+                    }"
+                    class="flex-grow text-center py-1 rounded z-10 !bg-opacity-0 dark:bg-gray-700 bg-gray-100"
+                    @click="(e) => changeTab(thisTab, e)"
                 >
-                    <div
-                        v-for="thisTab in tabs"
-                        :key="thisTab"
-                        :class="{
-                            'hover:!bg-opacity-40': selectedTab !== thisTab,
-                        }"
-                        class="flex-grow text-center py-1 rounded z-10 !bg-opacity-0 dark:bg-gray-700 bg-gray-100"
-                        @click="(e) => changeTab(thisTab, e)"
-                    >
-                        {{ thisTab }}
-                    </div>
+                    {{ thisTab }}
                 </div>
             </div>
-            <div v-else class="flex relative h-min w-full">
-                <DropdownComponent
-                    class="w-full"
-                    :items="tabs"
-                    :model-value="selectedTab"
-                    @update:model-value="(e) => changeTab(e as string)"
-                />
-            </div>
-        </ClientOnly>
+        </div>
+        <div
+            class="relative h-min w-full"
+            :class="{
+                'flex md:hidden': tabs.length > 4,
+                hidden: tabs.length <= 4,
+            }"
+        >
+            <DropdownComponent
+                class="w-full"
+                :items="tabs"
+                :model-value="selectedTab"
+                @update:model-value="(e) => changeTab(e as string)"
+            />
+        </div>
         <div class="mt-2">
             <template v-for="thisTab in tabs" :key="thisTab">
                 <div v-if="selectedTab === thisTab">
@@ -60,10 +67,6 @@ const selectedTab = ref(props.tab ?? props.tabs[0]);
 const tabElement = ref<HTMLDivElement | null>(null);
 const parentElement = ref<HTMLDivElement | null>(null);
 
-const showFullBar = computed(() => {
-    return props.tabs.length <= 4 || window?.innerWidth > 768;
-});
-
 const selectorStyle = computed(() => {
     return `width: ${(tabElement.value?.clientWidth ?? 2) - 2}px; left: ${(tabElement.value?.offsetLeft ?? 0) + 1}px`;
 });
@@ -88,7 +91,7 @@ onMounted(() => {
 onUpdated(() => {
     const index = Math.max(
         0,
-        props.tabs.findIndex((v) => v === selectedTab.value),
+        props.tabs.findIndex((v) => v === props.tab),
     );
     tabElement.value =
         (parentElement.value?.children.item(index) as HTMLDivElement) ?? null;

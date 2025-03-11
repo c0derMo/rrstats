@@ -65,14 +65,11 @@ const actualIsDarkMode = computed(() => {
 });
 
 onMounted(() => {
-    lightDarkSwitch.value =
-        window.localStorage.getItem("theme") === "dark" ||
-        (window.localStorage.getItem("theme") === null &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches);
     isDarkMode.value =
         window.localStorage.getItem("theme") === "dark" ||
         (window.localStorage.getItem("theme") === null &&
             window.matchMedia("(prefers-color-scheme: dark)").matches);
+    lightDarkSwitch.value = isDarkMode.value;
     nextTick(() => {
         initialized.value = true;
     });
