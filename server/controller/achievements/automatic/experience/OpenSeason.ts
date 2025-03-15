@@ -95,5 +95,8 @@ export class OpenSeason extends AutomaticAchievement<AchievementDataType> {
         achievement.progression = levelRequirements.map((requirement) =>
             Math.min(1, biggestSeason / requirement),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${biggestSeason} / ${requirement}`;
+        });
     }
 }

@@ -11,4 +11,5 @@ export class ExpertlyDone implements ManualAchievement {
     category = AchievementCategory.MATCH;
     levels = 1;
     manual = true;
+    manualRequiresVideo = true;
 }

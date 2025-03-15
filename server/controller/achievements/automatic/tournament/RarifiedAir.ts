@@ -9,9 +9,9 @@ import {
 export class RarifiedAir extends AutomaticAchievement<number> {
     name = "Rarified Air";
     description = [
-        "Play 5 matches in the RRWC Knockout Stage",
-        "Play 10 matches in the RRWC Knockout Stage",
-        "Play 25 matches in the RRWC Knockout Stage",
+        "Play 5 matches in RRWC Knockout Stages",
+        "Play 10 matches in RRWC Knockout Stages",
+        "Play 25 matches in RRWC Knockout Stages",
     ];
     tier = [
         AchievementTier.SILVER,
@@ -59,5 +59,8 @@ export class RarifiedAir extends AutomaticAchievement<number> {
         achievement.progression = levelRequirements.map((requirement) =>
             Math.min(1, achievement.data / requirement),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${achievement.data} / ${requirement}`;
+        });
     }
 }

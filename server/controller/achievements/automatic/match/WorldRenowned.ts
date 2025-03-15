@@ -81,5 +81,6 @@ export class WorldRenowned extends AutomaticAchievement<string[]> {
         }
 
         achievement.progression = [Math.min(1, achievement.data.length / 10)];
+        achievement.progressionString = [`${achievement.data.length} / 10`];
     }
 }

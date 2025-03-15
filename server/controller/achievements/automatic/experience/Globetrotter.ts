@@ -70,5 +70,8 @@ export class Globetrotter extends AutomaticAchievement<AchievementDataType> {
                     19,
             ),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${Object.values(achievement.data).filter((m) => m >= requirement).length} / 19`;
+        });
     }
 }

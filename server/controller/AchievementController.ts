@@ -254,7 +254,10 @@ export default class AchievementController {
                 levels: achievement.levels,
                 achievedAt: Array(achievement.levels).fill(0),
                 progress: Array(achievement.levels).fill(0),
-            };
+                progressString: undefined,
+                match: undefined,
+                manualRequiresVideo: achievement.manualRequiresVideo,
+            } as AchievementInfo;
 
             const achieved = achievedAchievements.find(
                 (aA) => aA.achievement === achievement.name,
@@ -262,6 +265,8 @@ export default class AchievementController {
             if (achieved != null) {
                 result.achievedAt = achieved.achievedAt;
                 result.progress = achieved.progression;
+                result.progressString = achieved.progressionString;
+                result.match = achieved.match;
             }
             return result;
         });

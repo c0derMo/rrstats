@@ -31,6 +31,7 @@ export class BestServedCold extends AutomaticAchievement<string[]> {
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             }
         } else if (match.playerTwoScore > match.playerOneScore) {
@@ -42,6 +43,7 @@ export class BestServedCold extends AutomaticAchievement<string[]> {
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             }
         }

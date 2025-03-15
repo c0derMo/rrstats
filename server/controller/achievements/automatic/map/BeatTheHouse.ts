@@ -76,12 +76,14 @@ export class BeatTheHouse extends AutomaticAchievement<boolean> {
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             } else if (map.winner === WinningPlayer.PLAYER_TWO) {
                 playerTwoAchievement.achieveIfNotAchieved(
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             }
         }

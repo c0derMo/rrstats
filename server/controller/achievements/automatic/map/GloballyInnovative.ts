@@ -95,5 +95,8 @@ export class GloballyInnovative extends AutomaticAchievement<AchievementDataType
         achievement.progression = levelRequirements.map((req) =>
             Math.min(1, lowestSeasonWon / req),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${lowestSeasonWon} / ${requirement}`;
+        });
     }
 }

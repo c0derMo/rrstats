@@ -7,6 +7,9 @@ export interface AchievementInfo {
     levels: number;
     achievedAt: number[];
     progress: number[];
+    progressString?: string[];
+    match?: string;
+    manualRequiresVideo?: boolean;
 }
 
 export enum AchievementTier {
@@ -32,5 +35,7 @@ export interface SubmittedAchievement {
     achievement: string;
     achievedAt: number[];
     progression: number[];
+    progressionString?: string[];
+    match?: string;
     verified: boolean;
 }

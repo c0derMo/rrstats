@@ -46,6 +46,7 @@ export class PerfectingTheCraft extends AutomaticAchievement<number> {
                         recordTime.time,
                         playerOneAchievement,
                         match.timestamp,
+                        match.uuid,
                     );
                 } else if (map.winner === WinningPlayer.PLAYER_TWO) {
                     this.checkCondition(
@@ -53,6 +54,7 @@ export class PerfectingTheCraft extends AutomaticAchievement<number> {
                         recordTime.time,
                         playerTwoAchievement,
                         match.timestamp,
+                        match.uuid,
                     );
                 }
             }
@@ -101,6 +103,7 @@ export class PerfectingTheCraft extends AutomaticAchievement<number> {
                         recordTimeAtTime.time,
                         achievements[match.playerOne],
                         match.timestamp,
+                        match.uuid,
                     );
                 } else if (map.winner === WinningPlayer.PLAYER_TWO) {
                     this.checkCondition(
@@ -108,6 +111,7 @@ export class PerfectingTheCraft extends AutomaticAchievement<number> {
                         recordTimeAtTime.time,
                         achievements[match.playerTwo],
                         match.timestamp,
+                        match.uuid,
                     );
                 }
             }
@@ -119,9 +123,10 @@ export class PerfectingTheCraft extends AutomaticAchievement<number> {
         recordTime: number,
         achievement: Achievement<number>,
         timestamp: number,
+        matchUuid: string,
     ) {
         if (mapTime - 60 <= recordTime) {
-            achievement.achieveIfNotAchieved(timestamp, 0, true);
+            achievement.achieveIfNotAchieved(timestamp, 0, true, matchUuid);
         }
     }
 }

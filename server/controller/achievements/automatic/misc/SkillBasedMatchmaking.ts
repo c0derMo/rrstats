@@ -72,5 +72,8 @@ export class SkillBasedMatchmaking extends AutomaticAchievement<number> {
         achievement.progression = levelRequirements.map((req) =>
             Math.min(1, maxElo / req),
         );
+        achievement.progressionString = levelRequirements.map(
+            (req) => `${maxElo} / ${req}`,
+        );
     }
 }

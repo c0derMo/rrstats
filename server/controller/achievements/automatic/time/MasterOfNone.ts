@@ -63,5 +63,8 @@ export class MasterOfNone extends AutomaticAchievement<number[]> {
         achievement.progression = [
             Math.min(1, mapsWithGoodPB / achievement.data.length),
         ];
+        achievement.progressionString = [
+            `${mapsWithGoodPB} / ${achievement.data.length}`,
+        ];
     }
 }

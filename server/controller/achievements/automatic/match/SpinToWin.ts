@@ -61,5 +61,8 @@ export class SpinToWin extends AutomaticAchievement<number> {
         achievement.progression = levelRequirements.map((req) =>
             Math.min(1, achievement.data / req),
         );
+        achievement.progressionString = levelRequirements.map(
+            (req) => `${achievement.data} / ${req}`,
+        );
     }
 }

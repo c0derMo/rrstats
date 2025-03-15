@@ -9,7 +9,7 @@ import { Competition, CompetitionPlacement } from "~/server/model/Competition";
 
 export class TheEncore extends AutomaticAchievement<number> {
     name = "The Encore";
-    description = ["Reach the Grand final two tournaments in a row"];
+    description = ["Reach the Grand Final two tournaments in a row"];
     tier = [AchievementTier.PLATINUM];
     category = AchievementCategory.STREAK;
     levels = 1;

@@ -91,5 +91,8 @@ export class GuessWhosBack extends AutomaticAchievement<string[]> {
         achievement.progression = requirements.map((req) =>
             Math.min(1, streak.getLongestStreak() / req),
         );
+        achievement.progressionString = requirements.map((req) => {
+            return `${streak.getLongestStreak()} / ${req}`;
+        });
     }
 }

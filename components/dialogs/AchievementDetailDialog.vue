@@ -4,6 +4,11 @@
         @click-outside="dialogOpen = false"
         @closed="$emit('closed')"
     >
+        <MatchDetailsDialog
+            v-if="match != null"
+            :match="match"
+            @click-outside="match = null"
+        />
         <CardComponent>
             <h1 class="text-2xl text-center mb-5">
                 Achievement: {{ achievement.name }}
@@ -61,6 +66,20 @@
                                             achievement.progress[tier - 1] * 100
                                         ).toFixed(2)
                                     }}%
+                                    <span
+                                        v-if="
+                                            achievement.progressString?.[
+                                                tier - 1
+                                            ] != null
+                                        "
+                                        class="italic"
+                                    >
+                                        ({{
+                                            achievement.progressString[
+                                                tier - 1
+                                            ]
+                                        }})
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -68,6 +87,14 @@
                     </div>
                 </template>
             </div>
+
+            <ButtonComponent
+                v-if="achievement.match != null"
+                class="my-2 float-right"
+                @click="openMatch(achievement.match)"
+            >
+                View match
+            </ButtonComponent>
 
             <template
                 v-if="
@@ -81,7 +108,7 @@
                     <div class="text-center font-bold">
                         Submit achievement completion:
                     </div>
-                    <div>
+                    <div v-if="achievement.manualRequiresVideo">
                         If you believe this player has completed the
                         achievement, please link a video
                         <span class="font-bold">with timestamp</span>
@@ -89,7 +116,14 @@
                         The achievement will be manually reviewed and added to
                         the profile afterwards. This may take a bit of time.
                     </div>
+                    <div v-else>
+                        If you believe this player has completed the
+                        achievement, please fill the form below.<br />
+                        The achievement will be manually reviewed and added to
+                        the profile afterwards. This may take a bit of time.
+                    </div>
                     <TextInputComponent
+                        v-if="achievement.manualRequiresVideo"
                         v-model="completionLink"
                         placeholder="Video with timestamp"
                     />
@@ -121,6 +155,7 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
+import type { IMatch } from "~/utils/interfaces/IMatch";
 
 const props = defineProps<{
     achievement: AchievementInfo;
@@ -138,6 +173,7 @@ const loading = ref(false);
 const videoError = ref(false);
 const submitError = ref(false);
 const submitSuccess = ref(false);
+const match = ref<IMatch | null>(null);
 
 function getColorOfTierOrUnachieved(tier: number, achievedAt: number) {
     if (achievedAt <= 0) {
@@ -152,12 +188,14 @@ async function submit() {
     submitSuccess.value = false;
     loading.value = true;
 
-    try {
-        new URL(completionLink.value);
-    } catch {
-        loading.value = false;
-        videoError.value = true;
-        return;
+    if (props.achievement.manualRequiresVideo) {
+        try {
+            new URL(completionLink.value);
+        } catch {
+            loading.value = false;
+            videoError.value = true;
+            return;
+        }
     }
 
     try {
@@ -176,5 +214,10 @@ async function submit() {
     } finally {
         loading.value = false;
     }
+}
+
+async function openMatch(uuid: string) {
+    const fetchedMatch = await $fetch(`/api/matches?uuid=${uuid}`);
+    match.value = fetchedMatch as IMatch;
 }
 </script>

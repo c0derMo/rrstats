@@ -66,5 +66,8 @@ export class PointsForYou extends AutomaticAchievement<number> {
         achievement.progression = levelRequirements.map((m) =>
             Math.min(1, achievement.data / m),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${achievement.data} / ${requirement}`;
+        });
     }
 }

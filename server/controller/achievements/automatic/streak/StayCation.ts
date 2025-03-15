@@ -56,5 +56,6 @@ export class StayCation extends AutomaticAchievement<AchievementData> {
         }
 
         achievement.progression = [Math.min(1, longestStreak / 3)];
+        achievement.progressionString = [`${longestStreak} / 3`];
     }
 }

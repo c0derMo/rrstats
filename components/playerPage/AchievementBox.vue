@@ -94,11 +94,11 @@
         <div class="italic mb-3 min-h-12 px-2">{{ description }}</div>
 
         <div v-if="completedAll" class="italic">
-            Achieved at
+            Achieved on
             {{
                 DateTime.fromMillis(lastCompletion)
                     .setLocale(useLocale().value)
-                    .toLocaleString(DateTime.DATETIME_MED)
+                    .toLocaleString(DateTime.DATE_MED)
             }}
         </div>
         <div
@@ -114,9 +114,8 @@
                 />
             </div>
         </div>
-        <div v-else class="italic">
-            not achieved
-            <span v-if="achievement.manual"> (click to submit) </span>
+        <div v-else-if="achievement.manual" class="italic">
+            (click to submit)
         </div>
     </div>
 </template>

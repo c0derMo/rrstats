@@ -70,5 +70,8 @@ export class GettingMileage extends AutomaticAchievement<AchievementDataType> {
         achievement.progression = levelRequirements.map((requirement) =>
             Math.min(1, mostPlayed / requirement),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${mostPlayed} / ${requirement}`;
+        });
     }
 }

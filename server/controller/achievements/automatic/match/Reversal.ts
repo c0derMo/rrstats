@@ -9,7 +9,7 @@ import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
 export class Reversal extends AutomaticAchievement<number> {
     name = "Reversal";
-    description = ["Win a match with a reverse sweep (at least 6 points)"];
+    description = ["Win a match with a reverse sweep (at least six points)"];
     tier = [AchievementTier.GOLD];
     category = AchievementCategory.MATCH;
     levels = 1;
@@ -51,9 +51,19 @@ export class Reversal extends AutomaticAchievement<number> {
         }
 
         if (winner === WinningPlayer.PLAYER_ONE) {
-            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerOneAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
         } else if (winner === WinningPlayer.PLAYER_TWO) {
-            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerTwoAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
         }
     }
 }

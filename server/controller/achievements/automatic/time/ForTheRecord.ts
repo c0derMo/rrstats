@@ -23,17 +23,28 @@ export class ForTheRecord extends AutomaticAchievement<number> {
         playerOneAchievement: Achievement<number>,
         playerTwoAchievement: Achievement<number>,
     ): Promise<void> {
-        const playerOneRecord = await MapRecord.findOneBy({
-            player: match.playerOne,
+        const playerOneRecord = await MapRecord.findOne({
+            where: {
+                player: match.playerOne,
+            },
+            order: {
+                timestamp: "ASC",
+            },
         });
-        const playerTwoRecord = await MapRecord.findOneBy({
-            player: match.playerOne,
+        const playerTwoRecord = await MapRecord.findOne({
+            where: {
+                player: match.playerTwo,
+            },
+            order: {
+                timestamp: "ASC",
+            },
         });
         if (playerOneRecord != null) {
             playerOneAchievement.achieveIfNotAchieved(
                 playerOneRecord.timestamp,
                 0,
                 true,
+                playerOneRecord.match,
             );
         }
         if (playerTwoRecord != null) {
@@ -41,6 +52,7 @@ export class ForTheRecord extends AutomaticAchievement<number> {
                 playerTwoRecord.timestamp,
                 0,
                 true,
+                playerTwoRecord.match,
             );
         }
     }
@@ -72,6 +84,7 @@ export class ForTheRecord extends AutomaticAchievement<number> {
                 firstRecord!.timestamp,
                 0,
                 true,
+                firstRecord!.match,
             );
         }
     }

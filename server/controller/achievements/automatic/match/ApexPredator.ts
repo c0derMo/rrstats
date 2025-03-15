@@ -84,7 +84,12 @@ export class ApexPredator extends AutomaticAchievement<number> {
                 match.competition,
             ))
         ) {
-            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerOneAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
         } else if (
             match.playerTwoScore > match.playerOneScore &&
             (await this.isChampionOfPreviousRRWC(
@@ -92,7 +97,12 @@ export class ApexPredator extends AutomaticAchievement<number> {
                 match.competition,
             ))
         ) {
-            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerTwoAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
         }
     }
 }

@@ -53,13 +53,16 @@ export class TheRouletteRival extends AutomaticAchievement<
 
         const levelRequirements = [3, 5, 7];
         for (let i = 0; i < this.levels; i++) {
-            if (highestSameOppo > levelRequirements[i]) {
+            if (highestSameOppo >= levelRequirements[i]) {
                 achievement.achieveIfNotAchieved(timestamp, i);
             }
         }
 
         achievement.progression = levelRequirements.map((req) =>
             Math.min(1, highestSameOppo / req),
+        );
+        achievement.progressionString = levelRequirements.map(
+            (req) => `${highestSameOppo} / ${req}`,
         );
     }
 }

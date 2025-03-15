@@ -64,5 +64,8 @@ export class SpinTheWheel extends AutomaticAchievement<number> {
         achievement.progression = levelRequirements.map((requirement) => {
             return Math.min(1, achievement.data / requirement);
         });
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${achievement.data} / ${requirement}`;
+        });
     }
 }

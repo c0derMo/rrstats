@@ -70,5 +70,8 @@ export class HistoryRepeatsItself extends AutomaticAchievement<AchievementDataTy
         achievement.progression = levelRequirements.map((req) =>
             Math.min(1, mostOnSameMap / req),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${mostOnSameMap} / ${requirement}`;
+        });
     }
 }

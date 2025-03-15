@@ -10,7 +10,7 @@ import { getAllMaps } from "~/utils/mapUtils";
 
 export class TrilogySpeedrunner extends AutomaticAchievement<number[]> {
     name = "Trilogy Speedrunner";
-    description = ["Achieve a PB of 10:00 or less on three maps combined"];
+    description = ["Achieve a PB of 10:00 or less on any three maps combined"];
     tier = [AchievementTier.SILVER];
     category = AchievementCategory.TIME;
     levels = 1;

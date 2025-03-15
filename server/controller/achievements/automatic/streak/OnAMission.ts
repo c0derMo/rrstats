@@ -71,5 +71,8 @@ export class OnAMission extends AutomaticAchievement<AchievementData> {
         achievement.progression = requirements.map((req) =>
             Math.min(1, longestStreak / req),
         );
+        achievement.progressionString = requirements.map((req) => {
+            return `${longestStreak} / ${req}`;
+        });
     }
 }

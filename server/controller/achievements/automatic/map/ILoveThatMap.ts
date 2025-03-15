@@ -51,5 +51,6 @@ export class ILoveThatMap extends AutomaticAchievement<HitmanMap[]> {
         }
 
         achievement.progression = [Math.min(1, achievement.data.length / 19)];
+        achievement.progressionString = [`${achievement.data.length} / 19`];
     }
 }

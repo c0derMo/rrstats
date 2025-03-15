@@ -63,5 +63,8 @@ export class AgainstTheWorld extends AutomaticAchievement<string[]> {
         achievement.progression = levelRequirements.map((requirement) => {
             return Math.min(1, achievement.data.length / requirement);
         });
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${achievement.data.length} / ${requirement}`;
+        });
     }
 }

@@ -10,7 +10,7 @@ export class TitleContender extends AutomaticAchievement<
     Record<string, number>
 > {
     name = "Title Contender";
-    description = ["Win all your matches in the RRWC Group Stage"];
+    description = ["Win all your matches in an RRWC Group Stage"];
     tier = [AchievementTier.GOLD];
     category = AchievementCategory.TOURNAMENT;
     levels = 1;

@@ -88,12 +88,16 @@ onMounted(() => {
         (parentElement.value?.children.item(0) as HTMLDivElement) ?? null;
 });
 
-watch(() => props.tab, () => {
-    const index = Math.max(
-        0,
-        props.tabs.findIndex((v) => v === props.tab),
-    );
-    tabElement.value =
-        (parentElement.value?.children.item(index) as HTMLDivElement) ?? null;
-});
+watch(
+    () => props.tab,
+    () => {
+        const index = Math.max(
+            0,
+            props.tabs.findIndex((v) => v === props.tab),
+        );
+        tabElement.value =
+            (parentElement.value?.children.item(index) as HTMLDivElement) ??
+            null;
+    },
+);
 </script>

@@ -131,7 +131,7 @@ export class DressedForTheOccasion extends BaseSpinConditionAchievement {
 
 export class Kaboom extends BaseSpinConditionAchievement {
     name = "Kaboom";
-    description = ["Win a spin with a explosion kill method"];
+    description = ["Win a spin with an explosion kill method"];
 
     doesSpinAchieve(spin: Spin): boolean {
         return getMethodsOfSpin(spin).some(includesAny(EXPLOSIVE));

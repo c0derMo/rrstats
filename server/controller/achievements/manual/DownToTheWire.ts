@@ -11,4 +11,5 @@ export class DownToTheWire implements ManualAchievement {
     category = AchievementCategory.MISC;
     levels = 1;
     manual = true;
+    manualRequiresVideo = true;
 }

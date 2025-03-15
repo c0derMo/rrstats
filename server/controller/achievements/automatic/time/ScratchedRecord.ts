@@ -57,6 +57,7 @@ export class ScratchedRecord extends AutomaticAchievement<number> {
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             } else if (
                 map.winner === WinningPlayer.PLAYER_TWO &&
@@ -66,6 +67,7 @@ export class ScratchedRecord extends AutomaticAchievement<number> {
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             }
         }
@@ -108,6 +110,7 @@ export class ScratchedRecord extends AutomaticAchievement<number> {
                     record.timestamp,
                     0,
                     true,
+                    record.match,
                 );
             }
         }

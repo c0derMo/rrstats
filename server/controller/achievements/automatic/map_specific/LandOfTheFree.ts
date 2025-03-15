@@ -37,8 +37,18 @@ export class LandOfTheFree extends AutomaticAchievement<number> {
         );
 
         if (played_usa_maps.size >= 3) {
-            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
-            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerOneAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
+            playerTwoAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
         }
     }
 }

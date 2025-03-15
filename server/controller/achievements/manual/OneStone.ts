@@ -11,4 +11,5 @@ export class OneStone implements ManualAchievement {
     category = AchievementCategory.MAP;
     levels = 1;
     manual = true;
+    manualRequiresVideo = true;
 }

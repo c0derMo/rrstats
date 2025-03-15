@@ -99,12 +99,22 @@ export class GiantKiller extends AutomaticAchievement<number> {
             match.playerOneScore > match.playerTwoScore &&
             (await this.isChampion(match.playerTwo, match.timestamp))
         ) {
-            playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerOneAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
         } else if (
             match.playerTwoScore > match.playerOneScore &&
             (await this.isChampion(match.playerOne, match.timestamp))
         ) {
-            playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+            playerTwoAchievement.achieveIfNotAchieved(
+                match.timestamp,
+                0,
+                true,
+                match.uuid,
+            );
         }
     }
 }

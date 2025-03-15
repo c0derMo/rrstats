@@ -18,17 +18,23 @@ export class Achievement<T = unknown>
     data: T;
     @Column("boolean")
     verified: boolean;
+    @Column("simple-json", { nullable: true })
+    progressionString?: string[];
+    @Column("text", { nullable: true })
+    match?: string;
 
     achieveIfNotAchieved(
         timestamp: number,
         level: number = 0,
         setProgression: boolean = false,
+        match?: string,
     ) {
         if (this.achievedAt[level] <= 0) {
             this.achievedAt[level] = timestamp;
             if (setProgression) {
                 this.progression[level] = 1;
             }
+            this.match = match;
         }
     }
 

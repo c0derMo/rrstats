@@ -59,5 +59,8 @@ export class OnAStreak extends AutomaticAchievement<number> {
         achievement.progression = requirements.map((req) =>
             Math.min(1, achievement.data / req),
         );
+        achievement.progressionString = requirements.map((req) => {
+            return `${achievement.data} / ${req}`;
+        });
     }
 }

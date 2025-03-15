@@ -9,9 +9,9 @@ import {
 export class BeatenTheBest extends AutomaticAchievement<number> {
     name = "Beaten the Best";
     description = [
-        "Win a match in the RRWC Knockout Stage",
-        "Win 5 matches in the RRWC Knockout Stage",
-        "Win 15 matches in the RRWC Knockout Stage",
+        "Win a match in a RRWC Knockout Stage",
+        "Win 5 matches in RRWC Knockout Stages",
+        "Win 15 matches in RRWC Knockout Stages",
     ];
     tier = [
         AchievementTier.SILVER,
@@ -62,5 +62,8 @@ export class BeatenTheBest extends AutomaticAchievement<number> {
         achievement.progression = levelRequirements.map((requirement) =>
             Math.min(1, achievement.data / requirement),
         );
+        achievement.progressionString = levelRequirements.map((requirement) => {
+            return `${achievement.data} / ${requirement}`;
+        });
     }
 }
