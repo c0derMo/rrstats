@@ -61,13 +61,22 @@ export class GuessWhosBack extends AutomaticAchievement<string[]> {
         if (!playerTwoAchievement.data.includes(match.competition)) {
             playerTwoAchievement.data.push(match.competition);
         }
-        await this.checkCondition(playerOneAchievement, match.timestamp);
-        await this.checkCondition(playerTwoAchievement, match.timestamp);
+        await this.checkCondition(
+            playerOneAchievement,
+            match.timestamp,
+            match.uuid,
+        );
+        await this.checkCondition(
+            playerTwoAchievement,
+            match.timestamp,
+            match.uuid,
+        );
     }
 
     private async checkCondition(
         achievement: Achievement<string[]>,
         timestamp: number,
+        match: string,
     ) {
         const streak = new StreakCounter();
         const tourneyOrder = await this.getTournamentsInOrder();
@@ -84,7 +93,7 @@ export class GuessWhosBack extends AutomaticAchievement<string[]> {
 
         for (let idx = 0; idx < requirements.length; idx++) {
             if (streak.getLongestStreak() > requirements[idx]) {
-                achievement.achieveIfNotAchieved(timestamp, idx);
+                achievement.achieveIfNotAchieved(timestamp, idx, false, match);
             }
         }
 

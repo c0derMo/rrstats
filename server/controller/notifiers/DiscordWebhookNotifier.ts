@@ -82,7 +82,7 @@ export class DiscordWebhookNotifier implements Notifier {
         lastMessage.embeds[0].fields = [
             {
                 name: "Verified",
-                value: `:white_check_mark: <t:${submission.achievedAt[0]}>`,
+                value: `:white_check_mark: <t:${submission.achievedAt[0] / 1000}>`,
             },
         ];
 

@@ -2,9 +2,7 @@ import AchievementController from "~/server/controller/AchievementController";
 import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
 import ld from "lodash";
 
-export default defineEventHandler<
-    Omit<AchievementInfo, "achievedAt" | "progress">[]
->(() => {
+export default defineEventHandler<AchievementInfo[]>(() => {
     const allAchievements = [
         ...AchievementController.automaticAchievements,
         ...AchievementController.manualAchievements,
@@ -21,8 +19,5 @@ export default defineEventHandler<
         ]);
     });
 
-    return strippedAchievements as Omit<
-        AchievementInfo,
-        "achievedAt" | "progress"
-    >[];
+    return strippedAchievements as AchievementInfo[];
 });

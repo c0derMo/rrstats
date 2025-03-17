@@ -25,11 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
+import type { AchievedAchievement } from "~/utils/interfaces/AchievementInfo";
 import { DateTime } from "luxon";
 
 const props = defineProps<{
-    achievement: AchievementInfo;
+    achievement: AchievedAchievement;
     player: string;
 }>();
 

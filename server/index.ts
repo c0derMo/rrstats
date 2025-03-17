@@ -6,12 +6,7 @@ import { VERSION } from "./version";
 import EloController from "./controller/EloController";
 import AchievementController from "./controller/AchievementController";
 import NotificationController from "./controller/NotificationController";
-
-let fullyInitialized = false;
-
-export function isReady() {
-    return fullyInitialized;
-}
+import { setReady } from "./readyListener";
 
 export default defineNitroPlugin(async (nitroApp) => {
     console.log(`Starting rrstats with commit hash ${VERSION}`);
@@ -31,7 +26,7 @@ export default defineNitroPlugin(async (nitroApp) => {
     await AchievementController.recalculateAllAchievements();
     NotificationController.initialize();
 
-    fullyInitialized = true;
+    setReady(true);
 
     nitroApp.hooks.hook("close", async () => {
         if (database.isInitialized()) {

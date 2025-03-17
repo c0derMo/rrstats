@@ -43,19 +43,25 @@ export class BeatenTheBest extends AutomaticAchievement<number> {
             playerTwoAchievement.data += 1;
         }
 
-        this.checkCondition(playerOneAchievement, match.timestamp);
-        this.checkCondition(playerTwoAchievement, match.timestamp);
+        this.checkCondition(playerOneAchievement, match.timestamp, match.uuid);
+        this.checkCondition(playerTwoAchievement, match.timestamp, match.uuid);
     }
 
     private checkCondition(
         achievement: Achievement<number>,
         achievementTimestamp: number,
+        match: string,
     ) {
         const levelRequirements = [1, 5, 15];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
             if (achievement.data >= levelRequirements[idx]) {
-                achievement.achieveIfNotAchieved(achievementTimestamp, idx);
+                achievement.achieveIfNotAchieved(
+                    achievementTimestamp,
+                    idx,
+                    false,
+                    match,
+                );
             }
         }
 

@@ -44,19 +44,25 @@ export class AgainstTheWorld extends AutomaticAchievement<string[]> {
             playerTwoAchievement.data.push(match.competition);
         }
 
-        this.checkCondition(playerOneAchievement, match.timestamp);
-        this.checkCondition(playerTwoAchievement, match.timestamp);
+        this.checkCondition(playerOneAchievement, match.timestamp, match.uuid);
+        this.checkCondition(playerTwoAchievement, match.timestamp, match.uuid);
     }
 
     private checkCondition(
         achievement: Achievement<string[]>,
         achievementTimestamp: number,
+        match: string,
     ) {
         const levelRequirements = [1, 2, 3, 4, 5];
 
         for (let idx = 0; idx < levelRequirements.length; idx++) {
             if (achievement.data.length >= levelRequirements[idx]) {
-                achievement.achieveIfNotAchieved(achievementTimestamp, idx);
+                achievement.achieveIfNotAchieved(
+                    achievementTimestamp,
+                    idx,
+                    false,
+                    match,
+                );
             }
         }
 

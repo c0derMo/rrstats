@@ -29,7 +29,17 @@ export class TheCulling extends AutomaticAchievement<number> {
             return;
         }
 
-        playerOneAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
-        playerTwoAchievement.achieveIfNotAchieved(match.timestamp, 0, true);
+        playerOneAchievement.achieveIfNotAchieved(
+            match.timestamp,
+            0,
+            true,
+            match.uuid,
+        );
+        playerTwoAchievement.achieveIfNotAchieved(
+            match.timestamp,
+            0,
+            true,
+            match.uuid,
+        );
     }
 }

@@ -35,6 +35,29 @@
 
         <TabbedContainer :tabs="tabs" class="my-5">
             <template #[tabs[0]]>
+                <div class="flex flex-row gap-5 justify-between w-full">
+                    <TextInputComponent
+                        v-model="quickAdderPlayer"
+                        :error="quickPlayerError"
+                        placeholder="Player"
+                        class="grow"
+                    />
+                    <DropdownComponent
+                        v-model="selectedAchievement"
+                        :items="manualAchievementNames"
+                        class="grow"
+                    />
+                    <TextInputComponent
+                        v-model="achievementDatetime"
+                        type="datetime-local"
+                        placeholder="Achieved at"
+                        class="grow"
+                    />
+                    <ButtonComponent @click="quickAddAchievement"
+                        >Add achievement</ButtonComponent
+                    >
+                </div>
+
                 <DataTableComponent
                     :headers="unverifiedTableHeaders"
                     :rows="unverifiedAchievements"
@@ -130,7 +153,7 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 import type {
-    AchievementInfo,
+    AchievedAchievement,
     SubmittedAchievement,
 } from "~/utils/interfaces/AchievementInfo";
 
@@ -154,6 +177,8 @@ const tabs = ["Unverified achievements", "Achievements of player"];
 
 const playerLookup = usePlayers();
 const player = ref("");
+const quickAdderPlayer = ref("");
+const selectedAchievement = ref("");
 const achievementToVerify = ref<ExtendedSubmittedAchievement | null>(null);
 const achievementDatetime = ref(
     DateTime.now().set({ second: 0, millisecond: 0 }).toISO({
@@ -165,9 +190,13 @@ const achievementDatetime = ref(
 const { data: unverifiedAchievements } = await useFetch<
     ExtendedSubmittedAchievement[]
 >("/api/achievements/unverified", { default: () => [] });
-const playerAchievements = ref<AchievementInfo[]>([]);
-const viewedAchievement = ref<AchievementInfo | null>(null);
-const achievementToEdit = ref<AchievementInfo | null>(null);
+const playerAchievements = ref<AchievedAchievement[]>([]);
+const viewedAchievement = ref<AchievedAchievement | null>(null);
+const achievementToEdit = ref<AchievedAchievement | null>(null);
+
+const { data: manualAchievements } = await useFetch("/api/achievements/list", {
+    default: () => [],
+});
 
 await playerLookup.queryAll();
 
@@ -190,6 +219,19 @@ const playerError = computed(() => {
     return playerLookup.getUUID(player.value, "") === "";
 });
 
+const quickPlayerError = computed(() => {
+    return (
+        quickAdderPlayer.value !== "" &&
+        playerLookup.getUUID(quickAdderPlayer.value, "") === ""
+    );
+});
+
+const manualAchievementNames = computed(() => {
+    return manualAchievements.value
+        .filter((achievement) => achievement.manual)
+        .map((achievement) => achievement.name);
+});
+
 async function verifyAchievement(achievement: SubmittedAchievement) {
     await $fetch(`/api/achievements`, {
         method: "POST",
@@ -204,6 +246,31 @@ async function verifyAchievement(achievement: SubmittedAchievement) {
     });
     unverifiedAchievements.value = await $fetch(`/api/achievements/unverified`);
     achievementToVerify.value = null;
+}
+
+async function quickAddAchievement() {
+    if (
+        quickAdderPlayer.value === "" ||
+        selectedAchievement.value === "" ||
+        playerLookup.getUUID(quickAdderPlayer.value, "") === ""
+    ) {
+        return;
+    }
+
+    await $fetch(`/api/achievements`, {
+        method: "POST",
+        body: {
+            player: playerLookup.getUUID(quickAdderPlayer.value),
+            achievement: selectedAchievement.value,
+            achievedAt: [
+                DateTime.fromISO(achievementDatetime.value).toMillis(),
+            ],
+            progression: [1],
+            verified: true,
+            data: {},
+        },
+    });
+    quickAdderPlayer.value = "";
 }
 
 async function rejectAchievement(achievement: SubmittedAchievement) {

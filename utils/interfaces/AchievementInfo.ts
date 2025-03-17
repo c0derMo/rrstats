@@ -5,10 +5,6 @@ export interface AchievementInfo {
     manual?: boolean;
     category: AchievementCategory;
     levels: number;
-    achievedAt: number[];
-    progress: number[];
-    progressString?: string[];
-    match?: string;
     manualRequiresVideo?: boolean;
 }
 
@@ -36,6 +32,8 @@ export interface SubmittedAchievement {
     achievedAt: number[];
     progression: number[];
     progressionString?: string[];
-    match?: string;
+    match?: string[];
     verified: boolean;
 }
+
+export type AchievedAchievement = AchievementInfo & SubmittedAchievement;

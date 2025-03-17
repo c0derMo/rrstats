@@ -50,21 +50,30 @@ export class OnAMission extends AutomaticAchievement<AchievementData> {
                 playerTwoAchievement.data[map.map] = 0;
             }
 
-            this.checkCondition(playerOneAchievement, match.timestamp);
-            this.checkCondition(playerTwoAchievement, match.timestamp);
+            this.checkCondition(
+                playerOneAchievement,
+                match.timestamp,
+                match.uuid,
+            );
+            this.checkCondition(
+                playerTwoAchievement,
+                match.timestamp,
+                match.uuid,
+            );
         }
     }
 
     private checkCondition(
         achievement: Achievement<AchievementData>,
         timestamp: number,
+        match: string,
     ) {
         const requirements = [2, 5, 10];
         const longestStreak = Math.max(...Object.values(achievement.data));
 
         for (let idx = 0; idx < requirements.length; idx++) {
             if (longestStreak >= requirements[idx]) {
-                achievement.achieveIfNotAchieved(timestamp, idx);
+                achievement.achieveIfNotAchieved(timestamp, idx, false, match);
             }
         }
 

@@ -8,11 +8,13 @@ import {
     type InsertEvent,
     type UpdateEvent,
 } from "typeorm";
-import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
+import type {
+    AchievedAchievement,
+    AchievementInfo,
+} from "~/utils/interfaces/AchievementInfo";
 import { Player } from "../model/Player";
 import NotificationController from "./NotificationController";
 import ld from "lodash";
-import { isReady } from "..";
 
 import type { AutomaticAchievement } from "./achievements/automatic/AutomaticAchievement";
 
@@ -97,9 +99,9 @@ import { TheConstant } from "./achievements/manual/TheConstant";
 import { RecordHolder } from "./achievements/manual/RecordHolder";
 import { RecordSmasher } from "./achievements/manual/RecordSmasher";
 import { ASeedToAvoid } from "./achievements/manual/ASeedToAvoid";
+import { isReady } from "../readyListener";
 
-export interface ManualAchievement
-    extends Omit<AchievementInfo, "achievedAt" | "progress"> {
+export interface ManualAchievement extends AchievementInfo {
     manual: boolean;
 }
 
@@ -228,7 +230,7 @@ export default class AchievementController {
 
     public static async getAchievementsOfPlayer(
         player: string,
-    ): Promise<AchievementInfo[]> {
+    ): Promise<AchievedAchievement[]> {
         const achievedAchievements = await Achievement.find({
             where: {
                 player: player,
@@ -236,10 +238,7 @@ export default class AchievementController {
             },
         });
 
-        const allAchievements: Omit<
-            AchievementInfo,
-            "progress" | "achievedAt"
-        >[] = [
+        const allAchievements: AchievementInfo[] = [
             ...AchievementController.automaticAchievements,
             ...AchievementController.manualAchievements,
         ];
@@ -253,19 +252,19 @@ export default class AchievementController {
                 category: achievement.category,
                 levels: achievement.levels,
                 achievedAt: Array(achievement.levels).fill(0),
-                progress: Array(achievement.levels).fill(0),
-                progressString: undefined,
+                progression: Array(achievement.levels).fill(0),
+                progressionString: undefined,
                 match: undefined,
                 manualRequiresVideo: achievement.manualRequiresVideo,
-            } as AchievementInfo;
+            } as AchievedAchievement;
 
             const achieved = achievedAchievements.find(
                 (aA) => aA.achievement === achievement.name,
             );
             if (achieved != null) {
                 result.achievedAt = achieved.achievedAt;
-                result.progress = achieved.progression;
-                result.progressString = achieved.progressionString;
+                result.progression = achieved.progression;
+                result.progressionString = achieved.progressionString;
                 result.match = achieved.match;
             }
             return result;

@@ -41,20 +41,21 @@ export class TheRouletteRival extends AutomaticAchievement<
         }
         playerTwoAchievement.data[match.playerOne] += 1;
 
-        this.checkCondition(playerOneAchievement, match.timestamp);
-        this.checkCondition(playerTwoAchievement, match.timestamp);
+        this.checkCondition(playerOneAchievement, match.timestamp, match.uuid);
+        this.checkCondition(playerTwoAchievement, match.timestamp, match.uuid);
     }
 
     private checkCondition(
         achievement: Achievement<Record<string, number>>,
         timestamp: number,
+        match: string,
     ) {
         const highestSameOppo = Math.max(...Object.values(achievement.data));
 
         const levelRequirements = [3, 5, 7];
         for (let i = 0; i < this.levels; i++) {
             if (highestSameOppo >= levelRequirements[i]) {
-                achievement.achieveIfNotAchieved(timestamp, i);
+                achievement.achieveIfNotAchieved(timestamp, i, false, match);
             }
         }
 

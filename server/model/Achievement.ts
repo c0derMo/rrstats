@@ -20,8 +20,8 @@ export class Achievement<T = unknown>
     verified: boolean;
     @Column("simple-json", { nullable: true })
     progressionString?: string[];
-    @Column("text", { nullable: true })
-    match?: string;
+    @Column("simple-json", { nullable: true })
+    match?: string[];
 
     achieveIfNotAchieved(
         timestamp: number,
@@ -34,7 +34,12 @@ export class Achievement<T = unknown>
             if (setProgression) {
                 this.progression[level] = 1;
             }
-            this.match = match;
+            if (match) {
+                if (this.match == null) {
+                    this.match = Array(this.achievedAt.length).fill(undefined);
+                }
+                this.match[level] = match;
+            }
         }
     }
 

@@ -14,7 +14,7 @@ import {
 } from "typeorm";
 import { Player } from "../model/Player";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
-import { isReady } from "..";
+import { isReady } from "../readyListener";
 
 const logger = consola.withTag("rrstats:elo");
 const DAY_IN_MS = 86400000;

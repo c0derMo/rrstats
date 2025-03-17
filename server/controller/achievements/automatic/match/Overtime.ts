@@ -45,11 +45,13 @@ export class Overtime extends AutomaticAchievement<number> {
                 match.timestamp,
                 idx,
                 true,
+                match.uuid,
             );
             playerTwoAchievement.achieveIfNotAchieved(
                 match.timestamp,
                 idx,
                 true,
+                match.uuid,
             );
         }
     }

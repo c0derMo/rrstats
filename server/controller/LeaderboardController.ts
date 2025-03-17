@@ -56,8 +56,9 @@ import { Log } from "~/utils/FunctionTimer";
 import consola from "consola";
 import { PlayedMap } from "../model/PlayedMap";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
-import { isReady } from "..";
 import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
+import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
+import { isReady } from "../readyListener";
 
 export interface StatisticData<T extends string> {
     name: string;
@@ -76,7 +77,11 @@ interface GenericLeaderboardStatistic<T extends string, R>
         matches: IMatch[],
         placements: ICompetitionPlacement[],
         officialCompetitions: ICompetition[],
-    ) => R[] | Record<HitmanMap, R[]> | Record<HitmanMap | OptionalMap, R[]>;
+    ) =>
+        | R[]
+        | Record<HitmanMap, R[]>
+        | Record<HitmanMap | OptionalMap, R[]>
+        | Promise<R[]>;
 }
 
 export interface LeaderboardPlayerStatistic
@@ -132,6 +137,7 @@ export default class LeaderboardController {
         new PlayerSpecificMapPlayed(),
         new PlayerSpecificMapWinrate(),
         new PlayerElo(),
+        new PlayerAchievements(),
         new PlayerMatchesCasted(),
 
         new CountryPlayers(),
@@ -183,7 +189,8 @@ export default class LeaderboardController {
                 placements,
                 competitions,
             );
-            LeaderboardController.cache[statistic.name] = result;
+            LeaderboardController.cache[statistic.name] =
+                result instanceof Promise ? await result : result;
         }
     }
 
@@ -275,7 +282,7 @@ export default class LeaderboardController {
 
 @EventSubscriber()
 export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
-    private functionCaller = new DebouncedInvalidationFunction(
+    private readonly functionCaller = new DebouncedInvalidationFunction(
         LeaderboardController.recalculate,
         { maxWait: 10000, checkInterval: 100, inactivityWait: 2000 },
     );

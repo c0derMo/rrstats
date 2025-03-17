@@ -39,43 +39,56 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <div v-if="achievement.achievedAt[tier - 1] > 0">
-                            Achieved at
-                            {{
-                                DateTime.fromMillis(
-                                    achievement.achievedAt[tier - 1],
-                                )
-                                    .setLocale(useLocale().value)
-                                    .toLocaleString(DateTime.DATETIME_MED)
-                            }}
+                        <div
+                            v-if="achievement.achievedAt[tier - 1] > 0"
+                            class="flex-col"
+                        >
+                            <div>
+                                Achieved at
+                                {{
+                                    DateTime.fromMillis(
+                                        achievement.achievedAt[tier - 1],
+                                    )
+                                        .setLocale(useLocale().value)
+                                        .toLocaleString(DateTime.DATETIME_MED)
+                                }}
+                            </div>
+                            <div
+                                v-if="achievement.match?.[tier - 1] != null"
+                                class="text-blue-500 underline cursor-pointer"
+                                @click="openMatch(achievement.match[tier - 1])"
+                            >
+                                View match
+                            </div>
                         </div>
-                        <div v-else-if="achievement.progress[tier - 1] > 0">
+                        <div v-else-if="achievement.progression[tier - 1] > 0">
                             <div class="flex flex-col gap-3 h-5">
                                 <div
                                     class="relative h-1 w-full flex-grow bg-gray-600 rounded-full mt-2 flex-shrink-0"
                                 >
                                     <div
                                         class="h-1 rounded-full left-0 top-0 absolute bg-blue-700"
-                                        :style="`width: ${achievement.progress[tier - 1] * 100}%`"
+                                        :style="`width: ${achievement.progression[tier - 1] * 100}%`"
                                     />
                                 </div>
                                 <div>
                                     Progress:
                                     {{
                                         (
-                                            achievement.progress[tier - 1] * 100
-                                        ).toFixed(2)
+                                            achievement.progression[tier - 1] *
+                                            100
+                                        ).toFixed(0)
                                     }}%
                                     <span
                                         v-if="
-                                            achievement.progressString?.[
+                                            achievement.progressionString?.[
                                                 tier - 1
                                             ] != null
                                         "
                                         class="italic"
                                     >
                                         ({{
-                                            achievement.progressString[
+                                            achievement.progressionString[
                                                 tier - 1
                                             ]
                                         }})
@@ -87,14 +100,6 @@
                     </div>
                 </template>
             </div>
-
-            <ButtonComponent
-                v-if="achievement.match != null"
-                class="my-2 float-right"
-                @click="openMatch(achievement.match)"
-            >
-                View match
-            </ButtonComponent>
 
             <template
                 v-if="
@@ -154,11 +159,11 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
+import type { AchievedAchievement } from "~/utils/interfaces/AchievementInfo";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 
 const props = defineProps<{
-    achievement: AchievementInfo;
+    achievement: AchievedAchievement;
     player: string;
 }>();
 

@@ -99,8 +99,10 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
-import { AchievementCategory } from "~/utils/interfaces/AchievementInfo";
+import {
+    type AchievedAchievement,
+    AchievementCategory,
+} from "~/utils/interfaces/AchievementInfo";
 import ld from "lodash";
 
 const props = defineProps<{
@@ -110,7 +112,7 @@ const props = defineProps<{
 const sortingOptions = ["Sort by name", "Sort by rarity", "Sort by completion"];
 
 const loading = ref(true);
-const achievements = ref<AchievementInfo[]>([]);
+const achievements = ref<AchievedAchievement[]>([]);
 const achievementCompletions = ref<Record<string, number[]>>({});
 const sort = ref(sortingOptions[2]);
 const search = ref("");
@@ -118,7 +120,7 @@ const hideCompleted = ref(false);
 const hideMissing = ref(false);
 const groupCategories = ref(true);
 
-const openedAchievement = ref<AchievementInfo | null>(null);
+const openedAchievement = ref<AchievedAchievement | null>(null);
 const expandedRows = ref<AchievementCategory[]>([
     ...(Object.values(AchievementCategory) as AchievementCategory[]),
 ]);
@@ -167,13 +169,25 @@ const filteredSortedAchievements = computed(() => {
                 if (ld.last(b.achievedAt)! > 0 && ld.last(a.achievedAt)! <= 0) {
                     return 1;
                 }
+                if (
+                    a.achievedAt.some((v) => v > 0) &&
+                    b.achievedAt.every((v) => v <= 0)
+                ) {
+                    return -1;
+                }
+                if (
+                    b.achievedAt.some((v) => v > 0) &&
+                    a.achievedAt.every((v) => v <= 0)
+                ) {
+                    return 1;
+                }
 
                 const completionRateA =
                     achievementCompletions.value[a.name]?.[currentStageA] ?? 0;
                 const completionRateB =
                     achievementCompletions.value[b.name]?.[currentStageB] ?? 0;
 
-                return completionRateB - completionRateA;
+                return completionRateA - completionRateB;
             });
             break;
         case sortingOptions[2]: // Sort by completion
@@ -191,7 +205,9 @@ const filteredSortedAchievements = computed(() => {
                     b.achievedAt.findLastIndex((b) => b <= 0),
                 );
 
-                return b.progress[currentStageB] - a.progress[currentStageA];
+                return (
+                    b.progression[currentStageB] - a.progression[currentStageA]
+                );
             });
             break;
     }
@@ -201,7 +217,7 @@ const filteredSortedAchievements = computed(() => {
 
 function getAchievementsInCategory(
     category: AchievementCategory,
-): AchievementInfo[] {
+): AchievedAchievement[] {
     return filteredSortedAchievements.value.filter((achievement) => {
         return achievement.category === category;
     });
@@ -216,7 +232,7 @@ function toggleCategory(category: AchievementCategory) {
 }
 
 onMounted(async () => {
-    const newAchievements = await $fetch<AchievementInfo[]>(
+    const newAchievements = await $fetch<AchievedAchievement[]>(
         `/api/achievements/player?player=${props.player}`,
     );
     achievements.value = newAchievements ?? [];

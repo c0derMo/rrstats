@@ -6,9 +6,7 @@ import type {
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
 
-export abstract class AutomaticAchievement<T>
-    implements Omit<AchievementInfo, "achievedAt" | "progress">
-{
+export abstract class AutomaticAchievement<T> implements AchievementInfo {
     abstract name: string;
     abstract description: string[];
     abstract tier: AchievementTier[];

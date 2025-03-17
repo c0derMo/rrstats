@@ -122,10 +122,10 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
+import type { AchievedAchievement } from "~/utils/interfaces/AchievementInfo";
 
 const props = defineProps<{
-    achievement: AchievementInfo;
+    achievement: AchievedAchievement;
 }>();
 defineEmits<{
     click: [];
@@ -182,7 +182,7 @@ const lastCompletion = computed(() => {
 });
 
 const currentProgress = computed(() => {
-    return props.achievement.progress[achievedLevel.value + 1] ?? 1;
+    return props.achievement.progression[achievedLevel.value + 1] ?? 1;
 });
 </script>
 

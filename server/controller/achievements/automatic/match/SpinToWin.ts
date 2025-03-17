@@ -40,21 +40,30 @@ export class SpinToWin extends AutomaticAchievement<number> {
     ): Promise<void> {
         if (match.playerOneScore > match.playerTwoScore) {
             playerOneAchievement.data += 1;
-            this.checkCondition(playerOneAchievement, match.timestamp);
+            this.checkCondition(
+                playerOneAchievement,
+                match.timestamp,
+                match.uuid,
+            );
         } else if (match.playerTwoScore > match.playerOneScore) {
             playerTwoAchievement.data += 1;
-            this.checkCondition(playerTwoAchievement, match.timestamp);
+            this.checkCondition(
+                playerTwoAchievement,
+                match.timestamp,
+                match.uuid,
+            );
         }
     }
 
     private checkCondition(
         achievement: Achievement<number>,
         timestamp: number,
+        match: string,
     ) {
         const levelRequirements = [1, 5, 10, 25, 50, 75, 100];
         for (let i = 0; i < this.levels; i++) {
             if (achievement.data >= levelRequirements[i]) {
-                achievement.achieveIfNotAchieved(timestamp, i);
+                achievement.achieveIfNotAchieved(timestamp, i, false, match);
             }
         }
 
