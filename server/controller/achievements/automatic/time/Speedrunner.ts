@@ -10,7 +10,7 @@ import { WinningPlayer } from "~/utils/interfaces/IMatch";
 export class Speedrunner extends AutomaticAchievement<number> {
     name = "Speedrunner";
     description = ["Win a spin in 3:00 or less"];
-    tier = [AchievementTier.BRONZE];
+    tier = [AchievementTier.SILVER];
     category = AchievementCategory.TIME;
     levels = 1;
 

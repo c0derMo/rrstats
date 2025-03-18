@@ -14,8 +14,8 @@ export class FallIntoPlace extends AutomaticAchievement<string[]> {
         "Finish a tournament in the top half of players",
         "Finish a tournament 9th or better",
         "Finish a tournament 5th or better",
-        "Reach the Semi-Finals of a tournament",
-        "Reach the Grand Final of a tournament",
+        "Finish a tournament 3rd or better",
+        "Finish a tournament 2nd or better",
     ];
     tier = [
         AchievementTier.BRONZE,
@@ -82,48 +82,25 @@ export class FallIntoPlace extends AutomaticAchievement<string[]> {
             if (placement.placement == null) {
                 continue;
             }
-            if (
-                placement.placement <=
-                placementsPerTourney[placement.competition] / 2
-            ) {
-                achievements[placement.player].achieveIfNotAchieved(
-                    lastMatchesOfComps[placement.competition],
-                    0,
-                    true,
-                );
-            }
 
-            if (achievements[placement.player].achievedAt[0] <= 0) {
-                continue;
-            }
+            const required = [
+                placementsPerTourney[placement.competition] / 2,
+                9,
+                5,
+                3,
+                2,
+            ];
 
-            if (placement.placement <= 9) {
-                achievements[placement.player].achieveIfNotAchieved(
-                    lastMatchesOfComps[placement.competition],
-                    1,
-                    true,
-                );
-            }
-            if (placement.placement <= 5) {
-                achievements[placement.player].achieveIfNotAchieved(
-                    lastMatchesOfComps[placement.competition],
-                    2,
-                    true,
-                );
-            }
-            if (placement.placement <= 3) {
-                achievements[placement.player].achieveIfNotAchieved(
-                    lastMatchesOfComps[placement.competition],
-                    3,
-                    true,
-                );
-            }
-            if (placement.placement <= 2) {
-                achievements[placement.player].achieveIfNotAchieved(
-                    lastMatchesOfComps[placement.competition],
-                    4,
-                    true,
-                );
+            for (let i = 0; i < required.length; i++) {
+                if (placement.placement <= required[i]) {
+                    achievements[placement.player].achieveIfNotAchieved(
+                        lastMatchesOfComps[placement.competition],
+                        i,
+                        true,
+                    );
+                } else {
+                    break;
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ import { Player } from "~/server/model/Player";
 export class WorldRenowned extends AutomaticAchievement<string[]> {
     name = "World-Renowned";
     description = ["Win a match against players of 10 different nationalities"];
-    tier = [AchievementTier.PLATINUM];
+    tier = [AchievementTier.GOLD];
     category = AchievementCategory.MATCH;
     levels = 1;
 

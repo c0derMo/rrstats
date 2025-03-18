@@ -22,8 +22,8 @@ export default defineNitroPlugin(async (nitroApp) => {
     await database.initialize();
     await EloController.getInstance().fetchCompetitions();
     await EloController.getInstance().recalculateAllElos();
-    await LeaderboardController.recalculate();
     await AchievementController.recalculateAllAchievements();
+    await LeaderboardController.recalculate();
     NotificationController.initialize();
 
     setReady(true);

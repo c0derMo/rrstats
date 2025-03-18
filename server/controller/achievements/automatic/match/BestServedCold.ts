@@ -9,7 +9,7 @@ import {
 export class BestServedCold extends AutomaticAchievement<string[]> {
     name = "Best Served Cold";
     description = ["Beat an opponent who previously defeated you"];
-    tier = [AchievementTier.GOLD];
+    tier = [AchievementTier.SILVER];
     category = AchievementCategory.MATCH;
     levels = 1;
 

@@ -24,7 +24,7 @@ export class TheCulling extends AutomaticAchievement<number> {
     ): Promise<void> {
         if (
             !match.competition.toLowerCase().includes("rrwc") ||
-            !match.round.toLowerCase().includes("group")
+            match.round.toLowerCase().includes("group")
         ) {
             return;
         }

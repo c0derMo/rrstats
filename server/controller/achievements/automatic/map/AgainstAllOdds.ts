@@ -29,10 +29,8 @@ export class AgainstAllOdds extends AutomaticAchievement<boolean> {
             }
             if (
                 map.winner === WinningPlayer.PLAYER_ONE &&
-                map.picked === ChoosingPlayer.PLAYER_TWO &&
-                !playerOneAchievement.data
+                map.picked === ChoosingPlayer.PLAYER_TWO
             ) {
-                playerOneAchievement.data = true;
                 playerOneAchievement.achieveIfNotAchieved(
                     match.timestamp,
                     0,
@@ -40,10 +38,8 @@ export class AgainstAllOdds extends AutomaticAchievement<boolean> {
                 );
             } else if (
                 map.winner === WinningPlayer.PLAYER_TWO &&
-                map.picked === ChoosingPlayer.PLAYER_ONE &&
-                !playerTwoAchievement.data
+                map.picked === ChoosingPlayer.PLAYER_ONE
             ) {
-                playerTwoAchievement.data = true;
                 playerTwoAchievement.achieveIfNotAchieved(
                     match.timestamp,
                     0,

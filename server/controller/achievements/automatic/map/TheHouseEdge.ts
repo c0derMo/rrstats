@@ -29,10 +29,8 @@ export class TheHouseEdge extends AutomaticAchievement<boolean> {
             }
             if (
                 map.winner === WinningPlayer.PLAYER_ONE &&
-                map.picked === ChoosingPlayer.PLAYER_ONE &&
-                !playerOneAchievement.data
+                map.picked === ChoosingPlayer.PLAYER_ONE
             ) {
-                playerOneAchievement.data = true;
                 playerOneAchievement.achieveIfNotAchieved(
                     match.timestamp,
                     0,
@@ -40,10 +38,8 @@ export class TheHouseEdge extends AutomaticAchievement<boolean> {
                 );
             } else if (
                 map.winner === WinningPlayer.PLAYER_TWO &&
-                map.picked === ChoosingPlayer.PLAYER_TWO &&
-                !playerTwoAchievement.data
+                map.picked === ChoosingPlayer.PLAYER_TWO
             ) {
-                playerTwoAchievement.data = true;
                 playerTwoAchievement.achieveIfNotAchieved(
                     match.timestamp,
                     0,
