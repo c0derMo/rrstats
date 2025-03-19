@@ -25,7 +25,8 @@ export class OverTheHump extends AutomaticAchievement<number> {
     ): Promise<void> {
         if (
             match.playedMaps.find((m) => m.map === HitmanMap.MUMBAI) != null &&
-            match.playedMaps.find((m) => m.map === HitmanMap.SANTA_FORTUNA) != null
+            match.playedMaps.find((m) => m.map === HitmanMap.SANTA_FORTUNA) !=
+                null
         ) {
             playerOneAchievement.achieveIfNotAchieved(
                 match.timestamp,

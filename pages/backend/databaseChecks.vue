@@ -17,8 +17,6 @@
 
 <script setup lang="ts">
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Database checks",
 });
 

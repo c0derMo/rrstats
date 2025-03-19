@@ -158,8 +158,6 @@ import {
 import { HitmanMap } from "~/utils/mapUtils";
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Records",
 });
 
@@ -268,7 +266,9 @@ async function deleteRecord(
 }
 
 async function updateLists() {
-    const recordQuery = await $fetch("/api/records/list");
+    const recordQuery = await $fetch("/api/records/list", {
+        headers: useRequestHeaders(),
+    });
     mapRecords.value = recordQuery.mapRecords;
     genericRecords.value = recordQuery.genericRecords;
 }

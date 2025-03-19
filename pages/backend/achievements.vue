@@ -168,8 +168,6 @@ type ExtendedSubmittedAchievement = SubmittedAchievement & {
 };
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Achievements",
 });
 

@@ -25,7 +25,8 @@ export class FamilyMatters extends AutomaticAchievement<number> {
     ): Promise<void> {
         if (
             match.playedMaps.find((m) => m.map === HitmanMap.MIAMI) != null &&
-            match.playedMaps.find((m) => m.map === HitmanMap.ISLE_OF_SGAIL) != null
+            match.playedMaps.find((m) => m.map === HitmanMap.ISLE_OF_SGAIL) !=
+                null
         ) {
             playerOneAchievement.achieveIfNotAchieved(
                 match.timestamp,

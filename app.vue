@@ -100,4 +100,6 @@ function consentToLocalStorage() {
     window.localStorage.setItem("consent", "consented");
     showForm.value = false;
 }
+
+provide("lightDarkSwitch", lightDarkSwitch);
 </script>

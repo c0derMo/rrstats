@@ -77,8 +77,6 @@ import { DateTime } from "luxon";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Matches",
 });
 
