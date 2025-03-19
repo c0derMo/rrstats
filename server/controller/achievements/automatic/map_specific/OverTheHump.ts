@@ -6,11 +6,10 @@ import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
 export class OverTheHump extends AutomaticAchievement<number> {
     name = "Over the Hump";
-    description = ["Win a Santa Fortuna and Mumbai spin in the same match"];
+    description = ["Play a Santa Fortuna and Mumbai spin in the same match"];
     tier = [AchievementTier.SILVER];
     category = AchievementCategory.MAP_SPECIFIC;
     levels = 1;
@@ -24,30 +23,16 @@ export class OverTheHump extends AutomaticAchievement<number> {
         playerOneAchievement: Achievement<number>,
         playerTwoAchievement: Achievement<number>,
     ): Promise<void> {
-        let sfWin = -1;
-        let mumWin = -1;
-
-        for (const map of match.playedMaps) {
-            if (map.forfeit) {
-                continue;
-            }
-
-            if (map.map === HitmanMap.MUMBAI) {
-                mumWin = map.winner;
-            }
-            if (map.map === HitmanMap.SANTA_FORTUNA) {
-                sfWin = map.winner;
-            }
-        }
-
-        if (mumWin === sfWin && mumWin === WinningPlayer.PLAYER_ONE) {
+        if (
+            match.playedMaps.find((m) => m.map === HitmanMap.MUMBAI) != null &&
+            match.playedMaps.find((m) => m.map === HitmanMap.SANTA_FORTUNA) != null
+        ) {
             playerOneAchievement.achieveIfNotAchieved(
                 match.timestamp,
                 0,
                 true,
                 match.uuid,
             );
-        } else if (mumWin === sfWin && mumWin === WinningPlayer.PLAYER_TWO) {
             playerTwoAchievement.achieveIfNotAchieved(
                 match.timestamp,
                 0,

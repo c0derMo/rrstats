@@ -53,6 +53,9 @@ export class FallIntoPlace extends AutomaticAchievement<string[]> {
             where: {
                 officialCompetition: true,
             },
+            order: {
+                startingTimestamp: "ASC",
+            },
         });
         const allOfficialPlacements = await CompetitionPlacement.find({
             where: {
@@ -77,6 +80,16 @@ export class FallIntoPlace extends AutomaticAchievement<string[]> {
                 (placement) => placement.competition === comp.tag,
             ).length;
         }
+
+        allOfficialPlacements.sort((a, b) => {
+            const compIndexA = officialCompetitions.findIndex(
+                (comp) => a.competition === comp.tag,
+            );
+            const compIndexB = officialCompetitions.findIndex(
+                (comp) => b.competition === comp.tag,
+            );
+            return compIndexA - compIndexB;
+        });
 
         for (const placement of allOfficialPlacements) {
             if (placement.placement == null) {

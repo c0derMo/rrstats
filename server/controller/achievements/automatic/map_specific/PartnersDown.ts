@@ -6,11 +6,10 @@ import {
     AchievementCategory,
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
 
 export class PartnersDown extends AutomaticAchievement<number> {
     name = "Partners Down";
-    description = ["Win a Dubai and Dartmoor spin in the same match"];
+    description = ["Play a Dubai and Dartmoor spin in the same match"];
     tier = [AchievementTier.SILVER];
     category = AchievementCategory.MAP_SPECIFIC;
     levels = 1;
@@ -24,30 +23,16 @@ export class PartnersDown extends AutomaticAchievement<number> {
         playerOneAchievement: Achievement<number>,
         playerTwoAchievement: Achievement<number>,
     ): Promise<void> {
-        let dubWin = -1;
-        let darWin = -1;
-
-        for (const map of match.playedMaps) {
-            if (map.forfeit) {
-                continue;
-            }
-
-            if (map.map === HitmanMap.DUBAI) {
-                dubWin = map.winner;
-            }
-            if (map.map === HitmanMap.DARTMOOR) {
-                darWin = map.winner;
-            }
-        }
-
-        if (darWin === dubWin && darWin === WinningPlayer.PLAYER_ONE) {
+        if (
+            match.playedMaps.find((m) => m.map === HitmanMap.DUBAI) != null &&
+            match.playedMaps.find((m) => m.map === HitmanMap.DARTMOOR) != null
+        ) {
             playerOneAchievement.achieveIfNotAchieved(
                 match.timestamp,
                 0,
                 true,
                 match.uuid,
             );
-        } else if (darWin === dubWin && darWin === WinningPlayer.PLAYER_TWO) {
             playerTwoAchievement.achieveIfNotAchieved(
                 match.timestamp,
                 0,
