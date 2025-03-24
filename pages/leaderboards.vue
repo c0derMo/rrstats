@@ -198,10 +198,11 @@ useHead({
     title: `Leaderboards - RRStats`,
 });
 
-const categoryRequest = await useFetch("/api/leaderboards/list");
-const playerCategories = categoryRequest.data.value?.player ?? [];
-const countryCategories = categoryRequest.data.value?.country ?? [];
-const mapCategories = categoryRequest.data.value?.map ?? [];
+const navigatorInfo = useNavigatorInfo();
+
+const playerCategories = await navigatorInfo.getPlayerLeaderboards();
+const countryCategories = await navigatorInfo.getCountryLeaderboards();
+const mapCategories = await navigatorInfo.getMapLeaderboards();
 
 const selectedTab = ref("Players");
 const selectedCategory: Ref<{

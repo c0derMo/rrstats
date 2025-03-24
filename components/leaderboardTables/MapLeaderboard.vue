@@ -116,10 +116,10 @@ const props = defineProps<{
 }>();
 
 onBeforeMount(async () => {
-    const competitionsQuery = await $fetch("/api/competitions/list");
+    const competitionsQuery = await useNavigatorInfo().getCompetitions();
     competitions.value = competitionsQuery.filter(
         (comp) => comp.officialCompetition,
-    );
+    ) as ICompetition[];
     selectedMaxComp.value = competitions.value.length - 1;
 });
 

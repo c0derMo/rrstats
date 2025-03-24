@@ -1,11 +1,12 @@
 <template>
     <div
-        class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-40 dark:hidden top-0 left-0"
-    />
-    <div
         class="fixed w-full h-full pointer-events-none -z-20 bg-cover bg-repeat dark:brightness-50 blur top-0 left-0"
         :style="bgStyle"
-    />
+    >
+        <div
+            class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-40 dark:hidden top-0 left-0"
+        />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -13,7 +14,7 @@ const props = defineProps<{
     competitions: string[];
 }>();
 
-const chosenBackground = useState<string>("background");
+const chosenBackground = useState("compBackground", () => "");
 
 callOnce(selectBackground);
 
@@ -31,7 +32,10 @@ const bgStyle = computed(() => {
     return `background-image: url(${chosenBackground.value})`;
 });
 
-onUpdated(() => {
-    selectBackground();
-});
+watch(
+    () => props.competitions,
+    () => {
+        selectBackground();
+    },
+);
 </script>

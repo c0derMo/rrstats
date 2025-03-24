@@ -59,16 +59,7 @@ import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunc
 import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
 import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
 import { isReady } from "../readyListener";
-
-export interface StatisticData<T extends string> {
-    name: string;
-    type: T;
-    hasMaps?: boolean;
-    mapOptional?: boolean;
-    secondaryFilter?: string;
-    explanatoryText?: string;
-    defaultSecondaryFilter?: number;
-}
+import type { StatisticData } from "~/utils/interfaces/StatisticData";
 
 interface GenericLeaderboardStatistic<T extends string, R>
     extends StatisticData<T> {

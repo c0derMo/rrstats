@@ -117,8 +117,10 @@ useHead({
     title: "RRStats",
 });
 
-const { data: players } = await useFetch("/api/player/list");
-const { data: competitions } = await useFetch("/api/competitions/list");
+const navigatorInfo = useNavigatorInfo();
+
+const players = ref(await navigatorInfo.getPlayers());
+const competitions = ref(await navigatorInfo.getCompetitions());
 const { data: numbers } = await useFetch("/api/onlyNumbers");
 
 const competitionsDropdown = computed(() => {
