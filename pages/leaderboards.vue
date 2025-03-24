@@ -5,8 +5,8 @@
         <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">
             <CardComponent class="md:w-72">
                 <TabbedContainer
+                    v-model:tab="selectedTab"
                     :tabs="['Players', 'Countries', 'Maps']"
-                    @change-tab="(tab) => (selectedTab = tab)"
                 />
 
                 <div
@@ -198,10 +198,11 @@ useHead({
     title: `Leaderboards - RRStats`,
 });
 
-const categoryRequest = await useFetch("/api/leaderboards/list");
-const playerCategories = categoryRequest.data.value?.player ?? [];
-const countryCategories = categoryRequest.data.value?.country ?? [];
-const mapCategories = categoryRequest.data.value?.map ?? [];
+const navigatorInfo = useNavigatorInfo();
+
+const playerCategories = await navigatorInfo.getPlayerLeaderboards();
+const countryCategories = await navigatorInfo.getCountryLeaderboards();
+const mapCategories = await navigatorInfo.getMapLeaderboards();
 
 const selectedTab = ref("Players");
 const selectedCategory: Ref<{
@@ -224,6 +225,21 @@ const expandedCountry = ref("");
 const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
+
+const route = useRoute();
+onMounted(async () => {
+    if (route.hash === "#players") {
+        selectedTab.value = "Players";
+        selectedCategory.value = playerCategories[0];
+    } else if (route.hash === "#countries") {
+        selectedTab.value = "Countries";
+        selectedCategory.value = countryCategories[0];
+    } else if (route.hash === "#maps") {
+        selectedTab.value = "Maps";
+        selectedCategory.value = mapCategories[0];
+    }
+    await loadLeaderboardData(true);
+});
 
 const selectableMaps = computed(() => {
     const maps = getAllMaps().map((map) => {
@@ -400,6 +416,4 @@ watch(selectedCategory, async () => {
 watch(selectedMap, async () => {
     await loadLeaderboardData(false);
 });
-
-await loadLeaderboardData(true);
 </script>

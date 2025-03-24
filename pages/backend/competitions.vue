@@ -57,8 +57,6 @@ import type {
 } from "~/utils/interfaces/ICompetition";
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Competitions",
 });
 

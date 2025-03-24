@@ -73,8 +73,6 @@ const error = ref(false);
 const playerLookup = usePlayers();
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Tweet",
 });
 

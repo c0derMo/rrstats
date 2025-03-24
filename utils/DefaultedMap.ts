@@ -33,6 +33,10 @@ export class DefaultedMap<K, T> {
         }
         return result;
     }
+
+    public clear() {
+        this.map.clear();
+    }
 }
 
 export function getSumOfValues<K extends string | number | symbol>(

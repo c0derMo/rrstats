@@ -34,6 +34,7 @@ const props = withDefaults(
 );
 
 const currentlyOpen = ref(!props.animateOnShow && props.open);
+const openDialogs = useState<number>("openDialogs", () => 0);
 
 const classes = computed(() => {
     if (currentlyOpen.value) {
@@ -47,10 +48,17 @@ onMounted(() => {
     setTimeout(() => {
         currentlyOpen.value = props.open;
     }, 5);
+    openDialogs.value += 1;
 });
-onUpdated(() => {
-    currentlyOpen.value = props.open;
+onBeforeUnmount(() => {
+    openDialogs.value -= 1;
 });
+watch(
+    () => props.open,
+    () => {
+        currentlyOpen.value = props.open;
+    },
+);
 
 function transitionEndEvent(e: TransitionEvent) {
     if (e.propertyName == "opacity") {

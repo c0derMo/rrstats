@@ -1,7 +1,7 @@
 <template>
     <AccordionComponent
         v-if="upcomingMatches.length > 0"
-        class="!bg-opacity-50"
+        class="!bg-opacity-50 overflow-y-visible"
     >
         <template #title> Upcoming matches </template>
 

@@ -1,6 +1,5 @@
-import LeaderboardController, {
-    type StatisticData,
-} from "../../controller/LeaderboardController";
+import type { StatisticData } from "~/utils/interfaces/StatisticData";
+import LeaderboardController from "../../controller/LeaderboardController";
 
 export default defineEventHandler<
     Promise<{

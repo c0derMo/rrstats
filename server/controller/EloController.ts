@@ -10,9 +10,11 @@ import {
     type EntitySubscriberInterface,
     type InsertEvent,
     type UpdateEvent,
+    MoreThan,
 } from "typeorm";
 import { Player } from "../model/Player";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
+import { isReady } from "../readyListener";
 
 const logger = consola.withTag("rrstats:elo");
 const DAY_IN_MS = 86400000;
@@ -128,6 +130,7 @@ export default class EloController {
         for (const match of nonForfeitMatches) {
             const isUpdated = await this.recalculateMatch(match);
             if (isUpdated) {
+                await match.save();
                 updatedMatches += 1;
             }
         }
@@ -168,11 +171,10 @@ export default class EloController {
         const updatedElo = await this.getEloOfMatch(match);
         let isUpdated = false;
         if (
-            match.eloChange[0] !== updatedElo[0] ||
-            match.eloChange[1] !== updatedElo[1]
+            match.eloChange?.[0] !== updatedElo[0] ||
+            match.eloChange?.[1] !== updatedElo[1]
         ) {
             match.eloChange = updatedElo;
-            await match.save();
             isUpdated = true;
         }
 
@@ -389,9 +391,25 @@ function round(toRound: number): number {
 
 @EventSubscriber()
 export class EloDatabaseListener implements EntitySubscriberInterface {
+    private matchesToIgnore: Set<string> = new Set();
+
     private functionCaller = new DebouncedInvalidationFunction(() =>
         EloController.getInstance().recalculateAllElos(),
     );
+
+    async beforeInsert(event: InsertEvent<unknown>): Promise<void> {
+        if (event.entity instanceof Match) {
+            const newerMatches = await Match.countBy({
+                timestamp: MoreThan(event.entity.timestamp),
+            });
+            if (newerMatches <= 0) {
+                await EloController.getInstance().recalculateMatch(
+                    event.entity,
+                );
+                this.matchesToIgnore.add(event.entity.uuid);
+            }
+        }
+    }
 
     afterInsert(event: InsertEvent<unknown>): void {
         this.invalidateElo(event.entity);
@@ -402,6 +420,9 @@ export class EloDatabaseListener implements EntitySubscriberInterface {
     }
 
     private invalidateElo(entity: unknown) {
+        if (!isReady()) {
+            return;
+        }
         if (
             !(
                 entity instanceof Player ||
@@ -409,6 +430,11 @@ export class EloDatabaseListener implements EntitySubscriberInterface {
                 entity instanceof Competition
             )
         ) {
+            return;
+        }
+
+        if (entity instanceof Match && this.matchesToIgnore.has(entity.uuid)) {
+            this.matchesToIgnore.delete(entity.uuid);
             return;
         }
 

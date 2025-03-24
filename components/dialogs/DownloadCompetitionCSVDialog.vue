@@ -50,7 +50,7 @@ const emits = defineEmits<{
 }>();
 
 const dialogOpen = ref(true);
-const { data: competitions } = await useFetch("/api/competitions/list");
+const competitions = ref(await useNavigatorInfo().getCompetitions());
 const selectedCompetitions = ref([props.competition]);
 
 const mappedCompetitions = computed(() => {

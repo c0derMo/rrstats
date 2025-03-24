@@ -28,7 +28,7 @@
             </div>
 
             <CardComponent
-                class="overflow-x-visible mt-8 mb-2"
+                class="overflow-y-visible mt-8 mb-2"
                 :bg-opacity="80"
             >
                 <div
@@ -49,11 +49,19 @@
                             Records
                         </ButtonComponent>
                     </NuxtLink>
-                    <NuxtLink to="/leaderboards">
-                        <ButtonComponent class="border-0">
-                            Leaderboards
-                        </ButtonComponent>
-                    </NuxtLink>
+                    <DropdownComponent
+                        button-class="border-0"
+                        button-text="Leaderboards"
+                        :items="[
+                            'Players',
+                            'Countries',
+                            'Maps',
+                            'Achievements',
+                        ]"
+                        @update:model-value="
+                            (v) => selectLeaderboard(v as string)
+                        "
+                    />
                     <NuxtLink to="/spins">
                         <ButtonComponent class="border-0">
                             Spins
@@ -109,8 +117,10 @@ useHead({
     title: "RRStats",
 });
 
-const { data: players } = await useFetch("/api/player/list");
-const { data: competitions } = await useFetch("/api/competitions/list");
+const navigatorInfo = useNavigatorInfo();
+
+const players = ref(await navigatorInfo.getPlayers());
+const competitions = ref(await navigatorInfo.getCompetitions());
 const { data: numbers } = await useFetch("/api/onlyNumbers");
 
 const competitionsDropdown = computed(() => {
@@ -124,5 +134,18 @@ const competitionsDropdown = computed(() => {
 
 function selectTournament(tournament: string) {
     navigateTo(`/matches?tournament=${tournament}`);
+}
+
+function selectLeaderboard(leaderboard: string) {
+    switch (leaderboard) {
+        case "Achievements":
+            return navigateTo("/achievements");
+        case "Players":
+            return navigateTo("/leaderboards#players");
+        case "Countries":
+            return navigateTo("/leaderboards#countries");
+        case "Maps":
+            return navigateTo("/leaderboards#maps");
+    }
 }
 </script>

@@ -65,8 +65,6 @@
 import type { IPlayer } from "~/utils/interfaces/IPlayer";
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Players",
 });
 

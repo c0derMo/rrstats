@@ -186,6 +186,10 @@ import {
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 
+definePageMeta({
+    key: (route) => route.fullPath,
+});
+
 const matchToShow: Ref<IMatch | null> = ref(null);
 const showDownload = ref(false);
 
@@ -248,7 +252,7 @@ onMounted(async () => {
     if (competition.value?.shouldRetry) {
         await $fetch("/api/competitions", { query: { tag: tournament } });
         const matchRequest = await $fetch<IMatch[]>("/api/matches", {
-            query: { tournament },
+            query: { tournament: tournament },
         });
 
         matches.value = matchRequest;

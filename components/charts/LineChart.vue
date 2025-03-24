@@ -109,5 +109,7 @@ function makeChart() {
 }
 
 onMounted(makeChart);
-onUpdated(makeChart);
+watch(props, () => {
+    makeChart();
+});
 </script>

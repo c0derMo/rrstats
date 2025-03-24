@@ -233,7 +233,10 @@ async function update() {
 onMounted(async () => {
     await update();
 });
-onUpdated(async () => {
-    await update();
-});
+watch(
+    () => props.map,
+    async () => {
+        await update();
+    },
+);
 </script>

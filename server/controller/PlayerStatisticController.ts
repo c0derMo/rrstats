@@ -14,6 +14,7 @@ import { Player } from "../model/Player";
 import { Log } from "~/utils/FunctionTimer";
 import EloController from "./EloController";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
+import { isReady } from "../readyListener";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();
@@ -105,6 +106,9 @@ export class PlayerStatisticDatabaseListener
     }
 
     private invalidateLeaderboard(entity: unknown) {
+        if (!isReady()) {
+            return;
+        }
         if (
             !(
                 entity instanceof Player ||

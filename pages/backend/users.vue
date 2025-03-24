@@ -27,7 +27,9 @@
                         <TextInputComponent
                             v-model="row.username"
                             :error="row.username === ''"
-                            :disabled="row.authorizationKey === currentUserId"
+                            :disabled="
+                                row.authorizationKey === user.authorizationKey
+                            "
                         />
                     </template>
 
@@ -35,7 +37,9 @@
                         <TextInputComponent
                             v-model="row.authorizationKey"
                             :error="row.authorizationKey == ''"
-                            :disabled="row.authorizationKey === currentUserId"
+                            :disabled="
+                                row.authorizationKey === user.authorizationKey
+                            "
                         />
                     </template>
 
@@ -43,7 +47,9 @@
                         <MultiSelectComponent
                             v-model="row.permissions"
                             :items="selectablePermissions"
-                            :disabled="row.authorizationKey === currentUserId"
+                            :disabled="
+                                row.authorizationKey === user.authorizationKey
+                            "
                         />
                     </template>
 
@@ -111,10 +117,12 @@
 import { IPermission, type IUser } from "~/utils/interfaces/IUser";
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Users",
 });
+
+defineProps<{
+    user: IUser;
+}>();
 
 const userHeaders = [
     { key: "username", title: "Username" },
@@ -132,7 +140,6 @@ const apiHeaders = [
 const addAlert =
     inject<(text: string, type?: string) => void>("alertHandler") ?? (() => {});
 
-const currentUserId: Ref<string> = ref("");
 const users: Ref<IUser[]> = ref([]);
 const apiKeys: Ref<IUser[]> = ref([]);
 const selectablePermissions = Object.values(IPermission)
@@ -174,12 +181,6 @@ async function updateUserList() {
     apiKeys.value = usersQuery.filter((user) => user.isAPIKey);
 }
 
-async function updateLocalUser() {
-    const userQuery = await $fetch("/api/auth/user");
-
-    currentUserId.value = userQuery.authorizationKey;
-}
-
 async function save() {
     const toSave = [...users.value, ...apiKeys.value];
 
@@ -201,5 +202,4 @@ async function save() {
 }
 
 await updateUserList();
-await updateLocalUser();
 </script>
