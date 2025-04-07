@@ -69,6 +69,7 @@ export default class DatabaseConnector {
                           logger.debug("Setting journal mode");
                           db.pragma("journal_mode = WAL");
                       },
+            poolSize: dbType === "postgres" ? 20 : undefined,
         } as DataSourceOptions);
     }
 
