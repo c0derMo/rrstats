@@ -294,14 +294,14 @@ async function buildSuggestions(routeName: string, playerName?: string) {
             return {
                 type: "Spins" as const,
                 text: getMap(map)!.name,
-                targetURL: "/spins",
+                targetURL: `/spins#${getMap(map)!.name}`,
             };
         }),
         ...getAllMaps().map((map) => {
             return {
                 type: "Spins" as const,
                 text: getMap(map)!.abbreviation,
-                targetURL: "/spins",
+                targetURL: `/spins#${getMap(map)!.name}`,
             };
         }),
         ...getAllMaps().map((map) => {

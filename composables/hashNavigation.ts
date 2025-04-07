@@ -32,14 +32,14 @@ export const useHash = (func: HashNavigationFunction) => {
         },
     );
 
-    return (hash: string) => {
+    return (hash: string, immediate: boolean = false) => {
         if (!hash.startsWith("#")) {
             console.error(
                 `Trying to set hash that doesnt start with #, aborting (${hash})`,
             );
             return;
         }
-        if (hasherData.value.lastClicked === hash) {
+        if (hasherData.value.lastClicked === hash || immediate) {
             hasherData.value.ignoreNext = true;
             navigateTo({ hash: hash });
         } else {

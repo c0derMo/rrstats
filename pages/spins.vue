@@ -204,6 +204,15 @@ const killMethods: Ref<Record<string, string[]>> = ref({});
 const filterDisguises: Ref<Record<string, string>> = ref({});
 const filterMethods: Ref<Record<string, string>> = ref({});
 
+const setHash = useHash((hash: string[]) => {
+    const map = maps.find((m) => {
+        return `#${m.text}` === hash[0];
+    });
+    if (map != null) {
+        selectedMap.value = map.value;
+    }
+});
+
 async function getSpins(
     skip: number,
     take: number,
@@ -325,5 +334,10 @@ async function showMatch(uuid: string) {
     detailedMatch.value = match;
 }
 
-watch(selectedMap, updateSpins);
+watch(selectedMap, () => {
+    if (selectedMap.value >= 0) {
+        setHash(`#${maps[selectedMap.value + 1].text}`, true);
+    }
+    updateSpins();
+});
 </script>
