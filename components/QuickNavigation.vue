@@ -289,36 +289,31 @@ async function buildSuggestions(routeName: string, playerName?: string) {
         }),
     );
 
-    allSuggestions.value.push(
-        ...getAllMaps().map((map) => {
-            return {
+    getAllMaps().map((map) => {
+        const mapInfo = getMap(map)!;
+        allSuggestions.value.push(
+            {
                 type: "Spins" as const,
-                text: getMap(map)!.name,
-                targetURL: `/spins#${getMap(map)!.name}`,
-            };
-        }),
-        ...getAllMaps().map((map) => {
-            return {
+                text: mapInfo.name,
+                targetURL: `/spins#${mapInfo.name}`,
+            },
+            {
                 type: "Spins" as const,
-                text: getMap(map)!.abbreviation,
-                targetURL: `/spins#${getMap(map)!.name}`,
-            };
-        }),
-        ...getAllMaps().map((map) => {
-            return {
+                text: mapInfo.abbreviation,
+                targetURL: `/spins#${mapInfo.name}`,
+            },
+            {
                 type: "Records" as const,
-                text: getMap(map)!.name,
-                targetURL: "/records",
-            };
-        }),
-        ...getAllMaps().map((map) => {
-            return {
+                text: mapInfo.name,
+                targetURL: `/records#${mapInfo.name}`,
+            },
+            {
                 type: "Records" as const,
-                text: getMap(map)!.abbreviation,
-                targetURL: "/records",
-            };
-        }),
-    );
+                text: mapInfo.abbreviation,
+                targetURL: `/records#${mapInfo.name}`,
+            },
+        );
+    });
 }
 
 router.afterEach((to) =>

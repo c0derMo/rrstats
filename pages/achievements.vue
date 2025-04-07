@@ -8,8 +8,13 @@
                     v-for="achievement in sortedMappedData"
                     :key="achievement"
                 >
-                    <div class="w-fit leading-10">
-                        <TooltipComponent>
+                    <div
+                        :id="normalizeName(achievement.name)"
+                        class="w-fit leading-10"
+                    >
+                        <TooltipComponent
+                            @click="setHash('#' + achievement.name)"
+                        >
                             <template #tooltip>
                                 {{
                                     achievement.achievement?.description[0] ??
@@ -61,6 +66,27 @@ const { data: achievementInfo } = await useFetch<StrippedAchievementInfo[]>(
     "/api/achievements/list",
     { default: () => [] },
 );
+
+const setHash = useHash((hash: string[]) => {
+    const achievement = achievementInfo.value.find((ach) => {
+        return `#${ach.name}` === hash[0];
+    });
+    if (achievement != null) {
+        const element = document.querySelector(
+            `#${normalizeName(achievement.name)}`,
+        );
+        if (element != null) {
+            window.scrollTo({
+                top: Math.max(
+                    0,
+                    window.scrollY + element.getBoundingClientRect().y - 15,
+                ),
+                left: window.scrollX + element.getBoundingClientRect().x,
+                behavior: "smooth",
+            });
+        }
+    }
+});
 
 const sortedMappedData = computed(() => {
     const result = [];

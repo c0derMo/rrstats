@@ -10,9 +10,17 @@
         @closed="historyMap = null"
     />
 
-    <TableComponent :headers="headers" :rows="sortedRecords">
+    <TableComponent
+        :headers="headers"
+        :rows="sortedRecords"
+        @click-row="(row) => setHash(`#${getMap(row.map)!.name}`)"
+    >
         <template #map="{ value }">
-            <MapTag :map="getMap(value)!" full-name />
+            <MapTag
+                :id="normalizeName(getMap(value)!.name)"
+                :map="getMap(value)!"
+                full-name
+            />
         </template>
 
         <template #spin="{ row }">
@@ -94,6 +102,27 @@ const props = withDefaults(
 
 const players = usePlayers();
 await players.queryFromMatches(Object.values(props.matches));
+
+const setHash = useHash((hash: string[]) => {
+    const record = props.records.find((rec) => {
+        return `#${getMap(rec.map)!.name}` === hash[0];
+    });
+    if (record != null) {
+        const element = document.querySelector(
+            `#${normalizeName(getMap(record.map)!.name)}`,
+        );
+        if (element != null) {
+            window.scrollTo({
+                top: Math.max(
+                    0,
+                    window.scrollY + element.getBoundingClientRect().y - 15,
+                ),
+                left: window.scrollX + element.getBoundingClientRect().x,
+                behavior: "smooth",
+            });
+        }
+    }
+});
 
 const sortedRecords = computed(() => {
     return [...props.records].sort(
