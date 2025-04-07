@@ -400,11 +400,11 @@ export default class AchievementController {
                 const completed = await Achievement.createQueryBuilder(
                     "achievement",
                 )
-                    .where("verified = true")
-                    .andWhere("achievement = :achievement", {
+                    .where("achievement.verified = true")
+                    .andWhere("achievement.achievement = :achievement", {
                         achievement: achievement.name,
                     })
-                    .andWhere("achievedAt LIKE :achieveLevel", {
+                    .andWhere("achievement.achievedAt LIKE :achieveLevel", {
                         achieveLevel: `[${achieveLevel.join(",")}]`,
                     })
                     .getCount();
