@@ -14,7 +14,7 @@ export const useHash = (func: HashNavigationFunction) => {
             return;
         }
         await func(route.hash.split("."));
-        await navigateTo({ hash: "" });
+        await navigateTo({ ...route, hash: "" });
     });
 
     watch(
@@ -28,7 +28,7 @@ export const useHash = (func: HashNavigationFunction) => {
                 return;
             }
             await func(route.hash.split("."));
-            await navigateTo({ hash: "" });
+            await navigateTo({ ...route, hash: "" });
         },
     );
 
@@ -41,7 +41,8 @@ export const useHash = (func: HashNavigationFunction) => {
         }
         if (hasherData.value.lastClicked === hash || immediate) {
             hasherData.value.ignoreNext = true;
-            navigateTo({ hash: hash });
+            window.location.hash = hash;
+            return navigateTo({ ...route, hash: hash });
         } else {
             hasherData.value.lastClicked = hash;
         }
