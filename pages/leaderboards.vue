@@ -1,5 +1,7 @@
 <template>
     <div class="flex flex-col gap-5">
+        <MapBackground />
+
         <h1 class="text-center text-5xl bold">Leaderboards</h1>
 
         <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">

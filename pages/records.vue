@@ -1,5 +1,7 @@
 <template>
     <div class="flex flex-col gap-3 md:mx-10">
+        <MapBackground />
+
         <h1 class="text-center text-5xl bold">Roulette Rivals Records</h1>
 
         <div class="italic text-center">

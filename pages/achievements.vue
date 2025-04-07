@@ -1,5 +1,7 @@
 <template>
     <div class="flex flex-col gap-5">
+        <MapBackground />
+
         <h1 class="text-center text-5xl bold">Achievements</h1>
 
         <CardComponent class="w-4/5 mx-auto overflow-y-visible">

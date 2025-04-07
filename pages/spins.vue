@@ -1,5 +1,7 @@
 <template>
     <div>
+        <MapBackground :maps="selectedMap >= 0 ? [selectedMap] : undefined" />
+
         <MatchDetailsDialog
             v-if="detailedMatch != null"
             :match="detailedMatch"
