@@ -270,21 +270,21 @@ async function buildSuggestions(routeName: string, playerName?: string) {
             return {
                 type: "Player Leaderboard" as const,
                 text: lb.name,
-                targetURL: `/leaderboards#players`,
+                targetURL: `/leaderboards#player.${lb.name}`,
             };
         }),
         ...(await navigatorInfo.getMapLeaderboards()).map((lb) => {
             return {
                 type: "Map Leaderboard" as const,
                 text: lb.name,
-                targetURL: `/leaderboards#maps`,
+                targetURL: `/leaderboards#map.${lb.name}`,
             };
         }),
         ...(await navigatorInfo.getCountryLeaderboards()).map((lb) => {
             return {
                 type: "Country Leaderboard" as const,
                 text: lb.name,
-                targetURL: `/leaderboards#countries`,
+                targetURL: `/leaderboards#country.${lb.name}`,
             };
         }),
     );

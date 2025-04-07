@@ -17,7 +17,7 @@
                             selectedCategory === category,
                     }"
                     class="p-1 w-full border-b last:border-0 dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
-                    @click="selectedCategory = category"
+                    @click="selectCategory(category)"
                 >
                     {{ category.name }}
                 </div>
@@ -194,6 +194,16 @@ import type {
 import { getPlacementTagColor } from "~/utils/formatters";
 import { OptionalMap } from "~/utils/mapUtils";
 
+interface CategoryData {
+    name: string;
+    hasMaps?: boolean;
+    mapOptional?: boolean;
+    type: string;
+    secondaryFilter?: string;
+    explanatoryText?: string;
+    defaultSecondaryFilter?: number;
+}
+
 useHead({
     title: `Leaderboards - RRStats`,
 });
@@ -205,15 +215,7 @@ const countryCategories = await navigatorInfo.getCountryLeaderboards();
 const mapCategories = await navigatorInfo.getMapLeaderboards();
 
 const selectedTab = ref("Players");
-const selectedCategory: Ref<{
-    name: string;
-    hasMaps?: boolean;
-    mapOptional?: boolean;
-    type: string;
-    secondaryFilter?: string;
-    explanatoryText?: string;
-    defaultSecondaryFilter?: number;
-}> = ref(playerCategories[0]);
+const selectedCategory: Ref<CategoryData> = ref(playerCategories[0]);
 const leaderboardData: Ref<
     (LeaderboardPlayerEntry | LeaderboardCountryEntry | LeaderboardMapEntry)[]
 > = ref([]);
@@ -226,19 +228,35 @@ const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
 
-const route = useRoute();
-onMounted(async () => {
-    if (route.hash === "#players") {
+const setHash = useHash(async (hash) => {
+    let categories: CategoryData[] = [];
+    if (hash[0] === "#player") {
         selectedTab.value = "Players";
-        selectedCategory.value = playerCategories[0];
-    } else if (route.hash === "#countries") {
+        categories = playerCategories;
+    } else if (hash[0] === "#country") {
         selectedTab.value = "Countries";
-        selectedCategory.value = countryCategories[0];
-    } else if (route.hash === "#maps") {
+        categories = countryCategories;
+    } else if (hash[0] === "#map") {
         selectedTab.value = "Maps";
-        selectedCategory.value = mapCategories[0];
+        categories = mapCategories;
+    } else {
+        return;
     }
-    await loadLeaderboardData(true);
+
+    let category: CategoryData | null = null;
+    if (hash.length > 1) {
+        // Trying to find the referenced category
+        category =
+            categories.find((cat) => {
+                return cat.name === hash[1];
+            }) ?? null;
+    }
+
+    if (category != null) {
+        await selectCategory(category);
+    } else {
+        await selectCategory(categories[0]);
+    }
 });
 
 const selectableMaps = computed(() => {
@@ -337,6 +355,20 @@ const searchedLeaderboardData = computed(() => {
     });
 });
 
+async function selectCategory(category: CategoryData) {
+    console.log(`Setting category to: ${category}`);
+    console.log("We fail here?");
+    selectedCategory.value = category;
+    console.log("We fail here :(");
+    setHash(`#${category.type}.${category.name}`);
+    if (selectedCategory.value.defaultSecondaryFilter != null) {
+        secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
+    } else {
+        secondaryFilter.value = 0;
+    }
+    await loadLeaderboardData(true);
+}
+
 function expandCountry(row: LeaderboardCountryEntry) {
     if (expandedCountry.value === row.country) {
         expandedCountry.value = "";
@@ -416,4 +448,6 @@ watch(selectedCategory, async () => {
 watch(selectedMap, async () => {
     await loadLeaderboardData(false);
 });
+
+await loadLeaderboardData(true);
 </script>
