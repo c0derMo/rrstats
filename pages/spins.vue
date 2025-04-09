@@ -113,11 +113,11 @@
                             <TextualSpin v-if="value != null" :spin="value" />
                         </template>
 
-                        <template #timeTaken="{ value }">
+                        <template #[`played_map.timeTaken`]="{ row }">
                             {{
-                                (value as number) > 0
+                                row.timeTaken > 0
                                     ? Duration.fromObject({
-                                          seconds: value,
+                                          seconds: row.timeTaken,
                                       }).toFormat("mm:ss")
                                     : "unknown"
                             }}
@@ -184,7 +184,7 @@ const tableHeaders = [
     },
     { key: "map", title: "Map", disableSort: true },
     { key: "spin", title: "Spin", disableSort: true },
-    { key: "timeTaken", title: "RTA" },
+    { key: "played_map.timeTaken", title: "RTA" },
     { key: "player", title: "Player", disableSort: true },
     { key: "match", title: "Match", disableSort: true },
 ];
@@ -338,7 +338,7 @@ async function showMatch(uuid: string) {
 
 watch(selectedMap, () => {
     if (selectedMap.value >= 0) {
-        setHash(`#${maps[selectedMap.value + 1].text}`, true);
+        setHash(`#${getMap(selectedMap.value)!.name}`, true);
     }
     updateSpins();
 });

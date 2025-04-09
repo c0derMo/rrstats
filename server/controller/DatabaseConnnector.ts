@@ -114,9 +114,8 @@ export default class DatabaseConnector {
 
 @EventSubscriber()
 class DatabaseInsertUpdateLogger implements EntitySubscriberInterface {
-    private readonly LOGGING_LEVEL: "full" | "event" | "none" = import.meta.dev
-        ? "event"
-        : "none";
+    private readonly LOGGING_LEVEL =
+        DatabaseInsertUpdateLogger.getLoggingLevel();
 
     afterInsert(event: InsertEvent<unknown>): void {
         switch (this.LOGGING_LEVEL) {
@@ -145,5 +144,22 @@ class DatabaseInsertUpdateLogger implements EntitySubscriberInterface {
             case "none":
                 break;
         }
+    }
+
+    private static getLoggingLevel(): "full" | "event" | "none" {
+        if (
+            ["full", "event", "none"].includes(
+                useRuntimeConfig().databaseLogging,
+            )
+        ) {
+            return useRuntimeConfig().databaseLogging as
+                | "full"
+                | "event"
+                | "none";
+        }
+        if (import.meta.dev) {
+            return "event";
+        }
+        return "none";
     }
 }
