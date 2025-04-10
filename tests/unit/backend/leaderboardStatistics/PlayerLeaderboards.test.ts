@@ -22,6 +22,36 @@ describe("Player Leaderboards", () => {
         await database.destroy();
     });
 
+    test("Achievements", async () => {
+        const players = await LeaderboardController.getEntries(
+            "Achievements",
+        );
+
+        expect(players.length).toBe(237);
+
+        expect(players[0]).toEqual({
+            player: playerNamesToUUIDs["In4Fun"],
+            displayScore: "29 Platinum - 41 Gold - 37 Silver - 25 Bronze",
+            sortingScore: 0,
+        });
+        expect(players[1]).toEqual({
+            player: playerNamesToUUIDs["Frote7"],
+            displayScore: "27 Platinum - 39 Gold - 37 Silver - 25 Bronze",
+            sortingScore: 1,
+        });
+        expect(players[2]).toEqual({
+            player: playerNamesToUUIDs["Yannini"],
+            displayScore: "27 Platinum - 39 Gold - 37 Silver - 25 Bronze",
+            sortingScore: 1,
+        });
+
+        expect(players[236]).toEqual({
+            player: "5c223821-1976-4938-b287-e8d160035760",
+            displayScore: "0 Platinum - 0 Gold - 0 Silver - 1 Bronze",
+            sortingScore: 233,
+        });
+    });
+
     test("Average RR Placement", async () => {
         const players = await LeaderboardController.getEntries(
             "Average RR Placement",
