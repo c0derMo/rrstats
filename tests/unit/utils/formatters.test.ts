@@ -1,5 +1,8 @@
 import { expect, test, describe } from "vitest";
-import { AchievementCategory, AchievementTier } from "~/utils/interfaces/AchievementInfo";
+import {
+    AchievementCategory,
+    AchievementTier,
+} from "~/utils/interfaces/AchievementInfo";
 
 describe("formatters", () => {
     test("formatPlacement", () => {
@@ -44,10 +47,18 @@ describe("formatters", () => {
 
     test("getColorOfTier", () => {
         expect(getColorOfTier(-1)).toEqual({ color: "#4f4f4f" });
-        expect(getColorOfTier(AchievementTier.BRONZE)).toEqual({ color: "#ffcfc9" });
-        expect(getColorOfTier(AchievementTier.SILVER)).toEqual({ color: "#d0d0d0" });
-        expect(getColorOfTier(AchievementTier.GOLD)).toEqual({ color: "#ffe39c" });
-        expect(getColorOfTier(AchievementTier.PLATINUM)).toEqual({ color: "#bcfaf2" });
+        expect(getColorOfTier(AchievementTier.BRONZE)).toEqual({
+            color: "#ffcfc9",
+        });
+        expect(getColorOfTier(AchievementTier.SILVER)).toEqual({
+            color: "#d0d0d0",
+        });
+        expect(getColorOfTier(AchievementTier.GOLD)).toEqual({
+            color: "#ffe39c",
+        });
+        expect(getColorOfTier(AchievementTier.PLATINUM)).toEqual({
+            color: "#bcfaf2",
+        });
     });
 
     test("numberToRoman", () => {
@@ -64,14 +75,30 @@ describe("formatters", () => {
     });
 
     test("getColorOfAchievementCategory", () => {
-        expect(getColorOfAchievementCategory(AchievementCategory.EXPERIENCE)).toEqual("#d4edbc");
-        expect(getColorOfAchievementCategory(AchievementCategory.MAP)).toEqual("#ffcfc9");
-        expect(getColorOfAchievementCategory(AchievementCategory.MAP_SPECIFIC)).toEqual("#e6cff2");
-        expect(getColorOfAchievementCategory(AchievementCategory.MATCH)).toEqual("#ffe5a0");
-        expect(getColorOfAchievementCategory(AchievementCategory.MISC)).toEqual("#e6e6e6");
-        expect(getColorOfAchievementCategory(AchievementCategory.STREAK)).toEqual("#c9f3ed");
-        expect(getColorOfAchievementCategory(AchievementCategory.TIME)).toEqual("#c6dbe1");
-        expect(getColorOfAchievementCategory(AchievementCategory.TOURNAMENT)).toEqual("#bfe1f6");
+        expect(
+            getColorOfAchievementCategory(AchievementCategory.EXPERIENCE),
+        ).toEqual("#d4edbc");
+        expect(getColorOfAchievementCategory(AchievementCategory.MAP)).toEqual(
+            "#ffcfc9",
+        );
+        expect(
+            getColorOfAchievementCategory(AchievementCategory.MAP_SPECIFIC),
+        ).toEqual("#e6cff2");
+        expect(
+            getColorOfAchievementCategory(AchievementCategory.MATCH),
+        ).toEqual("#ffe5a0");
+        expect(getColorOfAchievementCategory(AchievementCategory.MISC)).toEqual(
+            "#e6e6e6",
+        );
+        expect(
+            getColorOfAchievementCategory(AchievementCategory.STREAK),
+        ).toEqual("#c9f3ed");
+        expect(getColorOfAchievementCategory(AchievementCategory.TIME)).toEqual(
+            "#c6dbe1",
+        );
+        expect(
+            getColorOfAchievementCategory(AchievementCategory.TOURNAMENT),
+        ).toEqual("#bfe1f6");
     });
 
     test("normalizeName", () => {

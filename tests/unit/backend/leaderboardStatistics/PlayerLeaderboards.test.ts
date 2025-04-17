@@ -23,9 +23,7 @@ describe("Player Leaderboards", () => {
     });
 
     test("Achievements", async () => {
-        const players = await LeaderboardController.getEntries(
-            "Achievements",
-        );
+        const players = await LeaderboardController.getEntries("Achievements");
 
         expect(players.length).toBe(237);
 
