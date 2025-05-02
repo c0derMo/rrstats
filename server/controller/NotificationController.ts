@@ -15,11 +15,15 @@ export default class NotificationController {
     public static initialize() {
         const config = useRuntimeConfig();
         if (config.discordWebhook !== "") {
-            NotificationController.notifiers.push(
+            NotificationController.addNotifier(
                 new DiscordWebhookNotifier(config.discordWebhook),
             );
-            logger.info("Added discord webhook notifier.");
         }
+    }
+
+    public static addNotifier(notifier: Notifier) {
+        NotificationController.notifiers.push(notifier);
+        logger.info(`Added ${notifier.constructor.name} notifier.`);
     }
 
     public static async sendManualAchievementSubmissionNotification(
