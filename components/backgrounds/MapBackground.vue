@@ -4,7 +4,7 @@
         :style="bgStyle"
     >
         <div
-            class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-40 dark:hidden top-0 left-0"
+            class="fixed w-full h-full pointer-events-none -z-10 bg-white opacity-60 dark:hidden top-0 left-0"
         />
     </div>
 </template>

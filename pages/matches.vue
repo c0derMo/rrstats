@@ -86,7 +86,7 @@
                 </template>
 
                 <template #bans="{ row }: { row: IMatch }">
-                    <div class="flex flex-wrap">
+                    <div class="flex flex-wrap max-w-60">
                         <TooltipComponent
                             v-for="(ban, idx) in row.bannedMaps"
                             :key="idx"
