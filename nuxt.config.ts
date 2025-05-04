@@ -5,8 +5,9 @@ export default defineNuxtConfig({
     modules: [
         "@nuxtjs/tailwindcss",
         "@nuxt/eslint",
-        "@nuxtjs/robots",
         "@nuxt/test-utils/module",
+        "@nuxt/content",
+        "@nuxtjs/robots",
     ],
     components: [{ path: "~/components", pathPrefix: false }],
 
