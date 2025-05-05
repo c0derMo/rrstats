@@ -9,7 +9,7 @@ test.describe("Changelog Page", () => {
             "Version 3.4",
         );
         expect(await page.locator(".text-3xl").allTextContents()).toContain(
-            "The Achievement Update",
+            "What An Achievement",
         );
     });
 });

@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-row items-center gap-2 ml-8">
-        <FontAwesomeIcon :icon="['far', 'circle']" size="2xs" class="mt-1" />
+    <div class="flex flex-row gap-2 ml-6">
+        <FontAwesomeIcon :icon="['fas', 'circle']" class="mt-3 text-[5px]" />
         <span>
             <slot />
         </span>
