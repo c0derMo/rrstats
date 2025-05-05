@@ -378,6 +378,6 @@ test.describe("Player Page", () => {
             .last()
             .click();
         expect(await page.locator(".grid").count()).toBe(1);
-        expect(page.getByText("Experience")).not.toBeVisible();
+        await expect(page.getByText("Experience")).not.toBeVisible();
     });
 });
