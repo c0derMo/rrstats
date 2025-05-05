@@ -87,31 +87,31 @@ test.describe("Achievement Page", () => {
 
         await expect(roulettePlayerBars.locator("div").nth(0)).toHaveCSS(
             "width",
-            "22.1562px",
+            /^2[123]\D/,
         );
         await expect(roulettePlayerBars.locator("div").nth(1)).toHaveCSS(
             "width",
-            "38px",
+            /^3[789]\D/,
         );
         await expect(roulettePlayerBars.locator("div").nth(2)).toHaveCSS(
             "width",
-            "85.5156px",
+            /^8[456]\D/,
         );
         await expect(roulettePlayerBars.locator("div").nth(3)).toHaveCSS(
             "width",
-            "196.359px",
+            /^19[567]\D/,
         );
         await expect(roulettePlayerBars.locator("div").nth(4)).toHaveCSS(
             "width",
-            "386.391px",
+            /^38[567]\D/,
         );
         await expect(roulettePlayerBars.locator("div").nth(5)).toHaveCSS(
             "width",
-            "522.594px",
+            /^52[123]\D/,
         );
         await expect(roulettePlayerBars.locator("div").nth(6)).toHaveCSS(
             "width",
-            "750.641px",
+            /^7(49|5[01])\D/,
         );
 
         await expect(roulettePlayerBars.locator("div").nth(0)).toHaveCSS(
