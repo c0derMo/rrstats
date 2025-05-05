@@ -40,7 +40,7 @@ describe("useHash()", () => {
         expect(callerFunction).toBeCalledTimes(1);
         expect(callerFunction).toBeCalledWith(["#abc", "123"]);
         expect(navigateTo).toBeCalledTimes(1);
-        expect(navigateTo).toBeCalledWith({ hash: "", otherVal: "test" });
+        expect(navigateTo).toBeCalledWith({ hash: "", otherVal: "test" }, { replace: true });
     });
 
     test("Initial function call - without hash", async () => {
@@ -93,7 +93,7 @@ describe("useHash()", () => {
         expect(callerFunction).toBeCalledTimes(1);
         expect(callerFunction).toBeCalledWith(["#other", "hash"]);
         expect(navigateTo).toBeCalledTimes(1);
-        expect(navigateTo).toBeCalledWith({ hash: "", otherVal: "test" });
+        expect(navigateTo).toBeCalledWith({ hash: "", otherVal: "test" }, { replace: true });
     });
 
     test("Updating hash", async () => {
@@ -133,7 +133,7 @@ describe("useHash()", () => {
         expect(navigateTo).toBeCalledWith({
             otherVal: "test",
             hash: "#some.hash",
-        });
+        }, { replace: true });
     });
 
     test("Updating hash - immediate", async () => {
@@ -167,6 +167,6 @@ describe("useHash()", () => {
         expect(navigateTo).toBeCalledWith({
             otherVal: "test",
             hash: "#some.hash",
-        });
+        }, { replace: true });
     });
 });
