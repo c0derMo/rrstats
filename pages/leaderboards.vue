@@ -358,10 +358,7 @@ const searchedLeaderboardData = computed(() => {
 });
 
 async function selectCategory(category: CategoryData) {
-    console.log(`Setting category to: ${category}`);
-    console.log("We fail here?");
     selectedCategory.value = category;
-    console.log("We fail here :(");
     setHash(`#${category.type}.${category.name}`);
     if (selectedCategory.value.defaultSecondaryFilter != null) {
         secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
