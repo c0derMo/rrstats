@@ -39,7 +39,7 @@ describe("Streak Achievements", () => {
         expect.soft(achievementFun).toHaveAchievementLevel(1);
         expect
             .soft(achievementFun)
-            .toHaveAchievementAchievedAt([1640905200000]);
+            .toHaveAchievementAchievedAt([1640941200000]);
         expect.soft(achievementFun).toHaveAchievementProgress([0]);
 
         const achievementCurry =
@@ -50,7 +50,7 @@ describe("Streak Achievements", () => {
         expect.soft(achievementCurry).toHaveAchievementLevel(1);
         expect
             .soft(achievementCurry)
-            .toHaveAchievementAchievedAt([1640905200000]);
+            .toHaveAchievementAchievedAt([1640941200000]);
         expect.soft(achievementCurry).toHaveAchievementProgress([0]);
     });
 

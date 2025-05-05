@@ -77,7 +77,8 @@ export class AFullCalendar extends AutomaticAchievement<string[]> {
                     year: year + 1,
                     month: 1,
                     day: 1,
-                })
+                    hour: 10,
+                }, { zone: 'Europe/Berlin' })
                     .minus({ days: 1 })
                     .toMillis();
                 achievement.achieveIfNotAchieved(lastDayOfYear);
