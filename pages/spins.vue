@@ -278,7 +278,7 @@ async function updateSpins() {
             disguises.value = [];
             killMethods.value = {};
         }
-    } catch (e) {
+    } catch {
         console.warn("Updating spins failed");
         queryingFilters.value = false;
         return;

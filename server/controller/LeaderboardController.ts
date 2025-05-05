@@ -75,12 +75,18 @@ interface GenericLeaderboardStatistic<T extends string, R>
         | Promise<R[]>;
 }
 
-export interface LeaderboardPlayerStatistic
-    extends GenericLeaderboardStatistic<"player", LeaderboardPlayerEntry> {}
-export interface LeaderboardCountryStatistic
-    extends GenericLeaderboardStatistic<"country", LeaderboardCountryEntry> {}
-export interface LeaderboardMapStatistic
-    extends GenericLeaderboardStatistic<"map", LeaderboardMapEntry> {}
+export type LeaderboardPlayerStatistic = GenericLeaderboardStatistic<
+    "player",
+    LeaderboardPlayerEntry
+>;
+export type LeaderboardCountryStatistic = GenericLeaderboardStatistic<
+    "country",
+    LeaderboardCountryEntry
+>;
+export type LeaderboardMapStatistic = GenericLeaderboardStatistic<
+    "map",
+    LeaderboardMapEntry
+>;
 
 export type LeaderboardStatistic =
     | LeaderboardPlayerStatistic

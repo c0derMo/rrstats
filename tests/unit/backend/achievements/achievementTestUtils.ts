@@ -12,9 +12,8 @@ interface AchievementMatchers<R = unknown> {
 }
 
 declare module "vitest" {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
     interface Assertion<T = any> extends AchievementMatchers<T> {}
-    interface AsymmetricMatchersContaining {}
 }
 
 const UUID_In4Fun = "564c9a2f-88df-46fa-9b93-9b1b9e5fd0d7";

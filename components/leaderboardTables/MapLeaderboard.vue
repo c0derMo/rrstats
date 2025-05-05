@@ -1,8 +1,8 @@
 <template>
     <div>
         <DoubleEndedSlider
-            v-model:minValue="selectedMinComp"
-            v-model:maxValue="selectedMaxComp"
+            v-model:min-value="selectedMinComp"
+            v-model:max-value="selectedMaxComp"
             class="w-full mb-2"
             :max="dropdownCompetitions.length - 1"
         />
