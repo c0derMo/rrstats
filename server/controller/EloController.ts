@@ -306,7 +306,7 @@ export default class EloController {
             return 35;
         }
 
-        if (match.round.includes("Final")) {
+        if (match.round.includes("Final") && !match.round.includes("Quarter")) {
             return 40;
         }
         return 30;
