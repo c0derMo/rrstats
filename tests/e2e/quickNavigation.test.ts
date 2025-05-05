@@ -138,6 +138,7 @@ test.describe("Quick Navigation", () => {
             }),
         ).toBeVisible();
 
+        await page.locator(".fixed.z-50.bg-black.bg-opacity-50.w-full.h-full").waitFor({ state: "detached" });
         await page.locator(".fa-bolt").click();
         await inputField.fill("Paris");
         await getRecommendation(page, "Spins", "Paris").click();
@@ -150,6 +151,7 @@ test.describe("Quick Navigation", () => {
                 .filter({ hasText: "Paris" }),
         ).toBeVisible();
 
+        await page.locator(".fixed.z-50.bg-black.bg-opacity-50.w-full.h-full").waitFor({ state: "detached" });
         await page.locator(".fa-bolt").click();
         await inputField.fill("HAV");
         await getRecommendation(page, "Records", "HAV").click();
@@ -158,16 +160,19 @@ test.describe("Quick Navigation", () => {
             ratio: 1,
         });
 
+        await page.locator(".fixed.z-50.bg-black.bg-opacity-50.w-full.h-full").waitFor({ state: "detached" });
         await page.locator(".fa-bolt").click();
         await inputField.fill("RRWC");
         await inputField.press("Enter");
         await expect(page).toHaveURL(/.*\/matches\?tournament=RRWC/);
 
+        await page.locator(".fixed.z-50.bg-black.bg-opacity-50.w-full.h-full").waitFor({ state: "detached" });
         await page.locator(".fa-bolt").click();
         await inputField.fill("In4");
         await inputField.press("Enter");
         await expect(page).toHaveURL(/.*\/In4Fun/);
 
+        await page.locator(".fixed.z-50.bg-black.bg-opacity-50.w-full.h-full").waitFor({ state: "detached" });
         await page.locator(".fa-bolt").click();
         await inputField.fill("Curry");
         await inputField.press("ArrowDown");
