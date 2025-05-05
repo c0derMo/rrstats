@@ -55,6 +55,10 @@ test.describe("Index Page", () => {
         await page.goto("/");
         await page.getByText("Spins").click();
         await expect(page).toHaveURL(/.*\/spins/);
+
+        await page.goto("/");
+        await page.getByText("Changelog").click();
+        await expect(page).toHaveURL(/.*\/changelog/);
     });
 
     test("Tournament dropdown on main page", async ({ page }) => {

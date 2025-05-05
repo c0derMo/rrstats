@@ -49,14 +49,6 @@
             <FontAwesomeIcon :icon="['fa', 'user-cog']" />
         </BackendButton>
         <BackendButton
-            v-if="user.permissions.includes(IPermission.TWEET)"
-            title="Tweet"
-            subtitle="Send tweets from the @rrstats account"
-            target="/backend/tweet"
-        >
-            <FontAwesomeIcon :icon="['fab', 'twitter']" />
-        </BackendButton>
-        <BackendButton
             title="Database checks"
             subtitle="Run various checks on the database"
             target="/backend/databaseChecks"

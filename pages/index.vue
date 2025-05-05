@@ -86,11 +86,9 @@
             </CardComponent>
 
             <div class="flex flex-row w-full gap-3 justify-between text-sm">
-                <a
-                    class="text-blue-600 underline"
-                    href="https://twitter.com/rrstats"
-                    >RRStats twitter</a
-                >
+                <NuxtLink class="text-blue-600 underline" to="/changelog">
+                    Changelog
+                </NuxtLink>
                 <a
                     class="text-blue-600 underline"
                     href="https://discord.gg/FVxTKdU"
