@@ -93,7 +93,7 @@
                 >
                 <a
                     class="text-blue-600 underline"
-                    href="https://discord.gg/f7sc"
+                    href="https://discord.gg/FVxTKdU"
                     >F7SC Discord</a
                 >
                 <a

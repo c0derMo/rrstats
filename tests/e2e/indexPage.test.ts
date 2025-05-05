@@ -34,7 +34,23 @@ test.describe("Index Page", () => {
 
         await page.goto("/");
         await page.getByText("Leaderboards").click();
+        await page.getByText("Players", { exact: true }).click();
         await expect(page).toHaveURL(/.*\/leaderboards/);
+
+        await page.goto("/");
+        await page.getByText("Leaderboards").click();
+        await page.getByText("Countries").click();
+        await expect(page).toHaveURL(/.*\/leaderboards/);
+
+        await page.goto("/");
+        await page.getByText("Leaderboards").click();
+        await page.getByText("Maps", { exact: true }).click();
+        await expect(page).toHaveURL(/.*\/leaderboards/);
+
+        await page.goto("/");
+        await page.getByText("Leaderboards").click();
+        await page.getByText("Achievements").click();
+        await expect(page).toHaveURL(/.*\/achievements/);
 
         await page.goto("/");
         await page.getByText("Spins").click();

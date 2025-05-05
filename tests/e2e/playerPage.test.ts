@@ -52,7 +52,7 @@ test.describe("Player Page", () => {
         ]);
 
         // Opponents panel
-        await outerTabPanel.getByText("Opponents").click();
+        await outerTabPanel.getByText("Opponents").first().click();
         await expectTableRow(tabPanel.locator("tbody").first(), [
             "The Rieper 47",
             "6",
@@ -70,7 +70,7 @@ test.describe("Player Page", () => {
         ]);
 
         // Records panel
-        await outerTabPanel.getByText("Records").click();
+        await outerTabPanel.getByText("Records").first().click();
 
         await expectTableRow(tabPanel.locator("tbody").first(), [
             "Isle of Sgàil",
@@ -112,7 +112,7 @@ test.describe("Player Page", () => {
         );
 
         // Personal bests panel
-        await outerTabPanel.getByText("Personal Bests").click();
+        await outerTabPanel.getByText("Personal Bests").first().click();
         const parisSpin =
             "Viktor Novikov: Falling Object as Sheikh Salman Al-Ghazali Dalia Margolis: Silenced SMG as Helmut Kruger (No Target Pacification)";
         const newYorkSpin = "Athena Savalas: Neck Snap as Security Guard";
@@ -158,5 +158,226 @@ test.describe("Player Page", () => {
             "Peter Dutton MP",
             ["SF", "MIA", "SAP", "DAR", "MEN", "MUM", "PAR"],
         ]);
+    });
+
+    test("Achievement grid", async ({ page }) => {
+        await page.goto("/In4Fun");
+
+        await page.getByText("Achievements").first().click();
+        await page.locator(".fa-spinner").waitFor({ state: "hidden" });
+
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" }),
+        ).toBeVisible();
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" }),
+        ).toHaveClass(/(\s|^)completed-shadow-plat(\s|$)/);
+        expect(
+            await page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" })
+                .textContent(),
+        ).toContain("Achieved on Nov 6, 2024");
+        expect(
+            await page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" })
+                .locator(".fa-trophy")
+                .count(),
+        ).toBe(5);
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" })
+                .locator(".fa-trophy")
+                .nth(0),
+        ).toHaveCSS("color", "rgb(208, 208, 208)");
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" })
+                .locator(".fa-trophy")
+                .nth(1),
+        ).toHaveCSS("color", "rgb(255, 227, 156)");
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" })
+                .locator(".fa-trophy")
+                .nth(2),
+        ).toHaveCSS("color", "rgb(255, 227, 156)");
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" })
+                .locator(".fa-trophy")
+                .nth(3),
+        ).toHaveCSS("color", "rgb(255, 207, 201)");
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" })
+                .locator(".fa-trophy")
+                .nth(4),
+        ).toHaveCSS("color", "rgb(188, 250, 242)");
+
+        await expect(
+            page.locator(".grid > div").filter({ hasText: "Open Season V" }),
+        ).toBeVisible();
+        await expect(
+            page.locator(".grid > div").filter({ hasText: "Open Season V" }),
+        ).not.toHaveClass(/(\s|^)completed-shadow-plat(\s|$)/);
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Open Season V" })
+                .locator("div > div > div"),
+        ).toHaveCSS("width", "116.156px");
+
+        await expect(
+            page.locator(".grid > div").filter({ hasText: "World-Renowned" }),
+        ).toBeVisible();
+        await expect(
+            page.locator(".grid > div").filter({ hasText: "World-Renowned" }),
+        ).toHaveClass(/(\s|^)completed-shadow(\s|$)/);
+
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Challenger & Defender" }),
+        ).toBeVisible();
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Challenger & Defender" }),
+        ).not.toHaveClass(/(\s|^)completed-shadow(\s|$)/);
+        expect(
+            await page
+                .locator(".grid > div")
+                .filter({ hasText: "Challenger & Defender" })
+                .textContent(),
+        ).not.toContain("Achieved on");
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Challenger & Defender" })
+                .locator(".fa-trophy"),
+        ).toHaveCSS("color", "rgb(79, 79, 79)");
+
+        await expect(
+            page.locator(".grid > div").filter({ hasText: "A Seed to Avoid" }),
+        ).toBeVisible();
+        await expect(
+            page.locator(".grid > div").filter({ hasText: "A Seed to Avoid" }),
+        ).not.toHaveClass(/(\s|^)completed-shadow(\s|$)/);
+        expect(
+            await page
+                .locator(".grid > div")
+                .filter({ hasText: "A Seed to Avoid" })
+                .textContent(),
+        ).toContain("(click to submit)");
+
+        // Hide missing
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Challenger & Defender" }),
+        ).toBeVisible();
+        await page
+            .locator("div")
+            .filter({ has: page.locator("#achievementsHideMissing") })
+            .last()
+            .click();
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Challenger & Defender" }),
+        ).not.toBeVisible();
+        await page
+            .locator("div")
+            .filter({ has: page.locator("#achievementsHideMissing") })
+            .last()
+            .click();
+
+        // Hide completed
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" }),
+        ).toBeVisible();
+        await page
+            .locator("div")
+            .filter({ has: page.locator("#achievementsHideCompleted") })
+            .last()
+            .click();
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" }),
+        ).not.toBeVisible();
+        await page
+            .locator("div")
+            .filter({ has: page.locator("#achievementsHideCompleted") })
+            .last()
+            .click();
+
+        // Search
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" }),
+        ).toBeVisible();
+        await page.getByRole("textbox").nth(1).fill("Play");
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Roulette Player VII" }),
+        ).toBeVisible();
+        await expect(
+            page
+                .locator(".grid > div")
+                .filter({ hasText: "Getting Mileage V" }),
+        ).not.toBeVisible();
+        await page.getByRole("textbox").nth(1).fill("");
+
+        // Sorting
+        expect(
+            await page.locator(".grid > div").first().textContent(),
+        ).toContain("Getting Mileage V");
+        await page
+            .locator("span.flex-grow", { hasText: "Sort by completion" })
+            .click();
+        await page.getByText("Sort by name").click();
+
+        expect(
+            await page.locator(".grid > div").first().textContent(),
+        ).toContain("Against the World V");
+        await page
+            .locator("span.flex-grow", { hasText: "Sort by name" })
+            .click();
+        await page.getByText("Sort by rarity").click();
+
+        expect(
+            await page.locator(".grid > div").nth(1).textContent(),
+        ).toContain("Against the World V");
+        await page
+            .locator("span.flex-grow", { hasText: "Sort by rarity" })
+            .click();
+        await page.getByText("Sort by completion").click();
+
+        // Categories
+        expect(await page.locator(".grid").count()).toBeGreaterThan(1);
+        expect(page.getByText("Experience")).toBeVisible();
+        await page
+            .locator("div")
+            .filter({ has: page.locator("#achievementsGroup") })
+            .last()
+            .click();
+        expect(await page.locator(".grid").count()).toBe(1);
+        expect(page.getByText("Experience")).not.toBeVisible();
     });
 });

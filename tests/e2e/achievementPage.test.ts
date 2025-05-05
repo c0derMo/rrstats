@@ -17,37 +17,37 @@ test.describe("Achievement Page", () => {
                 .locator(":right-of(#roulette_player)")
                 .first()
                 .textContent(),
-        ).toContain("Level 2: 70.83%");
+        ).toContain("Level 2: 69.62%");
         expect(
             await page
                 .locator(":right-of(#roulette_player)")
                 .first()
                 .textContent(),
-        ).toContain("Level 3: 52.08%");
+        ).toContain("Level 3: 51.48%");
         expect(
             await page
                 .locator(":right-of(#roulette_player)")
                 .first()
                 .textContent(),
-        ).toContain("Level 4: 26.25%");
+        ).toContain("Level 4: 26.16%");
         expect(
             await page
                 .locator(":right-of(#roulette_player)")
                 .first()
                 .textContent(),
-        ).toContain("Level 5: 12.92%");
+        ).toContain("Level 5: 11.39%");
         expect(
             await page
                 .locator(":right-of(#roulette_player)")
                 .first()
                 .textContent(),
-        ).toContain("Level 6: 5.83%");
+        ).toContain("Level 6: 5.06%");
         expect(
             await page
                 .locator(":right-of(#roulette_player)")
                 .first()
                 .textContent(),
-        ).toContain("Level 7: 3.33%");
+        ).toContain("Level 7: 2.95%");
     });
 
     test("Bar attributes top achievement", async ({ page }) => {
@@ -87,27 +87,27 @@ test.describe("Achievement Page", () => {
 
         await expect(roulettePlayerBars.locator("div").nth(0)).toHaveCSS(
             "width",
-            "25.0156px",
+            "22.1562px",
         );
         await expect(roulettePlayerBars.locator("div").nth(1)).toHaveCSS(
             "width",
-            "43.7812px",
+            "38px",
         );
         await expect(roulettePlayerBars.locator("div").nth(2)).toHaveCSS(
             "width",
-            "96.9531px",
+            "85.5156px",
         );
         await expect(roulettePlayerBars.locator("div").nth(3)).toHaveCSS(
             "width",
-            "197.031px",
+            "196.359px",
         );
         await expect(roulettePlayerBars.locator("div").nth(4)).toHaveCSS(
             "width",
-            "390.953px",
+            "386.391px",
         );
         await expect(roulettePlayerBars.locator("div").nth(5)).toHaveCSS(
             "width",
-            "531.703px",
+            "522.594px",
         );
         await expect(roulettePlayerBars.locator("div").nth(6)).toHaveCSS(
             "width",

@@ -97,7 +97,7 @@ test.describe("Compare Page", () => {
             "56%",
         ]);
 
-        await page.getByText("Season 2").click();
+        await page.getByText("Season 2").first().click();
 
         await expectTableRow(leftPlayerTable.locator("tbody").first(), [
             "Miami",
@@ -116,7 +116,7 @@ test.describe("Compare Page", () => {
             "60%",
         ]);
 
-        await page.getByText("Season 3").click();
+        await page.getByText("Season 3").first().click();
 
         await expectTableRow(leftPlayerTable.locator("tbody").first(), [
             "Dubai",
