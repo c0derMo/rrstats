@@ -21,6 +21,9 @@ test.describe("Index Page", () => {
         await autocompleteInput.fill("<roulette_");
         await expect(page.getByText("CurryMaker")).not.toBeVisible();
         await expect(page.getByText("<roulette_player>")).not.toBeVisible();
+
+        await autocompleteInput.fill("Scruff");
+        await expect(page.getByText("Scruffy")).toBeVisible();
     });
 
     test("Direct links on main page", async ({ page }) => {

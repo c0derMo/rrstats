@@ -26,7 +26,7 @@ export default defineEventHandler<
     const rawPlayers = await Player.find({
         select: ["primaryName"],
         where: {
-            excludedFromSearch: And(Not(true), Not(IsNull())),
+            excludedFromSearch: Not(And(Not(false), Not(IsNull()))),
         },
     });
 

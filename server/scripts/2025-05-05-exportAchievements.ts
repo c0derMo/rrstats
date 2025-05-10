@@ -28,7 +28,11 @@ async function main() {
     const dbAchievements = await Achievement.find();
     console.log(`Loaded ${dbAchievements.length} achievements.`);
 
-    const playerLookup = MapperService.createStringMapFromList(allPlayers, "uuid", "primaryName");
+    const playerLookup = MapperService.createStringMapFromList(
+        allPlayers,
+        "uuid",
+        "primaryName",
+    );
 
     for (const ach of dbAchievements) {
         for (let tier = 0; tier < ach.achievedAt.length; tier++) {
@@ -38,8 +42,13 @@ async function main() {
 
             achievements.push({
                 player: playerLookup[ach.player],
-                achievement: tier > 0 ? ach.achievement + " " + numberToRoman(tier) : ach.achievement,
-                achieved: DateTime.fromMillis(ach.achievedAt[tier]).toISODate() ?? "unknown date"
+                achievement:
+                    tier > 0
+                        ? ach.achievement + " " + numberToRoman(tier)
+                        : ach.achievement,
+                achieved:
+                    DateTime.fromMillis(ach.achievedAt[tier]).toISODate() ??
+                    "unknown date",
             });
         }
     }
