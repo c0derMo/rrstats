@@ -11,7 +11,7 @@ import { In } from "typeorm";
 export class AllRounder extends AutomaticAchievement<boolean[]> {
     name = "All-Rounder";
     description = [
-        "Win a Roulette Rivals and a Roulette Rivals World Championship",
+        "Win a Roulette Rivals tournament and a Roulette Rivals World Championship",
     ];
     tier = [AchievementTier.PLATINUM];
     category = AchievementCategory.TOURNAMENT;
