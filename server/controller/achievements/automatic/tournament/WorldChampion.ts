@@ -6,7 +6,7 @@ import {
     AchievementTier,
 } from "~/utils/interfaces/AchievementInfo";
 import { Competition, CompetitionPlacement } from "~/server/model/Competition";
-import { In, Like } from "typeorm";
+import { In, ILike } from "typeorm";
 
 export class WorldChampion extends AutomaticAchievement<string[]> {
     name = "World Champion";
@@ -40,7 +40,7 @@ export class WorldChampion extends AutomaticAchievement<string[]> {
         const officialCompetitions = await Competition.find({
             where: {
                 officialCompetition: true,
-                tag: Like("%wc%"),
+                tag: ILike("%wc%"),
             },
         });
         const winners = await CompetitionPlacement.find({
