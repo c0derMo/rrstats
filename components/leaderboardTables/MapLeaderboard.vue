@@ -1,8 +1,8 @@
 <template>
     <div>
         <DoubleEndedSlider
-            v-model:minValue="selectedMinComp"
-            v-model:maxValue="selectedMaxComp"
+            v-model:min-value="selectedMinComp"
+            v-model:max-value="selectedMaxComp"
             class="w-full mb-2"
             :max="dropdownCompetitions.length - 1"
         />
@@ -108,30 +108,36 @@
 </template>
 
 <script setup lang="ts">
+import type { ICompetition } from "~/utils/interfaces/ICompetition";
 import type { LeaderboardMapEntry } from "~/utils/interfaces/LeaderboardEntry";
 
 const props = defineProps<{
     leaderboardData: LeaderboardMapEntry[];
 }>();
 
-const competitionsQuery = await useFetch("/api/competitions/list");
-const competitions =
-    competitionsQuery.data.value?.filter((comp) => comp.officialCompetition) ??
-    [];
+onBeforeMount(async () => {
+    const competitionsQuery = await useNavigatorInfo().getCompetitions();
+    competitions.value = competitionsQuery.filter(
+        (comp) => comp.officialCompetition,
+    ) as ICompetition[];
+    selectedMaxComp.value = competitions.value.length - 1;
+});
 
+const competitions = ref<ICompetition[]>([]);
 const expandedMap = ref("");
 const selectedMinComp = ref(0);
-const selectedMaxComp = ref(competitions.length - 1);
+const selectedMaxComp = ref(0);
 
-const dropdownCompetitions = [...competitions].reverse().map((comp, idx) => {
-    return { text: comp.tag, value: idx };
+const dropdownCompetitions = computed(() => {
+    return [...competitions.value].reverse().map((comp, idx) => {
+        return { text: comp.tag, value: idx };
+    });
 });
-
 const invertedMinComp = computed(() => {
-    return competitions.length - 1 - selectedMaxComp.value;
+    return competitions.value.length - 1 - selectedMaxComp.value;
 });
 const invertedMaxComp = computed(() => {
-    return competitions.length - selectedMinComp.value;
+    return competitions.value.length - selectedMinComp.value;
 });
 
 const headers = [

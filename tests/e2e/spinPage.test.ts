@@ -42,7 +42,7 @@ test.describe("Spin Page", () => {
     test("Correct statistics without map filter", async ({ page }) => {
         await page.goto("/spins");
 
-        await page.getByText("Statistics").click();
+        await page.getByText("Statistics").first().click();
 
         await expect(page.locator(".mb-10 > span").first()).toHaveText(
             "Estimated percentage of spins completed",
@@ -130,7 +130,7 @@ test.describe("Spin Page", () => {
         await page.goto("/spins");
 
         const dropdown = page.locator("div.w-fit.w-full > .relative");
-        await dropdown.getByText("-- all maps --").click();
+        await dropdown.getByText("-- all maps --").first().click();
         await dropdown.getByText("New York").click();
 
         const table = page.locator("table");
@@ -166,10 +166,10 @@ test.describe("Spin Page", () => {
         await page.goto("/spins");
 
         const dropdown = page.locator("div.w-fit.w-full > .relative");
-        await dropdown.getByText("-- all maps --").click();
+        await dropdown.getByText("-- all maps --").first().click();
         await dropdown.getByText("New York").click();
 
-        await page.getByText("Statistics").click();
+        await page.getByText("Statistics").first().click();
 
         await expect(page.locator(".mb-10 > span").first()).toHaveText(
             "Estimated percentage of spins completed",

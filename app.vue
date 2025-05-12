@@ -16,24 +16,25 @@
                 <template #BackButton>
                     <FontAwesomeIcon
                         :icon="['fas', 'chevron-circle-left']"
-                        class="cursor-pointer text-white"
+                        class="cursor-pointer dark:text-white"
                         @click="$router.back()"
                     />
                 </template>
 
                 <template #HomeButton>
-                    <FontAwesomeIcon
-                        :icon="['fas', 'home']"
-                        class="cursor-pointer text-white"
-                        @click="$router.push('/')"
-                    />
+                    <NuxtLink to="/">
+                        <FontAwesomeIcon
+                            :icon="['fas', 'home']"
+                            class="cursor-pointer dark:text-white"
+                        />
+                    </NuxtLink>
                 </template>
 
                 <template #DarkModeToggle>
                     <div class="flex flex-row mt-2">
                         <FontAwesomeIcon
                             :icon="['fas', 'sun']"
-                            class="text-white"
+                            class="dark:text-white"
                         />
                         <SwitchComponent
                             id="light-dark"
@@ -41,7 +42,7 @@
                         />
                         <FontAwesomeIcon
                             :icon="['fas', 'moon']"
-                            class="ml-3 text-white"
+                            class="ml-3 dark:text-white"
                         />
                     </div>
                 </template>
@@ -64,14 +65,11 @@ const actualIsDarkMode = computed(() => {
 });
 
 onMounted(() => {
-    lightDarkSwitch.value =
-        window.localStorage.getItem("theme") === "dark" ||
-        (window.localStorage.getItem("theme") === null &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches);
     isDarkMode.value =
         window.localStorage.getItem("theme") === "dark" ||
         (window.localStorage.getItem("theme") === null &&
             window.matchMedia("(prefers-color-scheme: dark)").matches);
+    lightDarkSwitch.value = isDarkMode.value;
     nextTick(() => {
         initialized.value = true;
     });
@@ -102,4 +100,6 @@ function consentToLocalStorage() {
     window.localStorage.setItem("consent", "consented");
     showForm.value = false;
 }
+
+provide("lightDarkSwitch", lightDarkSwitch);
 </script>

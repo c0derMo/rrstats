@@ -16,8 +16,11 @@
         </div>
 
         <div
-            class="overflow-hidden transition-[max-height] duration-200"
-            :class="{ 'max-h-0': !showContent, 'max-h-[2000px]': showContent }"
+            class="transition-[max-height] duration-200"
+            :class="{
+                'max-h-0 overflow-hidden': !showContent,
+                'max-h-[2000px]': showContent,
+            }"
         >
             <slot />
         </div>

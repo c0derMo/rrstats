@@ -77,8 +77,6 @@ import { DateTime } from "luxon";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 
 definePageMeta({
-    layout: "backend",
-    middleware: ["auth"],
     pageTitle: "Matches",
 });
 
@@ -149,6 +147,7 @@ function newMatch() {
         playerTwoScore: 0,
         round: "",
         timestamp: DateTime.now().toMillis(),
+        eloChange: [0, 0],
     };
 }
 

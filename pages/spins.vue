@@ -1,5 +1,7 @@
 <template>
     <div>
+        <MapBackground :maps="selectedMap >= 0 ? [selectedMap] : undefined" />
+
         <MatchDetailsDialog
             v-if="detailedMatch != null"
             :match="detailedMatch"
@@ -111,11 +113,11 @@
                             <TextualSpin v-if="value != null" :spin="value" />
                         </template>
 
-                        <template #timeTaken="{ value }">
+                        <template #[`played_map.timeTaken`]="{ row }">
                             {{
-                                (value as number) > 0
+                                row.timeTaken > 0
                                     ? Duration.fromObject({
-                                          seconds: value,
+                                          seconds: row.timeTaken,
                                       }).toFormat("mm:ss")
                                     : "unknown"
                             }}
@@ -182,7 +184,7 @@ const tableHeaders = [
     },
     { key: "map", title: "Map", disableSort: true },
     { key: "spin", title: "Spin", disableSort: true },
-    { key: "timeTaken", title: "RTA" },
+    { key: "played_map.timeTaken", title: "RTA" },
     { key: "player", title: "Player", disableSort: true },
     { key: "match", title: "Match", disableSort: true },
 ];
@@ -203,6 +205,15 @@ const killMethods: Ref<Record<string, string[]>> = ref({});
 
 const filterDisguises: Ref<Record<string, string>> = ref({});
 const filterMethods: Ref<Record<string, string>> = ref({});
+
+const setHash = useHash((hash: string[]) => {
+    const map = maps.find((m) => {
+        return `#${m.text}` === hash[0];
+    });
+    if (map != null) {
+        selectedMap.value = map.value;
+    }
+});
 
 async function getSpins(
     skip: number,
@@ -267,7 +278,7 @@ async function updateSpins() {
             disguises.value = [];
             killMethods.value = {};
         }
-    } catch (e) {
+    } catch {
         console.warn("Updating spins failed");
         queryingFilters.value = false;
         return;
@@ -325,5 +336,10 @@ async function showMatch(uuid: string) {
     detailedMatch.value = match;
 }
 
-watch(selectedMap, updateSpins);
+watch(selectedMap, () => {
+    if (selectedMap.value >= 0) {
+        setHash(`#${getMap(selectedMap.value)!.name}`, true);
+    }
+    updateSpins();
+});
 </script>

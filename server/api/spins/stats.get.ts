@@ -114,19 +114,19 @@ export default defineEventHandler<Promise<SpinStats>>(async (event) => {
         map: mapOrUndefined,
     });
     let qb = PlayedMap.createQueryBuilder("played_map")
-        .select("AVG(played_map.timeTaken)")
+        .select("AVG(played_map.timeTaken)", "avg")
         .innerJoin("played_map.match", "match")
         .where("match.timestamp >= :one_year_ago", {
             one_year_ago: DateTime.now().minus({ years: 1 }).toMillis(),
         });
 
     if (mapOrUndefined != null) {
-        qb = qb.andWhere("played_map.map == :map", { map: mapOrUndefined });
+        qb = qb.andWhere("played_map.map = :map", { map: mapOrUndefined });
     }
 
-    const averageLastYear = (await qb.execute())[0][
-        'AVG("played_map"."timeTaken")'
-    ];
+    const result = await qb.execute();
+
+    const averageLastYear = result[0]["avg"];
 
     let spinFactors: {
         methods: number;

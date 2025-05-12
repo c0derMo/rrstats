@@ -321,7 +321,9 @@ watch(selectedRowsPerPage, async () => {
     }
 });
 
-if (isAsync.value) {
-    await requery();
-}
+onMounted(async () => {
+    if (isAsync.value) {
+        await requery();
+    }
+});
 </script>

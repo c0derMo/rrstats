@@ -19,7 +19,7 @@ jobs:
 
     test:
         needs: pre_job
-        if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+        if: ${{ needs.pre_job.outputs.should_skip != 'true' && github.event.pull_request.draft == false }}
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -28,6 +28,16 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: "20"
+
+            - name: Cache Playwright dependencies
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.cache/ms-playwright
+                      node_modules
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-playwright-
 
             - name: Install and Build 🔧
               run: |

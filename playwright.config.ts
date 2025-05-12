@@ -8,6 +8,10 @@ export default defineConfig({
     use: {
         baseURL: "http://localhost:3000",
         timezoneId: "Europe/Berlin",
+        viewport: { width: 1280, height: 720 },
+        trace: "retain-on-failure",
+        screenshot: "only-on-failure",
+        video: "retain-on-failure",
     },
     projects: [
         {

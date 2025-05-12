@@ -57,16 +57,9 @@ import consola from "consola";
 import { PlayedMap } from "../model/PlayedMap";
 import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
-
-export interface StatisticData<T extends string> {
-    name: string;
-    type: T;
-    hasMaps?: boolean;
-    mapOptional?: boolean;
-    secondaryFilter?: string;
-    explanatoryText?: string;
-    defaultSecondaryFilter?: number;
-}
+import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
+import { isReady } from "../readyListener";
+import type { StatisticData } from "~/utils/interfaces/StatisticData";
 
 interface GenericLeaderboardStatistic<T extends string, R>
     extends StatisticData<T> {
@@ -75,15 +68,25 @@ interface GenericLeaderboardStatistic<T extends string, R>
         matches: IMatch[],
         placements: ICompetitionPlacement[],
         officialCompetitions: ICompetition[],
-    ) => R[] | Record<HitmanMap, R[]> | Record<HitmanMap | OptionalMap, R[]>;
+    ) =>
+        | R[]
+        | Record<HitmanMap, R[]>
+        | Record<HitmanMap | OptionalMap, R[]>
+        | Promise<R[]>;
 }
 
-export interface LeaderboardPlayerStatistic
-    extends GenericLeaderboardStatistic<"player", LeaderboardPlayerEntry> {}
-export interface LeaderboardCountryStatistic
-    extends GenericLeaderboardStatistic<"country", LeaderboardCountryEntry> {}
-export interface LeaderboardMapStatistic
-    extends GenericLeaderboardStatistic<"map", LeaderboardMapEntry> {}
+export type LeaderboardPlayerStatistic = GenericLeaderboardStatistic<
+    "player",
+    LeaderboardPlayerEntry
+>;
+export type LeaderboardCountryStatistic = GenericLeaderboardStatistic<
+    "country",
+    LeaderboardCountryEntry
+>;
+export type LeaderboardMapStatistic = GenericLeaderboardStatistic<
+    "map",
+    LeaderboardMapEntry
+>;
 
 export type LeaderboardStatistic =
     | LeaderboardPlayerStatistic
@@ -131,6 +134,7 @@ export default class LeaderboardController {
         new PlayerSpecificMapPlayed(),
         new PlayerSpecificMapWinrate(),
         new PlayerElo(),
+        new PlayerAchievements(),
         new PlayerMatchesCasted(),
 
         new CountryPlayers(),
@@ -182,7 +186,8 @@ export default class LeaderboardController {
                 placements,
                 competitions,
             );
-            LeaderboardController.cache[statistic.name] = result;
+            LeaderboardController.cache[statistic.name] =
+                result instanceof Promise ? await result : result;
         }
     }
 
@@ -274,7 +279,7 @@ export default class LeaderboardController {
 
 @EventSubscriber()
 export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
-    private functionCaller = new DebouncedInvalidationFunction(
+    private readonly functionCaller = new DebouncedInvalidationFunction(
         LeaderboardController.recalculate,
         { maxWait: 10000, checkInterval: 100, inactivityWait: 2000 },
     );
@@ -288,6 +293,9 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
     }
 
     private invalidateLeaderboard(entity: unknown) {
+        if (!isReady()) {
+            return;
+        }
         if (
             !(
                 entity instanceof Player ||

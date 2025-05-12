@@ -159,7 +159,10 @@ onMounted(() => {
 onUnmounted(() => {
     document.removeEventListener("click", clickOutsideListener);
 });
-onUpdated(() => {
-    selected.value = props.modelValue;
-});
+watch(
+    () => props.modelValue,
+    () => {
+        selected.value = props.modelValue;
+    },
+);
 </script>

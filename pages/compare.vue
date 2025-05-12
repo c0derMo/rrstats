@@ -99,7 +99,7 @@ useHead({
     title: "Comparison - RRStats",
 });
 
-const { data: players } = await useFetch("/api/player/list");
+const players = ref(await useNavigatorInfo().getPlayers());
 const route = useRoute();
 
 const leftPlayerRaw = ref("");
@@ -168,9 +168,12 @@ async function getComparisonData(
     try {
         const playerData = await $fetch(`/api/player/?player=${player}`);
         const avatar = await $fetch(`/api/player/avatar?player=${player}`);
-        const statistics = await $fetch(
-            `/api/player/statistics?player=${playerData.uuid}&opponent=${opponent}`,
-        );
+        const statistics = await $fetch(`/api/player/statistics`, {
+            query: {
+                player: playerData.uuid,
+                opponent: opponent,
+            },
+        });
         const matches = await $fetch<IMatch[]>(`/api/matches?player=${player}`);
         const placements = await $fetch(
             `/api/competitions/placements?player=${player}`,

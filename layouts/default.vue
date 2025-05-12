@@ -4,6 +4,7 @@
             <div class="flex-row gap-2 flex items-center">
                 <slot name="BackButton" />
                 <slot name="HomeButton" />
+                <QuickNavigation />
             </div>
             <div>
                 <slot name="DarkModeToggle" />

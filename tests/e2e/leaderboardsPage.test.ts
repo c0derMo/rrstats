@@ -40,7 +40,7 @@ test.describe("Leaderboards Page", () => {
         await expect(tabs.getByText("Elo rating")).toBeVisible();
         await expect(tabs.getByText("Matches casted")).toBeVisible();
 
-        await tabs.getByText("Countries").click();
+        await tabs.getByText("Countries").first().click();
 
         await expect(tabs.getByText("Players per country")).toBeVisible();
         await expect(tabs.getByText("Matches per country")).toBeVisible();
@@ -48,7 +48,7 @@ test.describe("Leaderboards Page", () => {
         await expect(tabs.getByText("Winrate per country")).toBeVisible();
         await expect(tabs.getByText("Titles per country")).toBeVisible();
 
-        await tabs.getByText("Maps").click();
+        await tabs.getByText("Maps").first().click();
 
         await expect(tabs.getByText("Picked")).toBeVisible();
         await expect(tabs.getByText("Banned")).toBeVisible();
@@ -78,7 +78,7 @@ test.describe("Leaderboards Page", () => {
         await page.getByText("Winrate on specific map").click();
         await expect(secondaryFilterInput).toHaveValue("5");
 
-        await page.getByText("Countries").click();
+        await page.getByText("Countries").first().click();
         await page.getByText("Winrate per country").click();
         await expect(secondaryFilterInput).toHaveValue("5");
     });
@@ -121,7 +121,7 @@ test.describe("Leaderboards Page", () => {
             "3",
         ]);
 
-        await page.getByText("Countries").click();
+        await page.getByText("Countries").first().click();
         await page.getByText("Players per country").click();
         await expectTableRow(page.locator("tbody").first(), [
             "1st",
@@ -133,7 +133,7 @@ test.describe("Leaderboards Page", () => {
             "Canada",
             "16",
         ]);
-        await page.getByText("Winrate per country").click();
+        await page.getByText("Winrate per country").first().click();
         await expectTableRow(page.locator("tbody").first(), [
             "1st",
             "Hungary",
@@ -147,8 +147,8 @@ test.describe("Leaderboards Page", () => {
             "52",
         ]);
 
-        await page.getByText("Maps").click();
-        await page.getByText("Picked").click();
+        await page.getByText("Maps").first().click();
+        await page.getByText("Picked").first().click();
         await expectTableRow(page.locator("tbody").first(), [
             "1st",
             "Sapienza",

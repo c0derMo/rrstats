@@ -150,6 +150,7 @@
                         'Time Heatmap',
                         'Personal Bests',
                         'Elo Progression',
+                        'Achievements',
                     ]"
                 >
                     <template #Maps>
@@ -168,11 +169,16 @@
                             :statistics="statistics"
                         />
                     </template>
+
                     <template #[eP]>
                         <EloGraph
                             :player-statistics="statistics"
                             :player="player?.primaryName ?? ''"
                         />
+                    </template>
+
+                    <template #Achievements>
+                        <AchievementsGrid :player="player?.uuid ?? ''" />
                     </template>
                 </TabbedContainer>
             </CardComponent>
@@ -182,10 +188,10 @@
 
 <script setup lang="ts">
 import { DateTime } from "luxon";
-import type { ICompetition } from "~/utils/interfaces/ICompetition";
 import type { IMatch } from "~/utils/interfaces/IMatch";
 import { emptyStatistics } from "~/utils/interfaces/IPlayer";
 import ld from "lodash";
+import type { ICompetition } from "~/utils/interfaces/ICompetition";
 
 const route = useRoute();
 
@@ -199,8 +205,8 @@ const eP = "Elo Progression";
 const { data: player } = await useFetch(
     `/api/player/?player=${route.params.player}&initialLoad=true`,
 );
-const { data: competitions } = await useFetch<ICompetition[]>(
-    "/api/competitions/list",
+const competitions = ref<ICompetition[]>(
+    (await useNavigatorInfo().getCompetitions()) as ICompetition[],
 );
 const { data: avatar } = await useFetch(
     `/api/player/avatar?player=${route.params.player}`,

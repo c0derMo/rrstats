@@ -21,6 +21,9 @@ test.describe("Index Page", () => {
         await autocompleteInput.fill("<roulette_");
         await expect(page.getByText("CurryMaker")).not.toBeVisible();
         await expect(page.getByText("<roulette_player>")).not.toBeVisible();
+
+        await autocompleteInput.fill("Scruff");
+        await expect(page.getByText("Scruffy")).toBeVisible();
     });
 
     test("Direct links on main page", async ({ page }) => {
@@ -34,11 +37,31 @@ test.describe("Index Page", () => {
 
         await page.goto("/");
         await page.getByText("Leaderboards").click();
+        await page.getByText("Players", { exact: true }).click();
         await expect(page).toHaveURL(/.*\/leaderboards/);
+
+        await page.goto("/");
+        await page.getByText("Leaderboards").click();
+        await page.getByText("Countries").click();
+        await expect(page).toHaveURL(/.*\/leaderboards/);
+
+        await page.goto("/");
+        await page.getByText("Leaderboards").click();
+        await page.getByText("Maps", { exact: true }).click();
+        await expect(page).toHaveURL(/.*\/leaderboards/);
+
+        await page.goto("/");
+        await page.getByText("Leaderboards").click();
+        await page.getByText("Achievements").click();
+        await expect(page).toHaveURL(/.*\/achievements/);
 
         await page.goto("/");
         await page.getByText("Spins").click();
         await expect(page).toHaveURL(/.*\/spins/);
+
+        await page.goto("/");
+        await page.getByText("Changelog").click();
+        await expect(page).toHaveURL(/.*\/changelog/);
     });
 
     test("Tournament dropdown on main page", async ({ page }) => {

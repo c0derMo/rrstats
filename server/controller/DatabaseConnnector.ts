@@ -1,8 +1,12 @@
 import "reflect-metadata";
 import {
     DataSource,
+    EventSubscriber,
     type DataSourceOptions,
     type EntityManager,
+    type EntitySubscriberInterface,
+    type InsertEvent,
+    type UpdateEvent,
 } from "typeorm";
 import { GenericRecord, MapRecord } from "../model/Record";
 import { Competition, CompetitionPlacement } from "../model/Competition";
@@ -14,6 +18,11 @@ import { Match } from "../model/Match";
 import { User } from "../model/User";
 import consola from "consola";
 import { EloDatabaseListener } from "./EloController";
+import { Achievement } from "../model/Achievement";
+import {
+    AchievementDatabaseListener,
+    AchievementVerifyListener,
+} from "./AchievementController";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -38,6 +47,7 @@ export default class DatabaseConnector {
                 CompetitionPlacement,
                 User,
                 PlayedMap,
+                Achievement,
             ],
             subscribers: withSubscribers
                 ? [
@@ -45,6 +55,9 @@ export default class DatabaseConnector {
                       LeaderboardDatabaseListener,
                       PlayerStatisticDatabaseListener,
                       EloDatabaseListener,
+                      AchievementDatabaseListener,
+                      AchievementVerifyListener,
+                      DatabaseInsertUpdateLogger,
                   ]
                 : undefined,
             synchronize: true,
@@ -56,6 +69,7 @@ export default class DatabaseConnector {
                           logger.debug("Setting journal mode");
                           db.pragma("journal_mode = WAL");
                       },
+            poolSize: dbType === "postgres" ? 20 : undefined,
         } as DataSourceOptions);
     }
 
@@ -95,5 +109,57 @@ export default class DatabaseConnector {
 
     getManager(): EntityManager {
         return this.db.manager;
+    }
+}
+
+@EventSubscriber()
+class DatabaseInsertUpdateLogger implements EntitySubscriberInterface {
+    private readonly LOGGING_LEVEL =
+        DatabaseInsertUpdateLogger.getLoggingLevel();
+
+    afterInsert(event: InsertEvent<unknown>): void {
+        switch (this.LOGGING_LEVEL) {
+            case "full":
+                logger.log(
+                    `INSERT: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`,
+                );
+                break;
+            case "event":
+                logger.log(`INSERT: ${event.metadata.tableName}`);
+                break;
+            case "none":
+                break;
+        }
+    }
+    afterUpdate(event: UpdateEvent<unknown>): void {
+        switch (this.LOGGING_LEVEL) {
+            case "full":
+                logger.log(
+                    `UPDATE: ${event.metadata.tableName} (${JSON.stringify(event.entity)})`,
+                );
+                break;
+            case "event":
+                logger.log(`UPDATE: ${event.metadata.tableName}`);
+                break;
+            case "none":
+                break;
+        }
+    }
+
+    private static getLoggingLevel(): "full" | "event" | "none" {
+        if (
+            ["full", "event", "none"].includes(
+                useRuntimeConfig().databaseLogging,
+            )
+        ) {
+            return useRuntimeConfig().databaseLogging as
+                | "full"
+                | "event"
+                | "none";
+        }
+        if (import.meta.dev) {
+            return "event";
+        }
+        return "none";
     }
 }

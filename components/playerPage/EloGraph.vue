@@ -45,9 +45,7 @@ const playerToRemove = ref<number>(-1);
 const players = usePlayers();
 await players.queryAll();
 
-const { data: allPlayers } = await useFetch("/api/player/list", {
-    default: () => [],
-});
+const allPlayers = ref(await useNavigatorInfo().getPlayers());
 
 const suggestiblePlayers = computed(() => {
     return allPlayers.value

@@ -5,8 +5,9 @@ export default defineNuxtConfig({
     modules: [
         "@nuxtjs/tailwindcss",
         "@nuxt/eslint",
-        "@nuxtjs/robots",
         "@nuxt/test-utils/module",
+        "@nuxt/content",
+        "@nuxtjs/robots",
     ],
     components: [{ path: "~/components", pathPrefix: false }],
 
@@ -14,15 +15,13 @@ export default defineNuxtConfig({
         discordToken: "",
         discordId: "",
         discordSecret: "",
-        twitterApiKey: "",
-        twitterApiSecret: "",
-        twitterAccessToken: "",
-        twitterTokenSecret: "",
         publicOrigin: "http://localhost:3000",
         database: "rrstats.db",
         databaseType: "sqlite",
         enableFunctionTimings: false,
         enableRouteTimings: false,
+        databaseLogging: "",
+        discordWebhook: "",
     },
 
     nitro: {

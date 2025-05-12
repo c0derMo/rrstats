@@ -71,7 +71,7 @@
 
                     <GroupsEditor
                         v-if="groupsEnabled"
-                        v-model:groupSettings="groupSettings"
+                        v-model:group-settings="groupSettings"
                     />
                 </template>
 

@@ -1,12 +1,14 @@
 <template>
     <div class="flex flex-col gap-5">
+        <MapBackground />
+
         <h1 class="text-center text-5xl bold">Leaderboards</h1>
 
         <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">
             <CardComponent class="md:w-72">
                 <TabbedContainer
+                    v-model:tab="selectedTab"
                     :tabs="['Players', 'Countries', 'Maps']"
-                    @change-tab="(tab) => (selectedTab = tab)"
                 />
 
                 <div
@@ -17,7 +19,7 @@
                             selectedCategory === category,
                     }"
                     class="p-1 w-full border-b last:border-0 dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
-                    @click="selectedCategory = category"
+                    @click="selectCategory(category)"
                 >
                     {{ category.name }}
                 </div>
@@ -194,17 +196,7 @@ import type {
 import { getPlacementTagColor } from "~/utils/formatters";
 import { OptionalMap } from "~/utils/mapUtils";
 
-useHead({
-    title: `Leaderboards - RRStats`,
-});
-
-const categoryRequest = await useFetch("/api/leaderboards/list");
-const playerCategories = categoryRequest.data.value?.player ?? [];
-const countryCategories = categoryRequest.data.value?.country ?? [];
-const mapCategories = categoryRequest.data.value?.map ?? [];
-
-const selectedTab = ref("Players");
-const selectedCategory: Ref<{
+interface CategoryData {
     name: string;
     hasMaps?: boolean;
     mapOptional?: boolean;
@@ -212,7 +204,20 @@ const selectedCategory: Ref<{
     secondaryFilter?: string;
     explanatoryText?: string;
     defaultSecondaryFilter?: number;
-}> = ref(playerCategories[0]);
+}
+
+useHead({
+    title: `Leaderboards - RRStats`,
+});
+
+const navigatorInfo = useNavigatorInfo();
+
+const playerCategories = await navigatorInfo.getPlayerLeaderboards();
+const countryCategories = await navigatorInfo.getCountryLeaderboards();
+const mapCategories = await navigatorInfo.getMapLeaderboards();
+
+const selectedTab = ref("Players");
+const selectedCategory: Ref<CategoryData> = ref(playerCategories[0]);
 const leaderboardData: Ref<
     (LeaderboardPlayerEntry | LeaderboardCountryEntry | LeaderboardMapEntry)[]
 > = ref([]);
@@ -224,6 +229,37 @@ const expandedCountry = ref("");
 const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
+
+const setHash = useHash(async (hash) => {
+    let categories: CategoryData[] = [];
+    if (hash[0] === "#player") {
+        selectedTab.value = "Players";
+        categories = playerCategories;
+    } else if (hash[0] === "#country") {
+        selectedTab.value = "Countries";
+        categories = countryCategories;
+    } else if (hash[0] === "#map") {
+        selectedTab.value = "Maps";
+        categories = mapCategories;
+    } else {
+        return;
+    }
+
+    let category: CategoryData | null = null;
+    if (hash.length > 1) {
+        // Trying to find the referenced category
+        category =
+            categories.find((cat) => {
+                return cat.name === hash[1];
+            }) ?? null;
+    }
+
+    if (category != null) {
+        await selectCategory(category);
+    } else {
+        await selectCategory(categories[0]);
+    }
+});
 
 const selectableMaps = computed(() => {
     const maps = getAllMaps().map((map) => {
@@ -320,6 +356,17 @@ const searchedLeaderboardData = computed(() => {
         );
     });
 });
+
+async function selectCategory(category: CategoryData) {
+    selectedCategory.value = category;
+    setHash(`#${category.type}.${category.name}`);
+    if (selectedCategory.value.defaultSecondaryFilter != null) {
+        secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
+    } else {
+        secondaryFilter.value = 0;
+    }
+    await loadLeaderboardData(true);
+}
 
 function expandCountry(row: LeaderboardCountryEntry) {
     if (expandedCountry.value === row.country) {

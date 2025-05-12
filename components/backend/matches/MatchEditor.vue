@@ -205,7 +205,7 @@ async function save() {
             body: matchData.value,
         });
         addAlert("Match saved successfully.", "success");
-    } catch (e) {
+    } catch {
         addAlert("Error upon saving match.", "error");
     }
 

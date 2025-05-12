@@ -86,7 +86,7 @@
                 </template>
 
                 <template #bans="{ row }: { row: IMatch }">
-                    <div class="flex flex-wrap">
+                    <div class="flex flex-wrap max-w-60">
                         <TooltipComponent
                             v-for="(ban, idx) in row.bannedMaps"
                             :key="idx"
@@ -186,6 +186,10 @@ import {
     WinningPlayer,
 } from "~/utils/interfaces/IMatch";
 
+definePageMeta({
+    key: (route) => route.fullPath,
+});
+
 const matchToShow: Ref<IMatch | null> = ref(null);
 const showDownload = ref(false);
 
@@ -248,7 +252,7 @@ onMounted(async () => {
     if (competition.value?.shouldRetry) {
         await $fetch("/api/competitions", { query: { tag: tournament } });
         const matchRequest = await $fetch<IMatch[]>("/api/matches", {
-            query: { tournament },
+            query: { tournament: tournament },
         });
 
         matches.value = matchRequest;

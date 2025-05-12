@@ -170,6 +170,7 @@ describe("usePlayers()", () => {
                 bannedMaps: [],
                 round: "",
                 competition: "",
+                eloChange: [],
             },
             {
                 uuid: "",
@@ -183,6 +184,7 @@ describe("usePlayers()", () => {
                 bannedMaps: [],
                 round: "",
                 competition: "",
+                eloChange: [],
             },
             {
                 uuid: "",
@@ -196,6 +198,7 @@ describe("usePlayers()", () => {
                 bannedMaps: [],
                 round: "",
                 competition: "",
+                eloChange: [],
             },
         ];
         await players.queryFromMatches(matches);

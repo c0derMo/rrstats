@@ -330,7 +330,7 @@ onBeforeMount(async () => {
                         );
                         if (recordIndex === data.length - 1) {
                             wrStatus.value[idx] = RecordStatus.CURRENT;
-                        } else if (recordIndex > 0) {
+                        } else if (recordIndex >= 0) {
                             wrStatus.value[idx] = RecordStatus.FORMER;
                         }
                         resolve();
