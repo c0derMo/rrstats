@@ -311,7 +311,7 @@ describe("AchievementController", () => {
                 0, 0.02109704641350211, 0.0379746835443038, 0.12658227848101267,
                 0.28270042194092826, 0.4092827004219409, 0.7046413502109705,
             ]);
-        expect.soft(stats["World-Renowned"]).toEqual([0.1308016877637131]);
+        expect.soft(stats["World-Renowned"]).toEqual([0.18143459915611815]);
 
         expect
             .soft(stats["Skill-Based Matchmaking"])

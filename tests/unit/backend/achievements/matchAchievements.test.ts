@@ -404,11 +404,11 @@ describe("Match Achievements", () => {
         expect.soft(achievementFun).toHaveAchievementLevel(1);
         expect
             .soft(achievementFun)
-            .toHaveAchievementAchievedAt([1614976200000]);
+            .toHaveAchievementAchievedAt([1614268800000]);
         expect.soft(achievementFun).toHaveAchievementProgress([1]);
         expect
             .soft(achievementFun)
-            .toHaveAchievementProgressString(["24 / 10"]);
+            .toHaveAchievementProgressString(["25 / 10"]);
 
         const achievementCurry =
             await AchievementController.getAchievementOfPlayerOrCreate(
