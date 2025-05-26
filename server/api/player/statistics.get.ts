@@ -1,6 +1,7 @@
 import PlayerStatisticController from "~/server/controller/PlayerStatisticController";
 import { Player } from "~/server/model/Player";
 import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import { validate } from "uuid";
 
 export default defineEventHandler<Promise<IPlayerStatistics>>(async (event) => {
     const query = getQuery<{
@@ -15,7 +16,10 @@ export default defineEventHandler<Promise<IPlayerStatistics>>(async (event) => {
         });
     }
 
-    if ((await Player.countBy({ uuid: query.player })) <= 0) {
+    if (
+        !validate(query.player) ||
+        (await Player.countBy({ uuid: query.player })) <= 0
+    ) {
         throw createError({
             statusCode: 404,
             message: "unknown player",
@@ -23,7 +27,11 @@ export default defineEventHandler<Promise<IPlayerStatistics>>(async (event) => {
     }
 
     let opponent = query.opponent;
-    if (opponent != null && (await Player.countBy({ uuid: opponent })) <= 0) {
+    if (
+        opponent != null &&
+        ((await Player.countBy({ uuid: opponent })) <= 0 ||
+            !validate(query.opponent))
+    ) {
         opponent = undefined;
     }
 

@@ -56,7 +56,7 @@ export class WorldRenowned extends AutomaticAchievement<string[]> {
             }
             if (!playerOneAchievement.data.includes(p2Nationality)) {
                 playerOneAchievement.data.push(p2Nationality);
-                this.checkCondition(playerTwoAchievement, match.timestamp);
+                this.checkCondition(playerOneAchievement, match.timestamp);
             }
         } else if (match.playerTwoScore > match.playerOneScore) {
             const p1Nationality = await this.getNationalityOfPlayer(
@@ -67,7 +67,7 @@ export class WorldRenowned extends AutomaticAchievement<string[]> {
             }
             if (!playerTwoAchievement.data.includes(p1Nationality)) {
                 playerTwoAchievement.data.push(p1Nationality);
-                this.checkCondition(playerOneAchievement, match.timestamp);
+                this.checkCondition(playerTwoAchievement, match.timestamp);
             }
         }
     }

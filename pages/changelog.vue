@@ -26,7 +26,9 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 
-const { data } = await useAsyncData(() => queryCollection("changelog").all());
+const { data } = await useAsyncData(() =>
+    queryCollection("changelog").order("date", "DESC").all(),
+);
 
 useHead({
     title: `Changelog - RRStats`,

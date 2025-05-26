@@ -80,6 +80,7 @@ abstract class BaseSpinConditionAchievement extends AutomaticAchievement<boolean
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             } else if (map.winner === WinningPlayer.PLAYER_TWO) {
                 playerTwoAchievement.data = true;
@@ -87,6 +88,7 @@ abstract class BaseSpinConditionAchievement extends AutomaticAchievement<boolean
                     match.timestamp,
                     0,
                     true,
+                    match.uuid,
                 );
             }
         }
