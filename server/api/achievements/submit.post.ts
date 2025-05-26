@@ -1,5 +1,6 @@
 import AchievementController from "~/server/controller/AchievementController";
 import { Player } from "~/server/model/Player";
+import { validate } from "uuid";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<{
@@ -11,6 +12,10 @@ export default defineEventHandler(async (event) => {
 
     if (body.player == null || body.achievement == null || body.video == null) {
         throw createError({ statusCode: 400 });
+    }
+
+    if (!validate(body.player)) {
+        throw createError({ statusCode: 404 });
     }
 
     const player = await Player.countBy({ uuid: body.player });
