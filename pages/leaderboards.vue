@@ -25,7 +25,7 @@
                 </div>
             </CardComponent>
 
-            <CardComponent class="flex-grow overflow-x-visible relative">
+            <CardComponent class="flex-grow !overflow-visible relative">
                 <IndefiniteProgressBar
                     v-if="leaderboardLoading"
                     class="absolute top-0 left-0"
