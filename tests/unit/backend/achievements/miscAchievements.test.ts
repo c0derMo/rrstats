@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
 import "./achievementTestUtils";
-import { SkillBasedMatchmaking } from "~/server/controller/achievements/automatic/misc/SkillBasedMatchmaking";
+import { SkillBasedMatchmaking } from "~~/server/controller/achievements/automatic/misc/SkillBasedMatchmaking";
 
 let database: DatabaseConnector;
 

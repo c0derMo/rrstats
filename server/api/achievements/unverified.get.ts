@@ -1,8 +1,6 @@
-import AchievementController from "~/server/controller/AchievementController";
-import { AuthController } from "~/server/controller/AuthController";
-import { Achievement } from "~/server/model/Achievement";
-import type { SubmittedAchievement } from "~/utils/interfaces/AchievementInfo";
-import { IPermission } from "~/utils/interfaces/IUser";
+import AchievementController from "~~/server/controller/AchievementController";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Achievement } from "~~/server/model/Achievement";
 
 type DataType = {
     video: string;

@@ -1,11 +1,9 @@
 import { In } from "typeorm";
-import { AuthController } from "~/server/controller/AuthController";
-import MapperService from "~/server/controller/MapperService";
-import PlayerStatisticController from "~/server/controller/PlayerStatisticController";
-import { Player } from "~/server/model/Player";
-import type { IMatch } from "~/utils/interfaces/IMatch";
+import { AuthController } from "~~/server/controller/AuthController";
+import MapperService from "~~/server/controller/MapperService";
+import PlayerStatisticController from "~~/server/controller/PlayerStatisticController";
+import { Player } from "~~/server/model/Player";
 import type { StatisticsReponse } from "../APITypes";
-import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 
 type ExtendedMatch = IMatch & {
     playerOneDiscord: string;

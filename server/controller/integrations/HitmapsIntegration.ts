@@ -2,18 +2,10 @@ import { Match } from "../../model/Match";
 import { Player } from "../../model/Player";
 import { In } from "typeorm";
 import { DateTime } from "luxon";
-import { HitmanMap, getMapBySlug } from "../../../utils/mapUtils";
-import {
-    type Spin,
-    WinningPlayer,
-    ChoosingPlayer,
-    type RRBannedMap,
-} from "~/utils/interfaces/IMatch";
-import { Competition } from "~/server/model/Competition";
-import { Log } from "~/utils/FunctionTimer";
-import { PlayedMap } from "~/server/model/PlayedMap";
+import { Competition } from "~~/server/model/Competition";
 import consola from "consola";
 import ld from "lodash";
+import { PlayedMap } from "~~/server/model/PlayedMap";
 
 export interface HitmapsTournamentMatch {
     id: number;

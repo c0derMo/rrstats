@@ -1,9 +1,5 @@
 import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import type { LeaderboardCountryEntry } from "~/utils/interfaces/LeaderboardEntry";
 import MapperService from "../../MapperService";
-import type { IMatch } from "~/utils/interfaces/IMatch";
-import { DefaultedMap, getSumOfValues } from "~/utils/DefaultedMap";
 
 export class CountryMatches implements LeaderboardCountryStatistic {
     type = "country" as const;

@@ -1,13 +1,6 @@
 import { In } from "typeorm";
-import { Match } from "~/server/model/Match";
-import { GenericRecord, MapRecord } from "~/server/model/Record";
-import type { IMatch } from "~/utils/interfaces/IMatch";
-import type {
-    GenericRecordType,
-    IGenericRecord,
-    IMapRecord,
-} from "~/utils/interfaces/IRecord";
-import type { HitmanMap } from "~/utils/mapUtils";
+import { Match } from "~~/server/model/Match";
+import { GenericRecord, MapRecord } from "~~/server/model/Record";
 
 export default defineEventHandler<
     Promise<{

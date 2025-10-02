@@ -1,8 +1,7 @@
 import { In } from "typeorm";
-import { AuthController } from "~/server/controller/AuthController";
-import { Match } from "~/server/model/Match";
-import { Player } from "~/server/model/Player";
-import type { IMatch } from "~/utils/interfaces/IMatch";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Match } from "~~/server/model/Match";
+import { Player } from "~~/server/model/Player";
 import type { PlayerResponse } from "../APITypes";
 
 export default defineEventHandler<PlayerResponse>(async (event) => {

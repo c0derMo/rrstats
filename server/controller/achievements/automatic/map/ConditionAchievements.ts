@@ -1,11 +1,6 @@
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import type { Match } from "~/server/model/Match";
-import { type Spin, WinningPlayer } from "~/utils/interfaces/IMatch";
+import type { Achievement } from "~~/server/model/Achievement";
+import type { Match } from "~~/server/model/Match";
 
 const POISONS = ["Injected Poison", "Consumed Poison", "Poison the Stem Cells"];
 const ACCIDENTS = [
@@ -47,8 +42,6 @@ function includesAnyExact(options: string[]): (_: string) => boolean {
 }
 
 abstract class BaseSpinConditionAchievement extends AutomaticAchievement<boolean> {
-    abstract name: string;
-    abstract description: string[];
     tier = [AchievementTier.BRONZE];
     category = AchievementCategory.MAP;
     levels = 1;

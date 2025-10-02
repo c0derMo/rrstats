@@ -1,5 +1,4 @@
-import { Competition } from "~/server/model/Competition";
-import type { ICompetition } from "~/utils/interfaces/ICompetition";
+import { Competition } from "~~/server/model/Competition";
 
 export default defineEventHandler<Promise<ICompetition[]>>(async () => {
     const rawCompetitions = await Competition.find({

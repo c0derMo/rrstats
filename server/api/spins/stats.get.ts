@@ -1,11 +1,8 @@
 import { DateTime } from "luxon";
 import objectHash from "object-hash";
 import { And, In, IsNull, Not } from "typeorm";
-import HitmapsSpinIntegration from "~/server/controller/integrations/HitmapsSpinIntegration";
-import { PlayedMap } from "~/server/model/PlayedMap";
-import type { Spin } from "~/utils/interfaces/IMatch";
-import { type HitmanMap, getMap } from "~/utils/mapUtils";
-import { calculatePossibleSpinAmount } from "~/utils/spinCountCalculator";
+import HitmapsSpinIntegration from "~~/server/controller/integrations/HitmapsSpinIntegration";
+import { PlayedMap } from "~~/server/model/PlayedMap";
 
 interface SpinStats {
     total: number;

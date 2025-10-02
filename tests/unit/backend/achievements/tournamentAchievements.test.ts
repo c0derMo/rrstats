@@ -1,17 +1,17 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
 import "./achievementTestUtils";
-import { AllRounder } from "~/server/controller/achievements/automatic/tournament/AllRounder";
-import { BeatenTheBest } from "~/server/controller/achievements/automatic/tournament/BeatenTheBest";
-import { ChallengerDefender } from "~/server/controller/achievements/automatic/tournament/ChallengerDefender";
-import { Champion } from "~/server/controller/achievements/automatic/tournament/Champion";
-import { FallIntoPlace } from "~/server/controller/achievements/automatic/tournament/FallIntoPlace";
-import { RarifiedAir } from "~/server/controller/achievements/automatic/tournament/RarifiedAir";
-import { TheCulling } from "~/server/controller/achievements/automatic/tournament/TheCulling";
-import { TitleContender } from "~/server/controller/achievements/automatic/tournament/TitleContender";
-import { Untouchable } from "~/server/controller/achievements/automatic/tournament/Untouchable";
-import { WorldChampion } from "~/server/controller/achievements/automatic/tournament/WorldChampion";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
+import { AllRounder } from "~~/server/controller/achievements/automatic/tournament/AllRounder";
+import { BeatenTheBest } from "~~/server/controller/achievements/automatic/tournament/BeatenTheBest";
+import { ChallengerDefender } from "~~/server/controller/achievements/automatic/tournament/ChallengerDefender";
+import { Champion } from "~~/server/controller/achievements/automatic/tournament/Champion";
+import { FallIntoPlace } from "~~/server/controller/achievements/automatic/tournament/FallIntoPlace";
+import { RarifiedAir } from "~~/server/controller/achievements/automatic/tournament/RarifiedAir";
+import { TheCulling } from "~~/server/controller/achievements/automatic/tournament/TheCulling";
+import { TitleContender } from "~~/server/controller/achievements/automatic/tournament/TitleContender";
+import { Untouchable } from "~~/server/controller/achievements/automatic/tournament/Untouchable";
+import { WorldChampion } from "~~/server/controller/achievements/automatic/tournament/WorldChampion";
 
 let database: DatabaseConnector;
 

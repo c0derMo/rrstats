@@ -6,11 +6,6 @@ import {
     Entity,
     PrimaryColumn,
 } from "typeorm";
-import type {
-    ICompetition,
-    ICompetitionPlacement,
-    IGroupSettings,
-} from "~/utils/interfaces/ICompetition";
 
 @Entity()
 export class Competition extends BaseEntity implements ICompetition {

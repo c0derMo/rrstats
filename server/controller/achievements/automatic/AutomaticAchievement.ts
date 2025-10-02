@@ -1,10 +1,5 @@
-import type { Achievement } from "~/server/model/Achievement";
-import type { Match } from "~/server/model/Match";
-import type {
-    AchievementCategory,
-    AchievementInfo,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
+import type { Achievement } from "~~/server/model/Achievement";
+import type { Match } from "~~/server/model/Match";
 
 export abstract class AutomaticAchievement<T> implements AchievementInfo {
     abstract name: string;

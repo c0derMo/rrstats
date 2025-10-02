@@ -1,9 +1,9 @@
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import AchievementController, {
     type ManualAchievementData,
-} from "~/server/controller/AchievementController";
-import NotificationController from "~/server/controller/NotificationController";
-import { Achievement } from "~/server/model/Achievement";
+} from "~~/server/controller/AchievementController";
+import NotificationController from "~~/server/controller/NotificationController";
+import { Achievement } from "~~/server/model/Achievement";
 
 const CustomNotifier = {
     sendManualAchievementSubmissionNotification: vi.fn(),

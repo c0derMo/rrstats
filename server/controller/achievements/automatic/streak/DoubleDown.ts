@@ -1,11 +1,7 @@
-import { Match } from "~/server/model/Match";
+import { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { Competition, CompetitionPlacement } from "~/server/model/Competition";
+import type { Achievement } from "~~/server/model/Achievement";
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 
 export class DoubleDown extends AutomaticAchievement<number> {
     name = "Double Down";
@@ -28,7 +24,7 @@ export class DoubleDown extends AutomaticAchievement<number> {
         // Do nothing - only placements are relevant to this achievement, not matches
     }
 
-    async recalculateAll(
+    override async recalculateAll(
         matches: Match[],
         achievements: Record<string, Achievement<number>>,
     ): Promise<void> {

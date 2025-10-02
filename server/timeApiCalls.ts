@@ -1,5 +1,4 @@
 import type { H3Event } from "h3";
-import FunctionTimer from "~/utils/FunctionTimer";
 
 export default defineNitroPlugin(async (nitroApp) => {
     const timers = new Map<H3Event, FunctionTimer>();

@@ -1,7 +1,6 @@
-import { AuthController } from "~/server/controller/AuthController";
-import { Match } from "~/server/model/Match";
-import { PlayedMap } from "~/server/model/PlayedMap";
-import { IPermission } from "~/utils/interfaces/IUser";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Match } from "~~/server/model/Match";
+import { PlayedMap } from "~~/server/model/PlayedMap";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);

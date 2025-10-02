@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 import { DataSource } from "typeorm";
-import { Match } from "~/server/model/Match";
-import type { RRMap } from "~/utils/interfaces/IMatch";
+import { Match } from "~~/server/model/Match";
 
 interface OldRRMap extends RRMap {
     startedTimestamp?: number;

@@ -1,4 +1,3 @@
-import type { HitmanMap } from "~/utils/mapUtils";
 import LeaderboardController, {
     type LeaderboardEntry,
 } from "../../controller/LeaderboardController";

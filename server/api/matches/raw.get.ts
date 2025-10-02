@@ -1,7 +1,5 @@
-import { AuthController } from "~/server/controller/AuthController";
-import { Match } from "~/server/model/Match";
-import type { IMatch } from "~/utils/interfaces/IMatch";
-import { IPermission } from "~/utils/interfaces/IUser";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Match } from "~~/server/model/Match";
 
 export default defineEventHandler<Promise<IMatch[]>>(async (event) => {
     const session = await AuthController.useSession(event);

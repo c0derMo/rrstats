@@ -1,5 +1,4 @@
 import { stringify } from "csv-stringify/sync";
-import { getMapBySlug } from "~/utils/mapUtils";
 import { writeFile } from "node:fs/promises";
 import { $fetch } from "ofetch";
 

@@ -1,10 +1,4 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import type {
-    GenericRecordType,
-    IGenericRecord,
-    IMapRecord,
-} from "~/utils/interfaces/IRecord";
-import type { HitmanMap } from "~/utils/mapUtils";
 
 @Entity()
 export class GenericRecord extends BaseEntity implements IGenericRecord {

@@ -1,11 +1,7 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { MapRecord } from "~/server/model/Record";
+import type { Achievement } from "~~/server/model/Achievement";
+import { MapRecord } from "~~/server/model/Record";
 import { LessThan } from "typeorm";
 
 export class Timekeeper extends AutomaticAchievement<number> {
@@ -28,7 +24,7 @@ export class Timekeeper extends AutomaticAchievement<number> {
         await this.checkForPlayer(playerTwoAchievement);
     }
 
-    public async recalculateAll(
+    public override async recalculateAll(
         matches: Match[],
         achievements: Record<string, Achievement<number>>,
     ) {

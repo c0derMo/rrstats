@@ -1,7 +1,4 @@
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
-import { type IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import type { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
 
 export class PlayerMapsWon implements LeaderboardPlayerStatistic {
     type = "player" as const;

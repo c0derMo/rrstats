@@ -1,11 +1,7 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import EloController from "~/server/controller/EloController";
+import type { Achievement } from "~~/server/model/Achievement";
+import EloController from "~~/server/controller/EloController";
 
 export class SkillBasedMatchmaking extends AutomaticAchievement<number> {
     name = "Skill-Based Matchmaking";
@@ -35,7 +31,7 @@ export class SkillBasedMatchmaking extends AutomaticAchievement<number> {
         this.checkOnePlayer(playerTwoAchievement);
     }
 
-    public async recalculateAll(
+    public override async recalculateAll(
         matches: Match[],
         achievements: Record<string, Achievement<number>>,
     ): Promise<void> {

@@ -1,14 +1,14 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
-import { AgainstTheWorld } from "~/server/controller/achievements/automatic/experience/AgainstTheWorld";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
+import { AgainstTheWorld } from "~~/server/controller/achievements/automatic/experience/AgainstTheWorld";
 import "./achievementTestUtils";
-import { GettingMileage } from "~/server/controller/achievements/automatic/experience/GettingMileage";
-import { Globetrotter } from "~/server/controller/achievements/automatic/experience/Globetrotter";
-import { OpenSeason } from "~/server/controller/achievements/automatic/experience/OpenSeason";
-import { ReturningRival } from "~/server/controller/achievements/automatic/experience/ReturningRival";
-import { RoulettePlayer } from "~/server/controller/achievements/automatic/experience/RoulettePlayer";
-import { SpinTheWheel } from "~/server/controller/achievements/automatic/experience/SpinTheWheel";
+import { GettingMileage } from "~~/server/controller/achievements/automatic/experience/GettingMileage";
+import { Globetrotter } from "~~/server/controller/achievements/automatic/experience/Globetrotter";
+import { OpenSeason } from "~~/server/controller/achievements/automatic/experience/OpenSeason";
+import { ReturningRival } from "~~/server/controller/achievements/automatic/experience/ReturningRival";
+import { RoulettePlayer } from "~~/server/controller/achievements/automatic/experience/RoulettePlayer";
+import { SpinTheWheel } from "~~/server/controller/achievements/automatic/experience/SpinTheWheel";
 
 let database: DatabaseConnector;
 

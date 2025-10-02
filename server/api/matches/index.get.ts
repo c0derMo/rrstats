@@ -1,6 +1,5 @@
 import { type FindOptionsSelect, In } from "typeorm";
-import { Match } from "~/server/model/Match";
-import type { IMatch } from "~/utils/interfaces/IMatch";
+import { Match } from "~~/server/model/Match";
 
 const selectedFields = [
     "uuid",

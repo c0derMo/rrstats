@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { afterEach, beforeEach, describe, test, expect } from "vitest";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
-import PlayerStatisticController from "~/server/controller/PlayerStatisticController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
+import PlayerStatisticController from "~~/server/controller/PlayerStatisticController";
 
 let database: DatabaseConnector;
 

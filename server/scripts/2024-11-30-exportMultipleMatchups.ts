@@ -4,7 +4,6 @@ import { PlayedMap } from "../model/PlayedMap";
 import { Player } from "../model/Player";
 import { Competition, CompetitionPlacement } from "../model/Competition";
 import MapperService from "../controller/MapperService";
-import { DefaultedMap } from "~/utils/DefaultedMap";
 
 async function main() {
     const dataSource = new DataSource({

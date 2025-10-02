@@ -1,5 +1,4 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from "typeorm";
-import type { SubmittedAchievement } from "~/utils/interfaces/AchievementInfo";
 
 @Entity()
 export class Achievement<T = unknown>

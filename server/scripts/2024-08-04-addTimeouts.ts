@@ -7,16 +7,10 @@ import {
     Entity,
     PrimaryColumn,
 } from "typeorm";
-import type {
-    ICompetition,
-    IGroupSettings,
-} from "~/utils/interfaces/ICompetition";
 import { Match } from "../model/Match";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
 import { createInterface, type Interface } from "node:readline";
 import { Player } from "../model/Player";
 import MapperService from "../controller/MapperService";
-import { getMap } from "~/utils/mapUtils";
 
 @Entity("competition")
 export class CompetitionWithDefault extends BaseEntity implements ICompetition {

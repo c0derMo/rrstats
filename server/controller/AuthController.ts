@@ -1,4 +1,3 @@
-import type { IPermission } from "~/utils/interfaces/IUser";
 import { User } from "../model/User";
 import type { H3Event } from "h3";
 import { randomBytes } from "crypto";

@@ -1,11 +1,10 @@
-import { Player } from "~/server/model/Player";
+import { Player } from "~~/server/model/Player";
 import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,
 } from "../DatabaseCheckController";
-import { Match } from "~/server/model/Match";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
+import { Match } from "~~/server/model/Match";
 import { In, Not } from "typeorm";
 
 export class InvalidScores implements DatabaseCheck {

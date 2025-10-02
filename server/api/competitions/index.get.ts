@@ -1,7 +1,5 @@
-import HitmapsIntegration from "~/server/controller/integrations/HitmapsIntegration";
-import { Competition } from "~/server/model/Competition";
-import type { ICompetition } from "~/utils/interfaces/ICompetition";
-import type { Retryable } from "~/utils/interfaces/Retryable";
+import HitmapsIntegration from "~~/server/controller/integrations/HitmapsIntegration";
+import { Competition } from "~~/server/model/Competition";
 
 export default defineEventHandler<Promise<Retryable<ICompetition> | null>>(
     async (event) => {

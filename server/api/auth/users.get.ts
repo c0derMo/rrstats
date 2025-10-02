@@ -1,6 +1,5 @@
-import { AuthController } from "~/server/controller/AuthController";
-import { User } from "~/server/model/User";
-import { IPermission, type IUser } from "~/utils/interfaces/IUser";
+import { AuthController } from "~~/server/controller/AuthController";
+import { User } from "~~/server/model/User";
 
 export default defineEventHandler<Promise<IUser[]>>(async (event) => {
     const session = await AuthController.useSession(event);

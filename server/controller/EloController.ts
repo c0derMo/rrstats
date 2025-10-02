@@ -2,8 +2,6 @@ import { Competition } from "../model/Competition";
 import { Match } from "../model/Match";
 import ld from "lodash";
 import consola from "consola";
-import { Log } from "~/utils/FunctionTimer";
-import { DefaultedMap } from "~/utils/DefaultedMap";
 import { DateTime } from "luxon";
 import {
     EventSubscriber,
@@ -13,7 +11,6 @@ import {
     MoreThan,
 } from "typeorm";
 import { Player } from "../model/Player";
-import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 import { isReady } from "../readyListener";
 
 const logger = consola.withTag("rrstats:elo");

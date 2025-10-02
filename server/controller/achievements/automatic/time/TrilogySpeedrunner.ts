@@ -1,12 +1,6 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
-import { getAllMaps } from "~/utils/mapUtils";
+import type { Achievement } from "~~/server/model/Achievement";
 
 export class TrilogySpeedrunner extends AutomaticAchievement<number[]> {
     name = "Trilogy Speedrunner";

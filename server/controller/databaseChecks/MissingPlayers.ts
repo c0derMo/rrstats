@@ -1,10 +1,10 @@
-import { Match } from "~/server/model/Match";
+import { Match } from "~~/server/model/Match";
 import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,
 } from "../DatabaseCheckController";
-import { Player } from "~/server/model/Player";
+import { Player } from "~~/server/model/Player";
 import { In, Not } from "typeorm";
 
 export class MissingPlayers implements DatabaseCheck {

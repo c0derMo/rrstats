@@ -1,18 +1,6 @@
-import type {
-    ICompetition,
-    ICompetitionPlacement,
-} from "~/utils/interfaces/ICompetition";
-import type { IMatch } from "~/utils/interfaces/IMatch";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import type {
-    LeaderboardCountryEntry,
-    LeaderboardMapEntry,
-    LeaderboardPlayerEntry,
-} from "~/utils/interfaces/LeaderboardEntry";
 import { Player } from "../model/Player";
 import { Match } from "../model/Match";
 import { Competition, CompetitionPlacement } from "../model/Competition";
-import { type HitmanMap, OptionalMap } from "~/utils/mapUtils";
 import {
     type EntitySubscriberInterface,
     EventSubscriber,
@@ -52,14 +40,11 @@ import { MapPlayed } from "./leaderboardStatistics/map/Played";
 import { MapRNG } from "./leaderboardStatistics/map/RNG";
 import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
 import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
-import { Log } from "~/utils/FunctionTimer";
 import consola from "consola";
 import { PlayedMap } from "../model/PlayedMap";
-import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
 import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
 import { isReady } from "../readyListener";
-import type { StatisticData } from "~/utils/interfaces/StatisticData";
 
 interface GenericLeaderboardStatistic<T extends string, R>
     extends StatisticData<T> {

@@ -5,7 +5,6 @@ import { writeFile } from "node:fs/promises";
 import { Achievement } from "../model/Achievement";
 import MapperService from "../controller/MapperService";
 import { DateTime } from "luxon";
-import { numberToRoman } from "~/utils/formatters";
 
 interface IndividualAchievement {
     player: string;

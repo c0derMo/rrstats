@@ -1,6 +1,5 @@
-import PlayerStatisticController from "~/server/controller/PlayerStatisticController";
-import { Player } from "~/server/model/Player";
-import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
+import PlayerStatisticController from "~~/server/controller/PlayerStatisticController";
+import { Player } from "~~/server/model/Player";
 import { validate } from "uuid";
 
 export default defineEventHandler<Promise<IPlayerStatistics>>(async (event) => {

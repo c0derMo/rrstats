@@ -1,4 +1,3 @@
-import type { StatisticData } from "~/utils/interfaces/StatisticData";
 import LeaderboardController from "../../controller/LeaderboardController";
 
 export default defineEventHandler<

@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import LeaderboardController from "./controller/LeaderboardController";
 import DatabaseConnector from "./controller/DatabaseConnnector";
-import { setFunctionTimersEnabled } from "~/utils/FunctionTimer";
 import { VERSION } from "./version";
 import EloController from "./controller/EloController";
 import AchievementController from "./controller/AchievementController";

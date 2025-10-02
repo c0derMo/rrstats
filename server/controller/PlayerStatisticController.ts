@@ -1,7 +1,4 @@
-import type { IPlayerStatistics } from "~/utils/interfaces/IPlayer";
 import { Match } from "../model/Match";
-import MatchCollection from "../../utils/playerStatistics/MatchCollection";
-import PlacementCollection from "../../utils/playerStatistics/PlacementCollection";
 import { Competition, CompetitionPlacement } from "../model/Competition";
 import {
     type EntitySubscriberInterface,
@@ -11,10 +8,10 @@ import {
     type UpdateEvent,
 } from "typeorm";
 import { Player } from "../model/Player";
-import { Log } from "~/utils/FunctionTimer";
 import EloController from "./EloController";
-import { DebouncedInvalidationFunction } from "~/utils/DebouncedInvalidationFunction";
 import { isReady } from "../readyListener";
+import MatchCollection from "#shared/utils/playerStatistics/MatchCollection";
+import PlacementCollection from "#shared/utils/playerStatistics/PlacementCollection";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();

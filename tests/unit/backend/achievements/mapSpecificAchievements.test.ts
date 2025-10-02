@@ -1,13 +1,13 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
-import { ChrisX3 } from "~/server/controller/achievements/automatic/map_specific/ChrisX3";
-import { FamilyMatters } from "~/server/controller/achievements/automatic/map_specific/FamilyMatters";
-import { LandOfTheFree } from "~/server/controller/achievements/automatic/map_specific/LandOfTheFree";
-import { OverTheHump } from "~/server/controller/achievements/automatic/map_specific/OverTheHump";
-import { PartnersDown } from "~/server/controller/achievements/automatic/map_specific/PartnersDown";
-import { RolfLured } from "~/server/controller/achievements/automatic/map_specific/RolfLured";
-import { TheSmallFive } from "~/server/controller/achievements/automatic/map_specific/TheSmallFive";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
+import { ChrisX3 } from "~~/server/controller/achievements/automatic/map_specific/ChrisX3";
+import { FamilyMatters } from "~~/server/controller/achievements/automatic/map_specific/FamilyMatters";
+import { LandOfTheFree } from "~~/server/controller/achievements/automatic/map_specific/LandOfTheFree";
+import { OverTheHump } from "~~/server/controller/achievements/automatic/map_specific/OverTheHump";
+import { PartnersDown } from "~~/server/controller/achievements/automatic/map_specific/PartnersDown";
+import { RolfLured } from "~~/server/controller/achievements/automatic/map_specific/RolfLured";
+import { TheSmallFive } from "~~/server/controller/achievements/automatic/map_specific/TheSmallFive";
 import "./achievementTestUtils";
 
 let database: DatabaseConnector;

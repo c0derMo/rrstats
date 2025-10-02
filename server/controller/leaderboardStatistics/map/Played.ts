@@ -1,13 +1,4 @@
-import type {
-    ICompetition,
-    ICompetitionPlacement,
-} from "~/utils/interfaces/ICompetition";
 import type { LeaderboardMapStatistic } from "../../LeaderboardController";
-import type { IMatch } from "~/utils/interfaces/IMatch";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import type { LeaderboardMapEntry } from "~/utils/interfaces/LeaderboardEntry";
-import { DefaultedMap } from "~/utils/DefaultedMap";
-import { getMap } from "~/utils/mapUtils";
 
 export class MapPlayed implements LeaderboardMapStatistic {
     type = "map" as const;

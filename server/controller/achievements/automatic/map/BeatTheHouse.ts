@@ -1,14 +1,8 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
-import { MapRecord } from "~/server/model/Record";
+import type { Achievement } from "~~/server/model/Achievement";
+import { MapRecord } from "~~/server/model/Record";
 import { LessThan } from "typeorm";
-import { getAllMaps, type HitmanMap } from "~/utils/mapUtils";
 
 export class BeatTheHouse extends AutomaticAchievement<boolean> {
     name = "Beat the House";
@@ -102,7 +96,7 @@ export class BeatTheHouse extends AutomaticAchievement<boolean> {
         );
     }
 
-    public async recalculateAll(
+    public override async recalculateAll(
         matches: Match[],
         achievements: Record<string, Achievement<boolean>>,
     ) {

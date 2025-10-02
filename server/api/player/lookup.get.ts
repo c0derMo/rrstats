@@ -1,6 +1,5 @@
 import { In } from "typeorm";
-import { Player } from "~/server/model/Player";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import { Player } from "~~/server/model/Player";
 
 export default defineEventHandler<Promise<Record<string, string>>>(
     async (event) => {

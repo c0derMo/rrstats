@@ -1,11 +1,7 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { Competition } from "~/server/model/Competition";
+import type { Achievement } from "~~/server/model/Achievement";
+import { Competition } from "~~/server/model/Competition";
 import { DateTime } from "luxon";
 
 export class AFullCalendar extends AutomaticAchievement<string[]> {

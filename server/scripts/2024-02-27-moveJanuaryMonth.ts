@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { DataSource } from "typeorm";
-import { Match } from "~/server/model/Match";
+import { Match } from "~~/server/model/Match";
 
 async function run() {
     const dataSource = new DataSource({

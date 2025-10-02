@@ -1,11 +1,11 @@
-import { Player } from "~/server/model/Player";
+import { Player } from "~~/server/model/Player";
 import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,
 } from "../DatabaseCheckController";
-import { CompetitionPlacement } from "~/server/model/Competition";
-import { Match } from "~/server/model/Match";
+import { CompetitionPlacement } from "~~/server/model/Competition";
+import { Match } from "~~/server/model/Match";
 
 export class MissingPlacements implements DatabaseCheck {
     info: CheckInfo = {

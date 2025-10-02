@@ -1,11 +1,7 @@
-import { Match } from "~/server/model/Match";
+import { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { Competition, CompetitionPlacement } from "~/server/model/Competition";
+import type { Achievement } from "~~/server/model/Achievement";
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import { In } from "typeorm";
 
 export class Champion extends AutomaticAchievement<string[]> {
@@ -27,7 +23,7 @@ export class Champion extends AutomaticAchievement<string[]> {
         // Do nothing - only placements are relevant to this achievement, not matches
     }
 
-    public async recalculateAll(
+    public override async recalculateAll(
         matches: Match[],
         achievements: Record<string, Achievement<string[]>>,
     ) {

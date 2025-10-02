@@ -5,7 +5,6 @@ import {
     BaseEntity,
     DataSource,
 } from "typeorm";
-import type { IMatch, RRBannedMap, RRMap } from "~/utils/interfaces/IMatch";
 import { PlayedMap } from "../model/PlayedMap";
 import { copyFile } from "node:fs/promises";
 import { Match } from "../model/Match";

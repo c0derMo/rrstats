@@ -1,12 +1,11 @@
-import { Player } from "~/server/model/Player";
+import { Player } from "~~/server/model/Player";
 import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,
 } from "../DatabaseCheckController";
-import { GenericRecord, MapRecord } from "~/server/model/Record";
-import { Match } from "~/server/model/Match";
-import { getMap } from "~/utils/mapUtils";
+import { GenericRecord, MapRecord } from "~~/server/model/Record";
+import { Match } from "~~/server/model/Match";
 import { DateTime } from "luxon";
 
 export class RecordMatches implements DatabaseCheck {

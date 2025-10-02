@@ -1,12 +1,6 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { ChoosingPlayer } from "~/utils/interfaces/IMatch";
-import type { HitmanMap } from "~/utils/mapUtils";
+import type { Achievement } from "~~/server/model/Achievement";
 
 export class ILoveThatMap extends AutomaticAchievement<HitmanMap[]> {
     name = "I Love That Map";

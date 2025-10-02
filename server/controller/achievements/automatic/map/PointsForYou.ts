@@ -1,11 +1,6 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
+import type { Achievement } from "~~/server/model/Achievement";
 
 export class PointsForYou extends AutomaticAchievement<number> {
     name = "Points for You";

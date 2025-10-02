@@ -3,8 +3,6 @@ import { Match } from "../model/Match";
 import { readFile } from "fs/promises";
 import { Player } from "../model/Player";
 import MapperService from "../controller/MapperService";
-import { type HitmanMap, getAllMaps, getMap } from "~/utils/mapUtils";
-import { ChoosingPlayer } from "~/utils/interfaces/IMatch";
 
 function transformPlayerName(oldName: string): string {
     switch (oldName) {

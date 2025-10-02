@@ -1,4 +1,4 @@
-import CSVExportController from "~/server/controller/CSVExportController";
+import CSVExportController from "~~/server/controller/CSVExportController";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery<{

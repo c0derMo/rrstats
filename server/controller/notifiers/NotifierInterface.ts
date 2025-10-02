@@ -1,4 +1,4 @@
-import type { Achievement } from "~/server/model/Achievement";
+import type { Achievement } from "~~/server/model/Achievement";
 import type {
     ManualAchievement,
     ManualAchievementData,

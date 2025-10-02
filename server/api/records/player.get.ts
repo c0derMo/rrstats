@@ -1,6 +1,5 @@
 import { Like, MoreThan, Not } from "typeorm";
-import { GenericRecord, MapRecord } from "~/server/model/Record";
-import type { GenericRecordType } from "~/utils/interfaces/IRecord";
+import { GenericRecord, MapRecord } from "~~/server/model/Record";
 
 interface PlayerRecord {
     map?: number;

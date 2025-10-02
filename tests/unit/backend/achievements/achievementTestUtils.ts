@@ -1,7 +1,7 @@
 import { expect } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import type { AutomaticAchievement } from "~/server/controller/achievements/automatic/AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
+import AchievementController from "~~/server/controller/AchievementController";
+import type { AutomaticAchievement } from "~~/server/controller/achievements/automatic/AutomaticAchievement";
+import type { Achievement } from "~~/server/model/Achievement";
 
 interface AchievementMatchers<R = unknown> {
     toHaveAchievementLevel: (expected: number) => R;

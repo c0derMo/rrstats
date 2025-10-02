@@ -1,8 +1,4 @@
 import { expect, test, describe } from "vitest";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
 
 describe("formatters", () => {
     test("formatPlacement", () => {

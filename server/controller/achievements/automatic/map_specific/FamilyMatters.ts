@@ -1,11 +1,6 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import { HitmanMap } from "~/utils/mapUtils";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
+import type { Achievement } from "~~/server/model/Achievement";
 
 export class FamilyMatters extends AutomaticAchievement<number> {
     name = "Family Matters";

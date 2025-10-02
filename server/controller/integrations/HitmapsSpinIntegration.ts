@@ -1,6 +1,4 @@
 import { DateTime } from "luxon";
-import { Log } from "~/utils/FunctionTimer";
-import type { HitmanMapInfo } from "~/utils/mapUtils";
 import consola from "consola";
 
 interface CacheEntry {
