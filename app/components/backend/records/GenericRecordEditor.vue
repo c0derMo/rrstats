@@ -4,7 +4,7 @@
         :open="showDialog"
         @closed="$emit('close')"
     >
-        <CardComponent class="max-h-screen">
+        <CardComponent class="max-h-screen !overflow-visible">
             <div class="flex flex-col gap-5">
                 <DropdownComponent
                     v-model="recordData.record"
