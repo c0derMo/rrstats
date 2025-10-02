@@ -1,9 +1,4 @@
-import { GenericRecord, MapRecord } from "~/server/model/Record";
-import type {
-    GenericRecordType,
-    IGenericRecord,
-    IMapRecord,
-} from "~/utils/interfaces/IRecord";
+import { GenericRecord, MapRecord } from "~~/server/model/Record";
 
 export default defineEventHandler<Promise<IMapRecord[] | IGenericRecord[]>>(
     async (event) => {

@@ -1,12 +1,6 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import { type HitmanMap, getAllMaps } from "~/utils/mapUtils";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
+import type { Achievement } from "~~/server/model/Achievement";
 
 type AchievementDataType = Record<HitmanMap, number>;
 

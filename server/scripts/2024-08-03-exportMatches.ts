@@ -1,11 +1,9 @@
 import { DataSource } from "typeorm";
 import { Match } from "../model/Match";
 import { DateTime } from "luxon";
-import type { Spin } from "~/utils/interfaces/IMatch";
 import { stringify } from "csv-stringify/sync";
 import { Player } from "../model/Player";
 import MapperService from "../controller/MapperService";
-import { getMap } from "~/utils/mapUtils";
 import { writeFile } from "node:fs/promises";
 import { PlayedMap } from "../model/PlayedMap";
 

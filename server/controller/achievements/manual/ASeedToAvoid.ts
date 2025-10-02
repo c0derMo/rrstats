@@ -1,7 +1,3 @@
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
 import type { ManualAchievement } from "../../AchievementController";
 
 export class ASeedToAvoid implements ManualAchievement {

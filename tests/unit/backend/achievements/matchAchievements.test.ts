@@ -1,18 +1,18 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
 import "./achievementTestUtils";
-import { ApexPredator } from "~/server/controller/achievements/automatic/match/ApexPredator";
-import { BehemothKiller } from "~/server/controller/achievements/automatic/match/BehemothKiller";
-import { BestServedCold } from "~/server/controller/achievements/automatic/match/BestServedCold";
-import { ComebackStory } from "~/server/controller/achievements/automatic/match/ComebackStory";
-import { GiantKiller } from "~/server/controller/achievements/automatic/match/GiantKiller";
-import { Overtime } from "~/server/controller/achievements/automatic/match/Overtime";
-import { Reversal } from "~/server/controller/achievements/automatic/match/Reversal";
-import { SpinToWin } from "~/server/controller/achievements/automatic/match/SpinToWin";
-import { Sweeper } from "~/server/controller/achievements/automatic/match/Sweeper";
-import { TheRouletteRival } from "~/server/controller/achievements/automatic/match/TheRouletteRival";
-import { WorldRenowned } from "~/server/controller/achievements/automatic/match/WorldRenowned";
+import { ApexPredator } from "~~/server/controller/achievements/automatic/match/ApexPredator";
+import { BehemothKiller } from "~~/server/controller/achievements/automatic/match/BehemothKiller";
+import { BestServedCold } from "~~/server/controller/achievements/automatic/match/BestServedCold";
+import { ComebackStory } from "~~/server/controller/achievements/automatic/match/ComebackStory";
+import { GiantKiller } from "~~/server/controller/achievements/automatic/match/GiantKiller";
+import { Overtime } from "~~/server/controller/achievements/automatic/match/Overtime";
+import { Reversal } from "~~/server/controller/achievements/automatic/match/Reversal";
+import { SpinToWin } from "~~/server/controller/achievements/automatic/match/SpinToWin";
+import { Sweeper } from "~~/server/controller/achievements/automatic/match/Sweeper";
+import { TheRouletteRival } from "~~/server/controller/achievements/automatic/match/TheRouletteRival";
+import { WorldRenowned } from "~~/server/controller/achievements/automatic/match/WorldRenowned";
 
 let database: DatabaseConnector;
 

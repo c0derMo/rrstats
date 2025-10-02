@@ -1,9 +1,7 @@
 import { Player } from "../../model/Player";
 import { IsNull, Not, Raw } from "typeorm";
 import HitmapsIntegration from "../../controller/integrations/HitmapsIntegration";
-import { Competition } from "~/server/model/Competition";
-import type { Retryable } from "~/utils/interfaces/Retryable";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
+import { Competition } from "~~/server/model/Competition";
 
 export default defineEventHandler<Promise<Retryable<IPlayer>>>(
     async (event) => {

@@ -1,4 +1,4 @@
-import { PlayedMap } from "~/server/model/PlayedMap";
+import { PlayedMap } from "~~/server/model/PlayedMap";
 import ld from "lodash";
 
 export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {

@@ -1,4 +1,3 @@
-import { Log } from "~/utils/FunctionTimer";
 import { Achievement } from "../model/Achievement";
 import { Match } from "../model/Match";
 import consola from "consola";
@@ -8,10 +7,6 @@ import {
     type InsertEvent,
     type UpdateEvent,
 } from "typeorm";
-import type {
-    AchievedAchievement,
-    AchievementInfo,
-} from "~/utils/interfaces/AchievementInfo";
 import { Player } from "../model/Player";
 import NotificationController from "./NotificationController";
 import ld from "lodash";

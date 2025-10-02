@@ -2,7 +2,6 @@ import { DataSource, In } from "typeorm";
 import { Player } from "../model/Player";
 import { CompetitionPlacement } from "../model/Competition";
 import MapperService from "../controller/MapperService";
-import { DefaultedMap } from "~/utils/DefaultedMap";
 
 interface CompPlacements {
     RR10: number | null;

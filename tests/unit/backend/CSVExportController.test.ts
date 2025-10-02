@@ -1,6 +1,6 @@
 import { expect, test, describe, beforeAll, afterAll } from "vitest";
-import CSVExportController from "~/server/controller/CSVExportController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
+import CSVExportController from "~~/server/controller/CSVExportController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
 import type { Stringifier } from "csv-stringify";
 import { Settings } from "luxon";
 

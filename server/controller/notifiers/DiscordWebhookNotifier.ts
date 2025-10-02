@@ -1,10 +1,10 @@
-import type { Achievement } from "~/server/model/Achievement";
+import type { Achievement } from "~~/server/model/Achievement";
 import type { Notifier } from "./NotifierInterface";
 import type {
     ManualAchievement,
     ManualAchievementData,
 } from "../AchievementController";
-import { Player } from "~/server/model/Player";
+import { Player } from "~~/server/model/Player";
 
 export class DiscordWebhookNotifier implements Notifier {
     private readonly webhookURL: string;

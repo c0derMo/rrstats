@@ -4,7 +4,6 @@ import { stringify } from "csv-stringify/sync";
 import { writeFile } from "node:fs/promises";
 import { Achievement } from "../model/Achievement";
 import AchievementController from "../controller/AchievementController";
-import { AchievementTier } from "~/utils/interfaces/AchievementInfo";
 
 interface IndividualAchievement {
     name: string;

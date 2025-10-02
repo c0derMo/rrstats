@@ -1,10 +1,7 @@
-import { DefaultedMap } from "~/utils/DefaultedMap";
 import { Match } from "../model/Match";
 import { Player } from "../model/Player";
 import { DataSource } from "typeorm";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
 import MapperService from "../controller/MapperService";
-import { getAllMaps, getMap } from "~/utils/mapUtils";
 import { stringify } from "csv-stringify/sync";
 import { writeFile } from "node:fs/promises";
 

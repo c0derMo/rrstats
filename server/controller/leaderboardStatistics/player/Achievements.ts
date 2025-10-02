@@ -1,8 +1,5 @@
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import type { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
 import AchievementController from "../../AchievementController";
-import { AchievementTier } from "~/utils/interfaces/AchievementInfo";
 
 interface AchievementCount {
     player: string;

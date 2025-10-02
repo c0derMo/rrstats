@@ -1,5 +1,5 @@
-import AchievementController from "~/server/controller/AchievementController";
-import { Player } from "~/server/model/Player";
+import AchievementController from "~~/server/controller/AchievementController";
+import { Player } from "~~/server/model/Player";
 import { validate } from "uuid";
 
 export default defineEventHandler(async (event) => {

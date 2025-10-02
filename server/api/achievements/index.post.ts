@@ -1,7 +1,5 @@
-import { AuthController } from "~/server/controller/AuthController";
-import { Achievement } from "~/server/model/Achievement";
-import type { SubmittedAchievement } from "~/utils/interfaces/AchievementInfo";
-import { IPermission } from "~/utils/interfaces/IUser";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Achievement } from "~~/server/model/Achievement";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<SubmittedAchievement>(event);

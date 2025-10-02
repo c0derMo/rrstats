@@ -1,5 +1,5 @@
-import { AuthController } from "~/server/controller/AuthController";
-import DiscordAuthIntegration from "~/server/controller/integrations/DiscordAuthIntegration";
+import { AuthController } from "~~/server/controller/AuthController";
+import DiscordAuthIntegration from "~~/server/controller/integrations/DiscordAuthIntegration";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery<{

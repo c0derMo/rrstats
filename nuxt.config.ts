@@ -25,7 +25,7 @@ export default defineNuxtConfig({
     },
 
     nitro: {
-        plugins: ["~/server/index.ts", "~/server/timeApiCalls.ts"],
+        plugins: ["~~/server/index.ts", "~~/server/timeApiCalls.ts"],
         esbuild: {
             options: {
                 target: "esnext",

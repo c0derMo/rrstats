@@ -1,6 +1,5 @@
-import AchievementController from "~/server/controller/AchievementController";
-import { Player } from "~/server/model/Player";
-import type { AchievedAchievement } from "~/utils/interfaces/AchievementInfo";
+import AchievementController from "~~/server/controller/AchievementController";
+import { Player } from "~~/server/model/Player";
 import { validate } from "uuid";
 
 export default defineEventHandler<Promise<AchievedAchievement[]>>(

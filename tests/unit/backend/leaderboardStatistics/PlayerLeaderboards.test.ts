@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, test, expect, describe } from "vitest";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
-import EloController from "~/server/controller/EloController";
-import LeaderboardController from "~/server/controller/LeaderboardController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
+import EloController from "~~/server/controller/EloController";
+import LeaderboardController from "~~/server/controller/LeaderboardController";
 
 let database: DatabaseConnector;
 

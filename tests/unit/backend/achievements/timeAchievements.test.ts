@@ -1,14 +1,14 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
 import "./achievementTestUtils";
-import { ForTheRecord } from "~/server/controller/achievements/automatic/time/ForTheRecord";
-import { MasterOfNone } from "~/server/controller/achievements/automatic/time/MasterOfNone";
-import { PerfectingTheCraft } from "~/server/controller/achievements/automatic/time/PerfectingTheCraft";
-import { ScratchedRecord } from "~/server/controller/achievements/automatic/time/ScratchedRecord";
-import { Speedrunner } from "~/server/controller/achievements/automatic/time/Speedrunner";
-import { Timekeeper } from "~/server/controller/achievements/automatic/time/Timekeeper";
-import { TrilogySpeedrunner } from "~/server/controller/achievements/automatic/time/TrilogySpeedrunner";
+import { ForTheRecord } from "~~/server/controller/achievements/automatic/time/ForTheRecord";
+import { MasterOfNone } from "~~/server/controller/achievements/automatic/time/MasterOfNone";
+import { PerfectingTheCraft } from "~~/server/controller/achievements/automatic/time/PerfectingTheCraft";
+import { ScratchedRecord } from "~~/server/controller/achievements/automatic/time/ScratchedRecord";
+import { Speedrunner } from "~~/server/controller/achievements/automatic/time/Speedrunner";
+import { Timekeeper } from "~~/server/controller/achievements/automatic/time/Timekeeper";
+import { TrilogySpeedrunner } from "~~/server/controller/achievements/automatic/time/TrilogySpeedrunner";
 
 let database: DatabaseConnector;
 

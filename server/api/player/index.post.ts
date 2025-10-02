@@ -1,7 +1,5 @@
-import { AuthController } from "~/server/controller/AuthController";
-import { Player } from "~/server/model/Player";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import { IPermission } from "~/utils/interfaces/IUser";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Player } from "~~/server/model/Player";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<Partial<IPlayer>>(event);

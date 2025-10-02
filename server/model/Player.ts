@@ -10,7 +10,6 @@ import {
     In,
     Index,
 } from "typeorm";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
 import { Competition, CompetitionPlacement } from "./Competition";
 
 @Entity()

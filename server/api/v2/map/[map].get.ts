@@ -1,9 +1,8 @@
 import { In } from "typeorm";
-import { AuthController } from "~/server/controller/AuthController";
-import { Match } from "~/server/model/Match";
-import { Player } from "~/server/model/Player";
-import { MapRecord } from "~/server/model/Record";
-import { getMapByName } from "~/utils/mapUtils";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Match } from "~~/server/model/Match";
+import { Player } from "~~/server/model/Player";
+import { MapRecord } from "~~/server/model/Record";
 import type { MapResponse } from "../APITypes";
 
 export default defineEventHandler<MapResponse>(async (event) => {
@@ -25,7 +24,7 @@ export default defineEventHandler<MapResponse>(async (event) => {
     }
 
     const recordTime = await MapRecord.findOne({
-        where: { map: map.map },
+        where: { map: map.map as HitmanMap },
         order: { timestamp: "DESC" },
         select: ["time"],
     });
@@ -36,7 +35,7 @@ export default defineEventHandler<MapResponse>(async (event) => {
     }
 
     const allRecords = await MapRecord.findBy({
-        map: map.map,
+        map: map.map as HitmanMap,
         time: recordTime.time,
     });
 

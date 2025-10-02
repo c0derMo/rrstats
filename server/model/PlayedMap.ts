@@ -8,13 +8,6 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
-import type {
-    ChoosingPlayer,
-    IPlayedMap,
-    Spin,
-    WinningPlayer,
-} from "~/utils/interfaces/IMatch";
-import type { HitmanMap } from "~/utils/mapUtils";
 import { Match } from "./Match";
 
 @Entity()

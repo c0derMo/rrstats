@@ -1,13 +1,7 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { WinningPlayer } from "~/utils/interfaces/IMatch";
-import { MapRecord } from "~/server/model/Record";
-import { getAllMaps } from "~/utils/mapUtils";
+import type { Achievement } from "~~/server/model/Achievement";
+import { MapRecord } from "~~/server/model/Record";
 
 export class PerfectingTheCraft extends AutomaticAchievement<number> {
     name = "Perfecting the Craft";
@@ -61,7 +55,7 @@ export class PerfectingTheCraft extends AutomaticAchievement<number> {
         }
     }
 
-    public async recalculateAll(
+    public override async recalculateAll(
         matches: Match[],
         achievements: Record<string, Achievement<number>>,
     ) {

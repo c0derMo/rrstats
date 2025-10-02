@@ -1,5 +1,4 @@
-import HitmapsSpinIntegration from "~/server/controller/integrations/HitmapsSpinIntegration";
-import { type HitmanMap, getMap } from "~/utils/mapUtils";
+import HitmapsSpinIntegration from "~~/server/controller/integrations/HitmapsSpinIntegration";
 
 export default defineEventHandler<
     Promise<{ disguises: string[]; killMethods: Record<string, string[]> }>

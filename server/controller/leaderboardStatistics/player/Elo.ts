@@ -1,6 +1,4 @@
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import type { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
 import EloController from "../../EloController";
 
 export class PlayerElo implements LeaderboardPlayerStatistic {

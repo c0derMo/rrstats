@@ -1,9 +1,4 @@
-import { DefaultedMap } from "~/utils/DefaultedMap";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
-import { type IMatch, WinningPlayer } from "~/utils/interfaces/IMatch";
-import type { IPlayer } from "~/utils/interfaces/IPlayer";
-import type { LeaderboardPlayerEntry } from "~/utils/interfaces/LeaderboardEntry";
-import { StreakCounter } from "~/utils/StreakCounter";
 
 export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
     type = "player" as const;

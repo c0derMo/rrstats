@@ -1,7 +1,5 @@
-import { AuthController } from "~/server/controller/AuthController";
-import { CompetitionPlacement } from "~/server/model/Competition";
-import type { ICompetitionPlacement } from "~/utils/interfaces/ICompetition";
-import { IPermission } from "~/utils/interfaces/IUser";
+import { AuthController } from "~~/server/controller/AuthController";
+import { CompetitionPlacement } from "~~/server/model/Competition";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<ICompetitionPlacement[]>(event);

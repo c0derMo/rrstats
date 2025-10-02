@@ -1,14 +1,13 @@
 import { afterEach, beforeEach, describe, test, expect, vi } from "vitest";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
 import newSchemaResponse from "./matchHistory-newSchema.json";
 import oldSchemaResponse from "./matchHistory-oldSchema.json";
 import oldSchemaMatch from "./oldSchema-match.json";
-import { Player } from "~/server/model/Player";
-import { Match } from "~/server/model/Match";
-import { Competition } from "~/server/model/Competition";
-import { PlayedMap } from "~/server/model/PlayedMap";
-import HitmapsIntegration from "~/server/controller/integrations/HitmapsIntegration";
-import { ChoosingPlayer, WinningPlayer } from "~/utils/interfaces/IMatch";
+import { Player } from "~~/server/model/Player";
+import { Match } from "~~/server/model/Match";
+import { Competition } from "~~/server/model/Competition";
+import { PlayedMap } from "~~/server/model/PlayedMap";
+import HitmapsIntegration from "~~/server/controller/integrations/HitmapsIntegration";
 import consola from "consola";
 
 let database: DatabaseConnector;

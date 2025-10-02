@@ -1,6 +1,6 @@
 import { Raw } from "typeorm";
 import { Player } from "../../model/Player";
-import DiscordAvatarIntegration from "~/server/controller/integrations/DiscordAvatarIntegration";
+import DiscordAvatarIntegration from "~~/server/controller/integrations/DiscordAvatarIntegration";
 
 export default defineEventHandler<Promise<string>>(async (event) => {
     const query = getQuery<{

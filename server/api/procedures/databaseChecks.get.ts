@@ -1,7 +1,7 @@
-import { AuthController } from "~/server/controller/AuthController";
+import { AuthController } from "~~/server/controller/AuthController";
 import DatabaseCheckController, {
     type CheckInfo,
-} from "~/server/controller/DatabaseCheckController";
+} from "~~/server/controller/DatabaseCheckController";
 
 export default defineEventHandler<Promise<CheckInfo[]>>(async (event) => {
     const session = await AuthController.useSession(event);

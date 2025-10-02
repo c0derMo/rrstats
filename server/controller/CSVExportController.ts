@@ -1,7 +1,5 @@
 import { DateTime } from "luxon";
 import { Match } from "../model/Match";
-import { getMap } from "~/utils/mapUtils";
-import { ChoosingPlayer, WinningPlayer } from "~/utils/interfaces/IMatch";
 import { Player } from "../model/Player";
 import { type Stringifier, stringify } from "csv-stringify";
 import MapperService from "./MapperService";

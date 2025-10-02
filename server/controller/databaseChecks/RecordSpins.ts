@@ -1,15 +1,12 @@
-import { Player } from "~/server/model/Player";
+import { Player } from "~~/server/model/Player";
 import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,
 } from "../DatabaseCheckController";
-import { MapRecord } from "~/server/model/Record";
-import { Match } from "~/server/model/Match";
-import { getAllMaps, getMap } from "~/utils/mapUtils";
+import { MapRecord } from "~~/server/model/Record";
+import { Match } from "~~/server/model/Match";
 import { DateTime } from "luxon";
-import type { IMapRecord } from "~/utils/interfaces/IRecord";
-import type { IMatch } from "~/utils/interfaces/IMatch";
 
 export class RecordSpins implements DatabaseCheck {
     info: CheckInfo = {

@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
-import { AgainstAllOdds } from "~/server/controller/achievements/automatic/map/AgainstAllOdds";
-import { BeatTheHouse } from "~/server/controller/achievements/automatic/map/BeatTheHouse";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
+import { AgainstAllOdds } from "~~/server/controller/achievements/automatic/map/AgainstAllOdds";
+import { BeatTheHouse } from "~~/server/controller/achievements/automatic/map/BeatTheHouse";
 import {
     CuttingEdge,
     DressedForTheOccasion,
@@ -12,15 +12,15 @@ import {
     WaitingToHappen,
     WhysItSpicy,
     WorthAShot,
-} from "~/server/controller/achievements/automatic/map/ConditionAchievements";
-import { GloballyInnovative } from "~/server/controller/achievements/automatic/map/GloballyInnovative";
-import { HistoryRepeatsItself } from "~/server/controller/achievements/automatic/map/HistoryRepeatsItself";
-import { IHateThatMap } from "~/server/controller/achievements/automatic/map/IHateThatMap";
-import { ILoveThatMap } from "~/server/controller/achievements/automatic/map/ILoveThatMap";
-import { NoWeaknesses } from "~/server/controller/achievements/automatic/map/NoWeaknesses";
-import { PointsForYou } from "~/server/controller/achievements/automatic/map/PointsForYou";
-import { TheHouseEdge } from "~/server/controller/achievements/automatic/map/TheHouseEdge";
-import { WorldOfAssassination } from "~/server/controller/achievements/automatic/map/WorldOfAssassination";
+} from "~~/server/controller/achievements/automatic/map/ConditionAchievements";
+import { GloballyInnovative } from "~~/server/controller/achievements/automatic/map/GloballyInnovative";
+import { HistoryRepeatsItself } from "~~/server/controller/achievements/automatic/map/HistoryRepeatsItself";
+import { IHateThatMap } from "~~/server/controller/achievements/automatic/map/IHateThatMap";
+import { ILoveThatMap } from "~~/server/controller/achievements/automatic/map/ILoveThatMap";
+import { NoWeaknesses } from "~~/server/controller/achievements/automatic/map/NoWeaknesses";
+import { PointsForYou } from "~~/server/controller/achievements/automatic/map/PointsForYou";
+import { TheHouseEdge } from "~~/server/controller/achievements/automatic/map/TheHouseEdge";
+import { WorldOfAssassination } from "~~/server/controller/achievements/automatic/map/WorldOfAssassination";
 import "./achievementTestUtils";
 
 let database: DatabaseConnector;

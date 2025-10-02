@@ -1,7 +1,7 @@
 import { In } from "typeorm";
-import { AuthController } from "~/server/controller/AuthController";
-import { Competition, CompetitionPlacement } from "~/server/model/Competition";
-import { Player } from "~/server/model/Player";
+import { AuthController } from "~~/server/controller/AuthController";
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
+import { Player } from "~~/server/model/Player";
 import type { AccoladeResponse } from "../APITypes";
 
 export default defineEventHandler<AccoladeResponse>(async (event) => {

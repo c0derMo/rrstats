@@ -1,15 +1,15 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
 import "./achievementTestUtils";
-import { AFullCalendar } from "~/server/controller/achievements/automatic/streak/AFullCalendar";
-import { DoubleDown } from "~/server/controller/achievements/automatic/streak/DoubleDown";
-import { GuessWhosBack } from "~/server/controller/achievements/automatic/streak/GuessWhosBack";
-import { OnAMission } from "~/server/controller/achievements/automatic/streak/OnAMission";
-import { OnARoll } from "~/server/controller/achievements/automatic/streak/OnARoll";
-import { OnAStreak } from "~/server/controller/achievements/automatic/streak/OnAStreak";
-import { StayCation } from "~/server/controller/achievements/automatic/streak/StayCation";
-import { TheEncore } from "~/server/controller/achievements/automatic/streak/TheEncore";
+import { AFullCalendar } from "~~/server/controller/achievements/automatic/streak/AFullCalendar";
+import { DoubleDown } from "~~/server/controller/achievements/automatic/streak/DoubleDown";
+import { GuessWhosBack } from "~~/server/controller/achievements/automatic/streak/GuessWhosBack";
+import { OnAMission } from "~~/server/controller/achievements/automatic/streak/OnAMission";
+import { OnARoll } from "~~/server/controller/achievements/automatic/streak/OnARoll";
+import { OnAStreak } from "~~/server/controller/achievements/automatic/streak/OnAStreak";
+import { StayCation } from "~~/server/controller/achievements/automatic/streak/StayCation";
+import { TheEncore } from "~~/server/controller/achievements/automatic/streak/TheEncore";
 
 let database: DatabaseConnector;
 

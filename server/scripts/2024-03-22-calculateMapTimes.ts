@@ -1,7 +1,5 @@
 import { DataSource, In } from "typeorm";
 import { Match } from "../model/Match";
-import { DefaultedMap } from "~/utils/DefaultedMap";
-import { getAllMaps, getMap } from "~/utils/mapUtils";
 
 function getQuartile(stats: number[], p: number): number {
     const sorted = [...stats].sort((a, b) => a - b);

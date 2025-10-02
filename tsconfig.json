@@ -4,6 +4,7 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "strictPropertyInitialization": false,
-        "module": "ESNext"
+        "module": "ESNext",
+        "noUncheckedIndexedAccess": false
     }
 }

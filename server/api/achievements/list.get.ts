@@ -1,5 +1,4 @@
-import AchievementController from "~/server/controller/AchievementController";
-import type { AchievementInfo } from "~/utils/interfaces/AchievementInfo";
+import AchievementController from "~~/server/controller/AchievementController";
 import ld from "lodash";
 
 export default defineEventHandler<AchievementInfo[]>(() => {

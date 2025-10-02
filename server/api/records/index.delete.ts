@@ -1,7 +1,5 @@
-import { AuthController } from "~/server/controller/AuthController";
-import { GenericRecord, MapRecord } from "~/server/model/Record";
-import type { GenericRecordType } from "~/utils/interfaces/IRecord";
-import { IPermission } from "~/utils/interfaces/IUser";
+import { AuthController } from "~~/server/controller/AuthController";
+import { GenericRecord, MapRecord } from "~~/server/model/Record";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody<{

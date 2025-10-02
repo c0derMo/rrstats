@@ -8,14 +8,14 @@ import {
     vi,
     type MockInstance,
 } from "vitest";
-import AchievementController from "~/server/controller/AchievementController";
-import DatabaseConnector from "~/server/controller/DatabaseConnnector";
-import EloController from "~/server/controller/EloController";
-import NotificationController from "~/server/controller/NotificationController";
-import { RoulettePlayer } from "~/server/controller/achievements/automatic/experience/RoulettePlayer";
-import { Achievement } from "~/server/model/Achievement";
-import { Match } from "~/server/model/Match";
-import { Player } from "~/server/model/Player";
+import AchievementController from "~~/server/controller/AchievementController";
+import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
+import EloController from "~~/server/controller/EloController";
+import NotificationController from "~~/server/controller/NotificationController";
+import { RoulettePlayer } from "~~/server/controller/achievements/automatic/experience/RoulettePlayer";
+import { Achievement } from "~~/server/model/Achievement";
+import { Match } from "~~/server/model/Match";
+import { Player } from "~~/server/model/Player";
 
 let database: DatabaseConnector;
 

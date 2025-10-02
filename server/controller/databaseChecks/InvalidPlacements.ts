@@ -1,11 +1,11 @@
-import { CompetitionPlacement } from "~/server/model/Competition";
+import { CompetitionPlacement } from "~~/server/model/Competition";
 import type {
     CheckInfo,
     CheckResult,
     DatabaseCheck,
 } from "../DatabaseCheckController";
 import { In, Not } from "typeorm";
-import { Player } from "~/server/model/Player";
+import { Player } from "~~/server/model/Player";
 
 export class InvalidPlacements implements DatabaseCheck {
     info: CheckInfo = {

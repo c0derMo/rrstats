@@ -1,13 +1,8 @@
-import type { Match } from "~/server/model/Match";
+import type { Match } from "~~/server/model/Match";
 import { AutomaticAchievement } from "../AutomaticAchievement";
-import type { Achievement } from "~/server/model/Achievement";
-import {
-    AchievementCategory,
-    AchievementTier,
-} from "~/utils/interfaces/AchievementInfo";
-import { Competition } from "~/server/model/Competition";
+import type { Achievement } from "~~/server/model/Achievement";
+import { Competition } from "~~/server/model/Competition";
 import { DateTime } from "luxon";
-import { StreakCounter } from "~/utils/StreakCounter";
 
 export class GuessWhosBack extends AutomaticAchievement<string[]> {
     name = "Guess Who's Back";
