@@ -37,9 +37,7 @@ export default class EloController {
     private constructor() {}
 
     static getInstance(): EloController {
-        if (EloController.instance == null) {
-            EloController.instance = new EloController();
-        }
+        EloController.instance ??= new EloController();
         return EloController.instance;
     }
 
@@ -115,9 +113,19 @@ export default class EloController {
         this.lastTournament = {};
         this.rookieMatches = {};
 
-        const matches = await Match.find({
-            order: { timestamp: "ASC" },
-        });
+        const matches = await Match.createQueryBuilder("match")
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "match.playerOneScore",
+                "match.playerTwoScore",
+                "match.competition",
+                "match.eloChange",
+                "match.timestamp",
+                "match.round",
+            ])
+            .orderBy("match.timestamp", "ASC")
+            .getMany();
 
         const nonForfeitMatches = matches.filter(
             (match) => match.playerOneScore + match.playerTwoScore > 1,
@@ -127,7 +135,11 @@ export default class EloController {
         for (const match of nonForfeitMatches) {
             const isUpdated = await this.recalculateMatch(match);
             if (isUpdated) {
-                await match.save();
+                await Match.createQueryBuilder("match")
+                    .update()
+                    .set({ eloChange: match.eloChange })
+                    .where({ uuid: match.uuid })
+                    .execute();
                 updatedMatches += 1;
             }
         }
@@ -140,16 +152,12 @@ export default class EloController {
     }
 
     async recalculateMatch(match: Match) {
-        if (this.eloCache[match.playerOne] == null) {
-            this.eloCache[match.playerOne] = [
-                { elo: 1000, timestamp: match.timestamp - DAY_IN_MS },
-            ];
-        }
-        if (this.eloCache[match.playerTwo] == null) {
-            this.eloCache[match.playerTwo] = [
-                { elo: 1000, timestamp: match.timestamp - DAY_IN_MS },
-            ];
-        }
+        this.eloCache[match.playerOne] ??= [
+            { elo: 1000, timestamp: match.timestamp - DAY_IN_MS },
+        ];
+        this.eloCache[match.playerTwo] ??= [
+            { elo: 1000, timestamp: match.timestamp - DAY_IN_MS },
+        ];
         if (
             !this.playedTournaments
                 .get(match.playerOne)
@@ -311,9 +319,7 @@ export default class EloController {
 
     private getKFactorOfPlayer(tournament: string, playerUUID: string): number {
         // Initializing rookie boost
-        if (this.rookieMatches[playerUUID] == null) {
-            this.rookieMatches[playerUUID] = 20;
-        }
+        this.rookieMatches[playerUUID] ??= 20;
 
         // Initializing returnee boost
         if (this.lastTournament[playerUUID] == null) {
@@ -388,9 +394,9 @@ function round(toRound: number): number {
 
 @EventSubscriber()
 export class EloDatabaseListener implements EntitySubscriberInterface {
-    private matchesToIgnore: Set<string> = new Set();
+    private readonly matchesToIgnore: Set<string> = new Set();
 
-    private functionCaller = new DebouncedInvalidationFunction(() =>
+    private readonly functionCaller = new DebouncedInvalidationFunction(() =>
         EloController.getInstance().recalculateAllElos(),
     );
 

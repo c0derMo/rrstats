@@ -301,15 +301,15 @@ export default class AchievementController {
 
     @Log("AchievementController.recalculateAllAchievements")
     public static async recalculateAllAchievements(): Promise<void> {
-        const matches = await Match.find({
-            order: {
-                timestamp: "ASC",
-            },
-        });
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select("*")
+            .orderBy("match.timestamp", "ASC")
+            .getMany();
 
-        const allPlayers = await Player.find({
-            select: ["uuid"],
-        });
+        const allPlayers = await Player.createQueryBuilder("player")
+            .select(["player.uuid"])
+            .getMany();
 
         const promises = AchievementController.automaticAchievements.map((m) =>
             (async () => {
@@ -468,7 +468,6 @@ export class AchievementVerifyListener
             merged.verified
         ) {
             NotificationController.updateManualAchievementVerified(merged);
-            logger.info("After update triggered");
         }
     }
 }
