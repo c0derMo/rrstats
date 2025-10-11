@@ -15,7 +15,6 @@ describe("Player Leaderboards", () => {
         await database.initialize();
         await EloController.getInstance().fetchCompetitions();
         await EloController.getInstance().recalculateAllElos();
-        await LeaderboardController.recalculate();
     });
 
     afterAll(async () => {

@@ -12,7 +12,6 @@ describe("Country Leaderboards", () => {
             false,
         );
         await database.initialize();
-        await LeaderboardController.recalculate();
     });
 
     afterAll(async () => {
