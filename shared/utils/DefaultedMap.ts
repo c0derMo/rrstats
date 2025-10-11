@@ -22,6 +22,10 @@ export class DefaultedMap<K, T> {
         this.map.set(key, value);
     }
 
+    public has(key: K): boolean {
+        return this.map.has(key);
+    }
+
     public getAll(): Map<K, T> {
         return new Map(this.map);
     }
@@ -32,6 +36,16 @@ export class DefaultedMap<K, T> {
             result.push(mapper(key, value));
         }
         return result;
+    }
+
+    public forEach(func: (key: K, value: T) => unknown) {
+        for (const [key, value] of this.map.entries()) {
+            func(key, value);
+        }
+    }
+
+    public keys(): MapIterator<K> {
+        return this.map.keys();
     }
 
     public clear() {
