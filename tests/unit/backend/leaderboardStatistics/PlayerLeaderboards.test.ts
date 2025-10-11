@@ -44,7 +44,7 @@ describe("Player Leaderboards", () => {
         });
 
         expect(players[236]).toEqual({
-            player: "5c223821-1976-4938-b287-e8d160035760",
+            player: "d97a24c4-e943-4b8b-b641-0489b0da6be3",
             displayScore: "0 Platinum - 0 Gold - 0 Silver - 1 Bronze",
             sortingScore: 233,
         });
@@ -197,7 +197,7 @@ describe("Player Leaderboards", () => {
         });
 
         expect(players[236]).toEqual({
-            player: playerNamesToUUIDs["Los_pepos"],
+            player: playerNamesToUUIDs["theclarkside"],
             displayScore: "0",
             sortingScore: 0,
         });
@@ -317,7 +317,7 @@ describe("Player Leaderboards", () => {
         });
 
         expect(players[236]).toEqual({
-            player: playerNamesToUUIDs["Dope"],
+            player: playerNamesToUUIDs["Janawham"],
             displayScore: "0",
             sortingScore: 0,
         });
@@ -345,7 +345,7 @@ describe("Player Leaderboards", () => {
         });
 
         expect(players[236]).toEqual({
-            player: playerNamesToUUIDs["gekko"],
+            player: playerNamesToUUIDs["Lowress"],
             displayScore: "0",
             sortingScore: 0,
         });
@@ -572,29 +572,29 @@ describe("Player Leaderboards", () => {
         expect(players.length).toBe(161);
 
         expect(players[0]).toEqual({
-            player: playerNamesToUUIDs["pokeredface"],
-            displayScore: "100.00%",
-            sortingScore: 1,
-            secondaryScore: 2,
-        });
-        expect(players[1]).toEqual({
-            player: playerNamesToUUIDs["ORO"],
+            player: playerNamesToUUIDs["Crewdy"],
             displayScore: "100.00%",
             sortingScore: 1,
             secondaryScore: 1,
         });
+        expect(players[1]).toEqual({
+            player: playerNamesToUUIDs["JoeTheBabyGrabber"],
+            displayScore: "100.00%",
+            sortingScore: 1,
+            secondaryScore: 2,
+        });
         expect(players[2]).toEqual({
-            player: playerNamesToUUIDs["BernardoOne"],
+            player: playerNamesToUUIDs["Agent SSR"],
             displayScore: "100.00%",
             sortingScore: 1,
             secondaryScore: 1,
         });
 
         expect(players[160]).toEqual({
-            player: playerNamesToUUIDs["AlexHiller"],
+            player: playerNamesToUUIDs["Harmaa.-"],
             displayScore: "0.00%",
             sortingScore: 0,
-            secondaryScore: 2,
+            secondaryScore: 1,
         });
     });
 
@@ -609,12 +609,12 @@ describe("Player Leaderboards", () => {
             sortingScore: 56,
         });
         expect(players[1]).toEqual({
-            player: playerNamesToUUIDs["Frote7"],
+            player: playerNamesToUUIDs["In4Fun"],
             displayScore: "54",
             sortingScore: 54,
         });
         expect(players[2]).toEqual({
-            player: playerNamesToUUIDs["In4Fun"],
+            player: playerNamesToUUIDs["Frote7"],
             displayScore: "54",
             sortingScore: 54,
         });
@@ -756,22 +756,22 @@ describe("Player Leaderboards", () => {
         expect(players.length).toBe(236);
 
         expect(players[0]).toEqual({
+            player: playerNamesToUUIDs["Vendetta"],
+            displayScore: "100.00%",
+            sortingScore: 1,
+            secondaryScore: 2,
+        });
+        expect(players[1]).toEqual({
             player: playerNamesToUUIDs["BernardoOne"],
             displayScore: "100.00%",
             sortingScore: 1,
             secondaryScore: 1,
         });
-        expect(players[1]).toEqual({
+        expect(players[2]).toEqual({
             player: playerNamesToUUIDs["Scroob"],
             displayScore: "100.00%",
             sortingScore: 1,
             secondaryScore: 1,
-        });
-        expect(players[2]).toEqual({
-            player: playerNamesToUUIDs["Vendetta"],
-            displayScore: "100.00%",
-            sortingScore: 1,
-            secondaryScore: 2,
         });
 
         expect(players[235]).toEqual({
@@ -801,7 +801,6 @@ const playerNamesToUUIDs: Record<string, string> = {
     sleazeball: "28542412-14b1-4635-87fc-8e89a1a09a1a",
     Tysonfoodsco: "eb27c4f0-a040-49ab-ba4d-8e29f9184186",
     "Dein Nomos": "874cf8b0-19ce-44e4-8d3c-7e38786cd5d7",
-    Dope: "4673dc0e-c502-43c3-8207-c2defcb95605",
     gekko: "05daa459-d687-4a0b-97a8-65f57bfb49d4",
     Dynaso: "040e2cb0-5426-4414-8ca0-37848473b076",
     Parapluie: "756979d8-6990-4f13-9c6a-3d3f3fd87b08",
@@ -821,4 +820,10 @@ const playerNamesToUUIDs: Record<string, string> = {
     "Max Masters": "5335e4c1-a6e6-4cc2-9310-e4ee8cb07708",
     "Music Inc": "3bc6b8e6-39a7-427c-984e-a2272e94b72e",
     TheTimeCube: "3d01bc25-7a1a-4111-b480-0486d0948649",
+    Janawham: "860163f0-84d8-4a23-98eb-18f6ea72024c",
+    Lowress: "fcec534a-01f0-437a-a240-2580f431f163",
+    theclarkside: "ebef1ade-f664-477e-a006-00d744d60d03",
+    Crewdy: "531b0d9a-428b-4fc3-bd7b-df2bf11adb54",
+    JoeTheBabyGrabber: "a613c63f-8d97-48b7-88a0-b5249ffb7244",
+    "Agent SSR": "1a4e8e9b-cfca-428a-9867-72fa916c97a0",
 };

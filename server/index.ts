@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import LeaderboardController from "./controller/LeaderboardController";
 import DatabaseConnector from "./controller/DatabaseConnnector";
 import { VERSION } from "./version";
 import EloController from "./controller/EloController";
@@ -22,7 +21,6 @@ export default defineNitroPlugin(async (nitroApp) => {
     await EloController.getInstance().fetchCompetitions();
     await EloController.getInstance().recalculateAllElos();
     await AchievementController.recalculateAllAchievements();
-    await LeaderboardController.recalculate();
     NotificationController.initialize();
 
     setReady(true);

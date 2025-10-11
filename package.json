@@ -11,7 +11,7 @@
         "prettier": "prettier . --write",
         "lint": "eslint .",
         "typecheck": "nuxt typecheck",
-        "script": "tsx --tsconfig ./server/tsconfig.json",
+        "script": "tsx --tsconfig ./server/tsconfig.json --import ./server/scripts/globals.ts",
         "test:unit": "vitest",
         "test:e2e": "playwright test",
         "sqlite2pg": "tsx --tsconfig ./server/tsconfig.json ./server/scripts/2024-09-26-sqliteToPG.ts"

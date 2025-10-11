@@ -1,3 +1,4 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerMatchesCasted implements LeaderboardPlayerStatistic {
@@ -5,7 +6,12 @@ export class PlayerMatchesCasted implements LeaderboardPlayerStatistic {
     name = "Matches casted";
     hasMaps = false;
 
-    calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
+    basedOn = ["match" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const matches = await Match.createQueryBuilder("match")
+            .select(["match.shoutcasters"])
+            .getMany();
         const matchesCasted: DefaultedMap<string, number> = new DefaultedMap(
             () => 0,
         );

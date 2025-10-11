@@ -1,3 +1,4 @@
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerTitlesWon implements LeaderboardPlayerStatistic {
@@ -5,33 +6,38 @@ export class PlayerTitlesWon implements LeaderboardPlayerStatistic {
     name = "Titles won";
     hasMaps = false;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ): LeaderboardPlayerEntry[] {
-        const titlesPerPlayer: DefaultedMap<string, number> = new DefaultedMap(
-            () => 0,
-        );
+    basedOn = ["placement" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const placements = await CompetitionPlacement.createQueryBuilder(
+            "placement",
+        )
+            .innerJoin(
+                Competition,
+                "competition",
+                "placement.competition = competition.tag",
+            )
+            .where("competition.officialCompetition = TRUE")
+            .andWhere("placement.placement == 1")
+            .select(["placement.player"])
+            .getMany();
+        const appearances: Record<string, number> = {};
 
         for (const placement of placements) {
-            if (placement.placement !== 1) continue;
-            titlesPerPlayer.set(
-                placement.player,
-                titlesPerPlayer.get(placement.player) + 1,
-            );
+            appearances[placement.player] ??= 0;
+            appearances[placement.player] += 1;
         }
 
-        const result: LeaderboardPlayerEntry[] = titlesPerPlayer.mapAll(
-            (player, wins) => {
-                return {
-                    player,
-                    displayScore: wins.toString(),
-                    sortingScore: wins,
-                };
-            },
-        );
+        const result: LeaderboardPlayerEntry[] = [];
+        for (const player in appearances) {
+            result.push({
+                player: player,
+                displayScore: appearances[player].toString(),
+                sortingScore: appearances[player],
+            });
+        }
         result.sort((a, b) => b.sortingScore - a.sortingScore);
+
         return result;
     }
 }

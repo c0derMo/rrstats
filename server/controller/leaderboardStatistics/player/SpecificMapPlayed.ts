@@ -1,3 +1,4 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerSpecificMapPlayed implements LeaderboardPlayerStatistic {
@@ -5,17 +6,18 @@ export class PlayerSpecificMapPlayed implements LeaderboardPlayerStatistic {
     name = "Spins played on specific map";
     hasMaps = true;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-    ): Record<HitmanMap, LeaderboardPlayerEntry[]> {
+    basedOn = ["match" as const, "map" as const];
+
+    async calculate(): Promise<Record<HitmanMap, LeaderboardPlayerEntry[]>> {
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select(["match.playerOne", "match.playerTwo", "map.map"])
+            .getMany();
         const mapCount: Record<string, Record<HitmanMap, number>> = {};
 
         for (const match of matches) {
-            if (mapCount[match.playerOne] == null)
-                mapCount[match.playerOne] = this.getDefaultMapRecord(0);
-            if (mapCount[match.playerTwo] == null)
-                mapCount[match.playerTwo] = this.getDefaultMapRecord(0);
+            mapCount[match.playerOne] ??= this.getDefaultMapRecord(0);
+            mapCount[match.playerTwo] ??= this.getDefaultMapRecord(0);
 
             for (const map of match.playedMaps) {
                 mapCount[match.playerOne][map.map] += 1;

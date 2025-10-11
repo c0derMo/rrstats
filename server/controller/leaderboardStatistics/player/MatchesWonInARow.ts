@@ -1,3 +1,4 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
@@ -5,7 +6,18 @@ export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
     name = "Most matches won in a row";
     hasMaps = false;
 
-    calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
+    basedOn = ["match" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const matches = await Match.createQueryBuilder("match")
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "match.playerOneScore",
+                "match.playerTwoScore",
+            ])
+            .orderBy("match.timestamp", "ASC")
+            .getMany();
         const streakInfo = new DefaultedMap<string, StreakCounter>(
             () => new StreakCounter(),
         );

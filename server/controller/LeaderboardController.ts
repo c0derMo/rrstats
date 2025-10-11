@@ -4,7 +4,6 @@ import { Competition, CompetitionPlacement } from "../model/Competition";
 import {
     type EntitySubscriberInterface,
     EventSubscriber,
-    In,
     type InsertEvent,
     type UpdateEvent,
 } from "typeorm";
@@ -45,18 +44,21 @@ import { PlayedMap } from "../model/PlayedMap";
 import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
 import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
 import { isReady } from "../readyListener";
+import { Achievement } from "../model/Achievement";
 
 interface GenericLeaderboardStatistic<T extends string, R>
     extends StatisticData<T> {
-    calculate: (
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-        officialCompetitions: ICompetition[],
-    ) =>
-        | R[]
-        | Record<HitmanMap, R[]>
-        | Record<HitmanMap | OptionalMap, R[]>
+    basedOn: (
+        | "player"
+        | "match"
+        | "map"
+        | "comp"
+        | "placement"
+        | "achievement"
+    )[];
+    calculate: () =>
+        | Promise<Record<HitmanMap, R[]>>
+        | Promise<Record<HitmanMap | OptionalMap, R[]>>
         | Promise<R[]>;
 }
 
@@ -86,15 +88,14 @@ export type LeaderboardEntry =
 const logger = consola.withTag("rrstats:leaderboards");
 
 export default class LeaderboardController {
-    private static cache: Record<
+    private static cache: Map<
         string,
         | LeaderboardPlayerEntry[]
         | LeaderboardCountryEntry[]
         | LeaderboardMapEntry[]
         | Record<HitmanMap, LeaderboardEntry[]>
         | Record<HitmanMap | OptionalMap, LeaderboardEntry[]>
-    > = {};
-    private static calculationPromise: Promise<void> | null = null;
+    > = new Map();
 
     private static readonly statistics: LeaderboardStatistic[] = [
         new PlayerWinrate(),
@@ -135,45 +136,17 @@ export default class LeaderboardController {
         new MapAppearance(),
     ];
 
-    public static async recalculate(): Promise<void> {
-        LeaderboardController.calculationPromise =
-            LeaderboardController._recalculate();
-        try {
-            await LeaderboardController.calculationPromise;
-        } finally {
-            LeaderboardController.calculationPromise = null;
-        }
-        logger.info("Leaderboards recalculated.");
-    }
-
-    @Log("LeaderboardController._recalculate")
-    private static async _recalculate(): Promise<void> {
-        // Empty the cache
-        LeaderboardController.cache = {};
-
-        // Query ALL THE THINGS
-        const players = await Player.find();
-        const matches = await Match.find({
-            order: { timestamp: "ASC" },
-        });
-        const competitions = await Competition.find({
-            where: { officialCompetition: true },
-            order: { startingTimestamp: "DESC" },
-        });
-        const placements = await CompetitionPlacement.find({
-            where: { competition: In(competitions.map((comp) => comp.tag)) },
-        });
-
+    public static clearCache(
+        type: "player" | "match" | "map" | "comp" | "placement" | "achievement",
+    ) {
+        let count = 0;
         for (const statistic of LeaderboardController.statistics) {
-            const result = statistic.calculate(
-                players,
-                matches,
-                placements,
-                competitions,
-            );
-            LeaderboardController.cache[statistic.name] =
-                result instanceof Promise ? await result : result;
+            if (statistic.basedOn.includes(type)) {
+                count++;
+                LeaderboardController.cache.delete(statistic.name);
+            }
         }
+        logger.log("Cleaned %d statistics with %s type.", count, type);
     }
 
     public static async getCategories(): Promise<{
@@ -224,49 +197,81 @@ export default class LeaderboardController {
         };
     }
 
+    @Log("LeaderboardController.getEntries", true)
     public static async getEntries(
         category: string,
         map?: HitmanMap | OptionalMap,
     ): Promise<LeaderboardEntry[]> {
-        if (LeaderboardController.calculationPromise != null) {
-            await LeaderboardController.calculationPromise;
-        }
-
         const statistic = LeaderboardController.statistics.find(
             (stat) => stat.name === category,
         );
         if (statistic == null) {
             return [];
         }
+
+        if (!LeaderboardController.cache.has(category)) {
+            LeaderboardController.cache.set(
+                category,
+                await statistic.calculate(),
+            );
+        }
+
         if (statistic.hasMaps) {
             if (map == null) {
                 return [];
             } else if (map === OptionalMap.NO_MAP) {
                 return (
-                    LeaderboardController.cache[category] as Record<
+                    LeaderboardController.cache.get(category) as Record<
                         HitmanMap | OptionalMap,
                         LeaderboardEntry[]
                     >
                 )[OptionalMap.NO_MAP];
             } else {
                 return (
-                    LeaderboardController.cache[category] as Record<
+                    LeaderboardController.cache.get(category) as Record<
                         HitmanMap,
                         LeaderboardEntry[]
                     >
                 )[map];
             }
         } else {
-            return LeaderboardController.cache[category] as LeaderboardEntry[];
+            return LeaderboardController.cache.get(
+                category,
+            ) as LeaderboardEntry[];
         }
     }
 }
 
 @EventSubscriber()
 export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
-    private readonly functionCaller = new DebouncedInvalidationFunction(
-        LeaderboardController.recalculate,
-        { maxWait: 10000, checkInterval: 100, inactivityWait: 2000 },
+    private readonly settings = {
+        maxWait: 10000,
+        checkInterval: 100,
+        inactivityWait: 2000,
+    };
+    private readonly clearPlayer = new DebouncedInvalidationFunction(
+        () => LeaderboardController.clearCache("player"),
+        this.settings,
+    );
+    private readonly clearMatch = new DebouncedInvalidationFunction(
+        () => LeaderboardController.clearCache("match"),
+        this.settings,
+    );
+    private readonly clearMap = new DebouncedInvalidationFunction(
+        () => LeaderboardController.clearCache("map"),
+        this.settings,
+    );
+    private readonly clearComp = new DebouncedInvalidationFunction(
+        () => LeaderboardController.clearCache("comp"),
+        this.settings,
+    );
+    private readonly clearPlacement = new DebouncedInvalidationFunction(
+        () => LeaderboardController.clearCache("placement"),
+        this.settings,
+    );
+    private readonly clearAchievements = new DebouncedInvalidationFunction(
+        () => LeaderboardController.clearCache("achievement"),
+        this.settings,
     );
 
     afterInsert(event: InsertEvent<unknown>): void {
@@ -281,18 +286,24 @@ export class LeaderboardDatabaseListener implements EntitySubscriberInterface {
         if (!isReady()) {
             return;
         }
-        if (
-            !(
-                entity instanceof Player ||
-                entity instanceof Match ||
-                entity instanceof CompetitionPlacement ||
-                entity instanceof Competition ||
-                entity instanceof PlayedMap
-            )
-        ) {
-            return;
-        }
 
-        this.functionCaller.call();
+        if (entity instanceof Player) {
+            this.clearPlayer.call();
+        }
+        if (entity instanceof Match) {
+            this.clearMatch.call();
+        }
+        if (entity instanceof PlayedMap) {
+            this.clearMap.call();
+        }
+        if (entity instanceof Competition) {
+            this.clearComp.call();
+        }
+        if (entity instanceof CompetitionPlacement) {
+            this.clearPlacement.call();
+        }
+        if (entity instanceof Achievement) {
+            this.clearAchievements.call();
+        }
     }
 }

@@ -1,3 +1,4 @@
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerRRWCAppearances implements LeaderboardPlayerStatistic {
@@ -5,17 +6,27 @@ export class PlayerRRWCAppearances implements LeaderboardPlayerStatistic {
     name = "RRWC Participations";
     hasMaps = false;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ): LeaderboardPlayerEntry[] {
+    basedOn = ["placement" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const placements = await CompetitionPlacement.createQueryBuilder(
+            "placement",
+        )
+            .innerJoin(
+                Competition,
+                "competition",
+                "placement.competition = competition.tag",
+            )
+            .where("competition.officialCompetition = TRUE")
+            .select(["placement.player", "placement.competition"])
+            .getMany();
         const appearances: Record<string, Set<string>> = {};
 
         for (const placement of placements) {
-            if (!placement.competition.toLowerCase().includes("wc")) continue;
-            if (appearances[placement.player] == null)
-                appearances[placement.player] = new Set();
+            if (!placement.competition.toLowerCase().includes("wc")) {
+                continue;
+            }
+            appearances[placement.player] ??= new Set();
             appearances[placement.player].add(placement.competition);
         }
 

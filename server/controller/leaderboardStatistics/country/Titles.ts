@@ -1,16 +1,31 @@
+import { Player } from "~~/server/model/Player";
 import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
 import MapperService from "../../MapperService";
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 
 export class CountryTitles implements LeaderboardCountryStatistic {
     type = "country" as const;
     name = "Titles per country";
     hasMaps = false;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ): LeaderboardCountryEntry[] {
+    basedOn = ["player" as const, "placement" as const];
+
+    async calculate(): Promise<LeaderboardCountryEntry[]> {
+        const players = await Player.createQueryBuilder("player")
+            .select(["player.uuid", "player.nationality"])
+            .getMany();
+        const placements = await CompetitionPlacement.createQueryBuilder(
+            "placement",
+        )
+            .innerJoin(
+                Competition,
+                "competition",
+                "placement.competition = competition.tag",
+            )
+            .where("competition.officialCompetition = TRUE")
+            .andWhere("placement.placement = 1")
+            .select(["placement.player"])
+            .getMany();
         const countryMap = MapperService.createStringMapFromList(
             players,
             "uuid",
@@ -22,7 +37,7 @@ export class CountryTitles implements LeaderboardCountryStatistic {
             DefaultedMap<string, number>
         > = new DefaultedMap(() => new DefaultedMap(() => 0));
         for (const placement of placements) {
-            if (placement.placement !== 1) continue;
+            // if (placement.placement !== 1) continue;
             const nationality = countryMap[placement.player];
             if (nationality != null) {
                 const countryMap = titlesPerCountry.get(nationality);

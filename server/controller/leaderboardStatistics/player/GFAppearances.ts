@@ -1,3 +1,4 @@
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerGFAppearances implements LeaderboardPlayerStatistic {
@@ -5,18 +6,29 @@ export class PlayerGFAppearances implements LeaderboardPlayerStatistic {
     name = "Grand Final Appearances";
     hasMaps = false;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ): LeaderboardPlayerEntry[] {
+    basedOn = ["placement" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const placements = await CompetitionPlacement.createQueryBuilder(
+            "placement",
+        )
+            .innerJoin(
+                Competition,
+                "competition",
+                "placement.competition = competition.tag",
+            )
+            .where("competition.officialCompetition = TRUE")
+            .andWhere("placement.placement <= 2")
+            .select([
+                "placement.player",
+                "placement.placement",
+                "placement.competition",
+            ])
+            .getMany();
         const appearances: Record<string, Set<string>> = {};
 
         for (const placement of placements) {
-            if (placement.placement == null || placement.placement > 2)
-                continue;
-            if (appearances[placement.player] == null)
-                appearances[placement.player] = new Set();
+            appearances[placement.player] ??= new Set();
             appearances[placement.player].add(placement.competition);
         }
 

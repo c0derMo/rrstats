@@ -1,6 +1,8 @@
 import withNuxt from "./.nuxt/eslint.config.mjs";
 
-export default withNuxt({
+export default withNuxt([{
+    ignores: ['server/scripts/globals.ts'] 
+}, {
     rules: {
         "@typescript-eslint/no-extraneous-class": "off",
         "vue/html-self-closing": [
@@ -14,4 +16,4 @@ export default withNuxt({
         "vue/define-emits-declaration": ["warn"],
         "vue/define-props-declaration": ["error"],
     },
-});
+}]);

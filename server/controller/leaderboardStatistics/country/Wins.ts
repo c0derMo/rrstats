@@ -1,15 +1,27 @@
+import { Player } from "~~/server/model/Player";
 import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
 import MapperService from "../../MapperService";
+import { Match } from "~~/server/model/Match";
 
 export class CountryWins implements LeaderboardCountryStatistic {
     type = "country" as const;
     name = "Wins per country";
     hasMaps = false;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-    ): LeaderboardCountryEntry[] {
+    basedOn = ["player" as const, "match" as const];
+
+    async calculate(): Promise<LeaderboardCountryEntry[]> {
+        const players = await Player.createQueryBuilder("player")
+            .select(["player.uuid", "player.nationality"])
+            .getMany();
+        const matches = await Match.createQueryBuilder("match")
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "match.playerOneScore",
+                "match.playerTwoScore",
+            ])
+            .getMany();
         const countryMap = MapperService.createStringMapFromList(
             players,
             "uuid",

@@ -1,5 +1,6 @@
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import AchievementController from "../../AchievementController";
+import { Player } from "~~/server/model/Player";
 
 interface AchievementCount {
     player: string;
@@ -16,7 +17,12 @@ export class PlayerAchievements implements LeaderboardPlayerStatistic {
     explanatoryText =
         "Number of achievements, ranked by Platinum, Gold, Silver and Bronze.";
 
-    async calculate(players: IPlayer[]): Promise<LeaderboardPlayerEntry[]> {
+    basedOn = ["player" as const, "achievement" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const players = await Player.createQueryBuilder("player")
+            .select(["player.uuid"])
+            .getMany();
         const result: LeaderboardPlayerEntry[] = [];
 
         const tmp: AchievementCount[] = [];
