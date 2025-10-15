@@ -22,7 +22,9 @@ describe("LeaderboardController", () => {
         for (const statistic of LeaderboardController.statistics) {
             const startTime = DateTime.now();
             await LeaderboardController.getEntries(statistic.name);
-            expect.soft(startTime.diffNow().as("milliseconds")).toBeLessThan(500);
+            expect
+                .soft(startTime.diffNow().as("milliseconds"))
+                .toBeLessThan(500);
         }
     });
 
