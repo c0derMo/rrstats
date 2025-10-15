@@ -302,8 +302,8 @@ export default class AchievementController {
     @Log("AchievementController.recalculateAllAchievements")
     public static async recalculateAllAchievements(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
-            .innerJoin("match.playedMaps", "map")
-            .select("*")
+            .leftJoin("match.playedMaps", "map")
+            .select()
             .orderBy("match.timestamp", "ASC")
             .getMany();
 
