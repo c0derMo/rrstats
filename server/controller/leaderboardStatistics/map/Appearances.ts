@@ -1,4 +1,6 @@
+import { Competition } from "~~/server/model/Competition";
 import type { LeaderboardMapStatistic } from "../../LeaderboardController";
+import { Match } from "~~/server/model/Match";
 
 export class MapAppearance implements LeaderboardMapStatistic {
     type = "map" as const;
@@ -6,12 +8,20 @@ export class MapAppearance implements LeaderboardMapStatistic {
     explanatoryText =
         "Total of map picked, map banned & map played as random map";
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-        officialCompetitions: ICompetition[],
-    ): LeaderboardMapEntry[] {
+    basedOn = ["match" as const, "map" as const, "comp" as const];
+
+    async calculate(): Promise<LeaderboardMapEntry[]> {
+        const officialCompetitions = await Competition.createQueryBuilder(
+            "competition",
+        )
+            .where("competition.officialCompetition = TRUE")
+            .select(["competition.tag"])
+            .orderBy("competition.startingTimestamp", "DESC")
+            .getMany();
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select(["match.competition", "match.bannedMaps", "map.map"])
+            .getMany();
         const appearanceMap: DefaultedMap<string, number[]> = new DefaultedMap(
             () => Array(officialCompetitions.length).fill(0),
         );

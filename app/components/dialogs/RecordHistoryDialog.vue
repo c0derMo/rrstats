@@ -348,7 +348,7 @@ function axisLabelFunction(value: string | number): string {
 
 function tooltipLabelFunction(item: TooltipItem<"line">): string {
     return (
-        Duration.fromMillis(item.parsed.y * 1000).toFormat("hh:mm:ss") +
+        Duration.fromMillis(item.parsed.y! * 1000).toFormat("hh:mm:ss") +
         " by " +
         (item.raw as { recordHolders: string[] }).recordHolders.join(", ")
     );

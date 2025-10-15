@@ -1,3 +1,4 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
@@ -7,7 +8,19 @@ export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
     secondaryFilter = "Own-map-picks played";
     defaultSecondaryFilter = 5;
 
-    calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
+    basedOn = ["match" as const, "map" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "map.winner",
+                "map.picked",
+            ])
+            .getMany();
+
         const playedMaps: Record<string, { played: number; won: number }> = {};
 
         for (const match of matches) {
@@ -15,15 +28,13 @@ export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
                 if (map.picked === ChoosingPlayer.RANDOM) continue;
 
                 if (map.picked === ChoosingPlayer.PLAYER_ONE) {
-                    if (playedMaps[match.playerOne] == null)
-                        playedMaps[match.playerOne] = { played: 0, won: 0 };
+                    playedMaps[match.playerOne] ??= { played: 0, won: 0 };
                     playedMaps[match.playerOne].played += 1;
                     if (map.winner === WinningPlayer.PLAYER_ONE) {
                         playedMaps[match.playerOne].won += 1;
                     }
                 } else if (map.picked === ChoosingPlayer.PLAYER_TWO) {
-                    if (playedMaps[match.playerTwo] == null)
-                        playedMaps[match.playerTwo] = { played: 0, won: 0 };
+                    playedMaps[match.playerTwo] ??= { played: 0, won: 0 };
                     playedMaps[match.playerTwo].played += 1;
                     if (map.winner === WinningPlayer.PLAYER_TWO) {
                         playedMaps[match.playerTwo].won += 1;

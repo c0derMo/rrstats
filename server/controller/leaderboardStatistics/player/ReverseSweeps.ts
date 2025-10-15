@@ -1,3 +1,4 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
@@ -7,7 +8,19 @@ export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
     explanatoryText =
         "Winning the match with 6 or more points after losing the first half of the maps.";
 
-    calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
+    basedOn = ["match" as const, "map" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select([
+                "match.playerOne",
+                "match.playerOneScore",
+                "match.playerTwo",
+                "match.playerTwoScore",
+                "map.winner",
+            ])
+            .getMany();
         const playerMap: Record<string, number> = {};
 
         for (const match of matches) {
@@ -34,12 +47,10 @@ export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
 
             if (isReverseSweep) {
                 if (winner === WinningPlayer.PLAYER_ONE) {
-                    if (playerMap[match.playerOne] == null)
-                        playerMap[match.playerOne] = 0;
+                    playerMap[match.playerOne] ??= 0;
                     playerMap[match.playerOne] += 1;
                 } else if (winner === WinningPlayer.PLAYER_TWO) {
-                    if (playerMap[match.playerTwo] == null)
-                        playerMap[match.playerTwo] = 0;
+                    playerMap[match.playerTwo] ??= 0;
                     playerMap[match.playerTwo] += 1;
                 }
             }

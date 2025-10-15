@@ -18,15 +18,15 @@ describe("LeaderboardController", () => {
         await database.destroy();
     });
 
-    test(
-        "Performance: Leaderboard recalculation",
-        { timeout: 10000 },
-        async () => {
+    test("Performance: Individual leaderboard calculations", async () => {
+        for (const statistic of LeaderboardController.statistics) {
             const startTime = DateTime.now();
-            await LeaderboardController.recalculate();
-            expect(startTime.diffNow().as("milliseconds")).toBeLessThan(10000);
-        },
-    );
+            await LeaderboardController.getEntries(statistic.name);
+            expect
+                .soft(startTime.diffNow().as("milliseconds"))
+                .toBeLessThan(500);
+        }
+    });
 
     test("Correct leaderboard categories", { timeout: 10000 }, async () => {
         const categories = await LeaderboardController.getCategories();

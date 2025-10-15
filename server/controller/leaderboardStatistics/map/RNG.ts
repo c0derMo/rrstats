@@ -1,15 +1,25 @@
+import { Competition } from "~~/server/model/Competition";
 import type { LeaderboardMapStatistic } from "../../LeaderboardController";
+import { Match } from "~~/server/model/Match";
 
 export class MapRNG implements LeaderboardMapStatistic {
     type = "map" as const;
     name = "Played as random map";
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-        officialCompetitions: ICompetition[],
-    ): LeaderboardMapEntry[] {
+    basedOn = ["match" as const, "map" as const, "comp" as const];
+
+    async calculate(): Promise<LeaderboardMapEntry[]> {
+        const officialCompetitions = await Competition.createQueryBuilder(
+            "competition",
+        )
+            .where("competition.officialCompetition = TRUE")
+            .select(["competition.tag"])
+            .orderBy("competition.startingTimestamp", "DESC")
+            .getMany();
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select(["match.competition", "map.map", "map.picked"])
+            .getMany();
         const randomMap: DefaultedMap<string, number[]> = new DefaultedMap(() =>
             Array(officialCompetitions.length).fill(0),
         );

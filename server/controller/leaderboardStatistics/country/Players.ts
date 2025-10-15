@@ -1,3 +1,4 @@
+import { Player } from "~~/server/model/Player";
 import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
 
 export class CountryPlayers implements LeaderboardCountryStatistic {
@@ -5,7 +6,13 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
     name = "Players per country";
     hasMaps = false;
 
-    calculate(players: IPlayer[]): LeaderboardCountryEntry[] {
+    basedOn = ["player" as const];
+
+    async calculate(): Promise<LeaderboardCountryEntry[]> {
+        const players = await Player.createQueryBuilder("player")
+            .select(["player.uuid", "player.nationality"])
+            .getMany();
+
         const countryMap: DefaultedMap<string, string[]> = new DefaultedMap(
             () => [],
         );

@@ -12,7 +12,6 @@ describe("Country Leaderboards", () => {
             false,
         );
         await database.initialize();
-        await LeaderboardController.recalculate();
     });
 
     afterAll(async () => {
@@ -172,12 +171,26 @@ describe("Country Leaderboards", () => {
             secondaryScore: 47,
         });
 
-        expect(countries[40]).toMatchObject({
+        expect(countries[38]).toMatchObject({
             countryCode: "my",
             country: "Malaysia",
             displayScore: "0.00%",
             sortingScore: 0,
             secondaryScore: 3,
+        });
+        expect(countries[39]).toMatchObject({
+            countryCode: "tr",
+            country: "Türkiye",
+            displayScore: "0.00%",
+            sortingScore: 0,
+            secondaryScore: 4,
+        });
+        expect(countries[40]).toMatchObject({
+            countryCode: "bg",
+            country: "Bulgaria",
+            displayScore: "0.00%",
+            sortingScore: 0,
+            secondaryScore: 1,
         });
     });
 

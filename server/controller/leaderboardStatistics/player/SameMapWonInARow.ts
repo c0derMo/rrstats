@@ -1,3 +1,4 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
@@ -6,10 +7,22 @@ export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
     hasMaps = true;
     mapOptional = true;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-    ): Record<HitmanMap | OptionalMap, LeaderboardPlayerEntry[]> {
+    basedOn = ["match" as const, "map" as const];
+
+    async calculate(): Promise<
+        Record<HitmanMap | OptionalMap, LeaderboardPlayerEntry[]>
+    > {
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "map.map",
+                "map.winner",
+                "map.forfeit",
+            ])
+            .orderBy("match.timestamp", "ASC")
+            .getMany();
         const streaks = new DefaultedMap<
             string,
             DefaultedMap<number, StreakCounter>

@@ -1,47 +1,53 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { Player } from "~~/server/model/Player";
 
 export class PlayerMatchesWon implements LeaderboardPlayerStatistic {
     type = "player" as const;
     name = "Matches won";
     hasMaps = false;
 
-    calculate(players: IPlayer[], matches: IMatch[]): LeaderboardPlayerEntry[] {
-        const result: LeaderboardPlayerEntry[] = players.map((player) => {
-            const amountWins = (
-                filterForfeitMatches(matches)
-                    .filter((match) => {
-                        return (
-                            match.playerOne === player.uuid ||
-                            match.playerTwo === player.uuid
-                        );
-                    })
-                    .map((match) => {
-                        if (match.playerOne === player.uuid) {
-                            if (match.playerOneScore > match.playerTwoScore) {
-                                return 1;
-                            } else if (
-                                match.playerOneScore === match.playerTwoScore
-                            ) {
-                                return 0.5;
-                            }
-                        } else if (match.playerTwo === player.uuid) {
-                            if (match.playerTwoScore > match.playerOneScore) {
-                                return 1;
-                            } else if (
-                                match.playerOneScore === match.playerTwoScore
-                            ) {
-                                return 0.5;
-                            }
-                        }
-                        return 0;
-                    }) as number[]
-            ).reduce((prev, cur) => prev + cur, 0);
-            return {
+    basedOn = ["match" as const, "player" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const players = await Player.createQueryBuilder("player")
+            .select(["player.uuid"])
+            .getMany();
+        const matches = await Match.createQueryBuilder("match")
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "match.playerOneScore",
+                "match.playerTwoScore",
+            ])
+            .getMany();
+
+        const matchesPerPlayer: Record<string, number> = {};
+
+        for (const match of matches) {
+            matchesPerPlayer[match.playerOne] ??= 0;
+            matchesPerPlayer[match.playerTwo] ??= 0;
+
+            if (match.playerOneScore > match.playerTwoScore) {
+                matchesPerPlayer[match.playerOne] += 1;
+            } else if (match.playerTwoScore > match.playerOneScore) {
+                matchesPerPlayer[match.playerTwo] += 1;
+            } else {
+                matchesPerPlayer[match.playerOne] += 0.5;
+                matchesPerPlayer[match.playerTwo] += 0.5;
+            }
+        }
+
+        const result: LeaderboardPlayerEntry[] = [];
+
+        for (const player of players) {
+            result.push({
                 player: player.uuid,
-                displayScore: amountWins.toString(),
-                sortingScore: amountWins,
-            };
-        });
+                displayScore: matchesPerPlayer[player.uuid]?.toString() ?? "0",
+                sortingScore: matchesPerPlayer[player.uuid] ?? 0,
+            });
+        }
+
         result.sort((a, b) => b.sortingScore - a.sortingScore);
 
         return result;

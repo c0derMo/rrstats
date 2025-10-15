@@ -1,3 +1,4 @@
+import { Match } from "~~/server/model/Match";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerSpecificMapWinrate implements LeaderboardPlayerStatistic {
@@ -7,34 +8,41 @@ export class PlayerSpecificMapWinrate implements LeaderboardPlayerStatistic {
     secondaryFilter = "Spins played";
     defaultSecondaryFilter = 5;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-    ): Record<HitmanMap, LeaderboardPlayerEntry[]> {
+    basedOn = ["match" as const, "map" as const];
+
+    async calculate(): Promise<Record<HitmanMap, LeaderboardPlayerEntry[]>> {
+        const matches = await Match.createQueryBuilder("match")
+            .innerJoin("match.playedMaps", "map")
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "map.map",
+                "map.winner",
+            ])
+            .getMany();
         const mapCount: Record<string, Record<HitmanMap, number>> = {};
         const mapWins: Record<string, Record<HitmanMap, number>> = {};
 
         for (const match of matches) {
-            if (mapCount[match.playerOne] == null)
-                mapCount[match.playerOne] = this.getDefaultMapRecord(0);
-            if (mapCount[match.playerTwo] == null)
-                mapCount[match.playerTwo] = this.getDefaultMapRecord(0);
-            if (mapWins[match.playerOne] == null)
-                mapWins[match.playerOne] = this.getDefaultMapRecord(0);
-            if (mapWins[match.playerTwo] == null)
-                mapWins[match.playerTwo] = this.getDefaultMapRecord(0);
+            mapCount[match.playerOne] ??= this.getDefaultMapRecord(0);
+            mapCount[match.playerTwo] ??= this.getDefaultMapRecord(0);
+            mapWins[match.playerOne] ??= this.getDefaultMapRecord(0);
+            mapWins[match.playerTwo] ??= this.getDefaultMapRecord(0);
 
             for (const map of match.playedMaps) {
                 mapCount[match.playerOne][map.map] += 1;
                 mapCount[match.playerTwo][map.map] += 1;
-
-                if (map.winner === WinningPlayer.PLAYER_ONE) {
-                    mapWins[match.playerOne][map.map] += 1;
-                } else if (map.winner === WinningPlayer.PLAYER_TWO) {
-                    mapWins[match.playerTwo][map.map] += 1;
-                } else {
-                    mapWins[match.playerOne][map.map] += 0.5;
-                    mapWins[match.playerTwo][map.map] += 0.5;
+                switch (map.winner) {
+                    case WinningPlayer.PLAYER_ONE:
+                        mapWins[match.playerOne][map.map] += 1;
+                        break;
+                    case WinningPlayer.PLAYER_TWO:
+                        mapWins[match.playerTwo][map.map] += 1;
+                        break;
+                    case WinningPlayer.DRAW:
+                        mapWins[match.playerOne][map.map] += 0.5;
+                        mapWins[match.playerTwo][map.map] += 0.5;
+                        break;
                 }
             }
         }

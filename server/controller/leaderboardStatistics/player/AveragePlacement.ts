@@ -1,3 +1,4 @@
+import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 
 export class PlayerAveragePlacement implements LeaderboardPlayerStatistic {
@@ -7,17 +8,26 @@ export class PlayerAveragePlacement implements LeaderboardPlayerStatistic {
     secondaryFilter = "Competitions played";
     defaultSecondaryFilter = 3;
 
-    calculate(
-        players: IPlayer[],
-        matches: IMatch[],
-        placements: ICompetitionPlacement[],
-    ): LeaderboardPlayerEntry[] {
+    basedOn = ["placement" as const];
+
+    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+        const placements = await CompetitionPlacement.createQueryBuilder(
+            "placement",
+        )
+            .innerJoin(
+                Competition,
+                "competition",
+                "placement.competition = competition.tag",
+            )
+            .where("competition.officialCompetition = TRUE")
+            .select(["placement.player", "placement.placement"])
+            .getMany();
+
         const placementsOfPlayers: Record<string, number[]> = {};
 
         for (const placement of placements) {
             if (placement.placement == null) continue;
-            if (placementsOfPlayers[placement.player] == null)
-                placementsOfPlayers[placement.player] = [];
+            placementsOfPlayers[placement.player] ??= [];
             placementsOfPlayers[placement.player].push(placement.placement);
         }
 
