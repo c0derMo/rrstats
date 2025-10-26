@@ -24,6 +24,8 @@ export class PlayerMapsWon implements LeaderboardPlayerStatistic {
             .addSelect("COUNT(CASE WHEN map.winner = 1 THEN 1 END)", "p1Win")
             .addSelect("COUNT(CASE WHEN map.winner = 2 THEN 1 END)", "p2Win")
             .groupBy("map.matchUuid")
+            .addGroupBy("match.playerOne")
+            .addGroupBy("match.playerTwo")
             .getRawMany<{
                 playerOne: string;
                 playerTwo: string;
