@@ -19,6 +19,8 @@ export class PlayerMapsPlayed implements LeaderboardPlayerStatistic {
             .addSelect("match.playerTwo", "playerTwo")
             .addSelect("COUNT(*)", "amountMaps")
             .groupBy("map.matchUuid")
+            .addGroupBy("match.playerOne")
+            .addGroupBy("match.playerTwo")
             .getRawMany<{
                 playerOne: string;
                 playerTwo: string;
