@@ -18,7 +18,7 @@ export class PlayerTitlesWon implements LeaderboardPlayerStatistic {
                 "placement.competition = competition.tag",
             )
             .where("competition.officialCompetition = TRUE")
-            .andWhere("placement.placement == 1")
+            .andWhere("placement.placement = 1")
             .select(["placement.player"])
             .getMany();
         const appearances: Record<string, number> = {};
