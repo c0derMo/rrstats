@@ -19,6 +19,7 @@ export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
                 "match.playerTwo",
                 "match.playerTwoScore",
                 "map.winner",
+                "map.index",
             ])
             .getMany();
         const playerMap: Record<string, number> = {};
@@ -35,6 +36,9 @@ export class PlayerReverseSweeps implements LeaderboardPlayerStatistic {
                     ? WinningPlayer.PLAYER_ONE
                     : WinningPlayer.PLAYER_TWO;
             let isReverseSweep = true;
+
+            match.playedMaps.sort((a, b) => a.index - b.index);
+
             for (let i = 0; i < Math.floor(match.playedMaps.length / 2); i++) {
                 if (
                     match.playedMaps[i].winner === winner ||
