@@ -318,19 +318,20 @@ onBeforeMount(async () => {
     await Promise.all(
         props.match.playedMaps.map((m, idx) => {
             return new Promise<void>((resolve) => {
-                $fetch("/api/records/history", { query: { map: m.map } }).then(
-                    (data) => {
-                        const recordIndex = data.findIndex(
-                            (r) => r.match === props.match.uuid,
-                        );
-                        if (recordIndex === data.length - 1) {
-                            wrStatus.value[idx] = RecordStatus.CURRENT;
-                        } else if (recordIndex >= 0) {
-                            wrStatus.value[idx] = RecordStatus.FORMER;
-                        }
-                        resolve();
-                    },
-                );
+                $fetch<IMapRecord[]>("/api/records/history", {
+                    query: { map: m.map },
+                }).then((data) => {
+                    const recordIndex = data.findIndex(
+                        (r) =>
+                            r.match === props.match.uuid && r.mapIndex === idx,
+                    );
+                    if (recordIndex === data.length - 1) {
+                        wrStatus.value[idx] = RecordStatus.CURRENT;
+                    } else if (recordIndex >= 0) {
+                        wrStatus.value[idx] = RecordStatus.FORMER;
+                    }
+                    resolve();
+                });
             });
         }),
     );
