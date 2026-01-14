@@ -15,17 +15,44 @@
             />
         </div>
 
-        <div
-            class="transition-[max-height] duration-200"
-            :class="{
-                'max-h-0 overflow-hidden': !showContent,
-                'max-h-[2000px]': showContent,
-            }"
+        <Transition
+            name="collapse"
+            @enter="updateFullHeight"
+            @leave="updateFullHeight"
         >
-            <slot />
-        </div>
+            <div v-show="showContent">
+                <slot />
+            </div>
+        </Transition>
     </CardComponent>
 </template>
+
+<style>
+.collapse-enter-from,
+.collapse-leave-to {
+    max-height: 0px;
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+    transition-property: max-height;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+    overflow-y: hidden;
+}
+
+.collapse-enter-to,
+.collapse-leave-from {
+    max-height: v-bind(fullHeight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .collapse-enter-active,
+    .collapse-leave-active {
+        transition-property: none;
+    }
+}
+</style>
 
 <script setup lang="ts">
 const props = withDefaults(
@@ -38,4 +65,9 @@ const props = withDefaults(
 );
 
 const showContent = ref(props.expanded);
+const fullHeight = ref("100vwh");
+
+function updateFullHeight(el: Element) {
+    fullHeight.value = `${el.scrollHeight}px`;
+}
 </script>

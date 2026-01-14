@@ -17,7 +17,7 @@
     </div>
 </template>
 
-<style scoped>
+<style>
 .dialog-enter-active,
 .dialog-leave-active {
     transition-property: opacity, transform;
@@ -35,6 +35,13 @@
 .dialog-enter-to {
     opacity: 1;
     transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog-enter-active,
+    .dialog-leave-active {
+        transition-property: none;
+    }
 }
 </style>
 
