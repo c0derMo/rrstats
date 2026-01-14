@@ -65,7 +65,7 @@ const props = withDefaults(
 );
 
 const showContent = ref(props.expanded);
-const fullHeight = ref("100vwh");
+const fullHeight = ref("100vh");
 
 function updateFullHeight(el: Element) {
     fullHeight.value = `${el.scrollHeight}px`;

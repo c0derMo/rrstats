@@ -52,7 +52,7 @@ const emits = defineEmits<{
     closed: [];
 }>();
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         dialogClass?: string;
         open?: boolean;
@@ -65,22 +65,12 @@ const props = withDefaults(
     },
 );
 
-const currentlyOpen = ref(!props.animateOnShow && props.open);
 const openDialogs = useState<number>("openDialogs", () => 0);
 
 onMounted(() => {
-    setTimeout(() => {
-        currentlyOpen.value = props.open;
-    }, 5);
     openDialogs.value += 1;
 });
 onBeforeUnmount(() => {
     openDialogs.value -= 1;
 });
-watch(
-    () => props.open,
-    () => {
-        currentlyOpen.value = props.open;
-    },
-);
 </script>
