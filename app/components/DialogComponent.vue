@@ -3,15 +3,47 @@
         class="fixed z-50 bg-black bg-opacity-50 w-full h-full top-0 left-0 grid place-items-center"
     >
         <div class="absolute w-full h-full" @click="$emit('clickOutside')" />
-        <div
-            class="relative transition-all motion-reduce:transition-none"
-            :class="classes"
-            @transitionend="transitionEndEvent"
+        <Transition
+            name="dialog"
+            :appear="animateOnShow"
+            @after-appear="emits('opened')"
+            @after-enter="emits('opened')"
+            @after-leave="emits('closed')"
         >
-            <slot />
-        </div>
+            <div v-show="open" class="relative" :class="dialogClass">
+                <slot />
+            </div>
+        </Transition>
     </div>
 </template>
+
+<style>
+.dialog-enter-active,
+.dialog-leave-active {
+    transition-property: opacity, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.dialog-enter-from,
+.dialog-leave-to {
+    opacity: 0;
+    transform: translateY(-5rem);
+}
+
+.dialog-leave-from,
+.dialog-enter-to {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog-enter-active,
+    .dialog-leave-active {
+        transition-property: none;
+    }
+}
+</style>
 
 <script setup lang="ts">
 const emits = defineEmits<{
@@ -20,7 +52,7 @@ const emits = defineEmits<{
     closed: [];
 }>();
 
-const props = withDefaults(
+withDefaults(
     defineProps<{
         dialogClass?: string;
         open?: boolean;
@@ -33,40 +65,12 @@ const props = withDefaults(
     },
 );
 
-const currentlyOpen = ref(!props.animateOnShow && props.open);
 const openDialogs = useState<number>("openDialogs", () => 0);
 
-const classes = computed(() => {
-    if (currentlyOpen.value) {
-        return props.dialogClass;
-    } else {
-        return `-translate-y-20 !opacity-0 ${props.dialogClass}`;
-    }
-});
-
 onMounted(() => {
-    setTimeout(() => {
-        currentlyOpen.value = props.open;
-    }, 5);
     openDialogs.value += 1;
 });
 onBeforeUnmount(() => {
     openDialogs.value -= 1;
 });
-watch(
-    () => props.open,
-    () => {
-        currentlyOpen.value = props.open;
-    },
-);
-
-function transitionEndEvent(e: TransitionEvent) {
-    if (e.propertyName == "opacity") {
-        if (props.open) {
-            emits("opened");
-        } else {
-            emits("closed");
-        }
-    }
-}
 </script>
