@@ -1,8 +1,10 @@
 <template>
     <Tag :color="color" :narrow="narrow">
-        <slot name="default">
-            {{ text }}
-        </slot>
+        <span class="text-black dark:text-gray-900">
+            <slot name="default">
+                {{ text }}
+            </slot>
+        </span>
     </Tag>
 </template>
 
