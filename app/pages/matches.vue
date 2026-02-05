@@ -87,17 +87,17 @@
 
                 <template #bans="{ row }: { row: IMatch }">
                     <div class="flex flex-wrap max-w-60">
-                        <TooltipComponent
-                            v-for="(ban, idx) in row.bannedMaps"
-                            :key="idx"
+                        <MatchBansTooltip
+                            :maps="row.bannedMaps"
+                            :players="[row.playerOne, row.playerTwo]"
+                            :score="[row.playerOneScore, row.playerTwoScore]"
                         >
-                            <MapTag :map="getMap(ban.map)!" />
-
-                            <template #tooltip>
-                                Map: {{ getMap(ban.map)?.name }}<br />
-                                Banned by: {{ getMapPicker(ban, row) }}
-                            </template>
-                        </TooltipComponent>
+                            <MapTag
+                                v-for="(map, idx) in row.bannedMaps"
+                                :key="idx"
+                                :map="getMap(map.map)!"
+                            />
+                        </MatchBansTooltip>
                     </div>
                 </template>
 
@@ -111,18 +111,17 @@
                     }"
                 >
                     <div class="flex flex-wrap">
-                        <TooltipComponent
-                            v-for="(play, idx) in value"
-                            :key="idx"
+                        <MatchMapsTooltip
+                            :maps="value"
+                            :players="[row.playerOne, row.playerTwo]"
+                            :score="[row.playerOneScore, row.playerTwoScore]"
                         >
-                            <MapTag :map="getMap(play.map)!" />
-
-                            <template #tooltip>
-                                Map: {{ getMap(play.map)?.name }}<br />
-                                Picked by: {{ getMapPicker(play, row) }}<br />
-                                Won by: {{ getMapWinner(play, row) }}
-                            </template>
-                        </TooltipComponent>
+                            <MapTag
+                                v-for="(map, idx) in value"
+                                :key="idx"
+                                :map="getMap(map.map)!"
+                            />
+                        </MatchMapsTooltip>
                     </div>
                 </template>
 
@@ -221,24 +220,6 @@ const sortedMatches = computed(() => {
     }
     return [...matches.value].sort((a, b) => b.timestamp - a.timestamp);
 });
-
-function getMapPicker(map: RRMap | RRBannedMap, match: IMatch): string {
-    if (map.picked === ChoosingPlayer.RANDOM) return "Random";
-    if (map.picked === ChoosingPlayer.PLAYER_ONE)
-        return players.get(match.playerOne, "Unknown");
-    if (map.picked === ChoosingPlayer.PLAYER_TWO)
-        return players.get(match.playerTwo, "Unknown");
-    return "Unknown";
-}
-
-function getMapWinner(map: RRMap, match: IMatch): string {
-    if (map.winner === WinningPlayer.DRAW) return "Draw";
-    if (map.winner === WinningPlayer.PLAYER_ONE)
-        return players.get(match.playerOne, "Unknown");
-    if (map.winner === WinningPlayer.PLAYER_TWO)
-        return players.get(match.playerTwo, "Unknown");
-    return "Unknown";
-}
 
 onMounted(async () => {
     if (competition.value?.shouldRetry) {

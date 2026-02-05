@@ -27,40 +27,30 @@
 
             <template #bans="{ row }">
                 <template v-if="row.bans.length != 0">
-                    <TooltipComponent v-for="(ban, idx) in row.bans" :key="idx">
-                        <MapTag :map="ban.map!" />
-
-                        <template #tooltip>
-                            Map: {{ ban.map!.name }}<br />
-                            Banned by:
-                            {{
-                                getMapPicker(
-                                    ban.picked,
-                                    row.playerOne,
-                                    row.playerTwo,
-                                )
-                            }}
-                        </template>
-                    </TooltipComponent>
+                    <MatchBansTooltip
+                        :maps="row.bans"
+                        :players="[row.playerOne, row.playerTwo]"
+                    >
+                        <MapTag
+                            v-for="(ban, idx) in row.bans"
+                            :key="idx"
+                            :map="getMap(ban.map)!"
+                        />
+                    </MatchBansTooltip>
                 </template>
             </template>
 
             <template #maps="{ row }">
-                <TooltipComponent v-for="(map, idx) in row.maps" :key="idx">
-                    <MapTag :map="map.map!" />
-
-                    <template #tooltip>
-                        Map: {{ map.map!.name }}<br />
-                        Picked by:
-                        {{
-                            getMapPicker(
-                                map.picked,
-                                row.playerOne,
-                                row.playerTwo,
-                            )
-                        }}
-                    </template>
-                </TooltipComponent>
+                <MatchMapsTooltip
+                    :maps="row.maps"
+                    :players="[row.playerOne, row.playerTwo]"
+                >
+                    <MapTag
+                        v-for="(map, idx) in row.maps"
+                        :key="idx"
+                        :map="getMap(map.map)!"
+                    />
+                </MatchMapsTooltip>
             </template>
 
             <template #cast="{ row }">
@@ -156,7 +146,7 @@ const displayedMatches = computed(() => {
                 .filter((map) => map.selectionType === "Ban")
                 .map((ban) => {
                     return {
-                        map: getMapBySlug(ban.mapSlug ?? ""),
+                        map: getMapBySlug(ban.mapSlug ?? "")!.map as HitmanMap,
                         picked: parseMapPicker(
                             ban.competitorId,
                             playerOneId,
@@ -170,14 +160,15 @@ const displayedMatches = computed(() => {
                         map.selectionType === "Pick" ||
                         map.selectionType === "Random",
                 )
-                .map((pick) => {
+                .map((pick, idx) => {
                     return {
-                        map: getMapBySlug(pick.mapSlug ?? ""),
+                        map: getMapBySlug(pick.mapSlug ?? "")!.map as HitmanMap,
                         picked: parseMapPicker(
                             pick.competitorId,
                             playerOneId,
                             playerTwoId,
                         ),
+                        index: idx,
                     };
                 }),
             cast:
@@ -190,21 +181,6 @@ const displayedMatches = computed(() => {
         };
     });
 });
-
-function getMapPicker(
-    choosingPlayer: ChoosingPlayer,
-    playerOne: string,
-    playerTwo: string,
-): string {
-    switch (choosingPlayer) {
-        case ChoosingPlayer.PLAYER_ONE:
-            return playerOne;
-        case ChoosingPlayer.PLAYER_TWO:
-            return playerTwo;
-        case ChoosingPlayer.RANDOM:
-            return "Random";
-    }
-}
 
 function parseMapPicker(
     competitorId: number | undefined,

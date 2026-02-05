@@ -124,20 +124,17 @@
             <template
                 #playedMaps="{ value, row }: { value: RRMap[]; row: IMatch }"
             >
-                <TooltipComponent v-for="(map, idx) of value" :key="idx">
+                <MatchMapsTooltip
+                    :maps="value"
+                    :players="[row.playerOne, row.playerTwo]"
+                    :score="[row.playerOneScore, row.playerTwoScore]"
+                >
                     <MapTag
+                        v-for="(map, idx) in value"
+                        :key="idx"
                         :map="getMap(map.map)!"
-                        :draw="map.winner === WinningPlayer.DRAW"
-                        :won="getLocalWinningPlayer(row) === map.winner"
-                        class="ml-2"
                     />
-
-                    <template #tooltip>
-                        Map: {{ getMap(map.map)?.name }}<br />
-                        Picked by: {{ getMapPicker(map, row) }}<br />
-                        Won by: {{ getMapWinner(map, row) }}
-                    </template>
-                </TooltipComponent>
+                </MatchMapsTooltip>
             </template>
 
             <template #more="{ row }">
@@ -215,24 +212,6 @@ function getLocalWinningPlayer(match: IMatch): WinningPlayer {
     if (match.playerOne === props.localPlayer) return WinningPlayer.PLAYER_ONE;
     if (match.playerTwo === props.localPlayer) return WinningPlayer.PLAYER_TWO;
     return WinningPlayer.DRAW;
-}
-
-function getMapPicker(map: RRMap, match: IMatch): string {
-    if (map.picked === ChoosingPlayer.RANDOM) return "Random";
-    if (map.picked === ChoosingPlayer.PLAYER_ONE)
-        return players.get(match.playerOne);
-    if (map.picked === ChoosingPlayer.PLAYER_TWO)
-        return players.get(match.playerTwo);
-    return "Unknown";
-}
-
-function getMapWinner(map: RRMap, match: IMatch): string {
-    if (map.winner === WinningPlayer.DRAW) return "Draw";
-    if (map.winner === WinningPlayer.PLAYER_ONE)
-        return players.get(match.playerOne);
-    if (map.winner === WinningPlayer.PLAYER_TWO)
-        return players.get(match.playerTwo);
-    return "Unknown";
 }
 
 async function redirectTo(link: string) {
