@@ -1,16 +1,18 @@
 <template>
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-5">
         <div
             v-for="(stage, stageIdx) in bracket.rounds"
             :key="stageIdx"
-            class="flex flex-row gap-3"
+            class="flex flex-row gap-6"
         >
             <div
                 v-for="(round, idx) in stage"
                 :key="idx"
                 class="flex flex-col gap-4"
             >
-                <div class="w-48 bg-white text-black h-12">
+                <div
+                    class="w-64 bg-slate-100 dark:bg-gray-800 rounded-md text-center font-semibold"
+                >
                     {{ round.roundName }}
                 </div>
 
@@ -20,14 +22,10 @@
                     class="flex flex-col justify-center"
                     :class="{ 'flex-grow': bracket.advancementBracket }"
                 >
-                    <div
-                        v-if="getLocalMatchById(match.id) != null"
-                        class="w-48 h-12 bg-white text-black"
-                    >
-                        {{ getPlayerOne(getLocalMatchById(match.id)!) }}
-                        <br />
-                        {{ getPlayerTwo(getLocalMatchById(match.id)!) }}
-                    </div>
+                    <BracketMatch
+                        :match="getLocalMatchById(match.id) ?? undefined"
+                        :forfeit="bracket.forfeits[match.id]"
+                    />
                 </div>
             </div>
         </div>
