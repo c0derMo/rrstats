@@ -21,154 +21,178 @@
                 {{ competition?.name }} - Matches
             </h1>
 
-            <UpcomingMatches
-                v-if="
-                    competition?.hitmapsSlug != null &&
-                    competition?.updateWithHitmaps
-                "
-                :tournament-slug="competition.hitmapsSlug"
-            />
-
-            <GroupsTables
-                v-if="competition?.groupsConfig != null"
-                :groups-info="competition.groupsConfig"
-                :matches="sortedMatches"
-            />
-
-            <div
-                v-if="competition?.hitmapsStatsUrl != null"
-                class="border-2 rounded p-3 text-center mx-auto my-4 border-blue-600 dark:border-blue-400"
-            >
-                <FontAwesomeIcon :icon="['fas', 'chart-simple']" class="mr-3" />
-                HITMAPS has tournament-specific statistics available! Check them
-                out
-                <a class="underline" :href="competition.hitmapsStatsUrl">here</a
-                >!
-            </div>
-
-            <IndefiniteProgressBar v-if="stillLoading" />
-            <DataTableComponent
-                :headers="headers"
-                :rows="sortedMatches"
-                :enable-sorting="false"
-                :rows-per-page="[10, 25, 50, 100]"
-                :selected-rows-per-page="25"
-            >
-                <template #header-actions>
-                    <ButtonComponent @click="showDownload = true">
-                        <FontAwesomeIcon
-                            :icon="['fas', 'download']"
-                            size="xs"
-                        />
-                    </ButtonComponent>
-                </template>
-
-                <template #timestamp="{ value }">
-                    {{
-                        DateTime.fromMillis(value)
-                            .setLocale(useLocale().value)
-                            .toLocaleString(DateTime.DATETIME_MED)
-                    }}
-                </template>
-
-                <template #playerOne="{ value }">
-                    <PlayerLinkTag :player="players.get(value)" />
-                </template>
-
-                <template #score="{ row }">
-                    <span class="whitespace-nowrap">
-                        {{ row.playerOneScore }} - {{ row.playerTwoScore }}
-                    </span>
-                </template>
-
-                <template #playerTwo="{ value }">
-                    <PlayerLinkTag :player="players.get(value)" />
-                </template>
-
-                <template #bans="{ row }: { row: IMatch }">
-                    <div class="flex flex-wrap max-w-60">
-                        <MatchBansTooltip
-                            :maps="row.bannedMaps"
-                            :players="[row.playerOne, row.playerTwo]"
-                            :score="[row.playerOneScore, row.playerTwoScore]"
-                        >
-                            <MapTag
-                                v-for="(map, idx) in row.bannedMaps"
-                                :key="idx"
-                                :map="getMap(map.map)!"
-                            />
-                        </MatchBansTooltip>
-                    </div>
-                </template>
-
-                <template
-                    #playedMaps="{
-                        value,
-                        row,
-                    }: {
-                        value: RRMap[];
-                        row: IMatch;
-                    }"
-                >
-                    <div class="flex flex-wrap">
-                        <MatchMapsTooltip
-                            :maps="value"
-                            :players="[row.playerOne, row.playerTwo]"
-                            :score="[row.playerOneScore, row.playerTwoScore]"
-                        >
-                            <MapTag
-                                v-for="(map, idx) in value"
-                                :key="idx"
-                                :map="getMap(map.map)!"
-                            />
-                        </MatchMapsTooltip>
-                    </div>
-                </template>
-
-                <template
-                    #shoutcasters="{
-                        value,
-                        row,
-                    }: {
-                        value: string[];
-                        row: IMatch;
-                    }"
-                >
-                    <a
-                        v-if="value !== null"
-                        :href="
-                            row.vodLink != null && row.vodLink.length > 0
-                                ? row.vodLink[0]
-                                : ''
+            <TabbedContainer :tabs="['Matches', 'Bracket']">
+                <template #[`Matches`]>
+                    <UpcomingMatches
+                        v-if="
+                            competition?.hitmapsSlug != null &&
+                            competition?.updateWithHitmaps
                         "
-                        :class="{
-                            'underline text-blue-600 dark:text-blue-400':
-                                row.vodLink != null && row.vodLink.length > 0,
-                        }"
+                        :tournament-slug="competition.hitmapsSlug"
+                    />
+
+                    <GroupsTables
+                        v-if="competition?.groupsConfig != null"
+                        :groups-info="competition.groupsConfig"
+                        :matches="sortedMatches"
+                    />
+
+                    <div
+                        v-if="competition?.hitmapsStatsUrl != null"
+                        class="border-2 rounded p-3 text-center mx-auto my-4 border-blue-600 dark:border-blue-400"
                     >
-                        {{ value.join(", ") }}
-                    </a>
-
-                    <template v-for="(vod, idx) of row.vodLink" :key="idx">
-                        <a
-                            v-if="idx > 0"
-                            class="underline text-blue-600 dark:text-blue-400 ml-1"
-                            :href="vod"
-                        >
-                            (Part {{ idx + 1 }})
-                        </a>
-                    </template>
-                </template>
-
-                <template #actions="{ row }">
-                    <ButtonComponent @click="matchToShow = row">
                         <FontAwesomeIcon
-                            :icon="['fas', 'ellipsis-h']"
-                            size="xs"
+                            :icon="['fas', 'chart-simple']"
+                            class="mr-3"
                         />
-                    </ButtonComponent>
+                        HITMAPS has tournament-specific statistics available!
+                        Check them out
+                        <a class="underline" :href="competition.hitmapsStatsUrl"
+                            >here</a
+                        >!
+                    </div>
+
+                    <IndefiniteProgressBar v-if="stillLoading" />
+                    <DataTableComponent
+                        :headers="headers"
+                        :rows="sortedMatches"
+                        :enable-sorting="false"
+                        :rows-per-page="[10, 25, 50, 100]"
+                        :selected-rows-per-page="25"
+                    >
+                        <template #header-actions>
+                            <ButtonComponent @click="showDownload = true">
+                                <FontAwesomeIcon
+                                    :icon="['fas', 'download']"
+                                    size="xs"
+                                />
+                            </ButtonComponent>
+                        </template>
+
+                        <template #timestamp="{ value }">
+                            {{
+                                DateTime.fromMillis(value)
+                                    .setLocale(useLocale().value)
+                                    .toLocaleString(DateTime.DATETIME_MED)
+                            }}
+                        </template>
+
+                        <template #playerOne="{ value }">
+                            <PlayerLinkTag :player="players.get(value)" />
+                        </template>
+
+                        <template #score="{ row }">
+                            <span class="whitespace-nowrap">
+                                {{ row.playerOneScore }} -
+                                {{ row.playerTwoScore }}
+                            </span>
+                        </template>
+
+                        <template #playerTwo="{ value }">
+                            <PlayerLinkTag :player="players.get(value)" />
+                        </template>
+
+                        <template #bans="{ row }: { row: IMatch }">
+                            <div class="flex flex-wrap max-w-60">
+                                <MatchBansTooltip
+                                    :maps="row.bannedMaps"
+                                    :players="[row.playerOne, row.playerTwo]"
+                                    :score="[
+                                        row.playerOneScore,
+                                        row.playerTwoScore,
+                                    ]"
+                                >
+                                    <MapTag
+                                        v-for="(map, idx) in row.bannedMaps"
+                                        :key="idx"
+                                        :map="getMap(map.map)!"
+                                    />
+                                </MatchBansTooltip>
+                            </div>
+                        </template>
+
+                        <template
+                            #playedMaps="{
+                                value,
+                                row,
+                            }: {
+                                value: RRMap[];
+                                row: IMatch;
+                            }"
+                        >
+                            <div class="flex flex-wrap">
+                                <MatchMapsTooltip
+                                    :maps="value"
+                                    :players="[row.playerOne, row.playerTwo]"
+                                    :score="[
+                                        row.playerOneScore,
+                                        row.playerTwoScore,
+                                    ]"
+                                >
+                                    <MapTag
+                                        v-for="(map, idx) in value"
+                                        :key="idx"
+                                        :map="getMap(map.map)!"
+                                    />
+                                </MatchMapsTooltip>
+                            </div>
+                        </template>
+
+                        <template
+                            #shoutcasters="{
+                                value,
+                                row,
+                            }: {
+                                value: string[];
+                                row: IMatch;
+                            }"
+                        >
+                            <a
+                                v-if="value !== null"
+                                :href="
+                                    row.vodLink != null &&
+                                    row.vodLink.length > 0
+                                        ? row.vodLink[0]
+                                        : ''
+                                "
+                                :class="{
+                                    'underline text-blue-600 dark:text-blue-400':
+                                        row.vodLink != null &&
+                                        row.vodLink.length > 0,
+                                }"
+                            >
+                                {{ value.join(", ") }}
+                            </a>
+
+                            <template
+                                v-for="(vod, idx) of row.vodLink"
+                                :key="idx"
+                            >
+                                <a
+                                    v-if="idx > 0"
+                                    class="underline text-blue-600 dark:text-blue-400 ml-1"
+                                    :href="vod"
+                                >
+                                    (Part {{ idx + 1 }})
+                                </a>
+                            </template>
+                        </template>
+
+                        <template #actions="{ row }">
+                            <ButtonComponent @click="matchToShow = row">
+                                <FontAwesomeIcon
+                                    :icon="['fas', 'ellipsis-h']"
+                                    size="xs"
+                                />
+                            </ButtonComponent>
+                        </template>
+                    </DataTableComponent>
                 </template>
-            </DataTableComponent>
+
+                <template #[`Bracket`]>
+                    <BracketViewer :matches="matches ?? []" />
+                </template>
+            </TabbedContainer>
         </div>
     </div>
 </template>
