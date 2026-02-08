@@ -1,15 +1,9 @@
-export enum BracketType {
-    SINGLE_ELIM = "single_elim",
-    DOUBLE_ELIM = "double_elim",
-    UNORDERED = "unordered",
-}
-
 export interface IBracketMatch {
-    id: number;
+    id: string;
     playerOne?: string;
     playerTwo?: string;
-    winnerTo?: number;
-    loserTo?: number;
+    playerOneFrom?: { matchId: string; winner: boolean; }
+    playerTwoFrom?: { matchId: string; winner: boolean; }
     bye?: boolean;
 }
 
@@ -21,7 +15,8 @@ export interface IBracketRound {
 export interface IBracket {
     name: string;
     index: number;
-    type: BracketType;
+    advancementBracket: boolean;
 
-    rounds: IBracketRound[];
+    rounds: IBracketRound[][];
+    forfeits: Record<string, string>;
 }

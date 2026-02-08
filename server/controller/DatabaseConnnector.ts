@@ -23,6 +23,7 @@ import {
     AchievementDatabaseListener,
     AchievementVerifyListener,
 } from "./AchievementController";
+import { Bracket } from "../model/Bracket";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -48,6 +49,7 @@ export default class DatabaseConnector {
                 User,
                 PlayedMap,
                 Achievement,
+                Bracket
             ],
             subscribers: withSubscribers
                 ? [

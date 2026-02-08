@@ -21,7 +21,7 @@
                 {{ competition?.name }} - Matches
             </h1>
 
-            <TabbedContainer :tabs="['Matches', 'Bracket']">
+            <TabbedContainer :tabs="tabs">
                 <template #[`Matches`]>
                     <UpcomingMatches
                         v-if="
@@ -189,8 +189,8 @@
                     </DataTableComponent>
                 </template>
 
-                <template #[`Bracket`]>
-                    <BracketViewer :matches="matches ?? []" />
+                <template v-for="bracket in brackets" :key="bracket.index" #[getTabName(bracket)]>
+                    <BracketViewer :matches="matches ?? []" :bracket="bracket" />
                 </template>
             </TabbedContainer>
         </div>
@@ -229,6 +229,10 @@ const { data: competition } = await useFetch<
 >("/api/competitions", {
     query: { tag: tournament, initialLoad: true },
 });
+const { data: brackets } = await useFetch<IBracket[]>("/api/competitions/brackets", {
+    query: { tag: tournament},
+    default: () => []
+});
 
 const stillLoading = ref(competition.value?.shouldRetry ?? false);
 const players = usePlayers();
@@ -244,6 +248,17 @@ const sortedMatches = computed(() => {
     }
     return [...matches.value].sort((a, b) => b.timestamp - a.timestamp);
 });
+
+const tabs = computed(() => {
+    return [
+        "Matches",
+        ...brackets.value.map((bracket) => getTabName(bracket))
+    ]
+});
+
+function getTabName(bracket: IBracket) {
+    return `Bracket - ${bracket.name}`
+}
 
 onMounted(async () => {
     if (competition.value?.shouldRetry) {
