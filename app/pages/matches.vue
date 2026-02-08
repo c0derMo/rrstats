@@ -189,8 +189,15 @@
                     </DataTableComponent>
                 </template>
 
-                <template v-for="bracket in brackets" :key="bracket.index" #[getTabName(bracket)]>
-                    <BracketViewer :matches="matches ?? []" :bracket="bracket" />
+                <template
+                    v-for="bracket in brackets"
+                    :key="bracket.index"
+                    #[getTabName(bracket)]
+                >
+                    <BracketViewer
+                        :matches="matches ?? []"
+                        :bracket="bracket"
+                    />
                 </template>
             </TabbedContainer>
         </div>
@@ -229,10 +236,13 @@ const { data: competition } = await useFetch<
 >("/api/competitions", {
     query: { tag: tournament, initialLoad: true },
 });
-const { data: brackets } = await useFetch<IBracket[]>("/api/competitions/brackets", {
-    query: { tag: tournament},
-    default: () => []
-});
+const { data: brackets } = await useFetch<IBracket[]>(
+    "/api/competitions/brackets",
+    {
+        query: { tag: tournament },
+        default: () => [],
+    },
+);
 
 const stillLoading = ref(competition.value?.shouldRetry ?? false);
 const players = usePlayers();
@@ -250,14 +260,11 @@ const sortedMatches = computed(() => {
 });
 
 const tabs = computed(() => {
-    return [
-        "Matches",
-        ...brackets.value.map((bracket) => getTabName(bracket))
-    ]
+    return ["Matches", ...brackets.value.map((bracket) => getTabName(bracket))];
 });
 
 function getTabName(bracket: IBracket) {
-    return `Bracket - ${bracket.name}`
+    return `Bracket - ${bracket.name}`;
 }
 
 onMounted(async () => {

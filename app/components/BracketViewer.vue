@@ -1,6 +1,10 @@
 <template>
     <div class="flex flex-col gap-3">
-        <div v-for="(stage, stageIdx) in bracket.rounds" :key="stageIdx" class="flex flex-row gap-3">
+        <div
+            v-for="(stage, stageIdx) in bracket.rounds"
+            :key="stageIdx"
+            class="flex flex-row gap-3"
+        >
             <div
                 v-for="(round, idx) in stage"
                 :key="idx"
@@ -9,14 +13,17 @@
                 <div class="w-48 bg-white text-black h-12">
                     {{ round.roundName }}
                 </div>
-    
+
                 <div
                     v-for="match in round.matches"
                     :key="match.id"
                     class="flex flex-col justify-center"
                     :class="{ 'flex-grow': bracket.advancementBracket }"
                 >
-                    <div v-if="getLocalMatchById(match.id) != null" class="w-48 h-12 bg-white text-black">
+                    <div
+                        v-if="getLocalMatchById(match.id) != null"
+                        class="w-48 h-12 bg-white text-black"
+                    >
                         {{ getPlayerOne(getLocalMatchById(match.id)!) }}
                         <br />
                         {{ getPlayerTwo(getLocalMatchById(match.id)!) }}
@@ -57,20 +64,35 @@ function getLocalMatchById(id: string): LocalBracketMatch | null {
 }
 
 function findPlayedMatch(match: LocalBracketMatch): IMatch | null {
-    return props.matches.find((m) => {
-        return m.round === match.roundName &&
-            ((players.get(m.playerOne) === getPlayerOne(match) &&
-                players.get(m.playerTwo) === getPlayerTwo(match)) ||
-                (players.get(m.playerTwo) === getPlayerOne(match) &&
-                    players.get(m.playerOne) === getPlayerTwo(match)))
-    }) ?? null;
+    return (
+        props.matches.find((m) => {
+            return (
+                m.round === match.roundName &&
+                ((players.get(m.playerOne) === getPlayerOne(match) &&
+                    players.get(m.playerTwo) === getPlayerTwo(match)) ||
+                    (players.get(m.playerTwo) === getPlayerOne(match) &&
+                        players.get(m.playerOne) === getPlayerTwo(match)))
+            );
+        }) ?? null
+    );
 }
 
-function resolveSingleMatch(match: LocalBracketMatch, unresolved: string[], forfeits: Record<string, string>): string[] {
+function resolveSingleMatch(
+    match: LocalBracketMatch,
+    unresolved: string[],
+    forfeits: Record<string, string>,
+): string[] {
     if (match.playerOneFrom != null && getPlayerOne(match) == null) {
         // Try to resolve player one
-        if (unresolved.includes(match.playerOneFrom.matchId) && getLocalMatchById(match.playerOneFrom.matchId) != null) {
-            unresolved = resolveSingleMatch(getLocalMatchById(match.playerOneFrom.matchId)!, unresolved, forfeits);
+        if (
+            unresolved.includes(match.playerOneFrom.matchId) &&
+            getLocalMatchById(match.playerOneFrom.matchId) != null
+        ) {
+            unresolved = resolveSingleMatch(
+                getLocalMatchById(match.playerOneFrom.matchId)!,
+                unresolved,
+                forfeits,
+            );
         }
 
         const resolvedMatch = getLocalMatchById(match.playerOneFrom.matchId)!;
@@ -83,8 +105,15 @@ function resolveSingleMatch(match: LocalBracketMatch, unresolved: string[], forf
 
     if (match.playerTwoFrom != null && getPlayerTwo(match) == null) {
         // Try to resolve player two
-        if (unresolved.includes(match.playerTwoFrom.matchId) && getLocalMatchById(match.playerTwoFrom.matchId) != null) {
-            unresolved = resolveSingleMatch(getLocalMatchById(match.playerTwoFrom.matchId)!, unresolved, forfeits);
+        if (
+            unresolved.includes(match.playerTwoFrom.matchId) &&
+            getLocalMatchById(match.playerTwoFrom.matchId) != null
+        ) {
+            unresolved = resolveSingleMatch(
+                getLocalMatchById(match.playerTwoFrom.matchId)!,
+                unresolved,
+                forfeits,
+            );
         }
 
         const resolvedMatch = getLocalMatchById(match.playerTwoFrom.matchId)!;
@@ -151,16 +180,26 @@ function resolveAllMatches() {
                 localMatches.value[match.id] = {
                     ...match,
                     roundName: round.roundName,
-                }
+                };
             }
         }
     }
 
-    let unresolvedMatches = props.bracket.rounds.flatMap((stage) => stage.flatMap((stage) => stage.matches.map((match) => match.id)));
+    let unresolvedMatches = props.bracket.rounds.flatMap((stage) =>
+        stage.flatMap((stage) => stage.matches.map((match) => match.id)),
+    );
     while (unresolvedMatches.length > 0) {
-        const randomIndex = Math.floor(Math.random() * unresolvedMatches.length);
-        const matchToResolve = getLocalMatchById(unresolvedMatches[randomIndex])!;
-        unresolvedMatches = resolveSingleMatch(matchToResolve, unresolvedMatches, props.bracket.forfeits);
+        const randomIndex = Math.floor(
+            Math.random() * unresolvedMatches.length,
+        );
+        const matchToResolve = getLocalMatchById(
+            unresolvedMatches[randomIndex],
+        )!;
+        unresolvedMatches = resolveSingleMatch(
+            matchToResolve,
+            unresolvedMatches,
+            props.bracket.forfeits,
+        );
     }
 }
 

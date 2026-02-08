@@ -8,17 +8,17 @@ export default defineEventHandler<Promise<IBracket[]>>(async (event) => {
     if (query.tag == null) {
         throw createError({
             statusCode: 400,
-            statusMessage: "competition tag query must be set"
-        })
+            statusMessage: "competition tag query must be set",
+        });
     }
 
     const brackets = await Bracket.find({
         where: {
-            competition: query.tag
+            competition: query.tag,
         },
         order: {
-            index: "ASC"
-        }
+            index: "ASC",
+        },
     });
 
     return brackets;

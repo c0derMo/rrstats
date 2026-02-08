@@ -2,8 +2,8 @@ export interface IBracketMatch {
     id: string;
     playerOne?: string;
     playerTwo?: string;
-    playerOneFrom?: { matchId: string; winner: boolean; }
-    playerTwoFrom?: { matchId: string; winner: boolean; }
+    playerOneFrom?: { matchId: string; winner: boolean };
+    playerTwoFrom?: { matchId: string; winner: boolean };
     bye?: boolean;
 }
 

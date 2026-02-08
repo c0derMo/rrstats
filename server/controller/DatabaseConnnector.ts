@@ -49,7 +49,7 @@ export default class DatabaseConnector {
                 User,
                 PlayedMap,
                 Achievement,
-                Bracket
+                Bracket,
             ],
             subscribers: withSubscribers
                 ? [

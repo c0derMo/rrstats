@@ -6,7 +6,7 @@ export class Bracket extends BaseEntity implements IBracket {
     competition: string;
     @PrimaryColumn("text")
     name: string;
-    
+
     @Column("int8")
     @Index()
     index: number;
