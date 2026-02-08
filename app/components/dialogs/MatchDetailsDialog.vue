@@ -74,97 +74,102 @@
                 {{ match.notes }}
             </div>
 
-            <div
-                v-if="match.bannedMaps.length > 0"
-                class="text-center font-bold"
-            >
-                Bans
-            </div>
-
             <div v-if="match.bannedMaps.length > 0" class="grid grid-cols-3">
-                <div class="flex flex-col gap-2 text-center">
-                    <MapTag
-                        v-for="(ban, idx) of playerOneBans"
-                        :key="idx"
-                        :map="getMap(ban.map)!"
-                        full-name
-                        :narrow="true"
-                        class="w-fit mx-auto"
-                    />
+                <div class="flex flex-col text-center">
+                    <div v-for="(ban, idx) of playerOneBans" :key="idx" class="bg-cover bg-center" :style="getMapBackground(ban.map)">
+                        <div class="bg-black/70 py-1">
+                            <MapTag
+                                :map="getMap(ban.map)!"
+                                full-name
+                                :narrow="true"
+                                class="w-fit mx-auto"
+                            />
+                        </div>
+                    </div>
                 </div>
-                <div />
-                <div class="flex flex-col gap-2 text-center">
-                    <MapTag
-                        v-for="(ban, idx) of playerTwoBans"
-                        :key="idx"
-                        :map="getMap(ban.map)!"
-                        full-name
-                        :narrow="true"
-                        class="w-fit mx-auto"
-                    />
+                <div class="text-center font-bold">
+                    Bans
+                </div>
+                <div class="flex flex-col text-center">
+                    <div v-for="(ban, idx) of playerTwoBans" :key="idx" class="bg-cover bg-center" :style="getMapBackground(ban.map)">
+                        <div class="bg-black/70 py-1">
+                            <MapTag
+                                :map="getMap(ban.map)!"
+                                full-name
+                                :narrow="true"
+                                class="w-fit mx-auto"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-y-1 gap-x-20">
-                <div class="font-bold">Map</div>
-                <div class="font-bold">Picked by</div>
-                <div class="font-bold">Won by</div>
+            <div class="grid grid-cols-3 gap-y-1">
+                <div class="font-bold pl-4">Map</div>
+                <div class="font-bold text-center">Picked by</div>
+                <div class="font-bold pr-4 text-right">Won by</div>
                 <template v-for="(map, idx) in match.playedMaps" :key="idx">
-                    <div>
-                        <MapTag :map="getMap(map.map)!" full-name />
-                    </div>
-                    <div>
-                        <Tag :color="getPlayerColor(map.picked)">
-                            {{ getPlayerName(map.picked, "Random") }}
-                        </Tag>
-                    </div>
-                    <div>
-                        <Tag :color="getPlayerColor(map.winner)">
-                            {{ getPlayerName(map.winner, "Draw") }}
-                        </Tag>
-                        <span v-if="map.forfeit">(Won by forfeit)</span>
-                        <span v-if="map.unscored">(Unscored)</span>
-                    </div>
-                    <div v-if="map.spin != null" class="col-span-3">
-                        <TextualSpin :spin="map.spin" />
+                    <div class="col-span-3 bg-center bg-cover rounded-md" :style="getMapBackground(map.map)">
+                        <div class="grid grid-cols-3 px-4 py-2 bg-black/70 rounded-md">
+                            <div>
+                                <MapTag :map="getMap(map.map)!" full-name />
+                            </div>
+                            <div class="justify-self-center">
+                                <Tag :color="getPlayerColor(map.picked)">
+                                    {{ getPlayerName(map.picked, "Random") }}
+                                </Tag>
+                            </div>
+                            <div class="justify-self-end">
+                                <Tag :color="getPlayerColor(map.winner)">
+                                    {{ getPlayerName(map.winner, "Draw") }}
+                                </Tag>
+                                <span v-if="map.forfeit">(Won by forfeit)</span>
+                                <span v-if="map.unscored">(Unscored)</span>
+                            </div>
+                            <div v-if="map.spin != null" class="col-span-3">
+                                <TextualSpin :spin="map.spin" />
+                            </div>
+        
+                            <div
+                                v-if="map.notes != null && map.notes !== ''"
+                                class="col-span-3 text-center italic"
+                            >
+                                {{ map.notes }}
+                            </div>
+        
+                            <div
+                                class="col-span-3 text-center"
+                            >
+                                RTA:
+                                {{
+                                    map.timeTaken > 0
+                                        ? durationToLocale(map.timeTaken * 1000)
+                                        : "unknown"
+                                }}
+                                <Tag v-if="isMapPB(idx)" narrow color="purple">
+                                    Personal best ({{
+                                        getPlayerName(map.winner, "unknown")
+                                    }})
+                                </Tag>
+                                <Tag
+                                    v-if="wrStatus[idx] === RecordStatus.CURRENT"
+                                    narrow
+                                    color="#cb8900"
+                                >
+                                    Current record
+                                </Tag>
+                                <Tag
+                                    v-if="wrStatus[idx] === RecordStatus.FORMER"
+                                    narrow
+                                    color="#926711"
+                                >
+                                    Former record
+                                </Tag>
+                            </div>
+                        </div>
                     </div>
 
-                    <div
-                        v-if="map.notes != null && map.notes !== ''"
-                        class="col-span-3 text-center italic"
-                    >
-                        {{ map.notes }}
-                    </div>
-
-                    <div
-                        class="col-span-3 border-b border-gray-500 pb-3 mb-3 text-center"
-                    >
-                        RTA:
-                        {{
-                            map.timeTaken > 0
-                                ? durationToLocale(map.timeTaken * 1000)
-                                : "unknown"
-                        }}
-                        <Tag v-if="isMapPB(idx)" narrow color="purple">
-                            Personal best ({{
-                                getPlayerName(map.winner, "unknown")
-                            }})
-                        </Tag>
-                        <Tag
-                            v-if="wrStatus[idx] === RecordStatus.CURRENT"
-                            narrow
-                            color="#cb8900"
-                        >
-                            Current record
-                        </Tag>
-                        <Tag
-                            v-if="wrStatus[idx] === RecordStatus.FORMER"
-                            narrow
-                            color="#926711"
-                        >
-                            Former record
-                        </Tag>
-                    </div>
+                    <div class="col-span-3 border-b border-gray-500 my-2" />
                 </template>
             </div>
 
@@ -336,4 +341,10 @@ onBeforeMount(async () => {
         }),
     );
 });
+
+function getMapBackground(map: HitmanMap) {
+    return {
+        "background-image": `url(${getMap(map)!.backgroundImage})`,
+    };
+}
 </script>
