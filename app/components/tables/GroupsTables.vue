@@ -1,20 +1,16 @@
 <template>
-    <AccordionComponent class="!bg-opacity-50">
-        <template #title> Groups </template>
-
-        <div class="grid grid-cols-3 gap-5">
-            <GroupTable
-                v-for="(group, idx) of groups"
-                :key="idx"
-                :group-name="group.name"
-                :advancing-players="group.advancingPlayers"
-                :matches-between-players="groupsInfo.matchesBetweenPlayers"
-                :max-points-per-match="groupsInfo.maxPointsPerMatch"
-                :players="group.players"
-                :position-overrides="group.positionOverrides"
-            />
-        </div>
-    </AccordionComponent>
+    <div class="grid grid-cols-3 gap-5">
+        <GroupTable
+            v-for="(group, idx) of groups"
+            :key="idx"
+            :group-name="group.name"
+            :advancing-players="group.advancingPlayers"
+            :matches-between-players="groupsInfo.matchesBetweenPlayers"
+            :max-points-per-match="groupsInfo.maxPointsPerMatch"
+            :players="group.players"
+            :position-overrides="group.positionOverrides"
+        />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +32,9 @@ const groups = computed(() => {
                 ties: 0,
                 losses: 0,
                 points: 0,
+                scoresVersus: {} as Record<string, number>,
+                mapsVersus: {} as Record<string, HitmanMap[]>,
+                bansVersus: {} as Record<string, HitmanMap[]>,
             };
 
             for (const opponent of group.players) {
@@ -46,23 +45,34 @@ const groups = computed(() => {
                     matchNo < props.groupsInfo.matchesBetweenPlayers;
                     matchNo++
                 ) {
-                    const pointsAgainst = getPointsAgainst(
+                    const statsAgainst = getStatsAgainst(
                         player,
                         opponent,
                         matchNo,
                     );
 
-                    if (pointsAgainst === undefined) continue;
-                    if (pointsAgainst < pointsNeededToWin) {
+                    if (statsAgainst === undefined) continue;
+                    if (statsAgainst.points < pointsNeededToWin) {
                         playerObject.losses++;
                     }
-                    if (pointsAgainst === pointsNeededToWin) {
+                    if (statsAgainst.points === pointsNeededToWin) {
                         playerObject.ties++;
                     }
-                    if (pointsAgainst > pointsNeededToWin) {
+                    if (statsAgainst.points > pointsNeededToWin) {
                         playerObject.wins++;
                     }
-                    playerObject.points += pointsAgainst;
+                    playerObject.points += statsAgainst.points;
+
+                    playerObject.scoresVersus[opponent] ??= 0;
+                    playerObject.scoresVersus[opponent] += statsAgainst.points;
+                    playerObject.mapsVersus[opponent] ??= [];
+                    playerObject.mapsVersus[opponent].push(
+                        ...statsAgainst.playedMaps,
+                    );
+                    playerObject.bansVersus[opponent] ??= [];
+                    playerObject.bansVersus[opponent].push(
+                        ...statsAgainst.bannedMaps,
+                    );
                 }
             }
 
@@ -80,11 +90,13 @@ const groups = computed(() => {
     return result;
 });
 
-function getPointsAgainst(
+function getStatsAgainst(
     player: string,
     opponent: string,
     matchNumber: number = 0,
-): number | undefined {
+):
+    | { points: number; playedMaps: HitmanMap[]; bannedMaps: HitmanMap[] }
+    | undefined {
     const matches = props.matches
         .filter(
             (m) =>
@@ -108,9 +120,25 @@ function getPointsAgainst(
     }
 
     if (match.playerOne === player) {
-        return match.playerOneScore;
+        return {
+            points: match.playerOneScore,
+            playedMaps: match.playedMaps
+                .filter((map) => map.picked === ChoosingPlayer.PLAYER_ONE)
+                .map((map) => map.map),
+            bannedMaps: match.bannedMaps
+                .filter((map) => map.picked === ChoosingPlayer.PLAYER_ONE)
+                .map((map) => map.map),
+        };
     } else {
-        return match.playerTwoScore;
+        return {
+            points: match.playerTwoScore,
+            playedMaps: match.playedMaps
+                .filter((map) => map.picked === ChoosingPlayer.PLAYER_TWO)
+                .map((map) => map.map),
+            bannedMaps: match.bannedMaps
+                .filter((map) => map.picked === ChoosingPlayer.PLAYER_TWO)
+                .map((map) => map.map),
+        };
     }
 }
 </script>

@@ -2,7 +2,7 @@
     <div class="w-64 h-12">
         <div
             v-if="showMatch(match)"
-            class="bg-slate-700 rounded-sm match-grid border border-gray-900"
+            class="bg-slate-700 text-sm rounded-sm match-grid border border-gray-900"
         >
             <div class="pl-1">
                 {{ match.playerOne }}

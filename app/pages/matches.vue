@@ -18,40 +18,22 @@
 
         <div class="flex flex-col gap-3 md:mx-10">
             <h1 class="text-center text-5xl bold">
-                {{ competition?.name }} - Matches
+                {{ competition?.name }}
             </h1>
+
+            <div
+                v-if="competition?.hitmapsStatsUrl != null"
+                class="border-2 rounded p-3 text-center mx-auto my-4 border-blue-600 dark:border-blue-400"
+            >
+                <FontAwesomeIcon :icon="['fas', 'chart-simple']" class="mr-3" />
+                HITMAPS has tournament-specific statistics available! Check them
+                out
+                <a class="underline" :href="competition.hitmapsStatsUrl">here</a
+                >!
+            </div>
 
             <TabbedContainer :tabs="tabs">
                 <template #[`Matches`]>
-                    <UpcomingMatches
-                        v-if="
-                            competition?.hitmapsSlug != null &&
-                            competition?.updateWithHitmaps
-                        "
-                        :tournament-slug="competition.hitmapsSlug"
-                    />
-
-                    <GroupsTables
-                        v-if="competition?.groupsConfig != null"
-                        :groups-info="competition.groupsConfig"
-                        :matches="sortedMatches"
-                    />
-
-                    <div
-                        v-if="competition?.hitmapsStatsUrl != null"
-                        class="border-2 rounded p-3 text-center mx-auto my-4 border-blue-600 dark:border-blue-400"
-                    >
-                        <FontAwesomeIcon
-                            :icon="['fas', 'chart-simple']"
-                            class="mr-3"
-                        />
-                        HITMAPS has tournament-specific statistics available!
-                        Check them out
-                        <a class="underline" :href="competition.hitmapsStatsUrl"
-                            >here</a
-                        >!
-                    </div>
-
                     <IndefiniteProgressBar v-if="stillLoading" />
                     <DataTableComponent
                         :headers="headers"
@@ -189,10 +171,23 @@
                     </DataTableComponent>
                 </template>
 
+                <template #[uM]>
+                    <UpcomingMatches
+                        :tournament-slug="competition!.hitmapsSlug!"
+                    />
+                </template>
+
+                <template #Groups>
+                    <GroupsTables
+                        :groups-info="competition!.groupsConfig!"
+                        :matches="sortedMatches"
+                    />
+                </template>
+
                 <template
                     v-for="bracket in brackets"
                     :key="bracket.index"
-                    #[getTabName(bracket)]
+                    #[getBracketTabName(bracket)]
                 >
                     <BracketViewer
                         :matches="matches ?? []"
@@ -214,6 +209,7 @@ definePageMeta({
 
 const matchToShow: Ref<IMatch | null> = ref(null);
 const showDownload = ref(false);
+const uM = "Upcoming matches";
 
 const headers = [
     { title: "Date & Time", key: "timestamp" },
@@ -260,10 +256,23 @@ const sortedMatches = computed(() => {
 });
 
 const tabs = computed(() => {
-    return ["Matches", ...brackets.value.map((bracket) => getTabName(bracket))];
+    const result = ["Matches"];
+    if (
+        competition.value?.hitmapsSlug != null &&
+        competition.value?.updateWithHitmaps
+    ) {
+        result.push("Upcoming matches");
+    }
+    if (competition.value?.groupsConfig != null) {
+        result.push("Groups");
+    }
+    brackets.value.forEach((bracket) => {
+        result.push(getBracketTabName(bracket));
+    });
+    return result;
 });
 
-function getTabName(bracket: IBracket) {
+function getBracketTabName(bracket: IBracket) {
     return `Bracket - ${bracket.name}`;
 }
 

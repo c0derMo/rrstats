@@ -76,7 +76,12 @@
 
             <div v-if="match.bannedMaps.length > 0" class="grid grid-cols-3">
                 <div class="flex flex-col text-center">
-                    <div v-for="(ban, idx) of playerOneBans" :key="idx" class="bg-cover bg-center" :style="getMapBackground(ban.map)">
+                    <div
+                        v-for="(ban, idx) of playerOneBans"
+                        :key="idx"
+                        class="bg-cover bg-center"
+                        :style="getMapBackground(ban.map)"
+                    >
                         <div class="bg-black/70 py-1">
                             <MapTag
                                 :map="getMap(ban.map)!"
@@ -87,11 +92,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-center font-bold">
-                    Bans
-                </div>
+                <div class="text-center font-bold">Bans</div>
                 <div class="flex flex-col text-center">
-                    <div v-for="(ban, idx) of playerTwoBans" :key="idx" class="bg-cover bg-center" :style="getMapBackground(ban.map)">
+                    <div
+                        v-for="(ban, idx) of playerTwoBans"
+                        :key="idx"
+                        class="bg-cover bg-center"
+                        :style="getMapBackground(ban.map)"
+                    >
                         <div class="bg-black/70 py-1">
                             <MapTag
                                 :map="getMap(ban.map)!"
@@ -109,8 +117,13 @@
                 <div class="font-bold text-center">Picked by</div>
                 <div class="font-bold pr-4 text-right">Won by</div>
                 <template v-for="(map, idx) in match.playedMaps" :key="idx">
-                    <div class="col-span-3 bg-center bg-cover rounded-md" :style="getMapBackground(map.map)">
-                        <div class="grid grid-cols-3 px-4 py-2 bg-black/70 rounded-md">
+                    <div
+                        class="col-span-3 bg-center bg-cover rounded-md"
+                        :style="getMapBackground(map.map)"
+                    >
+                        <div
+                            class="grid grid-cols-3 px-4 py-2 bg-black/70 rounded-md"
+                        >
                             <div>
                                 <MapTag :map="getMap(map.map)!" full-name />
                             </div>
@@ -129,17 +142,15 @@
                             <div v-if="map.spin != null" class="col-span-3">
                                 <TextualSpin :spin="map.spin" />
                             </div>
-        
+
                             <div
                                 v-if="map.notes != null && map.notes !== ''"
                                 class="col-span-3 text-center italic"
                             >
                                 {{ map.notes }}
                             </div>
-        
-                            <div
-                                class="col-span-3 text-center"
-                            >
+
+                            <div class="col-span-3 text-center">
                                 RTA:
                                 {{
                                     map.timeTaken > 0
@@ -152,7 +163,9 @@
                                     }})
                                 </Tag>
                                 <Tag
-                                    v-if="wrStatus[idx] === RecordStatus.CURRENT"
+                                    v-if="
+                                        wrStatus[idx] === RecordStatus.CURRENT
+                                    "
                                     narrow
                                     color="#cb8900"
                                 >
