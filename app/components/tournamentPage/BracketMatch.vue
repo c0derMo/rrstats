@@ -1,10 +1,10 @@
 <template>
-    <div class="w-64 h-12">
+    <div class="w-52 h-12">
         <div
             v-if="showMatch(match)"
             class="bg-slate-700 text-sm rounded-sm match-grid border border-gray-900"
         >
-            <div class="pl-1">
+            <div class="pl-1 min-h-5 text-ellipsis">
                 {{ match.playerOne }}
             </div>
             <div
@@ -14,7 +14,7 @@
                 {{ leftPlayerScore }}
             </div>
             <div class="border-b border-gray-500 col-span-2" />
-            <div class="pl-1">
+            <div class="pl-1 min-h-5 text-ellipsis">
                 {{ match.playerTwo }}
             </div>
             <div
@@ -59,7 +59,10 @@ function showMatch(match?: LocalBracketMatch): match is LocalBracketMatch {
 const leftPlayerScore = computed(() => {
     if (props.forfeit === props.match?.playerOne) {
         return "";
-    } else if (props.forfeit === props.match?.playerTwo) {
+    } else if (
+        props.forfeit === props.match?.playerTwo &&
+        props.match?.playerTwo != null
+    ) {
         return "FF";
     }
     return props.match?.playedMatch?.playerOneScore;
@@ -68,7 +71,10 @@ const leftPlayerScore = computed(() => {
 const rightPlayerScore = computed(() => {
     if (props.forfeit === props.match?.playerTwo) {
         return "";
-    } else if (props.forfeit === props.match?.playerOne) {
+    } else if (
+        props.forfeit === props.match?.playerOne &&
+        props.match?.playerOne != null
+    ) {
         return "FF";
     }
     return props.match?.playedMatch?.playerTwoScore;

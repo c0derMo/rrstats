@@ -8,10 +8,10 @@
             <div
                 v-for="(round, idx) in stage"
                 :key="idx"
-                class="flex flex-col gap-4"
+                class="flex flex-col gap-1"
             >
                 <div
-                    class="w-64 bg-slate-100 dark:bg-gray-800 rounded-md text-center font-semibold"
+                    class="w-52 bg-slate-100 dark:bg-gray-800 rounded-md text-center font-semibold"
                 >
                     {{ round.roundName }}
                 </div>
@@ -58,6 +58,9 @@ function getPlayerTwo(match: LocalBracketMatch): string | null {
 }
 
 function getLocalMatchById(id: string): LocalBracketMatch | null {
+    if (localMatches.value[id] == null) {
+        console.warn(`Queried nonexistant local match ${id}`);
+    }
     return localMatches.value[id] ?? null;
 }
 
