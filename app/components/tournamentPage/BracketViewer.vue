@@ -3,7 +3,13 @@
         <div
             v-for="(stage, stageIdx) in bracket.rounds"
             :key="stageIdx"
-            class="flex flex-row gap-6"
+            class="flex flex-row gap-6 overflow-x-auto select-none cursor-grab"
+            :class="{
+                'cursor-grabbing': draggingData != null,
+            }"
+            @mousedown="startDrag"
+            @mouseup="stopDrag"
+            @mousemove="drag"
         >
             <div
                 v-for="(round, idx) in stage"
@@ -25,6 +31,8 @@
                     <BracketMatch
                         :match="getLocalMatchById(match.id) ?? undefined"
                         :forfeit="bracket.forfeits[match.id]"
+                        :hovering="hoveringPlayer"
+                        @hovering-player="(e) => (hoveringPlayer = e)"
                     />
                 </div>
             </div>
@@ -46,8 +54,54 @@ const props = defineProps<{
 }>();
 
 const localMatches = ref<Record<string, LocalBracketMatch>>({});
+const draggingData = ref<{
+    element: HTMLElement;
+    mouseX: number;
+    mouseY: number;
+    elemX: number;
+    elemY: number;
+} | null>(null);
+const hoveringPlayer = ref("");
 
 const players = usePlayers();
+
+function startDrag(e: MouseEvent) {
+    console.log("Mouse down");
+    console.log(e.target);
+    const element = (e.target as HTMLElement).closest(
+        ".overflow-x-auto",
+    ) as HTMLElement;
+    if (element == null) {
+        return;
+    }
+    draggingData.value = {
+        element,
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        elemX: element.scrollLeft,
+        elemY: window.scrollY,
+    };
+}
+
+function stopDrag() {
+    draggingData.value = null;
+}
+
+function drag(e: MouseEvent) {
+    if (draggingData.value == null) {
+        return;
+    }
+
+    const element = draggingData.value.element;
+    element.scrollTo({
+        left: draggingData.value.elemX - e.clientX + draggingData.value.mouseX,
+        behavior: "smooth",
+    });
+    window.scrollTo({
+        top: draggingData.value.elemY - e.clientY + draggingData.value.mouseY,
+        behavior: "smooth",
+    });
+}
 
 function getPlayerOne(match: LocalBracketMatch): string | null {
     return match.playerOne ?? null;
@@ -58,9 +112,6 @@ function getPlayerTwo(match: LocalBracketMatch): string | null {
 }
 
 function getLocalMatchById(id: string): LocalBracketMatch | null {
-    if (localMatches.value[id] == null) {
-        console.warn(`Queried nonexistant local match ${id}`);
-    }
     return localMatches.value[id] ?? null;
 }
 

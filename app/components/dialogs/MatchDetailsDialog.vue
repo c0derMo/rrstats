@@ -76,39 +76,25 @@
 
             <div v-if="match.bannedMaps.length > 0" class="grid grid-cols-3">
                 <div class="flex flex-col text-center">
-                    <div
+                    <MapTag
                         v-for="(ban, idx) of playerOneBans"
                         :key="idx"
-                        class="bg-cover bg-center"
-                        :style="getMapBackground(ban.map)"
-                    >
-                        <div class="bg-black/70 py-1">
-                            <MapTag
-                                :map="getMap(ban.map)!"
-                                full-name
-                                :narrow="true"
-                                class="w-fit mx-auto"
-                            />
-                        </div>
-                    </div>
+                        :map="getMap(ban.map)!"
+                        full-name
+                        :narrow="true"
+                        class="w-fit mx-auto"
+                    />
                 </div>
                 <div class="text-center font-bold">Bans</div>
                 <div class="flex flex-col text-center">
-                    <div
+                    <MapTag
                         v-for="(ban, idx) of playerTwoBans"
                         :key="idx"
-                        class="bg-cover bg-center"
-                        :style="getMapBackground(ban.map)"
-                    >
-                        <div class="bg-black/70 py-1">
-                            <MapTag
-                                :map="getMap(ban.map)!"
-                                full-name
-                                :narrow="true"
-                                class="w-fit mx-auto"
-                            />
-                        </div>
-                    </div>
+                        :map="getMap(ban.map)!"
+                        full-name
+                        :narrow="true"
+                        class="w-fit mx-auto"
+                    />
                 </div>
             </div>
 
@@ -122,7 +108,7 @@
                         :style="getMapBackground(map.map)"
                     >
                         <div
-                            class="grid grid-cols-3 px-4 py-2 bg-black/70 rounded-md"
+                            class="grid grid-cols-3 px-4 py-4 bg-black/70 rounded-md"
                         >
                             <div>
                                 <MapTag :map="getMap(map.map)!" full-name />
@@ -182,7 +168,7 @@
                         </div>
                     </div>
 
-                    <div class="col-span-3 border-b border-gray-500 my-2" />
+                    <div class="col-span-3 border-b border-gray-500 my-1" />
                 </template>
             </div>
 

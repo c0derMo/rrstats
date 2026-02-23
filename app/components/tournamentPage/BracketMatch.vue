@@ -1,27 +1,71 @@
 <template>
     <div class="w-52 h-12">
+        <MatchDetailsDialog
+            v-if="showingMatch != null"
+            :match="showingMatch"
+            @click-outside="showingMatch = null"
+        />
         <div
             v-if="showMatch(match)"
-            class="bg-slate-700 text-sm rounded-sm match-grid border border-gray-900"
+            class="bg-slate-700 text-sm rounded-sm match-grid border border-gray-900 select-text cursor-auto"
+            :class="{
+                'cursor-pointer': match.playedMatch != null,
+            }"
+            @click="showingMatch = match.playedMatch ?? null"
+            @mousedown.stop
+            @mouseup.stop
         >
-            <div class="pl-1 min-h-5 text-ellipsis">
+            <div
+                class="pl-1 min-h-5 text-ellipsis transition-colors"
+                :class="{
+                    'bg-slate-900': hovering === match.playerOne,
+                }"
+                @mouseenter="emitHover(match.playerOne)"
+                @mouseleave="emitHover('')"
+            >
                 {{ match.playerOne }}
             </div>
-            <div
-                class="text-right pr-2 bg-slate-800 border-l border-gray-500"
-                :style="{ color: leftPlayerScoreColor }"
-            >
-                {{ leftPlayerScore }}
+            <div class="row-span-3">
+                <component
+                    :is="match.playedMatch != null ? MatchMapsTooltip : 'div'"
+                    :maps="match.playedMatch?.playedMaps"
+                    :players="
+                        match.playedMatch != null
+                            ? [
+                                  match.playedMatch?.playerOne,
+                                  match.playedMatch?.playerTwo,
+                              ]
+                            : undefined
+                    "
+                    class="h-full"
+                >
+                    <div class="flex flex-col h-full">
+                        <div
+                            class="text-right pr-2 bg-slate-800 border-l border-gray-500 h-1/2"
+                            :style="{ color: leftPlayerScoreColor }"
+                        >
+                            {{ leftPlayerScore }}
+                        </div>
+                        <div class="border-b border-gray-500" />
+                        <div
+                            class="text-right pr-2 bg-slate-800 border-l border-gray-500 h-1/2"
+                            :style="{ color: rightPlayerScoreColor }"
+                        >
+                            {{ rightPlayerScore }}
+                        </div>
+                    </div>
+                </component>
             </div>
-            <div class="border-b border-gray-500 col-span-2" />
-            <div class="pl-1 min-h-5 text-ellipsis">
+            <div class="border-b border-gray-500" />
+            <div
+                class="pl-1 min-h-5 text-ellipsis transition-colors"
+                :class="{
+                    'bg-slate-900': hovering === match.playerTwo,
+                }"
+                @mouseenter="emitHover(match.playerTwo)"
+                @mouseleave="emitHover('')"
+            >
                 {{ match.playerTwo }}
-            </div>
-            <div
-                class="text-right pr-2 bg-slate-800 border-l border-gray-500"
-                :style="{ color: rightPlayerScoreColor }"
-            >
-                {{ rightPlayerScore }}
             </div>
         </div>
     </div>
@@ -45,7 +89,20 @@ interface LocalBracketMatch extends IBracketMatch {
 const props = defineProps<{
     match?: LocalBracketMatch;
     forfeit?: string;
+    hovering?: string;
 }>();
+const emit = defineEmits<{
+    hoveringPlayer: [player: string];
+}>();
+
+const MatchMapsTooltip = resolveComponent("MatchMapsTooltip");
+const showingMatch = ref<IMatch | null>(null);
+
+function emitHover(player?: string) {
+    if (player != null) {
+        emit("hoveringPlayer", player);
+    }
+}
 
 function showMatch(match?: LocalBracketMatch): match is LocalBracketMatch {
     return (
