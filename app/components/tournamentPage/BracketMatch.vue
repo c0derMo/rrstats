@@ -7,7 +7,7 @@
         />
         <div
             v-if="showMatch(match)"
-            class="bg-slate-700 text-sm rounded-sm match-grid border border-gray-900 select-text cursor-auto"
+            class="bg-slate-700 text-sm rounded-sm match-grid border border-gray-900 select-text cursor-auto h-12"
             :class="{
                 'cursor-pointer': match.playedMatch != null,
             }"

@@ -23,17 +23,35 @@
                 </div>
 
                 <div
-                    v-for="match in round.matches"
+                    v-for="(match, mIdx) in round.matches"
                     :key="match.id"
                     class="flex flex-col justify-center"
                     :class="{ 'flex-grow': bracket.advancementBracket }"
                 >
-                    <BracketMatch
-                        :match="getLocalMatchById(match.id) ?? undefined"
-                        :forfeit="bracket.forfeits[match.id]"
-                        :hovering="hoveringPlayer"
-                        @hovering-player="(e) => (hoveringPlayer = e)"
-                    />
+                    <div class="flex flex-row h-full items-center">
+                        <BracketMatch
+                            :match="getLocalMatchById(match.id) ?? undefined"
+                            :forfeit="bracket.forfeits[match.id]"
+                            :hovering="hoveringPlayer"
+                            @hovering-player="(e) => (hoveringPlayer = e)"
+                        />
+
+                        <div
+                            v-if="
+                                bracket.advancementBracket &&
+                                showMatch(match) &&
+                                stage[idx + 1] != null
+                            "
+                            class="w-3 h-1/2 relative left-3"
+                            :class="{
+                                'border-r':
+                                    stage[idx + 1].matches.length <
+                                    stage[idx].matches.length,
+                                'border-t top-1/4': mIdx % 2 == 0,
+                                'border-b bottom-1/4': mIdx % 2 == 1,
+                            }"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,6 +119,15 @@ function drag(e: MouseEvent) {
         top: draggingData.value.elemY - e.clientY + draggingData.value.mouseY,
         behavior: "smooth",
     });
+}
+
+function showMatch(match?: IBracketMatch): boolean {
+    return (
+        match != null &&
+        !match.bye &&
+        (match.playerOne != null || match.playerOneFrom != null) &&
+        (match.playerTwo != null || match.playerTwoFrom != null)
+    );
 }
 
 function getPlayerOne(match: LocalBracketMatch): string | null {
