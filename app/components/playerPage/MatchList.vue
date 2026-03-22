@@ -133,6 +133,8 @@
                         v-for="(map, idx) in value"
                         :key="idx"
                         :map="getMap(map.map)!"
+                        :won="map.winner === getLocalWinningPlayer(row)"
+                        :draw="map.winner === WinningPlayer.DRAW"
                     />
                 </MatchMapsTooltip>
             </template>

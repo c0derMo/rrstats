@@ -143,9 +143,17 @@
                                         ? durationToLocale(map.timeTaken * 1000)
                                         : "unknown"
                                 }}
-                                <Tag v-if="isMapPB(idx)" narrow color="purple">
+                                <Tag
+                                    v-if="isMapPB(idx) != null"
+                                    narrow
+                                    color="purple"
+                                >
                                     Personal best ({{
-                                        getPlayerName(map.winner, "unknown")
+                                        isMapPB(idx)
+                                            ?.map((player) =>
+                                                players.get(player),
+                                            )
+                                            .join(", ")
                                     }})
                                 </Tag>
                                 <Tag
@@ -285,23 +293,37 @@ function getPlayerColor(
     return undefined;
 }
 
-function isMapPB(mapIdx: number): boolean {
+function isMapPB(mapIdx: number): string[] | null {
     const map = props.match.playedMaps[mapIdx];
-    if (map.winner === WinningPlayer.PLAYER_ONE) {
-        return (
+    const pbHolders: string[] = [];
+    if (
+        map.winner === WinningPlayer.PLAYER_ONE ||
+        map.winner === WinningPlayer.DRAW
+    ) {
+        const isP1PB =
             playerOneStatistics.value?.mapPBs[map.map].match?.uuid ===
                 props.match.uuid &&
-            playerOneStatistics.value?.mapPBs[map.map].map === mapIdx
-        );
+            playerOneStatistics.value?.mapPBs[map.map].map === mapIdx;
+        if (isP1PB) {
+            pbHolders.push(props.match.playerOne);
+        }
     }
-    if (map.winner === WinningPlayer.PLAYER_TWO) {
-        return (
+    if (
+        map.winner === WinningPlayer.PLAYER_TWO ||
+        map.winner === WinningPlayer.DRAW
+    ) {
+        const isP2PB =
             playerTwoStatistics.value?.mapPBs[map.map].match?.uuid ===
                 props.match.uuid &&
-            playerTwoStatistics.value?.mapPBs[map.map].map === mapIdx
-        );
+            playerTwoStatistics.value?.mapPBs[map.map].map === mapIdx;
+        if (isP2PB) {
+            pbHolders.push(props.match.playerTwo);
+        }
     }
-    return false;
+    if (pbHolders.length > 0) {
+        return pbHolders;
+    }
+    return null;
 }
 
 function getEloTag(index: number): string {
