@@ -23,7 +23,9 @@
                 @mouseenter="emitHover(match.playerOne)"
                 @mouseleave="emitHover('')"
             >
-                {{ match.playerOne }}
+                {{
+                    match.playerOne != null ? players.get(match.playerOne) : ""
+                }}
             </div>
             <div class="row-span-3">
                 <component
@@ -65,7 +67,9 @@
                 @mouseenter="emitHover(match.playerTwo)"
                 @mouseleave="emitHover('')"
             >
-                {{ match.playerTwo }}
+                {{
+                    match.playerTwo != null ? players.get(match.playerTwo) : ""
+                }}
             </div>
         </div>
     </div>
@@ -97,6 +101,13 @@ const emit = defineEmits<{
 
 const MatchMapsTooltip = resolveComponent("MatchMapsTooltip");
 const showingMatch = ref<IMatch | null>(null);
+const players = usePlayers();
+if (props.match?.playerOne != null) {
+    players.queryPlayers([props.match.playerOne]);
+}
+if (props.match?.playerTwo != null) {
+    players.queryPlayers([props.match.playerTwo]);
+}
 
 function emitHover(player?: string) {
     if (player != null) {
@@ -114,8 +125,11 @@ function showMatch(match?: LocalBracketMatch): match is LocalBracketMatch {
 }
 
 const leftPlayerScore = computed(() => {
-    if (props.forfeit === props.match?.playerOne) {
-        return "";
+    if (
+        props.forfeit === props.match?.playerOne &&
+        props.match?.playerOne != null
+    ) {
+        return "W";
     } else if (
         props.forfeit === props.match?.playerTwo &&
         props.match?.playerTwo != null
@@ -126,8 +140,11 @@ const leftPlayerScore = computed(() => {
 });
 
 const rightPlayerScore = computed(() => {
-    if (props.forfeit === props.match?.playerTwo) {
-        return "";
+    if (
+        props.forfeit === props.match?.playerTwo &&
+        props.match?.playerTwo != null
+    ) {
+        return "W";
     } else if (
         props.forfeit === props.match?.playerOne &&
         props.match?.playerOne != null

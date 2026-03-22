@@ -81,8 +81,6 @@ const draggingData = ref<{
 } | null>(null);
 const hoveringPlayer = ref("");
 
-const players = usePlayers();
-
 function startDrag(e: MouseEvent) {
     console.log("Mouse down");
     console.log(e.target);
@@ -147,10 +145,10 @@ function findPlayedMatch(match: LocalBracketMatch): IMatch | null {
         props.matches.find((m) => {
             return (
                 m.round === match.roundName &&
-                ((players.get(m.playerOne) === getPlayerOne(match) &&
-                    players.get(m.playerTwo) === getPlayerTwo(match)) ||
-                    (players.get(m.playerTwo) === getPlayerOne(match) &&
-                        players.get(m.playerOne) === getPlayerTwo(match)))
+                ((m.playerOne === getPlayerOne(match) &&
+                    m.playerTwo === getPlayerTwo(match)) ||
+                    (m.playerTwo === getPlayerOne(match) &&
+                        m.playerOne === getPlayerTwo(match)))
             );
         }) ?? null
     );
@@ -210,7 +208,7 @@ function resolveSingleMatch(
             let winner: string | null = null;
             let loser: string | null = null;
 
-            if (players.get(playedMatch.playerOne) === getPlayerTwo(match)) {
+            if (playedMatch.playerOne === getPlayerTwo(match)) {
                 const tmp = match.playerOne;
                 match.playerOne = match.playerTwo;
                 match.playerTwo = tmp;

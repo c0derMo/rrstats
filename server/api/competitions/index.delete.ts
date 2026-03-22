@@ -1,4 +1,5 @@
 import { AuthController } from "~~/server/controller/AuthController";
+import { Bracket } from "~~/server/model/Bracket";
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 
 export default defineEventHandler(async (event) => {
@@ -31,5 +32,6 @@ export default defineEventHandler(async (event) => {
     if (compToRemove != null) {
         await compToRemove.remove();
         await CompetitionPlacement.delete({ competition: body.tag });
+        await Bracket.delete({ competition: body.tag });
     }
 });
