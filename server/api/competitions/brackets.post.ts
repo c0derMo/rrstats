@@ -38,6 +38,7 @@ export default defineEventHandler(async (event) => {
         );
         const dbBracket = new Bracket();
         Object.assign(dbBracket, bracket);
+        dbBracket.competition = query.tag;
         await dbBracket.save();
     }
     for (const bracketToDelete of existingBrackets) {

@@ -24,21 +24,16 @@
                 @mouseleave="emitHover('')"
             >
                 {{
-                    match.playerOne != null ? players.get(match.playerOne) : ""
+                    match.playerOne != null
+                        ? players.get(match.playerOne, match.playerOne)
+                        : ""
                 }}
             </div>
             <div class="row-span-3">
-                <component
-                    :is="match.playedMatch != null ? MatchMapsTooltip : 'div'"
+                <BracketMatchScore
                     :maps="match.playedMatch?.playedMaps"
-                    :players="
-                        match.playedMatch != null
-                            ? [
-                                  match.playedMatch?.playerOne,
-                                  match.playedMatch?.playerTwo,
-                              ]
-                            : undefined
-                    "
+                    :player-one="match.playedMatch?.playerOne"
+                    :player-two="match.playedMatch?.playerTwo"
                     class="h-full"
                 >
                     <div class="flex flex-col h-full">
@@ -56,7 +51,7 @@
                             {{ rightPlayerScore }}
                         </div>
                     </div>
-                </component>
+                </BracketMatchScore>
             </div>
             <div class="border-b border-gray-500" />
             <div
@@ -68,7 +63,9 @@
                 @mouseleave="emitHover('')"
             >
                 {{
-                    match.playerTwo != null ? players.get(match.playerTwo) : ""
+                    match.playerTwo != null
+                        ? players.get(match.playerTwo, match.playerTwo)
+                        : ""
                 }}
             </div>
         </div>
@@ -99,7 +96,6 @@ const emit = defineEmits<{
     hoveringPlayer: [player: string];
 }>();
 
-const MatchMapsTooltip = resolveComponent("MatchMapsTooltip");
 const showingMatch = ref<IMatch | null>(null);
 const players = usePlayers();
 if (props.match?.playerOne != null) {

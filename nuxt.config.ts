@@ -66,6 +66,8 @@ export default defineNuxtConfig({
                 "@fortawesome/free-solid-svg-icons",
                 "@fortawesome/free-regular-svg-icons",
                 "luxon",
+                "lodash",
+                "chart.js",
             ],
         },
     },

@@ -172,11 +172,13 @@ function resolveSingleMatch(
             );
         }
 
-        const resolvedMatch = getLocalMatchById(match.playerOneFrom.matchId)!;
-        if (match.playerOneFrom.winner) {
-            match.playerOne = resolvedMatch.winner;
-        } else {
-            match.playerOne = resolvedMatch.loser;
+        const resolvedMatch = getLocalMatchById(match.playerOneFrom.matchId);
+        if (resolvedMatch != null) {
+            if (match.playerOneFrom.winner) {
+                match.playerOne = resolvedMatch.winner;
+            } else {
+                match.playerOne = resolvedMatch.loser;
+            }
         }
     }
 
@@ -193,11 +195,13 @@ function resolveSingleMatch(
             );
         }
 
-        const resolvedMatch = getLocalMatchById(match.playerTwoFrom.matchId)!;
-        if (match.playerTwoFrom.winner) {
-            match.playerTwo = resolvedMatch.winner;
-        } else {
-            match.playerTwo = resolvedMatch.loser;
+        const resolvedMatch = getLocalMatchById(match.playerTwoFrom.matchId);
+        if (resolvedMatch != null) {
+            if (match.playerTwoFrom.winner) {
+                match.playerTwo = resolvedMatch.winner;
+            } else {
+                match.playerTwo = resolvedMatch.loser;
+            }
         }
     }
 

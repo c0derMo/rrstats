@@ -1,15 +1,17 @@
 <template>
     <div
+        ref="tooltipContainer"
         class="relative inline"
         @mouseenter="showTooltip = true"
         @mouseleave="showTooltip = false"
     >
         <slot />
 
-        <Transition name="fade">
+        <Transition name="fade" @enter="updatePosition">
             <div
                 v-if="showTooltip"
-                class="absolute z-50 -translate-x-1/4 top-full w-full min-w-[650px]"
+                class="fixed z-50 w-fit max-w-[800px] min-w-[650px]"
+                :style="tooltipStyle"
             >
                 <div
                     class="p-1 rounded dark:bg-neutral-800/95 bg-neutral-100/95"
@@ -71,7 +73,10 @@
                                             full-name
                                         />
                                         <div
-                                            v-if="map.timeTaken != null"
+                                            v-if="
+                                                map.timeTaken != null &&
+                                                map.timeTaken > 0
+                                            "
                                             class="italic text-sm mx-1"
                                         >
                                             {{ secondsToTime(map.timeTaken) }}
@@ -102,7 +107,10 @@
                                         full-name
                                     />
                                     <div
-                                        v-if="map.timeTaken != null"
+                                        v-if="
+                                            map.timeTaken != null &&
+                                            map.timeTaken > 0
+                                        "
                                         class="italic text-sm mb-1"
                                     >
                                         {{ secondsToTime(map.timeTaken) }}
@@ -137,7 +145,10 @@
                                             full-name
                                         />
                                         <div
-                                            v-if="map.timeTaken != null"
+                                            v-if="
+                                                map.timeTaken != null &&
+                                                map.timeTaken > 0
+                                            "
                                             class="italic text-sm mx-1"
                                         >
                                             {{ secondsToTime(map.timeTaken) }}
@@ -192,8 +203,13 @@ const props = defineProps<{
     score?: number[];
 }>();
 
+const tooltipContainer = useTemplateRef("tooltipContainer");
 const playerNames = usePlayers();
 const showTooltip = ref(false);
+const tooltipPosition = ref({
+    top: 0,
+    left: 0,
+});
 
 function getPicker(picker: ChoosingPlayer): string {
     switch (picker) {
@@ -231,4 +247,39 @@ function getMapBackground(map: HitmanMap) {
         "background-image": `url(${getMap(map)!.backgroundImage})`,
     };
 }
+
+function updatePosition(el: Element) {
+    if (tooltipContainer.value != null) {
+        const container = tooltipContainer.value;
+        const containerRect = container.getBoundingClientRect();
+        const objHeight = el.scrollHeight;
+        const objWidth = el.scrollWidth;
+        const wH = window.innerHeight;
+        const wW = window.innerWidth;
+
+        const tooltipDist = 5;
+        if (containerRect.top + containerRect.height + objHeight > wH) {
+            // Popup
+            tooltipPosition.value.top =
+                containerRect.top - objHeight - tooltipDist;
+        } else {
+            // Popdown
+            tooltipPosition.value.top =
+                containerRect.top + containerRect.height + tooltipDist;
+        }
+
+        if (containerRect.left - 200 + objWidth > wW) {
+            tooltipPosition.value.left = wW - tooltipDist - objWidth;
+        } else {
+            tooltipPosition.value.left = containerRect.left - 200;
+        }
+    }
+}
+
+const tooltipStyle = computed(() => {
+    return {
+        top: `${tooltipPosition.value.top}px`,
+        left: `${tooltipPosition.value.left}px`,
+    };
+});
 </script>
