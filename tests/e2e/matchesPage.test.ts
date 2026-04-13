@@ -3,7 +3,7 @@ import { expectTable, expectTableRow } from "./testUtils";
 
 test.describe("Matches Page", () => {
     test("Correct matches on RRWC2024", async ({ page }) => {
-        await page.goto("/matches?tournament=RRWC2024");
+        await page.goto("/tournament/RRWC2024");
 
         const matchesTable = page.locator("table.min-w-full");
 
@@ -42,7 +42,7 @@ test.describe("Matches Page", () => {
     });
 
     test("Correct groups on RRWC2024", async ({ page }) => {
-        await page.goto("/matches?tournament=RRWC2024");
+        await page.goto("/tournament/RRWC2024");
         await page.getByText("Groups").click();
 
         const groupTables = page.locator("div.mt-5");

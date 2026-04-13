@@ -131,7 +131,7 @@ const competitionsDropdown = computed(() => {
 });
 
 function selectTournament(tournament: string) {
-    navigateTo(`/matches?tournament=${tournament}`);
+    navigateTo(`/tournament/${tournament}`);
 }
 
 function selectLeaderboard(leaderboard: string) {

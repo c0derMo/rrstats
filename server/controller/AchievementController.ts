@@ -417,9 +417,7 @@ export default class AchievementController {
 }
 
 @EventSubscriber()
-export class AchievementDatabaseListener
-    implements EntitySubscriberInterface<Match>
-{
+export class AchievementDatabaseListener implements EntitySubscriberInterface<Match> {
     IGNORED_COLUMNS = [
         "hitmapsMatchId",
         "uuid",
@@ -452,9 +450,7 @@ export class AchievementDatabaseListener
 }
 
 @EventSubscriber()
-export class AchievementVerifyListener
-    implements EntitySubscriberInterface<Achievement>
-{
+export class AchievementVerifyListener implements EntitySubscriberInterface<Achievement> {
     listenTo() {
         return Achievement;
     }

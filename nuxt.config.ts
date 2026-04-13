@@ -56,5 +56,19 @@ export default defineNuxtConfig({
         indexable: false,
     },
 
+    vite: {
+        optimizeDeps: {
+            include: [
+                "@vue/devtools-core",
+                "@vue/devtools-kit",
+                "@fortawesome/fontawesome-svg-core",
+                "@fortawesome/free-brands-svg-icons",
+                "@fortawesome/free-solid-svg-icons",
+                "@fortawesome/free-regular-svg-icons",
+                "luxon",
+            ],
+        },
+    },
+
     compatibilityDate: "2024-08-10",
 });

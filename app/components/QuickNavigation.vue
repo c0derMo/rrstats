@@ -253,14 +253,14 @@ async function buildSuggestions(routeName: string, playerName?: string) {
             return {
                 type: "Competition" as const,
                 text: comp.name,
-                targetURL: `/matches?tournament=${comp.tag}`,
+                targetURL: `/tournament/${comp.tag}`,
             };
         }),
         ...filteredCompetitions.map((comp) => {
             return {
                 type: "Competition" as const,
                 text: comp.tag,
-                targetURL: `/matches?tournament=${comp.tag}`,
+                targetURL: `/tournament/${comp.tag}`,
             };
         }),
     );
