@@ -5,7 +5,7 @@ const logger = consola.withTag("rrstats:timings");
 
 let functionTimersEnabled = false;
 
-export default class FunctionTimer {
+export class FunctionTimer {
     private start: DateTime;
     private name: string;
 

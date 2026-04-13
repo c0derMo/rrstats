@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const chosenBackground = useState("compBackground", () => "");
 
-callOnce(selectBackground);
+callOnce("selectBg", selectBackground);
 
 function selectBackground() {
     const chosenBackgroundIndex = Math.floor(
