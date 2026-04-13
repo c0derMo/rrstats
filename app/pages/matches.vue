@@ -9,9 +9,9 @@ const route = useRoute();
 
 const newLink = computed(() => {
     return `/tournament/${route.query.tournament}`;
-})
+});
 
 onBeforeMount(() => {
     navigateTo(newLink.value);
-})
+});
 </script>

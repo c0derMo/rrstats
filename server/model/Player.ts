@@ -57,9 +57,7 @@ export class Player extends BaseEntity implements IPlayer {
 }
 
 @EventSubscriber()
-export class PlayerAccoladeSubscriber
-    implements EntitySubscriberInterface<Player>
-{
+export class PlayerAccoladeSubscriber implements EntitySubscriberInterface<Player> {
     listenTo() {
         return Player;
     }

@@ -9,25 +9,23 @@
                         {{ chosenErrorTitle }}
                     </div>
                     <div class="text-xm font-titilliumWeb">
-                        {{ error.statusCode }}
+                        {{ error.status }}
                     </div>
 
-                    <div v-if="error.statusCode === 404">
+                    <div v-if="error.status === 404">
                         The page you are searching for doesn't exist.<br />
                         Just like Nitroglycerin.
                     </div>
 
                     <div
-                        v-else-if="
-                            error.statusCode === 403 || error.statusCode === 401
-                        "
+                        v-else-if="error.status === 403 || error.status === 401"
                     >
                         There's no way you're accessing that page, 47.<br />
                         It only displays for people with an authentic security
                         clearance.
                     </div>
 
-                    <div v-else-if="error.statusCode === 400">
+                    <div v-else-if="error.status === 400">
                         Richard, you are such a fool! How could you forget the
                         parameters?<br />
                         All you had to do was to remember to send the correct
@@ -35,7 +33,7 @@
                         working.
                     </div>
 
-                    <div v-else-if="error.statusCode >= 500">
+                    <div v-else-if="(error.status ?? 0) >= 500">
                         Server integrity collapsed. Summoning system
                         administrators for manual reset.<br /><br /><br /><br />
                         Server adminstrator C.Maker enroute.
