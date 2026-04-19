@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Player } from "../model/Player";
 import { DataSource, In, Not } from "typeorm";
 import { stringify } from "csv-stringify/sync";

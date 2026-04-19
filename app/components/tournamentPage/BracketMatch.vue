@@ -98,12 +98,6 @@ const emit = defineEmits<{
 
 const showingMatch = ref<IMatch | null>(null);
 const players = usePlayers();
-if (props.match?.playerOne != null) {
-    players.queryPlayers([props.match.playerOne]);
-}
-if (props.match?.playerTwo != null) {
-    players.queryPlayers([props.match.playerTwo]);
-}
 
 function emitHover(player?: string) {
     if (player != null) {

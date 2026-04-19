@@ -1,4 +1,6 @@
-import { default as FunctionTimer, Log } from "#shared/utils/FunctionTimer";
+// @ts-nocheck
+
+import { FunctionTimer, Log } from "#shared/utils/FunctionTimer";
 import { HitmanMap, getAllMaps, getMap } from "#shared/utils/mapUtils";
 import { filterForfeitMatches } from "#shared/utils/matchUtils";
 import {

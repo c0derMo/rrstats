@@ -1,7 +1,22 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
-    typescript: { shim: false },
+    typescript: {
+        shim: false,
+        tsConfig: {
+            compilerOptions: {
+                experimentalDecorators: true,
+                strictPropertyInitialization: false,
+                module: "ESNext",
+                noUncheckedIndexedAccess: false,
+            },
+        },
+        sharedTsConfig: {
+            compilerOptions: {
+                strictPropertyInitialization: false,
+            },
+        },
+    },
     modules: [
         "@nuxtjs/tailwindcss",
         "@nuxt/eslint",
@@ -38,6 +53,16 @@ export default defineNuxtConfig({
         },
         alias: {
             consola: "consola",
+        },
+        typescript: {
+            tsConfig: {
+                compilerOptions: {
+                    target: "esnext",
+                    experimentalDecorators: true,
+                    strictPropertyInitialization: false,
+                    noUncheckedIndexedAccess: false,
+                },
+            },
         },
     },
 

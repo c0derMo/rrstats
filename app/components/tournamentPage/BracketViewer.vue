@@ -231,21 +231,21 @@ function resolveSingleMatch(
             match.winner = winner ?? undefined;
             match.loser = loser ?? undefined;
         }
+
+        if (forfeits[match.id] != null) {
+            if (forfeits[match.id] === getPlayerOne(match)) {
+                match.winner = getPlayerOne(match) ?? undefined;
+                match.loser = getPlayerTwo(match) ?? undefined;
+            } else {
+                match.winner = getPlayerTwo(match) ?? undefined;
+                match.loser = getPlayerOne(match) ?? undefined;
+            }
+        }
     }
 
     if (match.bye) {
         // Resolve bye
         match.winner = getPlayerOne(match) ?? undefined;
-    }
-
-    if (forfeits[match.id] != null) {
-        if (forfeits[match.id] === getPlayerOne(match)) {
-            match.winner = getPlayerOne(match) ?? undefined;
-            match.loser = getPlayerTwo(match) ?? undefined;
-        } else {
-            match.winner = getPlayerTwo(match) ?? undefined;
-            match.loser = getPlayerOne(match) ?? undefined;
-        }
     }
 
     localMatches.value[match.id] = match;

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { DataSource, In } from "typeorm";
 import { Match } from "../model/Match";
 import { PlayedMap } from "../model/PlayedMap";
