@@ -27,9 +27,6 @@
                         <TextInputComponent
                             v-model="row.username"
                             :error="row.username === ''"
-                            :disabled="
-                                row.authorizationKey === user.authorizationKey
-                            "
                         />
                     </template>
 
@@ -37,9 +34,6 @@
                         <TextInputComponent
                             v-model="row.authorizationKey"
                             :error="row.authorizationKey == ''"
-                            :disabled="
-                                row.authorizationKey === user.authorizationKey
-                            "
                         />
                     </template>
 
@@ -47,9 +41,6 @@
                         <MultiSelectComponent
                             v-model="row.permissions"
                             :items="selectablePermissions"
-                            :disabled="
-                                row.authorizationKey === user.authorizationKey
-                            "
                         />
                     </template>
 
@@ -140,11 +131,9 @@ const addAlert =
 
 const users: Ref<IUser[]> = ref([]);
 const apiKeys: Ref<IUser[]> = ref([]);
-const selectablePermissions = Object.values(IPermission)
-    .filter((perm) => isNaN(perm as IPermission))
-    .map((perm, idx) => {
-        return { text: perm as string, value: idx };
-    });
+const selectablePermissions = Object.entries(IPermission).map((perm) => {
+    return { text: perm[0], value: perm[1] };
+});
 
 function addUser() {
     users.value.push({
@@ -173,7 +162,9 @@ function removeAPIKey(index: number) {
 }
 
 async function updateUserList() {
-    const usersQuery = await $fetch("/api/auth/users");
+    const usersQuery = await $fetch("/api/auth/users", {
+        headers: useRequestHeaders(),
+    });
 
     users.value = usersQuery.filter((user) => !user.isAPIKey);
     apiKeys.value = usersQuery.filter((user) => user.isAPIKey);

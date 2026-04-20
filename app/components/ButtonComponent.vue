@@ -9,7 +9,7 @@
     >
         <div
             v-if="loading"
-            class="absolute w-full h-full bg-opacity-70 bg-gray-500 text-center"
+            class="absolute w-full h-full bg-opacity-70 bg-gray-500 grid grid-cols-1 place-items-center"
         >
             <FontAwesomeIcon
                 :icon="['fa', 'spinner']"

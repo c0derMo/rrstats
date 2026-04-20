@@ -29,24 +29,19 @@ export class Player extends BaseEntity implements IPlayer {
     nationality?: string | null;
 
     @Column("text", { nullable: true })
-    title?: string | null;
-    @Column("boolean", { nullable: true })
-    hasCustomTitle?: boolean;
+    defaultAccolade: string;
+    @Column("text", { nullable: true })
+    accolade: string;
 
     @Index()
     @Column("boolean", { nullable: true })
     excludedFromSearch?: boolean;
-
-    accolade: string;
 
     @BeforeInsert()
     @BeforeUpdate()
     checkOptionalFields() {
         if (this.discordId === "") {
             this.discordId = null;
-        }
-        if (this.title === "") {
-            this.title = null;
         }
         if (this.nationality === "") {
             this.nationality = null;
@@ -63,24 +58,24 @@ export class PlayerAccoladeSubscriber implements EntitySubscriberInterface<Playe
     }
 
     async afterLoad(entity: Player): Promise<void> {
-        if (entity.title != null) {
-            entity.accolade = entity.title;
-            return;
+        if (entity.defaultAccolade == null || entity.defaultAccolade === "") {
+            const officialCompetitions = await Competition.find({
+                select: ["tag"],
+                where: { officialCompetition: true },
+            });
+
+            const placements = await CompetitionPlacement.countBy({
+                player: entity.uuid,
+                competition: In(officialCompetitions.map((c) => c.tag)),
+            });
+            if (placements > 0) {
+                entity.defaultAccolade = "Returning Rival";
+            } else {
+                entity.defaultAccolade = "Roulette Rookie";
+            }
         }
-
-        const officialCompetitions = await Competition.find({
-            select: ["tag"],
-            where: { officialCompetition: true },
-        });
-
-        const placements = await CompetitionPlacement.countBy({
-            player: entity.uuid,
-            competition: In(officialCompetitions.map((c) => c.tag)),
-        });
-        if (placements > 0) {
-            entity.accolade = "Returning Rival";
-        } else {
-            entity.accolade = "Roulette Rookie";
+        if (entity.accolade == null || entity.accolade === "") {
+            entity.accolade = entity.defaultAccolade;
         }
     }
 }

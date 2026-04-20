@@ -4,7 +4,9 @@
         :open="showDialog"
         @closed="$emit('close')"
     >
-        <CardComponent class="overflow-y-auto flex flex-col gap-3 max-h-screen">
+        <CardComponent
+            class="overflow-y-auto flex flex-col gap-3 max-h-screen !overflow-visible"
+        >
             <TabbedContainer
                 :tabs="['Basic', 'Groups', 'Placements', 'Brackets']"
             >

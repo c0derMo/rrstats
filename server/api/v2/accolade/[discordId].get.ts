@@ -1,6 +1,4 @@
-import { In } from "typeorm";
 import { AuthController } from "~~/server/controller/AuthController";
-import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import { Player } from "~~/server/model/Player";
 import type { AccoladeResponse } from "../APITypes";
 
@@ -22,31 +20,32 @@ export default defineEventHandler<AccoladeResponse>(async (event) => {
     }
 
     const player = await Player.findOne({
-        select: ["uuid", "title", "hasCustomTitle"],
+        select: ["uuid", "defaultAccolade", "accolade"],
         where: { discordId: playerDiscordId },
     });
     if (player == null) {
         return "Roulette Rookie";
     }
 
-    if (
-        player.title != null &&
-        (player.hasCustomTitle === false || player.hasCustomTitle == null)
-    ) {
-        return player.title;
-    }
+    return player.accolade;
 
-    const officialCompetitions = await Competition.find({
-        select: ["tag"],
-        where: { officialCompetition: true },
-    });
-    const placements = await CompetitionPlacement.countBy({
-        player: player.uuid,
-        competition: In(officialCompetitions.map((c) => c.tag)),
-    });
-    if (placements > 0) {
-        return "Returning Rival";
-    } else {
-        return "Roulette Rookie";
-    }
+    // if (
+    //     player.accolade != null
+    // ) {
+    //     return player.title;
+    // }
+
+    // const officialCompetitions = await Competition.find({
+    //     select: ["tag"],
+    //     where: { officialCompetition: true },
+    // });
+    // const placements = await CompetitionPlacement.countBy({
+    //     player: player.uuid,
+    //     competition: In(officialCompetitions.map((c) => c.tag)),
+    // });
+    // if (placements > 0) {
+    //     return "Returning Rival";
+    // } else {
+    //     return "Roulette Rookie";
+    // }
 });

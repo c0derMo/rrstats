@@ -6,11 +6,11 @@ export type IUser = {
 };
 
 export enum IPermission {
-    EDIT_COMPETITIONS,
-    EDIT_PLAYERS,
-    EDIT_MATCHES,
-    EDIT_RECORDS,
-    EDIT_USERS,
-    DEPRECATED_TWEET,
-    EDIT_ACHIEVEMENTS,
+    BACKEND_ACCESS = "backend_access",
+    EDIT_COMPETITIONS = "edit_comp",
+    EDIT_PLAYERS = "edit_players",
+    EDIT_MATCHES = "edit_matches",
+    EDIT_RECORDS = "edit_records",
+    EDIT_USERS = "edit_users",
+    EDIT_ACHIEVEMENTS = "edit_achievements",
 }

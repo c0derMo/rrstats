@@ -1,4 +1,3 @@
-import { User } from "../../model/User";
 import consola from "consola";
 
 interface DiscordUser {
@@ -46,7 +45,7 @@ export default class DiscordAuthIntegration {
         sessionId: string,
         discordCallbackCode: string,
         discordState: string,
-    ): Promise<User | null> {
+    ): Promise<{ id: string; username: string } | null> {
         if (sessionId !== discordState) {
             throw new Error("State and session don't align");
         }
@@ -77,24 +76,19 @@ export default class DiscordAuthIntegration {
             throw new Error("Error in token request");
         }
 
-        let discordId: string;
         try {
             const userReqeust = await $fetch<DiscordUser>(
                 "https://discord.com/api/v10/users/@me",
                 { headers: { Authorization: `Bearer ${token}` } },
             );
-            discordId = userReqeust.id;
+            return {
+                id: userReqeust.id,
+                username: userReqeust.username,
+            };
         } catch (e) {
             consola.error(e);
             consola.error((e as { data: string }).data);
             throw new Error("Error in user request");
         }
-
-        const user = await User.findOneBy({
-            authorizationKey: discordId,
-            isAPIKey: false,
-        });
-
-        return user;
     }
 }

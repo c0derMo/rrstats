@@ -30,8 +30,34 @@
                     </NuxtLink>
                 </template>
 
+                <template #Login>
+                    <div v-if="user != null" class="font-thin italic">
+                        Welcome, {{ user?.username }}
+                        <FontAwesomeIcon
+                            :icon="['fas', 'arrow-right-from-bracket']"
+                            class="cursor-pointer"
+                            @click="
+                                navigateTo('/api/auth/logout', {
+                                    external: true,
+                                })
+                            "
+                        />
+                    </div>
+                    <FontAwesomeIcon
+                        v-else
+                        :icon="['fas', 'arrow-right-to-bracket']"
+                        class="cursor-pointer"
+                        @click="
+                            navigateTo(
+                                `/api/auth/discord_login?to=${route.path}`,
+                                { external: true },
+                            )
+                        "
+                    />
+                </template>
+
                 <template #DarkModeToggle>
-                    <div class="flex flex-row mt-2">
+                    <div class="flex flex-row">
                         <FontAwesomeIcon
                             :icon="['fas', 'sun']"
                             class="dark:text-white"
@@ -47,18 +73,24 @@
                     </div>
                 </template>
 
-                <NuxtPage />
+                <NuxtPage :user="user" />
             </NuxtLayout>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
 const isDarkMode = ref(true);
 const lightDarkSwitch = ref(true);
 const showForm = ref(false);
 const initialized = ref(false);
 const route = useRoute();
+
+const { data: user } = useFetch("/api/auth/user", {
+    headers: useRequestHeaders(),
+});
 
 const actualIsDarkMode = computed(() => {
     return isDarkMode.value && route.fullPath != "/MrMike";

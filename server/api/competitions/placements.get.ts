@@ -13,7 +13,7 @@ export default defineEventHandler<Promise<ICompetitionPlacement[]>>(
         if (query.tag != null) {
             const isAuthenticated = await AuthController.isAuthenticated(
                 session.data.discordId,
-                IPermission.EDIT_COMPETITIONS,
+                [IPermission.BACKEND_ACCESS, IPermission.EDIT_COMPETITIONS],
             );
             if (!isAuthenticated) {
                 throw createError({

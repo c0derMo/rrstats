@@ -93,7 +93,9 @@ async function deleteCompetition(tag: string) {
 
 async function updateList() {
     try {
-        const competitionsQuery = await $fetch("/api/competitions/list");
+        const competitionsQuery = await $fetch("/api/competitions/list", {
+            headers: useRequestHeaders(),
+        });
         competitions.value = competitionsQuery;
     } catch {
         error.value = true;

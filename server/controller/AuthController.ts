@@ -5,6 +5,8 @@ import consola from "consola";
 
 interface SessionData {
     discordId?: string;
+    username?: string;
+    postLoginRedirect?: string;
 }
 
 const logger = consola.withTag("rrstats:auth");
@@ -35,8 +37,8 @@ export class AuthController {
     }
 
     static async isAuthenticated(
-        discordId?: string,
-        permission?: IPermission,
+        discordId: string | undefined,
+        permission: IPermission | IPermission[],
     ): Promise<boolean> {
         if (discordId == null) {
             return false;
@@ -50,11 +52,16 @@ export class AuthController {
             return false;
         }
 
-        if (permission == null) {
+        if (typeof permission == "object") {
+            for (const perm of permission) {
+                if (!user.permissions.includes(perm)) {
+                    return false;
+                }
+            }
             return true;
+        } else {
+            return user.permissions.includes(permission);
         }
-
-        return user.permissions.includes(permission);
     }
 
     static async isValidAPIKey(

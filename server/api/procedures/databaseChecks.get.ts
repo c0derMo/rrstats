@@ -6,7 +6,11 @@ import DatabaseCheckController, {
 export default defineEventHandler<Promise<CheckInfo[]>>(async (event) => {
     const session = await AuthController.useSession(event);
 
-    if (!(await AuthController.isAuthenticated(session.data.discordId))) {
+    if (
+        !(await AuthController.isAuthenticated(session.data.discordId, [
+            IPermission.BACKEND_ACCESS,
+        ]))
+    ) {
         throw createError({
             statusCode: 403,
         });

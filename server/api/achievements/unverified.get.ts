@@ -16,10 +16,10 @@ export default defineEventHandler<Promise<ResultType[]>>(async (event) => {
     const session = await AuthController.useSession(event);
 
     if (
-        !(await AuthController.isAuthenticated(
-            session.data.discordId,
+        !(await AuthController.isAuthenticated(session.data.discordId, [
+            IPermission.BACKEND_ACCESS,
             IPermission.EDIT_ACHIEVEMENTS,
-        ))
+        ]))
     ) {
         throw createError({
             statusCode: 403,
