@@ -4,12 +4,12 @@ import { BaseEntity, Column, Entity, Index, PrimaryColumn } from "typeorm";
 export class Bracket extends BaseEntity implements IBracket {
     @PrimaryColumn("text")
     competition: string;
-    @PrimaryColumn("text")
-    name: string;
-
-    @Column("int8")
-    @Index()
+    @PrimaryColumn("int8")
     index: number;
+    
+    @Column("text")
+    @Index()
+    name: string;
     @Column("boolean")
     advancementBracket: boolean;
     @Column("simple-json")
