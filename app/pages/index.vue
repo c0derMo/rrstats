@@ -92,16 +92,18 @@
                 <a
                     class="text-blue-600 underline"
                     href="https://discord.gg/FVxTKdU"
-                    >F7SC Discord</a
                 >
+                    F7SC Discord
+                </a>
+                <a class="text-blue-600 underline" href="https://hitmaps.com">
+                    HITMAPS
+                </a>
                 <a
                     class="text-blue-600 underline"
-                    href="https://providence.community/discord"
-                    >Providence Discord</a
+                    :href="$config.public.eventSubmissionLink ?? ''"
                 >
-                <a class="text-blue-600 underline" href="https://hitmaps.com"
-                    >HITMAPS</a
-                >
+                    Submit an event
+                </a>
             </div>
         </div>
     </div>

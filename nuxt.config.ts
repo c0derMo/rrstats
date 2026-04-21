@@ -37,6 +37,9 @@ export default defineNuxtConfig({
         enableRouteTimings: false,
         databaseLogging: "",
         discordWebhook: "",
+        public: {
+            eventSubmissionLink: "http://localhost:3000"
+        }
     },
 
     nitro: {
