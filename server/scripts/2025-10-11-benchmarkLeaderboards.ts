@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { DataSource, In } from "typeorm";
 import { Match } from "../model/Match";
 import { PlayedMap } from "../model/PlayedMap";
@@ -158,12 +156,7 @@ async function main() {
 
     for (const statistic of statistics) {
         const start = DateTime.now();
-        const result = statistic.calculate(
-            players,
-            matches,
-            placements,
-            competitions,
-        );
+        const result = statistic.calculate();
         if (result instanceof Promise) {
             await result;
         }

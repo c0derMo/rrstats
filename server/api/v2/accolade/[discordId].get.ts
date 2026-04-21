@@ -28,24 +28,4 @@ export default defineEventHandler<AccoladeResponse>(async (event) => {
     }
 
     return player.accolade;
-
-    // if (
-    //     player.accolade != null
-    // ) {
-    //     return player.title;
-    // }
-
-    // const officialCompetitions = await Competition.find({
-    //     select: ["tag"],
-    //     where: { officialCompetition: true },
-    // });
-    // const placements = await CompetitionPlacement.countBy({
-    //     player: player.uuid,
-    //     competition: In(officialCompetitions.map((c) => c.tag)),
-    // });
-    // if (placements > 0) {
-    //     return "Returning Rival";
-    // } else {
-    //     return "Roulette Rookie";
-    // }
 });
