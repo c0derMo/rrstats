@@ -170,7 +170,7 @@ test.describe("Quick Navigation", () => {
         await page.locator(".fa-bolt").click();
         await inputField.fill("RRWC");
         await inputField.press("Enter");
-        await expect(page).toHaveURL(/.*\/matches\?tournament=RRWC/);
+        await expect(page).toHaveURL(/.*\/tournament\/RRWC/);
 
         await page
             .locator(".fixed.z-50.bg-black.bg-opacity-50.w-full.h-full")

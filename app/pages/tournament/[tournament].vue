@@ -201,7 +201,7 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { flattenDeep, uniq } from "lodash";
+import ld from "lodash";
 import { DateTime } from "luxon";
 
 definePageMeta({
@@ -245,19 +245,21 @@ const stillLoading = ref(competition.value?.shouldRetry ?? false);
 const players = usePlayers();
 await players.queryFromMatches(matches.value ?? []);
 await players.queryPlayers(
-    uniq(
-        flattenDeep(
-            brackets.value.map((bracket) => {
-                return bracket.rounds.map((stage) => {
-                    return stage.map((round) => {
-                        return round.matches.map((match) => {
-                            return [match.playerOne, match.playerTwo];
+    ld
+        .uniq(
+            ld.flattenDeep(
+                brackets.value.map((bracket) => {
+                    return bracket.rounds.map((stage) => {
+                        return stage.map((round) => {
+                            return round.matches.map((match) => {
+                                return [match.playerOne, match.playerTwo];
+                            });
                         });
                     });
-                });
-            }),
-        ),
-    ).filter((v) => v != null),
+                }),
+            ),
+        )
+        .filter((v) => v != null),
 );
 
 useHead({
