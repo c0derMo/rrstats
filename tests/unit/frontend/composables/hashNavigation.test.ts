@@ -124,7 +124,7 @@ describe("useHash()", () => {
         expect(callerFunction).toHaveBeenCalledWith(["#other", "hash"]);
         expect(navigateTo).toHaveBeenCalledTimes(1);
         expect(navigateTo).toHaveBeenCalledWith(
-            { path: "/new", hash: "", otherVal: "test" },
+            { path: "/new", hash: "" },
             { replace: true },
         );
     });
