@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
     if (
         session.data.discordId !== player.discordId &&
         !(await AuthController.isAuthenticated(session.data.discordId, [
+            IPermission.BACKEND_ACCESS,
             IPermission.EDIT_PLAYERS,
         ]))
     ) {

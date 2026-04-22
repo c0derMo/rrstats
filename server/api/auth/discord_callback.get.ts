@@ -25,5 +25,10 @@ export default defineEventHandler(async (event) => {
         username: user.username,
     });
 
-    await sendRedirect(event, session.data.postLoginRedirect ?? "/");
+    const redirectUri = session.data.postLoginRedirect;
+    if (redirectUri != null && redirectUri.startsWith("/")) {
+        await sendRedirect(event, redirectUri);
+    } else {
+        await sendRedirect(event, "/");
+    }
 });

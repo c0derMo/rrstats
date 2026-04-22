@@ -38,7 +38,7 @@ export default defineNuxtConfig({
         databaseLogging: "",
         discordWebhook: "",
         public: {
-            eventSubmissionLink: "http://localhost:3000"
+            eventSubmissionLink: "/"
         }
     },
 

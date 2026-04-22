@@ -20,7 +20,10 @@ const isLoading = ref(false);
 
 async function handleLocalClick() {
     isLoading.value = true;
-    await props.handler();
-    isLoading.value = false;
+    try {
+        await props.handler();
+    } finally {
+        isLoading.value = false;
+    }
 }
 </script>

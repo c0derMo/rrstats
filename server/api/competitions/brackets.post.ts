@@ -16,14 +16,15 @@ export default defineEventHandler(async (event) => {
             statusCode: 403,
         });
     }
-    if (body.length <= 0) {
-        return;
-    }
     if (query.tag == null || query.tag === "") {
         throw createError({
             statusCode: 400,
             message: "Competition tag must be set",
         });
+    }
+    if (body.length <= 0) {
+        await Bracket.delete({ competition: query.tag });
+        return;
     }
 
     let existingBrackets = await Bracket.find({

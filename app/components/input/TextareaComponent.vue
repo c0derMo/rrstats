@@ -2,6 +2,7 @@
     <div class="w-full h-full relative">
         <textarea
             class="w-full h-full bg-neutral-100 dark:bg-neutral-800 border dark:border-neutral-500 rounded p-2"
+            :class="{ '!border-red-700': error }"
             :value="modelValue"
             :maxlength="maxLength"
             @input="
@@ -10,6 +11,7 @@
                     ($event.target as HTMLInputElement).value,
                 )
             "
+            @blur="$emit('blur')"
         />
         <span
             v-if="maxLength != null"
@@ -24,14 +26,17 @@ withDefaults(
     defineProps<{
         modelValue?: string;
         maxLength?: number;
+        error?: boolean
     }>(),
     {
         modelValue: "",
         maxLength: undefined,
+        error: false,
     },
 );
 
 defineEmits<{
     "update:modelValue": [value: string];
+    "blur": []
 }>();
 </script>

@@ -73,7 +73,9 @@ const emit = defineEmits<{
 const dialogOpen = ref(true);
 const selectedAccolade = ref(props.currentAccolade);
 
-const achievementAccolades = props.achievements.map((achievement) => {
+const achievementAccolades = props.achievements.filter((achievement) => {
+    return achievement.achievedAt[0] > 0
+}).map((achievement) => {
     return achievement.name;
 });
 

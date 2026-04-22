@@ -6,9 +6,16 @@
 
 <script setup lang="ts">
 const route = useRoute();
+const info = useNavigatorInfo();
+const tournament = route.query.tournament;
+const tournaments = (await info.getCompetitions()).map((t) => t.tag);
 
 const newLink = computed(() => {
-    return `/tournament/${route.query.tournament}`;
+    if (typeof tournament === "string" && tournaments.includes(tournament)) {
+        return `/tournament/${route.query.tournament}`;
+    } else {
+        return "/"
+    }
 });
 
 onBeforeMount(() => {

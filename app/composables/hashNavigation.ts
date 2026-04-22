@@ -19,8 +19,6 @@ export const useHash = (func: HashNavigationFunction) => {
     
     const removeHandler = router.afterEach(async (to, from) => {
         if (to.path === from.path) {
-            console.log(to.path);
-            console.log(from.path);
             return;
         }
         await func(to.hash.split("."));

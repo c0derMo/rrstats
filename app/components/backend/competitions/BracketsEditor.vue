@@ -10,6 +10,7 @@
                     }))
                 "
                 class="flex-grow"
+                @update:model-value="deserializeJSON()"
             />
             <ButtonComponent @click="addBracket()">
                 <FontAwesomeIcon
@@ -42,10 +43,10 @@
                 <div>Bracket definition:</div>
                 <div>Forfeits:</div>
                 <div class="h-80">
-                    <TextareaComponent v-model="currentBracketRoundsText" />
+                    <TextareaComponent v-model="currentBracketRoundsText" :error="roundError" @blur="serializeJSON()" />
                 </div>
                 <div class="h-80">
-                    <TextareaComponent v-model="currentBracketForfeitsText" />
+                    <TextareaComponent v-model="currentBracketForfeitsText" :error="forfeitError" @blur="serializeJSON()" />
                 </div>
             </div>
 
@@ -72,35 +73,39 @@ const currentBracket = computed<IBracket | null>(() => {
     return brackets.value[selectedBracketIdx.value] ?? null;
 });
 
-const currentBracketRoundsText = computed({
-    get() {
-        if (currentBracket.value == null) {
-            return "";
-        }
-        return JSON.stringify(currentBracket.value.rounds, null, 2);
-    },
-    set(value: string) {
-        if (currentBracket.value == null) {
-            return;
-        }
-        currentBracket.value.rounds = JSON.parse(value);
-    },
-});
+const currentBracketRoundsText = ref("");
+const roundError = ref(false);
+const currentBracketForfeitsText = ref("");
+const forfeitError = ref(false);
 
-const currentBracketForfeitsText = computed({
-    get() {
-        if (currentBracket.value == null) {
-            return "";
-        }
-        return JSON.stringify(currentBracket.value.forfeits, null, 2);
-    },
-    set(value: string) {
-        if (currentBracket.value == null) {
-            return;
-        }
-        currentBracket.value.forfeits = JSON.parse(value);
-    },
-});
+function deserializeJSON() {
+    if (currentBracket.value == null) {
+        return;
+    }
+    currentBracketRoundsText.value = JSON.stringify(currentBracket.value.rounds);
+    currentBracketForfeitsText.value = JSON.stringify(currentBracket.value.forfeits);
+}
+
+function serializeJSON() {
+    if (currentBracket.value == null) {
+        return;
+    }
+    try {
+        currentBracket.value.rounds = JSON.parse(currentBracketRoundsText.value);
+        roundError.value = false;
+    } catch {
+        roundError.value = true;
+    }
+    try {
+        currentBracket.value.forfeits = JSON.parse(currentBracketForfeitsText.value);
+        forfeitError.value = false;
+    } catch {
+        forfeitError.value = true;
+    }
+    if (!forfeitError.value && !roundError.value) {
+        deserializeJSON();
+    }
+}
 
 function addBracket() {
     brackets.value.push({

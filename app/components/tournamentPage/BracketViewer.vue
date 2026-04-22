@@ -82,8 +82,6 @@ const draggingData = ref<{
 const hoveringPlayer = ref("");
 
 function startDrag(e: MouseEvent) {
-    console.log("Mouse down");
-    console.log(e.target);
     const element = (e.target as HTMLElement).closest(
         ".overflow-x-auto",
     ) as HTMLElement;
