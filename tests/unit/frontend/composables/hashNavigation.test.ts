@@ -2,15 +2,6 @@ import { afterEach, describe, expect, test, vi, type Mock } from "vitest";
 import { useRoute, navigateTo } from "#app/composables/router";
 import { flushPromises } from "@vue/test-utils";
 
-type SimpleLocation = {
-    hash: string;
-    path: string;
-};
-type NavigationHookAfter = (
-    to: SimpleLocation,
-    from: SimpleLocation,
-) => unknown;
-
 vi.mock("vue", async (importOriginal) => ({
     ...(await importOriginal()),
     onMounted: vi.fn((hook: () => Promise<unknown>) => {
@@ -83,19 +74,12 @@ describe("useHash()", () => {
         });
 
         const hashRef = ref("");
-        const cbFunc = ref<NavigationHookAfter>();
 
         (useRoute as Mock).mockReturnValueOnce({
             get hash() {
                 return hashRef.value;
             },
             otherVal: "test",
-        });
-        const router = useRouter();
-        const afterEachFn = vi.spyOn(router, "afterEach");
-        afterEachFn.mockImplementationOnce((h) => {
-            cbFunc.value = h as NavigationHookAfter;
-            return vi.fn();
         });
 
         useHash(callerFunction);
@@ -104,19 +88,8 @@ describe("useHash()", () => {
 
         expect(callerFunction).toHaveBeenCalledTimes(0);
         expect(navigateTo).toHaveBeenCalledTimes(0);
-        expect(afterEachFn).toHaveBeenCalledTimes(1);
-        expect(cbFunc.value).not.toBe(null);
 
-        await cbFunc.value?.(
-            {
-                path: "/new",
-                hash: "#other.hash",
-            },
-            {
-                path: "/old",
-                hash: "",
-            },
-        );
+        hashRef.value = "#other.hash";
 
         await flushPromises();
 
@@ -124,7 +97,7 @@ describe("useHash()", () => {
         expect(callerFunction).toHaveBeenCalledWith(["#other", "hash"]);
         expect(navigateTo).toHaveBeenCalledTimes(1);
         expect(navigateTo).toHaveBeenCalledWith(
-            { path: "/new", hash: "" },
+            { hash: "", otherVal: "test" },
             { replace: true },
         );
     });
