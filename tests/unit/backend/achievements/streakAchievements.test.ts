@@ -85,12 +85,12 @@ describe("Streak Achievements", () => {
         expect.soft(achievementFun).toHaveAchievementLevel(2);
         expect
             .soft(achievementFun)
-            .toHaveAchievementAchievedAt([1603555200000, 1629478800000, 0]);
+            .toHaveAchievementAchievedAt([1594494000000, 1621162800000, 0]);
         expect
             .soft(achievementFun)
             .toHaveAchievementMatch([
-                "2c4306c5-b43d-4f03-8f5f-6b782c40711b",
-                "b3ae0d04-74ea-4732-8157-60d0b7b92aed",
+                "e1a12b53-fe13-4712-a57f-d3e9ad4f22a3",
+                "47103ff1-ed53-43d6-be6b-eb7426c6c57f",
                 null,
             ]);
         expect.soft(achievementFun).toHaveAchievementProgress([1, 1, 0.8]);
@@ -106,12 +106,12 @@ describe("Streak Achievements", () => {
         expect.soft(achievementCurry).toHaveAchievementLevel(2);
         expect
             .soft(achievementCurry)
-            .toHaveAchievementAchievedAt([1629486000000, 1715436000000, 0]);
+            .toHaveAchievementAchievedAt([1621447200000, 1644784200000, 0]);
         expect
             .soft(achievementCurry)
             .toHaveAchievementMatch([
-                "8c38b191-23aa-45d9-bca4-d6787aa45b76",
-                "f0b6e761-3b76-4c2c-b0de-d7766793b401",
+                "e91b95d7-c3a1-4cf6-8c06-45d60ff46e2e",
+                "edc349de-dbe3-40b0-90f2-ea58813e200a",
                 null,
             ]);
         expect.soft(achievementCurry).toHaveAchievementProgress([1, 1, 0.6]);

@@ -74,6 +74,7 @@ describe("useHash()", () => {
         });
 
         const hashRef = ref("");
+        const cbFunc = ref<NavigationHookAfter>();
 
         (useRoute as Mock).mockReturnValueOnce({
             get hash() {
@@ -81,6 +82,9 @@ describe("useHash()", () => {
             },
             otherVal: "test",
         });
+        const router = useRouter();
+        const afterEachFn = vi.spyOn(router, "afterEach");
+        afterEachFn.mockImplementationOnce((h: NavigationHookAfter) => cbFunc.value = h);
 
         useHash(callerFunction);
 
@@ -88,8 +92,18 @@ describe("useHash()", () => {
 
         expect(callerFunction).toBeCalledTimes(0);
         expect(navigateTo).toBeCalledTimes(0);
+        expect(afterEachFn).toBeCalledTimes(1);
+        expect(cbFunc.value).not.toBe(null);
 
-        hashRef.value = "#other.hash";
+        await cbFunc.value({
+            path: "/new",
+            hash: "#other.hash",
+            otherVal: "test"
+        }, {
+            path: "/old",
+            hash: "",
+            otherVal: "test"
+        });
 
         await flushPromises();
 
@@ -97,7 +111,7 @@ describe("useHash()", () => {
         expect(callerFunction).toBeCalledWith(["#other", "hash"]);
         expect(navigateTo).toBeCalledTimes(1);
         expect(navigateTo).toBeCalledWith(
-            { hash: "", otherVal: "test" },
+            { path: "/new", hash: "", otherVal: "test" },
             { replace: true },
         );
     });

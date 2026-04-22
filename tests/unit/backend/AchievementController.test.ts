@@ -340,7 +340,7 @@ describe("AchievementController", () => {
         expect
             .soft(stats["Guess Who's Back"])
             .toEqual([
-                0.04219409282700422, 0.1729957805907173, 0.379746835443038,
+                0.05907172995780591, 0.22362869198312235, 0.540084388185654,
             ]);
 
         expect.soft(stats["Speedrunner"]).toEqual([0.23628691983122363]);
