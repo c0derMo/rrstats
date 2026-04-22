@@ -130,11 +130,11 @@ describe("AchievementController", () => {
         match.playerTwo = "p2";
         await AchievementController.updateAchievements(match);
 
-        expect(saveMock).toBeCalledTimes(
+        expect(saveMock).toHaveBeenCalledTimes(
             AchievementController.automaticAchievements.length * 2,
         );
         for (const mock of automaticAchievementMocks) {
-            expect(mock).toBeCalledTimes(1);
+            expect(mock).toHaveBeenCalledTimes(1);
         }
     });
 
@@ -153,11 +153,11 @@ describe("AchievementController", () => {
         await AchievementController.recalculateAllAchievements();
         const amountPlayers = await Player.count();
 
-        expect(saveMock).toBeCalledTimes(
+        expect(saveMock).toHaveBeenCalledTimes(
             AchievementController.automaticAchievements.length * amountPlayers,
         );
         for (const mock of automaticAchievementMocks) {
-            expect(mock).toBeCalledTimes(1);
+            expect(mock).toHaveBeenCalledTimes(1);
         }
     });
 
@@ -179,8 +179,8 @@ describe("AchievementController", () => {
             ),
         ).toBe(false);
 
-        expect(saveMock).toBeCalledTimes(0);
-        expect(notifyMock).toBeCalledTimes(0);
+        expect(saveMock).toHaveBeenCalledTimes(0);
+        expect(notifyMock).toHaveBeenCalledTimes(0);
 
         expect(
             await AchievementController.submitManualAchievement(
@@ -190,8 +190,8 @@ describe("AchievementController", () => {
                 "no-comment",
             ),
         ).toBe(true);
-        expect(saveMock).toBeCalledTimes(1);
-        expect(notifyMock).toBeCalledTimes(1);
+        expect(saveMock).toHaveBeenCalledTimes(1);
+        expect(notifyMock).toHaveBeenCalledTimes(1);
     });
 
     test("getAchievementStatistics", async () => {

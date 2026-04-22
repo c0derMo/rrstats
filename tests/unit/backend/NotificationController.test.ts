@@ -30,10 +30,10 @@ describe("NotificationController", () => {
 
         expect(
             CustomNotifier.sendManualAchievementSubmissionNotification,
-        ).toBeCalledTimes(1);
+        ).toHaveBeenCalledTimes(1);
         expect(
             CustomNotifier.sendManualAchievementSubmissionNotification,
-        ).toBeCalledWith(achievement, submission);
+        ).toHaveBeenCalledWith(achievement, submission);
     });
 
     test("updateManualAchievementVerified", () => {
@@ -41,11 +41,11 @@ describe("NotificationController", () => {
 
         NotificationController.updateManualAchievementVerified(submission);
 
-        expect(CustomNotifier.updateManualAchievementVerified).toBeCalledTimes(
-            1,
-        );
-        expect(CustomNotifier.updateManualAchievementVerified).toBeCalledWith(
-            submission,
-        );
+        expect(
+            CustomNotifier.updateManualAchievementVerified,
+        ).toHaveBeenCalledTimes(1);
+        expect(
+            CustomNotifier.updateManualAchievementVerified,
+        ).toHaveBeenCalledWith(submission);
     });
 });

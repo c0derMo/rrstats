@@ -126,7 +126,7 @@ export class DatabaseInitialization1577833200000 implements MigrationInterface {
                 spin      TEXT,
                 timeTaken INTEGER NOT NULL,
                 notes     TEXT,
-                matchUuid VARCHAR NOT NULL
+                matchUuid VARCHAR
             );  
         `);
         await queryRunner.createForeignKey(

@@ -1,5 +1,4 @@
 import { expect, test, describe } from "vitest";
-import type { IMatch } from "~/utils/interfaces/IMatch";
 
 function buildMatch(
     uuid: string,
@@ -18,6 +17,7 @@ function buildMatch(
         round: "",
         bannedMaps: [],
         playedMaps: [],
+        eloChange: [0, 0],
     };
 }
 

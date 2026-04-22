@@ -99,7 +99,7 @@ export default class LeaderboardController {
         | Record<HitmanMap | OptionalMap, LeaderboardEntry[]>
     > = new Map();
 
-    private static readonly statistics: LeaderboardStatistic[] = [
+    static readonly statistics: LeaderboardStatistic[] = [
         new PlayerWinrate(),
         new PlayerMapWinrate(),
         new PlayerRRAppearances(),

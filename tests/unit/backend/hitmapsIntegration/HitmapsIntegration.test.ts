@@ -12,18 +12,18 @@ import consola from "consola";
 
 let database: DatabaseConnector;
 
-describe("PlayerStatisticController", () => {
-    const { $fetchMock } = vi.hoisted(() => {
-        return {
-            $fetchMock: vi.fn(),
-        };
-    });
-    vi.stubGlobal("$fetch", $fetchMock);
+const { $fetchMock } = vi.hoisted(() => {
+    return {
+        $fetchMock: vi.fn(),
+    };
+});
+vi.stubGlobal("$fetch", $fetchMock);
 
+describe("PlayerStatisticController", () => {
     beforeEach(async () => {
         database = new DatabaseConnector("sqlite", ":memory:", false);
         await database.initialize();
-        consola.level = 0;
+        consola.level = +999;
         vi.resetAllMocks();
     });
     afterEach(async () => {
@@ -42,12 +42,16 @@ describe("PlayerStatisticController", () => {
         parapluie.primaryName = "Parapluie";
         parapluie.alternativeNames = [];
         parapluie.discordId = "664320213700968478";
+        parapluie.accolade = "Roulette Rookie";
+        parapluie.defaultAccolade = "Roulette Rookie";
         await parapluie.save();
 
         const deinNomos = new Player();
         deinNomos.primaryName = "Dein Nomos";
         deinNomos.alternativeNames = [];
         deinNomos.discordId = "203595409623351296";
+        deinNomos.accolade = "Roulette Rookie";
+        deinNomos.defaultAccolade = "Roulette Rookie";
         await deinNomos.save();
 
         const comp = new Competition();
@@ -72,7 +76,7 @@ describe("PlayerStatisticController", () => {
 
         await HitmapsIntegration.updateHitmapsTournament("test-wc-2024", "TWC");
 
-        expect($fetchMock).toBeCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledTimes(1);
         expect($fetchMock).toHaveBeenNthCalledWith(
             1,
             "https://tournamentsapi.hitmaps.com/api/events/test-wc-2024/statistics?statsKey=MatchHistory",
@@ -142,7 +146,7 @@ describe("PlayerStatisticController", () => {
 
         await HitmapsIntegration.updateHitmapsTournament("test", "TC");
 
-        expect($fetchMock).toBeCalledTimes(2);
+        expect($fetchMock).toHaveBeenCalledTimes(2);
         expect($fetchMock).toHaveBeenNthCalledWith(
             1,
             "https://tournamentsapi.hitmaps.com/api/events/test/statistics?statsKey=MatchHistory",

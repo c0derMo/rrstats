@@ -10,6 +10,7 @@ export default defineNuxtConfig({
                 module: "ESNext",
                 noUncheckedIndexedAccess: false,
             },
+            include: ["../tests/**/*.ts"],
         },
         sharedTsConfig: {
             compilerOptions: {
