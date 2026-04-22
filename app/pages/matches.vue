@@ -14,7 +14,7 @@ const newLink = computed(() => {
     if (typeof tournament === "string" && tournaments.includes(tournament)) {
         return `/tournament/${route.query.tournament}`;
     } else {
-        return "/"
+        return "/";
     }
 });
 

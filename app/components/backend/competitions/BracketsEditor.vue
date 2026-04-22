@@ -43,10 +43,18 @@
                 <div>Bracket definition:</div>
                 <div>Forfeits:</div>
                 <div class="h-80">
-                    <TextareaComponent v-model="currentBracketRoundsText" :error="roundError" @blur="serializeJSON()" />
+                    <TextareaComponent
+                        v-model="currentBracketRoundsText"
+                        :error="roundError"
+                        @blur="serializeJSON()"
+                    />
                 </div>
                 <div class="h-80">
-                    <TextareaComponent v-model="currentBracketForfeitsText" :error="forfeitError" @blur="serializeJSON()" />
+                    <TextareaComponent
+                        v-model="currentBracketForfeitsText"
+                        :error="forfeitError"
+                        @blur="serializeJSON()"
+                    />
                 </div>
             </div>
 
@@ -82,8 +90,12 @@ function deserializeJSON() {
     if (currentBracket.value == null) {
         return;
     }
-    currentBracketRoundsText.value = JSON.stringify(currentBracket.value.rounds);
-    currentBracketForfeitsText.value = JSON.stringify(currentBracket.value.forfeits);
+    currentBracketRoundsText.value = JSON.stringify(
+        currentBracket.value.rounds,
+    );
+    currentBracketForfeitsText.value = JSON.stringify(
+        currentBracket.value.forfeits,
+    );
 }
 
 function serializeJSON() {
@@ -91,13 +103,17 @@ function serializeJSON() {
         return;
     }
     try {
-        currentBracket.value.rounds = JSON.parse(currentBracketRoundsText.value);
+        currentBracket.value.rounds = JSON.parse(
+            currentBracketRoundsText.value,
+        );
         roundError.value = false;
     } catch {
         roundError.value = true;
     }
     try {
-        currentBracket.value.forfeits = JSON.parse(currentBracketForfeitsText.value);
+        currentBracket.value.forfeits = JSON.parse(
+            currentBracketForfeitsText.value,
+        );
         forfeitError.value = false;
     } catch {
         forfeitError.value = true;

@@ -38,8 +38,8 @@ export default defineNuxtConfig({
         databaseLogging: "",
         discordWebhook: "",
         public: {
-            eventSubmissionLink: "/"
-        }
+            eventSubmissionLink: "/",
+        },
     },
 
     nitro: {

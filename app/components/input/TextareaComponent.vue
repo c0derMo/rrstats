@@ -26,7 +26,7 @@ withDefaults(
     defineProps<{
         modelValue?: string;
         maxLength?: number;
-        error?: boolean
+        error?: boolean;
     }>(),
     {
         modelValue: "",
@@ -37,6 +37,6 @@ withDefaults(
 
 defineEmits<{
     "update:modelValue": [value: string];
-    "blur": []
+    blur: [];
 }>();
 </script>

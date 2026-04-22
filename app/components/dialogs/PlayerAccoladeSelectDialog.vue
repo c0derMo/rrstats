@@ -73,11 +73,13 @@ const emit = defineEmits<{
 const dialogOpen = ref(true);
 const selectedAccolade = ref(props.currentAccolade);
 
-const achievementAccolades = props.achievements.filter((achievement) => {
-    return achievement.achievedAt[0] > 0
-}).map((achievement) => {
-    return achievement.name;
-});
+const achievementAccolades = props.achievements
+    .filter((achievement) => {
+        return achievement.achievedAt[0] > 0;
+    })
+    .map((achievement) => {
+        return achievement.name;
+    });
 
 async function update() {
     await $fetch("/api/player/accolade", {

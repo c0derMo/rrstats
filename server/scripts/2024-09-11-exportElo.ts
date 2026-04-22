@@ -20,7 +20,7 @@ async function main() {
 
     await dataSource.initialize();
     console.log("Database connection established.");
-    
+
     const players = await Player.find();
     console.log(`Loaded ${players.length} players.`);
 

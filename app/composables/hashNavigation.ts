@@ -16,7 +16,7 @@ export const useHash = (func: HashNavigationFunction) => {
         await func(route.hash.split("."));
         await navigateTo({ ...route, hash: "" }, { replace: true });
     });
-    
+
     const removeHandler = router.afterEach(async (to, from) => {
         if (to.path === from.path) {
             return;
@@ -27,7 +27,7 @@ export const useHash = (func: HashNavigationFunction) => {
 
     onBeforeUnmount(() => {
         removeHandler();
-    })
+    });
 
     return (hash: string, immediate: boolean = false): void => {
         if (!hash.startsWith("#")) {
