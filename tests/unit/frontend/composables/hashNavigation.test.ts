@@ -84,7 +84,9 @@ describe("useHash()", () => {
         });
         const router = useRouter();
         const afterEachFn = vi.spyOn(router, "afterEach");
-        afterEachFn.mockImplementationOnce((h: NavigationHookAfter) => cbFunc.value = h);
+        afterEachFn.mockImplementationOnce(
+            (h: NavigationHookAfter) => (cbFunc.value = h),
+        );
 
         useHash(callerFunction);
 
@@ -95,15 +97,18 @@ describe("useHash()", () => {
         expect(afterEachFn).toBeCalledTimes(1);
         expect(cbFunc.value).not.toBe(null);
 
-        await cbFunc.value({
-            path: "/new",
-            hash: "#other.hash",
-            otherVal: "test"
-        }, {
-            path: "/old",
-            hash: "",
-            otherVal: "test"
-        });
+        await cbFunc.value(
+            {
+                path: "/new",
+                hash: "#other.hash",
+                otherVal: "test",
+            },
+            {
+                path: "/old",
+                hash: "",
+                otherVal: "test",
+            },
+        );
 
         await flushPromises();
 

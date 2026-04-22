@@ -205,6 +205,8 @@ export default class HitmapsIntegration {
         player.discordId = discordId;
         player.alternativeNames = [];
         player.nationality = nationality?.toLowerCase();
+        player.accolade = "Roulette Rookie";
+        player.defaultAccolade = "Roulette Rookie";
         await player.save();
         logger.info("Creating new player " + primaryName);
         return player.uuid;
