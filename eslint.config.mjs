@@ -2,7 +2,7 @@ import withNuxt from "./.nuxt/eslint.config.mjs";
 
 export default withNuxt([
     {
-        ignores: ["server/scripts/globals.ts"],
+        ignores: ["server/scripts/*.ts"],
     },
     {
         rules: {

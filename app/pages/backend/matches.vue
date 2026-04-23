@@ -160,7 +160,9 @@ async function deleteMatch(uuid: string) {
 }
 
 async function updateList() {
-    const matchQuery = await $fetch("/api/matches/raw");
+    const matchQuery = await $fetch("/api/matches/raw", {
+        headers: useRequestHeaders(),
+    });
     matches.value = matchQuery;
 }
 

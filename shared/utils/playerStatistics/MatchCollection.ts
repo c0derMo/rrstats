@@ -266,7 +266,8 @@ export default class MatchCollection {
                     if (
                         !wasMapNotForfeit(map) ||
                         !hasMapTimeGreaterZero(map) ||
-                        !wasMapWonBy(this.player, match, map)
+                        (!wasMapWonBy(this.player, match, map) &&
+                            !wasMapTie(map))
                     ) {
                         continue;
                     }

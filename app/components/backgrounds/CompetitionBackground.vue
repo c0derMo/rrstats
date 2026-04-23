@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const chosenBackground = useState("compBackground", () => "");
 
-callOnce(selectBackground);
+callOnce("selectBg", selectBackground, { mode: "navigation" });
 
 function selectBackground() {
     const chosenBackgroundIndex = Math.floor(
@@ -31,11 +31,4 @@ const bgStyle = computed(() => {
 
     return `background-image: url(${chosenBackground.value})`;
 });
-
-watch(
-    () => props.competitions,
-    () => {
-        selectBackground();
-    },
-);
 </script>

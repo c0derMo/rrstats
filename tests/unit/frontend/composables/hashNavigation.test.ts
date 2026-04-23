@@ -37,10 +37,10 @@ describe("useHash()", () => {
 
         await flushPromises();
 
-        expect(callerFunction).toBeCalledTimes(1);
-        expect(callerFunction).toBeCalledWith(["#abc", "123"]);
-        expect(navigateTo).toBeCalledTimes(1);
-        expect(navigateTo).toBeCalledWith(
+        expect(callerFunction).toHaveBeenCalledTimes(1);
+        expect(callerFunction).toHaveBeenCalledWith(["#abc", "123"]);
+        expect(navigateTo).toHaveBeenCalledTimes(1);
+        expect(navigateTo).toHaveBeenCalledWith(
             { hash: "", otherVal: "test" },
             { replace: true },
         );
@@ -62,8 +62,8 @@ describe("useHash()", () => {
 
         await flushPromises();
 
-        expect(callerFunction).toBeCalledTimes(0);
-        expect(navigateTo).toBeCalledTimes(0);
+        expect(callerFunction).toHaveBeenCalledTimes(0);
+        expect(navigateTo).toHaveBeenCalledTimes(0);
     });
 
     test("Navigation on external hash change", async () => {
@@ -86,17 +86,17 @@ describe("useHash()", () => {
 
         await flushPromises();
 
-        expect(callerFunction).toBeCalledTimes(0);
-        expect(navigateTo).toBeCalledTimes(0);
+        expect(callerFunction).toHaveBeenCalledTimes(0);
+        expect(navigateTo).toHaveBeenCalledTimes(0);
 
         hashRef.value = "#other.hash";
 
         await flushPromises();
 
-        expect(callerFunction).toBeCalledTimes(1);
-        expect(callerFunction).toBeCalledWith(["#other", "hash"]);
-        expect(navigateTo).toBeCalledTimes(1);
-        expect(navigateTo).toBeCalledWith(
+        expect(callerFunction).toHaveBeenCalledTimes(1);
+        expect(callerFunction).toHaveBeenCalledWith(["#other", "hash"]);
+        expect(navigateTo).toHaveBeenCalledTimes(1);
+        expect(navigateTo).toHaveBeenCalledWith(
             { hash: "", otherVal: "test" },
             { replace: true },
         );
@@ -129,14 +129,14 @@ describe("useHash()", () => {
 
         await flushPromises();
         expect(window.localStorage.hash).toBe(undefined);
-        expect(navigateTo).toBeCalledTimes(0);
+        expect(navigateTo).toHaveBeenCalledTimes(0);
 
         setHash("#some.hash");
 
         await flushPromises();
         expect(window.location.hash).toBe("#some.hash");
-        expect(navigateTo).toBeCalledTimes(1);
-        expect(navigateTo).toBeCalledWith(
+        expect(navigateTo).toHaveBeenCalledTimes(1);
+        expect(navigateTo).toHaveBeenCalledWith(
             {
                 otherVal: "test",
                 hash: "#some.hash",
@@ -172,8 +172,8 @@ describe("useHash()", () => {
 
         await flushPromises();
         expect(window.location.hash).toBe("#some.hash");
-        expect(navigateTo).toBeCalledTimes(1);
-        expect(navigateTo).toBeCalledWith(
+        expect(navigateTo).toHaveBeenCalledTimes(1);
+        expect(navigateTo).toHaveBeenCalledWith(
             {
                 otherVal: "test",
                 hash: "#some.hash",

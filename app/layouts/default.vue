@@ -6,7 +6,8 @@
                 <slot name="HomeButton" />
                 <QuickNavigation />
             </div>
-            <div>
+            <div class="flex-row gap-2 flex items-center">
+                <slot name="Login" />
                 <slot name="DarkModeToggle" />
             </div>
         </div>

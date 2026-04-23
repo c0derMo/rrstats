@@ -37,15 +37,15 @@
                 />
 
                 <TextInputComponent
-                    v-model="title"
-                    placeholder="Override Accolade"
+                    v-model="defaultAccolade"
+                    placeholder="Default Accolade"
                     class="w-full"
                 />
 
-                <SwitchComponent
-                    id="customTitle"
-                    v-model="playerData.hasCustomTitle"
-                    label="Has custom accolade:"
+                <TextInputComponent
+                    v-model="currentAccolade"
+                    placeholder="Current Accolade"
+                    class="w-full"
                 />
 
                 <SwitchComponent
@@ -100,12 +100,21 @@ const discordId = computed({
     },
 });
 
-const title = computed({
+const defaultAccolade = computed({
     get() {
-        return playerData.value.title ?? "";
+        return playerData.value.defaultAccolade ?? "";
     },
     set(newValue: string) {
-        playerData.value.title = newValue;
+        playerData.value.defaultAccolade = newValue;
+    },
+});
+
+const currentAccolade = computed({
+    get() {
+        return playerData.value.accolade ?? "";
+    },
+    set(newValue: string) {
+        playerData.value.accolade = newValue;
     },
 });
 

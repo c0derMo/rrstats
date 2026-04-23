@@ -102,7 +102,7 @@ describe("PlayerStatisticController", () => {
             { map: 2, match: { uuid: "df6abbe5-cb93-4323-b15b-a125d707803c" } },
             { map: 1, match: { uuid: "87d3c3b0-97d6-4743-99bd-84f9dc202557" } },
             { map: 2, match: { uuid: "d68cce78-4a06-4870-bda2-889a3c032fed" } },
-            { map: 3, match: { uuid: "c64d9b3b-be04-4e75-8633-f16fe2fb0abc" } },
+            { map: 0, match: { uuid: "87d3c3b0-97d6-4743-99bd-84f9dc202557" } },
             { map: 3, match: { uuid: "1917be34-06df-464d-ae89-74c99d0c6e6b" } },
         ]);
     });

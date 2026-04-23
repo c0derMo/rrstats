@@ -74,15 +74,8 @@
                 {{ match.notes }}
             </div>
 
-            <div
-                v-if="match.bannedMaps.length > 0"
-                class="text-center font-bold"
-            >
-                Bans
-            </div>
-
             <div v-if="match.bannedMaps.length > 0" class="grid grid-cols-3">
-                <div class="flex flex-col gap-2 text-center">
+                <div class="flex flex-col text-center">
                     <MapTag
                         v-for="(ban, idx) of playerOneBans"
                         :key="idx"
@@ -92,8 +85,8 @@
                         class="w-fit mx-auto"
                     />
                 </div>
-                <div />
-                <div class="flex flex-col gap-2 text-center">
+                <div class="text-center font-bold">Bans</div>
+                <div class="flex flex-col text-center">
                     <MapTag
                         v-for="(ban, idx) of playerTwoBans"
                         :key="idx"
@@ -105,66 +98,85 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-y-1 gap-x-20">
-                <div class="font-bold">Map</div>
-                <div class="font-bold">Picked by</div>
-                <div class="font-bold">Won by</div>
+            <div class="grid grid-cols-3 gap-y-1">
+                <div class="font-bold pl-4">Map</div>
+                <div class="font-bold text-center">Picked by</div>
+                <div class="font-bold pr-4 text-right">Won by</div>
                 <template v-for="(map, idx) in match.playedMaps" :key="idx">
-                    <div>
-                        <MapTag :map="getMap(map.map)!" full-name />
-                    </div>
-                    <div>
-                        <Tag :color="getPlayerColor(map.picked)">
-                            {{ getPlayerName(map.picked, "Random") }}
-                        </Tag>
-                    </div>
-                    <div>
-                        <Tag :color="getPlayerColor(map.winner)">
-                            {{ getPlayerName(map.winner, "Draw") }}
-                        </Tag>
-                        <span v-if="map.forfeit">(Won by forfeit)</span>
-                        <span v-if="map.unscored">(Unscored)</span>
-                    </div>
-                    <div v-if="map.spin != null" class="col-span-3">
-                        <TextualSpin :spin="map.spin" />
+                    <div
+                        class="col-span-3 bg-center bg-cover rounded-md"
+                        :style="getMapBackground(map.map)"
+                    >
+                        <div
+                            class="grid grid-cols-3 px-4 py-4 bg-black/70 rounded-md"
+                        >
+                            <div>
+                                <MapTag :map="getMap(map.map)!" full-name />
+                            </div>
+                            <div class="justify-self-center">
+                                <Tag :color="getPlayerColor(map.picked)">
+                                    {{ getPlayerName(map.picked, "Random") }}
+                                </Tag>
+                            </div>
+                            <div class="justify-self-end">
+                                <Tag :color="getPlayerColor(map.winner)">
+                                    {{ getPlayerName(map.winner, "Draw") }}
+                                </Tag>
+                                <span v-if="map.forfeit">(Won by forfeit)</span>
+                                <span v-if="map.unscored">(Unscored)</span>
+                            </div>
+                            <div v-if="map.spin != null" class="col-span-3">
+                                <TextualSpin :spin="map.spin" />
+                            </div>
+
+                            <div
+                                v-if="map.notes != null && map.notes !== ''"
+                                class="col-span-3 text-center italic"
+                            >
+                                {{ map.notes }}
+                            </div>
+
+                            <div class="col-span-3 text-center">
+                                RTA:
+                                {{
+                                    map.timeTaken > 0
+                                        ? durationToLocale(map.timeTaken * 1000)
+                                        : "unknown"
+                                }}
+                                <Tag
+                                    v-if="isMapPB(idx) != null"
+                                    narrow
+                                    color="purple"
+                                >
+                                    Personal best ({{
+                                        isMapPB(idx)
+                                            ?.map((player) =>
+                                                players.get(player),
+                                            )
+                                            .join(", ")
+                                    }})
+                                </Tag>
+                                <Tag
+                                    v-if="
+                                        wrStatus[idx] === RecordStatus.CURRENT
+                                    "
+                                    narrow
+                                    color="#cb8900"
+                                >
+                                    Current record
+                                </Tag>
+                                <Tag
+                                    v-if="wrStatus[idx] === RecordStatus.FORMER"
+                                    narrow
+                                    color="#926711"
+                                >
+                                    Former record
+                                </Tag>
+                            </div>
+                        </div>
                     </div>
 
-                    <div
-                        v-if="map.notes != null && map.notes !== ''"
-                        class="col-span-3 text-center italic"
-                    >
-                        {{ map.notes }}
-                    </div>
-
-                    <div
-                        class="col-span-3 border-b border-gray-500 pb-3 mb-3 text-center"
-                    >
-                        RTA:
-                        {{
-                            map.timeTaken > 0
-                                ? durationToLocale(map.timeTaken * 1000)
-                                : "unknown"
-                        }}
-                        <Tag v-if="isMapPB(idx)" narrow color="purple">
-                            Personal best ({{
-                                getPlayerName(map.winner, "unknown")
-                            }})
-                        </Tag>
-                        <Tag
-                            v-if="wrStatus[idx] === RecordStatus.CURRENT"
-                            narrow
-                            color="#cb8900"
-                        >
-                            Current record
-                        </Tag>
-                        <Tag
-                            v-if="wrStatus[idx] === RecordStatus.FORMER"
-                            narrow
-                            color="#926711"
-                        >
-                            Former record
-                        </Tag>
-                    </div>
+                    <div class="col-span-3 border-b border-gray-500 my-1" />
                 </template>
             </div>
 
@@ -281,23 +293,37 @@ function getPlayerColor(
     return undefined;
 }
 
-function isMapPB(mapIdx: number): boolean {
+function isMapPB(mapIdx: number): string[] | null {
     const map = props.match.playedMaps[mapIdx];
-    if (map.winner === WinningPlayer.PLAYER_ONE) {
-        return (
+    const pbHolders: string[] = [];
+    if (
+        map.winner === WinningPlayer.PLAYER_ONE ||
+        map.winner === WinningPlayer.DRAW
+    ) {
+        const isP1PB =
             playerOneStatistics.value?.mapPBs[map.map].match?.uuid ===
                 props.match.uuid &&
-            playerOneStatistics.value?.mapPBs[map.map].map === mapIdx
-        );
+            playerOneStatistics.value?.mapPBs[map.map].map === mapIdx;
+        if (isP1PB) {
+            pbHolders.push(props.match.playerOne);
+        }
     }
-    if (map.winner === WinningPlayer.PLAYER_TWO) {
-        return (
+    if (
+        map.winner === WinningPlayer.PLAYER_TWO ||
+        map.winner === WinningPlayer.DRAW
+    ) {
+        const isP2PB =
             playerTwoStatistics.value?.mapPBs[map.map].match?.uuid ===
                 props.match.uuid &&
-            playerTwoStatistics.value?.mapPBs[map.map].map === mapIdx
-        );
+            playerTwoStatistics.value?.mapPBs[map.map].map === mapIdx;
+        if (isP2PB) {
+            pbHolders.push(props.match.playerTwo);
+        }
     }
-    return false;
+    if (pbHolders.length > 0) {
+        return pbHolders;
+    }
+    return null;
 }
 
 function getEloTag(index: number): string {
@@ -336,4 +362,10 @@ onBeforeMount(async () => {
         }),
     );
 });
+
+function getMapBackground(map: HitmanMap) {
+    return {
+        "background-image": `url(${getMap(map)!.backgroundImage})`,
+    };
+}
 </script>

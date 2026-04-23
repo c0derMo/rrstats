@@ -1,5 +1,15 @@
 <template>
     <div>
+        <PlayerAccoladeSelectDialog
+            v-if="selectingAccolade && player != null"
+            :current-accolade="accolade"
+            :can-edit="player.defaultAccolade !== 'Roulette Rookie'"
+            :achievements="achievements"
+            :default-accolade="player.defaultAccolade"
+            :player="player.uuid"
+            @close="selectingAccolade = false"
+            @update="(newAccolade) => (accolade = newAccolade)"
+        />
         <MapBackground :maps="pickedMaps" />
         <div class="flex flex-col gap-5 mt-5 lg:mx-10 mx-1">
             <div class="flex flex-row gap-5 justify-center">
@@ -24,11 +34,26 @@
                             <h1 class="text-5xl">
                                 {{ player?.primaryName ?? route.params.player }}
                             </h1>
-                            <h3
-                                :class="{ italic: player?.hasCustomTitle }"
-                                class="mt-1"
-                            >
-                                {{ player?.accolade }}
+                            <h3 class="mt-1">
+                                {{ accolade }}
+
+                                <FontAwesomeIcon
+                                    v-if="canEditAccolade"
+                                    :icon="['fas', 'pen']"
+                                    class="text-xs"
+                                    @click="selectingAccolade = true"
+                                />
+                                <FontAwesomeIcon
+                                    v-else-if="user == null"
+                                    :icon="['fas', 'pen']"
+                                    class="text-xs"
+                                    @click="
+                                        navigateTo(
+                                            `/api/auth/discord_login?to=${route.path}`,
+                                            { external: true },
+                                        )
+                                    "
+                                />
                             </h3>
                             <h3
                                 v-if="
@@ -178,7 +203,10 @@
                     </template>
 
                     <template #Achievements>
-                        <AchievementsGrid :player="player?.uuid ?? ''" />
+                        <AchievementsGrid
+                            :player="player?.uuid ?? ''"
+                            :achievements="achievements"
+                        />
                     </template>
                 </TabbedContainer>
             </CardComponent>
@@ -189,6 +217,11 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 import ld from "lodash";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+const props = defineProps<{
+    user?: IUser;
+}>();
 
 const route = useRoute();
 
@@ -220,8 +253,20 @@ const { data: placements } = await useFetch(
     `/api/competitions/placements?player=${player.value?.uuid}`,
     { default: () => [] },
 );
+const { data: achievements } = await useFetch<AchievedAchievement[]>(
+    `/api/achievements/player?player=${player.value?.uuid}`,
+    { default: () => [] },
+);
 
 const stillLoading = ref(player.value?.shouldRetry ?? false);
+const selectingAccolade = ref(false);
+const accolade = ref(player.value?.accolade ?? "");
+
+const canEditAccolade = ref(
+    (props.user?.authorizationKey === player.value?.discordId &&
+        player.value?.discordId != null) ||
+        props.user?.permissions.includes(IPermission.EDIT_PLAYERS),
+);
 
 const wtl = computed(() => {
     return `${statistics.value.winTieLoss.w}-${statistics.value.winTieLoss.t}-${statistics.value.winTieLoss.l}`;

@@ -103,12 +103,12 @@ import ld from "lodash";
 
 const props = defineProps<{
     player: string;
+    achievements: AchievedAchievement[];
 }>();
 
 const sortingOptions = ["Sort by name", "Sort by rarity", "Sort by completion"];
 
 const loading = ref(true);
-const achievements = ref<AchievedAchievement[]>([]);
 const achievementCompletions = ref<Record<string, number[]>>({});
 const sort = ref(sortingOptions[2]);
 const search = ref("");
@@ -122,7 +122,7 @@ const expandedRows = ref<AchievementCategory[]>([
 ]);
 
 const filteredSortedAchievements = computed(() => {
-    let result = [...achievements.value];
+    let result = [...props.achievements];
 
     if (hideMissing.value) {
         result = result.filter(
@@ -228,10 +228,6 @@ function toggleCategory(category: AchievementCategory) {
 }
 
 onMounted(async () => {
-    const newAchievements = await $fetch<AchievedAchievement[]>(
-        `/api/achievements/player?player=${props.player}`,
-    );
-    achievements.value = newAchievements ?? [];
     const globalCompletion = await $fetch("/api/achievements/statistics");
     achievementCompletions.value = globalCompletion ?? {};
     loading.value = false;

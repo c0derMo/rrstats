@@ -5,7 +5,14 @@ import { Player } from "~~/server/model/Player";
 export default defineEventHandler<
     Promise<
         | Pick<IPlayer, "primaryName">[]
-        | Pick<IPlayer, "uuid" | "primaryName" | "title" | "nationality">[]
+        | Pick<
+              IPlayer,
+              | "uuid"
+              | "primaryName"
+              | "defaultAccolade"
+              | "nationality"
+              | "accolade"
+          >[]
     >
 >(async (event) => {
     const query = getQuery(event);
@@ -13,10 +20,18 @@ export default defineEventHandler<
 
     if (
         query.full !== undefined &&
-        (await AuthController.isAuthenticated(session.data.discordId))
+        (await AuthController.isAuthenticated(session.data.discordId, [
+            IPermission.BACKEND_ACCESS,
+        ]))
     ) {
         const rawPlayers = await Player.find({
-            select: ["uuid", "primaryName", "title", "nationality"],
+            select: [
+                "uuid",
+                "primaryName",
+                "accolade",
+                "defaultAccolade",
+                "nationality",
+            ],
         });
 
         return rawPlayers;

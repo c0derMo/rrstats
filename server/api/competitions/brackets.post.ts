@@ -1,0 +1,48 @@
+import { AuthController } from "~~/server/controller/AuthController";
+import { Bracket } from "~~/server/model/Bracket";
+
+export default defineEventHandler(async (event) => {
+    const body = await readBody<IBracket[]>(event);
+    const query = getQuery<{ tag: string }>(event);
+    const session = await AuthController.useSession(event);
+
+    if (
+        !(await AuthController.isAuthenticated(session.data.discordId, [
+            IPermission.BACKEND_ACCESS,
+            IPermission.EDIT_COMPETITIONS,
+        ]))
+    ) {
+        throw createError({
+            statusCode: 403,
+        });
+    }
+    if (query.tag == null || query.tag === "") {
+        throw createError({
+            statusCode: 400,
+            message: "Competition tag must be set",
+        });
+    }
+    if (body.length <= 0) {
+        await Bracket.delete({ competition: query.tag });
+        return;
+    }
+
+    let existingBrackets = await Bracket.find({
+        where: {
+            competition: query.tag,
+        },
+        select: ["index", "competition", "name"],
+    });
+    for (const bracket of body) {
+        existingBrackets = existingBrackets.filter(
+            (existingBracket) => existingBracket.index !== bracket.index,
+        );
+        const dbBracket = new Bracket();
+        Object.assign(dbBracket, bracket);
+        dbBracket.competition = query.tag;
+        await dbBracket.save();
+    }
+    for (const bracketToDelete of existingBrackets) {
+        await bracketToDelete.remove();
+    }
+});

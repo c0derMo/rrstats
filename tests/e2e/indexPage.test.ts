@@ -82,7 +82,7 @@ test.describe("Index Page", () => {
         await expect(page.getByText("RR1", { exact: true })).toBeVisible();
 
         await page.getByText("RRWC2024").click();
-        await expect(page).toHaveURL(/.*\/matches\?tournament=RRWC2024/);
+        await expect(page).toHaveURL(/.*\/tournament\/RRWC2024/);
     });
 
     test("Accessing player pages", async ({ page }) => {

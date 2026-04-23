@@ -18,7 +18,7 @@
                 />
                 <div class="flex-grow mx-5" :class="{ 'text-right': reverse }">
                     <h1 class="text-5xl">{{ player.primaryName }}</h1>
-                    <h3 :class="{ italic: player.hasCustomTitle }" class="mt-1">
+                    <h3 class="mt-1">
                         {{ player.accolade }}
                     </h3>
                 </div>

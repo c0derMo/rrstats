@@ -9,9 +9,13 @@ import {
     type UpdateEvent,
 } from "typeorm";
 import { GenericRecord, MapRecord } from "../model/Record";
-import { Competition, CompetitionPlacement } from "../model/Competition";
+import {
+    Competition,
+    CompetitionPlacement,
+    RookieAccoladeUpdateSubscriber,
+} from "../model/Competition";
 import { PlayedMap } from "../model/PlayedMap";
-import { Player, PlayerAccoladeSubscriber } from "../model/Player";
+import { Player } from "../model/Player";
 import { LeaderboardDatabaseListener } from "./LeaderboardController";
 import { PlayerStatisticDatabaseListener } from "./PlayerStatisticController";
 import { Match } from "../model/Match";
@@ -23,6 +27,9 @@ import {
     AchievementDatabaseListener,
     AchievementVerifyListener,
 } from "./AchievementController";
+import { Bracket } from "../model/Bracket";
+import { BracketAndAccoladeAddition1776851396630 } from "../migrations/1776851396630-BracketAndAccoladeAddition";
+import { DatabaseInitialization1577833200000 } from "../migrations/1577833200000-DatabaseInitialization";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -48,19 +55,25 @@ export default class DatabaseConnector {
                 User,
                 PlayedMap,
                 Achievement,
+                Bracket,
             ],
             subscribers: withSubscribers
                 ? [
-                      PlayerAccoladeSubscriber,
                       LeaderboardDatabaseListener,
                       PlayerStatisticDatabaseListener,
                       EloDatabaseListener,
                       AchievementDatabaseListener,
                       AchievementVerifyListener,
                       DatabaseInsertUpdateLogger,
+                      RookieAccoladeUpdateSubscriber,
                   ]
                 : undefined,
-            synchronize: true,
+            synchronize: false,
+            migrations: [
+                DatabaseInitialization1577833200000,
+                BracketAndAccoladeAddition1776851396630,
+            ],
+            migrationsRun: true,
             parseInt8: dbType === "postgres" ? true : undefined,
             prepareDatabase:
                 dbType !== "sqlite"
@@ -109,6 +122,10 @@ export default class DatabaseConnector {
 
     getManager(): EntityManager {
         return this.db.manager;
+    }
+
+    getDataSource(): DataSource {
+        return this.db;
     }
 }
 

@@ -1,7 +1,23 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
-    typescript: { shim: false },
+    typescript: {
+        shim: false,
+        tsConfig: {
+            compilerOptions: {
+                experimentalDecorators: true,
+                strictPropertyInitialization: false,
+                module: "ESNext",
+                noUncheckedIndexedAccess: false,
+            },
+            include: ["../tests/**/*.ts"],
+        },
+        sharedTsConfig: {
+            compilerOptions: {
+                strictPropertyInitialization: false,
+            },
+        },
+    },
     modules: [
         "@nuxtjs/tailwindcss",
         "@nuxt/eslint",
@@ -22,6 +38,9 @@ export default defineNuxtConfig({
         enableRouteTimings: false,
         databaseLogging: "",
         discordWebhook: "",
+        public: {
+            eventSubmissionLink: "/",
+        },
     },
 
     nitro: {
@@ -39,6 +58,16 @@ export default defineNuxtConfig({
         alias: {
             consola: "consola",
         },
+        typescript: {
+            tsConfig: {
+                compilerOptions: {
+                    target: "esnext",
+                    experimentalDecorators: true,
+                    strictPropertyInitialization: false,
+                    noUncheckedIndexedAccess: false,
+                },
+            },
+        },
     },
 
     css: ["@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
@@ -54,6 +83,22 @@ export default defineNuxtConfig({
 
     site: {
         indexable: false,
+    },
+
+    vite: {
+        optimizeDeps: {
+            include: [
+                "@vue/devtools-core",
+                "@vue/devtools-kit",
+                "@fortawesome/fontawesome-svg-core",
+                "@fortawesome/free-brands-svg-icons",
+                "@fortawesome/free-solid-svg-icons",
+                "@fortawesome/free-regular-svg-icons",
+                "luxon",
+                "lodash",
+                "chart.js",
+            ],
+        },
     },
 
     compatibilityDate: "2024-08-10",

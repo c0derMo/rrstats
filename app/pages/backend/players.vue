@@ -110,6 +110,7 @@ function newPlayer() {
         uuid: "",
         primaryName: "",
         alternativeNames: [],
+        defaultAccolade: "",
         accolade: "",
     };
 }
@@ -126,6 +127,7 @@ async function deletePlayer(uuid: string) {
 async function updateList() {
     const playersQuery = await $fetch<IPlayer[]>("/api/player/list", {
         query: { full: true },
+        headers: useRequestHeaders(),
     });
     players.value = playersQuery;
 }

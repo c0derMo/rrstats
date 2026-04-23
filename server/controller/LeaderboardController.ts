@@ -46,8 +46,10 @@ import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements"
 import { isReady } from "../readyListener";
 import { Achievement } from "../model/Achievement";
 
-interface GenericLeaderboardStatistic<T extends string, R>
-    extends StatisticData<T> {
+interface GenericLeaderboardStatistic<
+    T extends string,
+    R,
+> extends StatisticData<T> {
     basedOn: (
         | "player"
         | "match"
@@ -97,7 +99,7 @@ export default class LeaderboardController {
         | Record<HitmanMap | OptionalMap, LeaderboardEntry[]>
     > = new Map();
 
-    private static readonly statistics: LeaderboardStatistic[] = [
+    static readonly statistics: LeaderboardStatistic[] = [
         new PlayerWinrate(),
         new PlayerMapWinrate(),
         new PlayerRRAppearances(),

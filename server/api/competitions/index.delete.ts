@@ -1,4 +1,5 @@
 import { AuthController } from "~~/server/controller/AuthController";
+import { Bracket } from "~~/server/model/Bracket";
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 
 export default defineEventHandler(async (event) => {
@@ -8,10 +9,10 @@ export default defineEventHandler(async (event) => {
     const session = await AuthController.useSession(event);
 
     if (
-        !(await AuthController.isAuthenticated(
-            session.data.discordId,
+        !(await AuthController.isAuthenticated(session.data.discordId, [
+            IPermission.BACKEND_ACCESS,
             IPermission.EDIT_COMPETITIONS,
-        ))
+        ]))
     ) {
         throw createError({
             statusCode: 403,
@@ -31,5 +32,6 @@ export default defineEventHandler(async (event) => {
     if (compToRemove != null) {
         await compToRemove.remove();
         await CompetitionPlacement.delete({ competition: body.tag });
+        await Bracket.delete({ competition: body.tag });
     }
 });

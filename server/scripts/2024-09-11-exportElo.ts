@@ -7,6 +7,7 @@ import { Match } from "../model/Match";
 import { PlayerElo } from "../controller/leaderboardStatistics/player/Elo";
 import MapperService from "../controller/MapperService";
 import { PlayedMap } from "../model/PlayedMap";
+import EloController from "../controller/EloController";
 
 const ignoredComps: string[] = ["RR14"];
 
@@ -22,32 +23,17 @@ async function main() {
 
     const players = await Player.find();
     console.log(`Loaded ${players.length} players.`);
-    const competition = await Competition.find({
-        where: { tag: Not(In(ignoredComps)), officialCompetition: true },
-        order: { startingTimestamp: "DESC" },
-    });
-    console.log(`Loaded ${competition.length} competitions.`);
-    const placements = await CompetitionPlacement.find({
-        where: { competition: In(competition.map((c) => c.tag)) },
-    });
-    console.log(`Loaded ${placements.length} placements.`);
-    const matches = await Match.find({
-        where: { competition: Not(In(ignoredComps)) },
-        order: { timestamp: "ASC" },
-    });
-    console.log(`Loaded ${matches.length} matches.`);
+
+    await EloController.getInstance().recalculateAllElos();
+    console.log(`Recalculated all elo.`);
+
     const playerLookupMap = MapperService.createStringMapFromList(
         players,
         "uuid",
         "primaryName",
     );
 
-    const eloStats = new PlayerElo().calculate(
-        players,
-        matches,
-        placements,
-        competition,
-    );
+    const eloStats = await new PlayerElo().calculate();
 
     eloStats.sort((a, b) => a.sortingScore - b.sortingScore);
 

@@ -4,6 +4,7 @@
             v-if="competitionToShow !== null"
             :competition="competitionToShow"
             :placements="placementsToShow!"
+            :brackets="bracketsToShow!"
             @close="
                 competitionToShow = null;
                 updateList();
@@ -60,6 +61,7 @@ const competitions: Ref<ICompetition[]> = ref([]);
 const error = ref(false);
 const competitionToShow: Ref<ICompetition | null> = ref(null);
 const placementsToShow: Ref<ICompetitionPlacement[] | null> = ref(null);
+const bracketsToShow: Ref<IBracket[] | null> = ref(null);
 const competitionToLoad = ref("");
 
 const headers = [
@@ -70,6 +72,7 @@ const headers = [
 
 function newCompetition() {
     placementsToShow.value = [];
+    bracketsToShow.value = [];
     competitionToShow.value = {
         name: "",
         tag: "",
@@ -90,7 +93,9 @@ async function deleteCompetition(tag: string) {
 
 async function updateList() {
     try {
-        const competitionsQuery = await $fetch("/api/competitions/list");
+        const competitionsQuery = await $fetch("/api/competitions/list", {
+            headers: useRequestHeaders(),
+        });
         competitions.value = competitionsQuery;
     } catch {
         error.value = true;
@@ -104,8 +109,12 @@ async function loadUpdateMatch(tag: string) {
         const placementsQuery = await $fetch("/api/competitions/placements", {
             query: { tag },
         });
-        competitionToShow.value = compQuery;
+        const bracketsQuery = await $fetch("/api/competitions/brackets", {
+            query: { tag },
+        });
         placementsToShow.value = placementsQuery;
+        bracketsToShow.value = bracketsQuery;
+        competitionToShow.value = compQuery;
     } catch {
         error.value = true;
     }

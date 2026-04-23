@@ -133,10 +133,8 @@ test.describe("Achievement Page", () => {
         await page.goto("/achievements");
 
         const roulettePlayer = page.locator("#roulette_player");
-        await expect(roulettePlayer.getByText("Play a match")).toHaveCSS(
-            "opacity",
-            "0",
-        );
+        await expect(roulettePlayer.getByText("Play a match")).toHaveCount(0);
+
         await roulettePlayer.hover();
         await expect(roulettePlayer.getByText("Play a match")).toHaveCSS(
             "opacity",

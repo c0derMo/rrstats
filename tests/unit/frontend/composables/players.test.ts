@@ -1,5 +1,4 @@
 import { test, expect, vi, afterEach, describe } from "vitest";
-import type { IMatch } from "~/utils/interfaces/IMatch";
 
 describe("usePlayers()", () => {
     const { $fetchMock } = vi.hoisted(() => {
@@ -24,8 +23,8 @@ describe("usePlayers()", () => {
 
         await players.queryPlayers(["uuidA", "uuidB"]);
 
-        expect($fetchMock).toBeCalledTimes(1);
-        expect($fetchMock).toBeCalledWith("/api/player/lookup", {
+        expect($fetchMock).toHaveBeenCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledWith("/api/player/lookup", {
             query: { players: ["uuidA", "uuidB"] },
         });
 
@@ -33,7 +32,7 @@ describe("usePlayers()", () => {
         expect(players.get("uuidB")).toBe("playerB");
 
         await players.queryPlayers(["uuidA", "uuidB"]);
-        expect($fetchMock).toBeCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledTimes(1);
     });
 
     test("Large queryPlayers", async () => {
@@ -60,7 +59,7 @@ describe("usePlayers()", () => {
             ...third36UUIDs,
         ]);
 
-        expect($fetchMock).toBeCalledTimes(3);
+        expect($fetchMock).toHaveBeenCalledTimes(3);
         expect($fetchMock).toHaveBeenNthCalledWith(3, "/api/player/lookup", {
             query: { players: first50UUIDs },
         });
@@ -81,14 +80,14 @@ describe("usePlayers()", () => {
         });
 
         await players.queryAll();
-        expect($fetchMock).toBeCalledTimes(1);
-        expect($fetchMock).toBeCalledWith("/api/player/lookup");
+        expect($fetchMock).toHaveBeenCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledWith("/api/player/lookup");
 
         await players.queryAll();
-        expect($fetchMock).toBeCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledTimes(1);
 
         await players.queryPlayers(["uuidC", "uuidD"]);
-        expect($fetchMock).toBeCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledTimes(1);
     });
 
     test("get", async () => {
@@ -137,8 +136,8 @@ describe("usePlayers()", () => {
             "uuidC",
         ]);
 
-        expect($fetchMock).toBeCalledTimes(1);
-        expect($fetchMock).toBeCalledWith("/api/player/lookup", {
+        expect($fetchMock).toHaveBeenCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledWith("/api/player/lookup", {
             query: { players: ["uuidA", "uuidB", "uuidC"] },
         });
 
@@ -203,8 +202,8 @@ describe("usePlayers()", () => {
         ];
         await players.queryFromMatches(matches);
 
-        expect($fetchMock).toBeCalledTimes(1);
-        expect($fetchMock).toBeCalledWith("/api/player/lookup", {
+        expect($fetchMock).toHaveBeenCalledTimes(1);
+        expect($fetchMock).toHaveBeenCalledWith("/api/player/lookup", {
             query: { players: ["uuidA", "uuidB", "uuidC", "uuidD"] },
         });
     });

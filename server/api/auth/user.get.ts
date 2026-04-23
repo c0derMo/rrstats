@@ -10,9 +10,19 @@ export default defineEventHandler<Promise<IUser>>(async (event) => {
         });
     }
 
-    const user = await User.findOneByOrFail({
+    const user = await User.findOneBy({
         authorizationKey: session.data.discordId,
+        isAPIKey: false,
     });
 
-    return user;
+    if (user != null) {
+        return user;
+    } else {
+        return {
+            username: session.data.username ?? "",
+            authorizationKey: session.data.discordId,
+            isAPIKey: false,
+            permissions: [],
+        };
+    }
 });

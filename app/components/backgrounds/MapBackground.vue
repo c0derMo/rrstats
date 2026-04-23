@@ -29,7 +29,7 @@ const mapSelection = computed(() => {
 
 const chosenBackground = useState("mapBackground", () => "");
 
-callOnce(selectBackground);
+callOnce("selectMapBg", selectBackground);
 
 function selectBackground() {
     const chosenMapIndex = Math.floor(

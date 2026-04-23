@@ -4,8 +4,12 @@
         :open="showDialog"
         @closed="$emit('close')"
     >
-        <CardComponent class="overflow-y-auto flex flex-col gap-3 max-h-screen">
-            <TabbedContainer :tabs="['Basic', 'Groups', 'Placements']">
+        <CardComponent
+            class="overflow-y-auto flex flex-col gap-3 max-h-screen !overflow-visible"
+        >
+            <TabbedContainer
+                :tabs="['Basic', 'Groups', 'Placements', 'Brackets']"
+            >
                 <template #Basic>
                     <div class="flex flex-col gap-5 w-full">
                         <TextInputComponent
@@ -78,6 +82,10 @@
                 <template #Placements>
                     <PlacementsEditor v-model:placements="placementsData" />
                 </template>
+
+                <template #Brackets>
+                    <BracketsEditor v-model="bracketsData" />
+                </template>
             </TabbedContainer>
 
             <div class="flex flex-row gap-3">
@@ -94,6 +102,7 @@
 const props = defineProps<{
     competition: ICompetition;
     placements: ICompetitionPlacement[];
+    brackets: IBracket[];
 }>();
 
 defineEmits<{
@@ -105,6 +114,7 @@ const addAlert =
 const showDialog = ref(true);
 const compData = toRef(props.competition);
 const placementsData = toRef(props.placements);
+const bracketsData = toRef(props.brackets);
 const groupsEnabled = ref(compData.value.groupsConfig != null);
 const groupSettings: Ref<IGroupSettings> = ref(
     compData.value.groupsConfig ?? {
@@ -135,6 +145,13 @@ async function save() {
         await $fetch("/api/competitions/placements", {
             method: "post",
             body: placementsData.value,
+        });
+        await $fetch("/api/competitions/brackets", {
+            method: "post",
+            body: bracketsData.value,
+            query: {
+                tag: compData.value.tag,
+            },
         });
         addAlert("Competition saved successfully.", "success");
     } catch {

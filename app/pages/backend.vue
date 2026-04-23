@@ -79,16 +79,24 @@ definePageMeta({
     layout: false,
 });
 
+const props = defineProps<{
+    user?: IUser;
+}>();
+
 const route = useRoute();
 const { data: numbers } = await useFetch("/api/onlyNumbers");
-const { data: user, error: userError } = await useFetch("/api/auth/user");
 
 const nextAlertId = ref(0);
 const alerts: Ref<{ text: string; type?: string; alertId: number }[]> = ref([]);
 const lightDarkSwitch = inject<Ref<boolean>>("lightDarkSwitch")!;
 
-if (userError.value != null) {
-    navigateTo("/api/auth/discord_login", { external: true });
+if (props.user == null) {
+    navigateTo("/api/auth/discord_login?to=/backend", { external: true });
+} else if (!props.user?.permissions.includes(IPermission.BACKEND_ACCESS)) {
+    throw createError({
+        status: 403,
+        fatal: true,
+    });
 }
 
 useRouter().afterEach((to) => {

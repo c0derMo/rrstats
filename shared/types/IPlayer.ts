@@ -9,9 +9,7 @@ export type IPlayer = {
     discordId?: string | null;
     nationality?: string | null;
 
-    title?: string | null;
-    hasCustomTitle?: boolean;
-
+    defaultAccolade: string;
     accolade: string;
 
     excludedFromSearch?: boolean;

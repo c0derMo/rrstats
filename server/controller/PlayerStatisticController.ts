@@ -87,9 +87,7 @@ export default class PlayerStatisticController {
 }
 
 @EventSubscriber()
-export class PlayerStatisticDatabaseListener
-    implements EntitySubscriberInterface
-{
+export class PlayerStatisticDatabaseListener implements EntitySubscriberInterface {
     private functionCaller = new DebouncedInvalidationFunction(
         PlayerStatisticController.clearCache,
     );

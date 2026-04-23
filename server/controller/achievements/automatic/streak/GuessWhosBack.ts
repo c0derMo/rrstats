@@ -87,7 +87,7 @@ export class GuessWhosBack extends AutomaticAchievement<string[]> {
         const requirements = [2, 5, 10];
 
         for (let idx = 0; idx < requirements.length; idx++) {
-            if (streak.getLongestStreak() > requirements[idx]) {
+            if (streak.getLongestStreak() >= requirements[idx]) {
                 achievement.achieveIfNotAchieved(timestamp, idx, false, match);
             }
         }

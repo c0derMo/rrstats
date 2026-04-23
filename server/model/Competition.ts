@@ -4,8 +4,12 @@ import {
     BeforeUpdate,
     Column,
     Entity,
+    type EntitySubscriberInterface,
+    EventSubscriber,
+    type InsertEvent,
     PrimaryColumn,
 } from "typeorm";
+import { Player } from "./Player";
 
 @Entity()
 export class Competition extends BaseEntity implements ICompetition {
@@ -70,6 +74,31 @@ export class CompetitionPlacement
     checkPlacement() {
         if (this.placement !== undefined && this.placement <= 0) {
             this.placement = undefined;
+        }
+    }
+}
+
+@EventSubscriber()
+export class RookieAccoladeUpdateSubscriber implements EntitySubscriberInterface<CompetitionPlacement> {
+    listenTo() {
+        return CompetitionPlacement;
+    }
+
+    async afterInsert(event: InsertEvent<CompetitionPlacement>): Promise<void> {
+        if (event.entity.player != null) {
+            const rookiePlayer = await Player.findOne({
+                where: {
+                    uuid: event.entity.player,
+                    defaultAccolade: "Roulette Rookie",
+                },
+                select: ["accolade", "defaultAccolade", "uuid"],
+            });
+            if (rookiePlayer == null) {
+                return;
+            }
+            rookiePlayer.accolade = "Returning Rival";
+            rookiePlayer.defaultAccolade = "Returning Rival";
+            await rookiePlayer.save();
         }
     }
 }

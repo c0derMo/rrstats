@@ -1,5 +1,5 @@
 <template>
-    <Tag :color="color">
+    <Tag :color="color" class="dark:text-black">
         {{ text }}
     </Tag>
 </template>
