@@ -109,11 +109,11 @@ function drag(e: MouseEvent) {
     const element = draggingData.value.element;
     element.scrollTo({
         left: draggingData.value.elemX - e.clientX + draggingData.value.mouseX,
-        behavior: "smooth",
+        behavior: "instant",
     });
     window.scrollTo({
         top: draggingData.value.elemY - e.clientY + draggingData.value.mouseY,
-        behavior: "smooth",
+        behavior: "instant",
     });
 }
 
