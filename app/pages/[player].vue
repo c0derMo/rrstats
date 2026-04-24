@@ -35,7 +35,9 @@
                                 {{ player?.primaryName ?? route.params.player }}
                             </h1>
                             <h3 class="mt-1">
-                                <TooltipComponent v-if="accoladeDescription != null">
+                                <TooltipComponent
+                                    v-if="accoladeDescription != null"
+                                >
                                     {{ accolade }}
 
                                     <template #tooltip>
@@ -278,11 +280,15 @@ const canEditAccolade = ref(
 );
 
 const accoladeDescription = computed<string | null>(() => {
-    const achievement = achievements.value.find((ach) => ach.name === accolade.value);
+    const achievement = achievements.value.find(
+        (ach) => ach.name === accolade.value,
+    );
     if (achievement == null) {
         return null;
     }
-    const lastAchievedStage = achievement.achievedAt.findLastIndex((achievedAt) => achievedAt > 0);
+    const lastAchievedStage = achievement.achievedAt.findLastIndex(
+        (achievedAt) => achievedAt > 0,
+    );
     if (lastAchievedStage < 0) {
         return achievement.description[0];
     } else {

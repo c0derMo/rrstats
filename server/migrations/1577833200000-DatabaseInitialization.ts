@@ -130,7 +130,11 @@ export class DatabaseInitialization1577833200000 implements MigrationInterface {
             );  
         `);
         const playedMapTable = (await queryRunner.getTable("played_map"))!;
-        if (playedMapTable.foreignKeys.find((key) => key.columnNames[0] === "matchUuid") == null) {
+        if (
+            playedMapTable.foreignKeys.find(
+                (key) => key.columnNames[0] === "matchUuid",
+            ) == null
+        ) {
             await queryRunner.createForeignKey(
                 "played_map",
                 new TableForeignKey({

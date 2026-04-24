@@ -13,8 +13,10 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
             .select("match.playerOne", "player")
             .addSelect("MIN(map.timeTaken)", "time")
             .addSelect("map.map", "map")
-            .where("(map.winner = :winner OR map.winner = :draw) AND map.timeTaken > 0", { winner: WinningPlayer.PLAYER_ONE, draw: WinningPlayer.DRAW })
-            .andWhere("map.timeTaken > 0")
+            .where(
+                "(map.winner = :winner OR map.winner = :draw) AND map.timeTaken > 0",
+                { winner: WinningPlayer.PLAYER_ONE, draw: WinningPlayer.DRAW },
+            )
             .groupBy("match.playerOne")
             .addGroupBy("map.map")
             .getRawMany<{
@@ -27,7 +29,10 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
             .select("match.playerTwo", "player")
             .addSelect("MIN(map.timeTaken)", "time")
             .addSelect("map.map", "map")
-            .where("(map.winner = :winner OR map.winner = :draw) AND map.timeTaken > 0", { winner: WinningPlayer.PLAYER_TWO, draw: WinningPlayer.DRAW })
+            .where(
+                "(map.winner = :winner OR map.winner = :draw) AND map.timeTaken > 0",
+                { winner: WinningPlayer.PLAYER_TWO, draw: WinningPlayer.DRAW },
+            )
             .groupBy("match.playerTwo")
             .addGroupBy("map.map")
             .getRawMany<{
@@ -35,14 +40,17 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
                 map: HitmanMap;
                 time: number;
             }>();
-        
+
         const mapPbs: Record<number, Record<string, number>> = {};
         for (const p1 of p1Maps) {
             mapPbs[p1.map] ??= {};
             if (mapPbs[p1.map][p1.player] == null) {
                 mapPbs[p1.map][p1.player] = p1.time;
             } else {
-                mapPbs[p1.map][p1.player] = Math.min(p1.time, mapPbs[p1.map][p1.player]);
+                mapPbs[p1.map][p1.player] = Math.min(
+                    p1.time,
+                    mapPbs[p1.map][p1.player],
+                );
             }
         }
         for (const p2 of p2Maps) {
@@ -50,7 +58,10 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
             if (mapPbs[p2.map][p2.player] == null) {
                 mapPbs[p2.map][p2.player] = p2.time;
             } else {
-                mapPbs[p2.map][p2.player] = Math.min(p2.time, mapPbs[p2.map][p2.player]);
+                mapPbs[p2.map][p2.player] = Math.min(
+                    p2.time,
+                    mapPbs[p2.map][p2.player],
+                );
             }
         }
 
@@ -61,7 +72,7 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
                 mapLB.push({
                     player: player,
                     sortingScore: mapPbs[map][player],
-                    displayScore: secondsToTime(mapPbs[map][player])
+                    displayScore: secondsToTime(mapPbs[map][player]),
                 });
             }
 

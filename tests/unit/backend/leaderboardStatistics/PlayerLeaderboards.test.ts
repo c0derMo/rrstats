@@ -619,7 +619,7 @@ describe("Player Leaderboards", () => {
             player: playerNamesToUUIDs["Phanium"],
             displayScore: "05:45",
             sortingScore: 345,
-        })
+        });
 
         expect(players[116]).toEqual({
             player: playerNamesToUUIDs["Beanstalkr"],

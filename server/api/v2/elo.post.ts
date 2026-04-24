@@ -22,21 +22,34 @@ export default defineEventHandler<EloResponse>(async (event) => {
         });
     }
 
+    if (players.length === 0) {
+        return [];
+    }
+
     const lookupPlayers = await Player.find({
         where: {
             discordId: In(players),
         },
-        select: ["uuid", "discordId"]
+        select: ["uuid", "discordId"],
     });
-    const discordToPlayer = MapperService.createStringMapFromList(lookupPlayers, "discordId", "uuid");
+    const discordToPlayer = MapperService.createStringMapFromList(
+        lookupPlayers,
+        "discordId",
+        "uuid",
+    );
 
-    const eloLB = await LeaderboardController.getEntries("Elo rating") as LeaderboardPlayerEntry[];
+    const eloLB = (await LeaderboardController.getEntries(
+        "Elo rating",
+    )) as LeaderboardPlayerEntry[];
+    const eloByPlayer = new Map<string, number>(
+        eloLB.map((entry) => [entry.player, entry.sortingScore]),
+    );
     const result: { discordId: string; elo: number }[] = [];
     for (const player of players) {
-        const playerElo = eloLB.find((lb) => lb.player === discordToPlayer[player]);
+        const playerElo = eloByPlayer.get(discordToPlayer[player]);
         result.push({
             discordId: player,
-            elo: playerElo?.sortingScore ?? 1000
+            elo: playerElo ?? 1000,
         });
     }
 

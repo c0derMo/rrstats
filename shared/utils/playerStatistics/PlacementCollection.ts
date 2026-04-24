@@ -33,48 +33,63 @@ export default class PlacementCollection {
 
     private calculateBestPlacements() {
         const officialPlacements = this.placements
-            .filter((placement) => isPlacementOfOfficialCompetition(placement, this.competitions))
+            .filter((placement) =>
+                isPlacementOfOfficialCompetition(placement, this.competitions),
+            )
             .filter(isNumericPlacement);
 
-            if (officialPlacements.length <= 0) {
-                this.cache.set("bestPlacement", undefined);
-                this.cache.set("bestPlacementCompetitions", []);
-            }
+        if (officialPlacements.length <= 0) {
+            this.cache.set("bestPlacement", undefined);
+            this.cache.set("bestPlacementCompetitions", []);
+            return;
+        }
 
-            const topPlacements = officialPlacements.map((placement) => {
+        const topPlacements = officialPlacements
+            .map((placement) => {
                 return {
                     placement: placement.placement as number,
-                    competitions: new Set([placement.competition])
-                }
-            }).reduce((prev, cur) => {
-                if (prev.placement < cur.placement) {
-                    return prev;
-                } else if (cur.placement < prev.placement) {
-                    return cur;
-                } else {
-                    return {
-                        placement: prev.placement,
-                        competitions: prev.competitions.union(cur.competitions)
+                    competitions: new Set([placement.competition]),
+                };
+            })
+            .reduce(
+                (prev, cur) => {
+                    if (prev.placement < cur.placement) {
+                        return prev;
+                    } else if (cur.placement < prev.placement) {
+                        return cur;
+                    } else {
+                        return {
+                            placement: prev.placement,
+                            competitions: new Set([
+                                ...prev.competitions,
+                                ...cur.competitions,
+                            ]),
+                        };
                     }
-                }
-            }, { placement: Number.MAX_SAFE_INTEGER, competitions: new Set() });
+                },
+                { placement: Number.MAX_SAFE_INTEGER, competitions: new Set() },
+            );
 
-            this.cache.set("bestPlacement", topPlacements.placement);
-            this.cache.set("bestPlacementCompetitions", [...topPlacements.competitions.values()]);
+        this.cache.set("bestPlacement", topPlacements.placement);
+        this.cache.set("bestPlacementCompetitions", [
+            ...topPlacements.competitions.values(),
+        ]);
     }
 
     bestPlacement(): number | undefined {
         return this.getCachedOrCalculate("bestPlacement", () => {
             this.calculateBestPlacements();
-            return this.cache.get("bestPlacement") as number || undefined;
+            return (this.cache.get("bestPlacement") as number) ?? undefined;
         });
     }
 
     bestPlacementCompetition(): string[] {
         return this.getCachedOrCalculate("bestPlacementCompetitions", () => {
             this.calculateBestPlacements();
-            return this.cache.get("bestPlacementCompetitions") as string[] || [];
-        })
+            return (
+                (this.cache.get("bestPlacementCompetitions") as string[]) ?? []
+            );
+        });
     }
 
     amountCompetitions(): number {

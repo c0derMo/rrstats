@@ -1,6 +1,6 @@
 export type AccoladeResponse = Promise<string>;
 
-export type EloResponse = Promise<{ discordId: string; elo: number; }[]>;
+export type EloResponse = Promise<{ discordId: string; elo: number }[]>;
 
 export type MapResponse = Promise<{
     map: string;
@@ -32,7 +32,12 @@ export type StatisticsReponse = Promise<{
     mapsWon: number[];
     mapsBanned: number[];
     perMapWinrate: number[];
-    mapPBs: { match: FrozenExtendedMatch | null; map: number; placement: number; total: number; }[];
+    mapPBs: {
+        match: FrozenExtendedMatch | null;
+        map: number;
+        placement: number;
+        total: number;
+    }[];
 }>;
 
 type FrozenExtendedMatch = {

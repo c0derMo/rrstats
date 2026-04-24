@@ -65,7 +65,8 @@ export default class PlayerStatisticController {
             winrate: matchCollection.winrate(),
             mapWinrate: matchCollection.mapWinrate(),
             bestPlacement: placementCollection.bestPlacement(),
-            bestPlacementCompetitions: placementCollection.bestPlacementCompetition(),
+            bestPlacementCompetitions:
+                placementCollection.bestPlacementCompetition(),
             winTieLoss: matchCollection.wtl(),
             debutMatch: matchCollection.earliestMatch(),
             matchCount: matchCollection.amountMatches(),

@@ -6,7 +6,11 @@
             class="flex flex-col dark:bg-black/70 bg-white/60"
         >
             <div class="top-grid">
-                <img :src="match.playerOneAvatar" height="128" class="left-pb" />
+                <img
+                    :src="match.playerOneAvatar"
+                    height="128"
+                    class="left-pb"
+                />
                 <div class="flex flex-col gap-4 left-player">
                     <div class="text-4xl font-bold mt-2">
                         {{ match.playerOne }}
@@ -65,7 +69,11 @@
                         />
                     </div>
                 </div>
-                <img :src="match.playerTwoAvatar" height="128" class="right-pb" />
+                <img
+                    :src="match.playerTwoAvatar"
+                    height="128"
+                    class="right-pb"
+                />
             </div>
             <div class="flex flex-col lg:flex-row">
                 <div
@@ -105,18 +113,17 @@
     grid-template-columns: 128px 1fr 128px;
     column-gap: 1rem;
     grid-template-rows: auto auto auto;
-    grid-template-areas: 
+    grid-template-areas:
         "leftPB leftPlayer leftPlayer"
         "time time time"
-        "rightPlayer rightPlayer rightPB"
-    ;
+        "rightPlayer rightPlayer rightPB";
+}
 
-    @media (min-width: 1024px) {
+@media (min-width: 1024px) {
+    .top-grid {
         grid-template-columns: 128px 1fr auto 1fr 128px;
         grid-template-rows: auto;
-        grid-template-areas:
-            "leftPB leftPlayer time rightPlayer rightPB"
-        ;
+        grid-template-areas: "leftPB leftPlayer time rightPlayer rightPB";
     }
 }
 

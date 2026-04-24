@@ -13,7 +13,12 @@ type ExtendedMatch = IMatch & {
 
 type ExtendedStatistics = IPlayerStatistics & {
     debutMatch: ExtendedMatch | null;
-    mapPBs: { match: ExtendedMatch | null; map: number; placement: number; total: number; }[];
+    mapPBs: {
+        match: ExtendedMatch | null;
+        map: number;
+        placement: number;
+        total: number;
+    }[];
 };
 
 export default defineEventHandler<StatisticsReponse>(async (event) => {
@@ -73,10 +78,13 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
 
     for (let mapIdx = 0; mapIdx < statistics.mapPBs.length; mapIdx++) {
         const pb = statistics.mapPBs[mapIdx];
-        const mapPBs = await LeaderboardController.getEntries("Personal best on map", mapIdx) as LeaderboardPlayerEntry[];
+        const mapPBs = (await LeaderboardController.getEntries(
+            "Personal best on map",
+            mapIdx,
+        )) as LeaderboardPlayerEntry[];
         const playerIndex = mapPBs.findIndex((p) => p.player === player.uuid);
         if (playerIndex < 0) {
-            pb.placement = -1
+            pb.placement = -1;
         } else {
             pb.placement = playerIndex + 1;
         }

@@ -12,7 +12,12 @@ export default defineEventHandler<Promise<Record<string, string>>>(
         let rawPlayers: IPlayer[];
         if (query.players !== undefined) {
             if (Array.isArray(query.players)) {
-                const validUuids = query.players.filter((player) => validate(player));
+                const validUuids = query.players.filter((player) =>
+                    validate(player),
+                );
+                if (validUuids.length === 0) {
+                    return {};
+                }
                 rawPlayers = await Player.find({
                     where: { uuid: In(validUuids) },
                     select: ["uuid", "primaryName"],
