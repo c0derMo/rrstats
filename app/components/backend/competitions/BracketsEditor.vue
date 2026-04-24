@@ -92,9 +92,13 @@ function deserializeJSON() {
     }
     currentBracketRoundsText.value = JSON.stringify(
         currentBracket.value.rounds,
+        null,
+        2,
     );
     currentBracketForfeitsText.value = JSON.stringify(
         currentBracket.value.forfeits,
+        null,
+        2,
     );
 }
 
@@ -165,9 +169,11 @@ function mapPlayers(cb: (player: string) => string) {
 
 function namesToUUIDs() {
     mapPlayers((player) => playerNames.getUUID(player, player));
+    deserializeJSON();
 }
 
 function uuidsToNames() {
     mapPlayers((player) => playerNames.get(player, player));
+    deserializeJSON();
 }
 </script>
