@@ -1,4 +1,5 @@
 import { In } from "typeorm";
+import { validate } from "uuid";
 import { Player } from "~~/server/model/Player";
 
 export default defineEventHandler<Promise<Record<string, string>>>(
@@ -11,11 +12,15 @@ export default defineEventHandler<Promise<Record<string, string>>>(
         let rawPlayers: IPlayer[];
         if (query.players !== undefined) {
             if (Array.isArray(query.players)) {
+                const validUuids = query.players.filter((player) => validate(player));
                 rawPlayers = await Player.find({
-                    where: { uuid: In(query.players) },
+                    where: { uuid: In(validUuids) },
                     select: ["uuid", "primaryName"],
                 });
             } else {
+                if (!validate(query.players)) {
+                    return {};
+                }
                 rawPlayers = await Player.find({
                     where: { uuid: query.players },
                     select: ["uuid", "primaryName"],
