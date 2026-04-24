@@ -46,7 +46,7 @@
                                 :style="getMapBackground(ban.map)"
                             >
                                 <div
-                                    class="w-full h-full flex flex-row items-center gap-1 bg-black/70 p-2"
+                                    class="w-full h-full flex flex-row items-center gap-1 dark:bg-black/70 bg-white/60 p-2"
                                 >
                                     <FontAwesomeIcon
                                         :icon="['fas', 'ban']"
@@ -65,7 +65,7 @@
                                 :style="getMapBackground(ban.map)"
                             >
                                 <div
-                                    class="w-full h-full flex flex-row justify-end items-center gap-1 bg-black/70 p-2"
+                                    class="w-full h-full flex flex-row justify-end items-center gap-1 dark:bg-black/70 bg-white/60 p-2"
                                 >
                                     <MapTag :map="getMap(ban.map)!" full-name />
                                     <FontAwesomeIcon
