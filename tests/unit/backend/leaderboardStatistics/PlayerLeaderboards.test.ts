@@ -597,6 +597,37 @@ describe("Player Leaderboards", () => {
         });
     });
 
+    test("Personal best on map - Colorado", async () => {
+        const players = await LeaderboardController.getEntries(
+            "Personal best on map",
+            HitmanMap.COLORADO,
+        );
+
+        expect(players.length).toBe(117);
+
+        expect(players[0]).toEqual({
+            player: playerNamesToUUIDs["Nezuko Chan"],
+            displayScore: "05:31",
+            sortingScore: 331,
+        });
+        expect(players[1]).toEqual({
+            player: playerNamesToUUIDs["quatilyti"],
+            displayScore: "05:43",
+            sortingScore: 343,
+        });
+        expect(players[2]).toEqual({
+            player: playerNamesToUUIDs["Phanium"],
+            displayScore: "05:45",
+            sortingScore: 345,
+        });
+
+        expect(players[116]).toEqual({
+            player: playerNamesToUUIDs["Beanstalkr"],
+            displayScore: "01:00:00",
+            sortingScore: 3600,
+        });
+    });
+
     test("Sweeps", async () => {
         const players = await LeaderboardController.getEntries("Sweeps");
 
@@ -825,4 +856,7 @@ const playerNamesToUUIDs: Record<string, string> = {
     Crewdy: "531b0d9a-428b-4fc3-bd7b-df2bf11adb54",
     JoeTheBabyGrabber: "a613c63f-8d97-48b7-88a0-b5249ffb7244",
     "Agent SSR": "1a4e8e9b-cfca-428a-9867-72fa916c97a0",
+    "Nezuko Chan": "5d4b6a9e-3535-4e5b-a945-d18bfab91c1b",
+    quatilyti: "19443c78-a672-4800-9753-72d1b7fae537",
+    Beanstalkr: "b4475dc5-d3ca-473c-adec-220c354c2b64",
 };

@@ -45,6 +45,7 @@ import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
 import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
 import { isReady } from "../readyListener";
 import { Achievement } from "../model/Achievement";
+import { PlayerMapPBTime } from "./leaderboardStatistics/player/MapPBTime";
 
 interface GenericLeaderboardStatistic<
     T extends string,
@@ -121,6 +122,7 @@ export default class LeaderboardController {
         new PlayerReverseSweeps(),
         new PlayerSpecificMapPlayed(),
         new PlayerSpecificMapWinrate(),
+        new PlayerMapPBTime(),
         new PlayerElo(),
         new PlayerAchievements(),
         new PlayerMatchesCasted(),

@@ -54,7 +54,7 @@
                             :style="getMapBackground(map.map)"
                         >
                             <div
-                                class="flex flex-row items-center gap-1 bg-black/70 p-2"
+                                class="flex flex-row items-center gap-1 dark:bg-black/70 bg-white/60 p-2"
                             >
                                 <template
                                     v-if="
@@ -91,7 +91,7 @@
                             </div>
 
                             <div
-                                class="flex flex-row justify-center items-center gap-5 bg-black/70 py-2"
+                                class="flex flex-row justify-center items-center gap-5 dark:bg-black/70 bg-white/60 py-2"
                             >
                                 <div
                                     v-if="
@@ -130,7 +130,7 @@
                             </div>
 
                             <div
-                                class="flex flex-row items-center justify-end gap-1 bg-black/70 p-2"
+                                class="flex flex-row items-center justify-end gap-1 dark:bg-black/70 bg-white/60 p-2"
                             >
                                 <template
                                     v-if="

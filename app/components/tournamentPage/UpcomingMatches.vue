@@ -3,11 +3,15 @@
         <div
             v-for="(match, idx) in displayedMatches"
             :key="idx"
-            class="flex flex-col bg-black/70"
+            class="flex flex-col dark:bg-black/70 bg-white/60"
         >
             <div class="top-grid">
-                <img :src="match.playerOneAvatar" height="128" />
-                <div class="flex flex-col gap-4">
+                <img
+                    :src="match.playerOneAvatar"
+                    height="128"
+                    class="left-pb"
+                />
+                <div class="flex flex-col gap-4 left-player">
                     <div class="text-4xl font-bold mt-2">
                         {{ match.playerOne }}
                     </div>
@@ -27,7 +31,7 @@
                         />
                     </div>
                 </div>
-                <div class="flex-grow text-center flex flex-col">
+                <div class="flex-grow text-center flex flex-col time">
                     <div class="text-xl font-bold mt-2">
                         {{
                             DateTime.fromISO(match.datetime).toLocaleString(
@@ -45,7 +49,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="flex flex-col gap-4 text-right">
+                <div class="flex flex-col gap-4 text-right right-player">
                     <div class="text-4xl font-bold mt-2">
                         {{ match.playerTwo }}
                     </div>
@@ -65,17 +69,21 @@
                         />
                     </div>
                 </div>
-                <img :src="match.playerTwoAvatar" height="128" />
+                <img
+                    :src="match.playerTwoAvatar"
+                    height="128"
+                    class="right-pb"
+                />
             </div>
-            <div class="flex flex-row">
+            <div class="flex flex-col lg:flex-row">
                 <div
                     v-for="(map, mapIdx) in match.maps"
                     :key="mapIdx"
-                    class="h-36 flex-grow bg-cover bg-center"
+                    class="h-fit lg:h-36 flex-grow bg-cover bg-center"
                     :style="getMapBackground(map.map)"
                 >
                     <div
-                        class="bg-black/50 flex flex-col h-full p-4 items-center gap-1"
+                        class="dark:bg-black/50 bg-white/60 flex flex-col h-full p-2 lg:p-4 items-center gap-1"
                     >
                         <MapTag
                             :map="getMap(map.map)!"
@@ -102,8 +110,37 @@
 <style scoped>
 .top-grid {
     display: grid;
-    grid-template-columns: 128px 32rem 1fr 32rem 128px;
+    grid-template-columns: 128px 1fr 128px;
     column-gap: 1rem;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+        "leftPB leftPlayer leftPlayer"
+        "time time time"
+        "rightPlayer rightPlayer rightPB";
+}
+
+@media (min-width: 1024px) {
+    .top-grid {
+        grid-template-columns: 128px 1fr auto 1fr 128px;
+        grid-template-rows: auto;
+        grid-template-areas: "leftPB leftPlayer time rightPlayer rightPB";
+    }
+}
+
+.left-pb {
+    grid-area: leftPB;
+}
+.left-player {
+    grid-area: leftPlayer;
+}
+.time {
+    grid-area: time;
+}
+.right-player {
+    grid-area: rightPlayer;
+}
+.right-pb {
+    grid-area: rightPB;
 }
 </style>
 

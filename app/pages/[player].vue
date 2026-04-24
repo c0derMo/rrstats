@@ -35,7 +35,18 @@
                                 {{ player?.primaryName ?? route.params.player }}
                             </h1>
                             <h3 class="mt-1">
-                                {{ accolade }}
+                                <TooltipComponent
+                                    v-if="accoladeDescription != null"
+                                >
+                                    {{ accolade }}
+
+                                    <template #tooltip>
+                                        {{ accoladeDescription }}
+                                    </template>
+                                </TooltipComponent>
+                                <template v-else>
+                                    {{ accolade }}
+                                </template>
 
                                 <FontAwesomeIcon
                                     v-if="canEditAccolade"
@@ -267,6 +278,23 @@ const canEditAccolade = ref(
         player.value?.discordId != null) ||
         props.user?.permissions.includes(IPermission.EDIT_PLAYERS),
 );
+
+const accoladeDescription = computed<string | null>(() => {
+    const achievement = achievements.value.find(
+        (ach) => ach.name === accolade.value,
+    );
+    if (achievement == null) {
+        return null;
+    }
+    const lastAchievedStage = achievement.achievedAt.findLastIndex(
+        (achievedAt) => achievedAt > 0,
+    );
+    if (lastAchievedStage < 0) {
+        return achievement.description[0];
+    } else {
+        return achievement.description[lastAchievedStage];
+    }
+});
 
 const wtl = computed(() => {
     return `${statistics.value.winTieLoss.w}-${statistics.value.winTieLoss.t}-${statistics.value.winTieLoss.l}`;

@@ -29,7 +29,9 @@ export class BracketAndAccoladeAddition1776851396630 implements MigrationInterfa
                 isNullable: true,
             }),
         );
-        await queryRunner.query(`UPDATE player SET accolade = defaultAccolade`);
+        await queryRunner.query(
+            `UPDATE player SET accolade = player."defaultAccolade"`,
+        );
         await queryRunner.changeColumn(
             "player",
             "accolade",

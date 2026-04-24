@@ -5,6 +5,7 @@ import type {
 
 type CacheKey =
     | "bestPlacement"
+    | "bestPlacementCompetitions"
     | "amountCompetitions"
     | "amountWins"
     | "averagePlacement";
@@ -30,23 +31,64 @@ export default class PlacementCollection {
         return this.cache.get(key) as T;
     }
 
+    private calculateBestPlacements() {
+        const officialPlacements = this.placements
+            .filter((placement) =>
+                isPlacementOfOfficialCompetition(placement, this.competitions),
+            )
+            .filter(isNumericPlacement);
+
+        if (officialPlacements.length <= 0) {
+            this.cache.set("bestPlacement", undefined);
+            this.cache.set("bestPlacementCompetitions", []);
+            return;
+        }
+
+        const topPlacements = officialPlacements
+            .map((placement) => {
+                return {
+                    placement: placement.placement as number,
+                    competitions: new Set([placement.competition]),
+                };
+            })
+            .reduce(
+                (prev, cur) => {
+                    if (prev.placement < cur.placement) {
+                        return prev;
+                    } else if (cur.placement < prev.placement) {
+                        return cur;
+                    } else {
+                        return {
+                            placement: prev.placement,
+                            competitions: new Set([
+                                ...prev.competitions,
+                                ...cur.competitions,
+                            ]),
+                        };
+                    }
+                },
+                { placement: Number.MAX_SAFE_INTEGER, competitions: new Set() },
+            );
+
+        this.cache.set("bestPlacement", topPlacements.placement);
+        this.cache.set("bestPlacementCompetitions", [
+            ...topPlacements.competitions.values(),
+        ]);
+    }
+
     bestPlacement(): number | undefined {
         return this.getCachedOrCalculate("bestPlacement", () => {
-            const officialPlacements = this.placements
-                .filter((placement) =>
-                    isPlacementOfOfficialCompetition(
-                        placement,
-                        this.competitions,
-                    ),
-                )
-                .filter(isNumericPlacement);
+            this.calculateBestPlacements();
+            return (this.cache.get("bestPlacement") as number) ?? undefined;
+        });
+    }
 
-            if (officialPlacements.length <= 0) return undefined;
-            return officialPlacements
-                .map((placement) => placement.placement!)
-                .reduce((prev, cur) => {
-                    return Math.min(prev, cur);
-                }, Number.MAX_SAFE_INTEGER);
+    bestPlacementCompetition(): string[] {
+        return this.getCachedOrCalculate("bestPlacementCompetitions", () => {
+            this.calculateBestPlacements();
+            return (
+                (this.cache.get("bestPlacementCompetitions") as string[]) ?? []
+            );
         });
     }
 

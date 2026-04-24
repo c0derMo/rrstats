@@ -33,7 +33,7 @@ describe("LeaderboardController", () => {
 
         expect(categories.country.length).toBe(5);
         expect(categories.map.length).toBe(5);
-        expect(categories.player.length).toBe(24);
+        expect(categories.player.length).toBe(25);
 
         expect(categories.country.map((c) => c.name)).toEqual([
             "Players per country",
@@ -71,6 +71,7 @@ describe("LeaderboardController", () => {
             "Reverse sweeps",
             "Spins played on specific map",
             "Winrate on specific map",
+            "Personal best on map",
             "Elo rating",
             "Achievements",
             "Matches casted",
