@@ -19,6 +19,7 @@ export type IPlayerStatistics = {
     winrate: number;
     mapWinrate: number;
     bestPlacement: number | undefined;
+    bestPlacementCompetitions: string[];
     winTieLoss: {
         w: number;
         t: number;
@@ -47,6 +48,7 @@ export function emptyStatistics(): IPlayerStatistics {
         winrate: 0,
         mapWinrate: 0,
         bestPlacement: undefined,
+        bestPlacementCompetitions: [],
         winTieLoss: {
             w: 0,
             t: 0,
