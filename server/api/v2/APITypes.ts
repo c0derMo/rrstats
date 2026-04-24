@@ -1,5 +1,7 @@
 export type AccoladeResponse = Promise<string>;
 
+export type EloResponse = Promise<{ discordId: string; elo: number; }[]>;
+
 export type MapResponse = Promise<{
     map: string;
     time: number;
@@ -13,6 +15,7 @@ export type StatisticsReponse = Promise<{
     winrate: number;
     mapWinrate: number;
     bestPlacement: number | undefined;
+    bestPlacementCompetitions: string[];
     winTieLoss: {
         w: number;
         t: number;
@@ -29,7 +32,7 @@ export type StatisticsReponse = Promise<{
     mapsWon: number[];
     mapsBanned: number[];
     perMapWinrate: number[];
-    mapPBs: { match: FrozenExtendedMatch | null; map: number }[];
+    mapPBs: { match: FrozenExtendedMatch | null; map: number; placement: number; total: number; }[];
 }>;
 
 type FrozenExtendedMatch = {
