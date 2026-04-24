@@ -129,15 +129,17 @@ export class DatabaseInitialization1577833200000 implements MigrationInterface {
                 matchUuid VARCHAR
             );  
         `);
-        await queryRunner.createForeignKey(
-            "played_map",
-            new TableForeignKey({
-                columnNames: ["matchUuid"],
-                referencedTableName: "match",
-                referencedColumnNames: ["uuid"],
-            }),
-        );
         const playedMapTable = (await queryRunner.getTable("played_map"))!;
+        if (playedMapTable.foreignKeys.find((key) => key.columnNames[0] === "matchUuid") == null) {
+            await queryRunner.createForeignKey(
+                "played_map",
+                new TableForeignKey({
+                    columnNames: ["matchUuid"],
+                    referencedTableName: "match",
+                    referencedColumnNames: ["uuid"],
+                }),
+            );
+        }
         if (
             playedMapTable.indices.find(
                 (index) => index.columnNames[0] === "map",
@@ -193,7 +195,7 @@ export class DatabaseInitialization1577833200000 implements MigrationInterface {
         }
 
         await queryRunner.query(`
-            CREATE TABLE IF NOT EXISTS main.user
+            CREATE TABLE IF NOT EXISTS "user"
             (
                 authorizationKey TEXT    NOT NULL
                     PRIMARY KEY,
