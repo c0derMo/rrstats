@@ -37,6 +37,7 @@ test.describe("Leaderboards Page", () => {
             tabs.getByText("Spins played on specific map"),
         ).toBeVisible();
         await expect(tabs.getByText("Winrate on specific map")).toBeVisible();
+        await expect(tabs.getByText("Personal best on map")).toBeVisible();
         await expect(tabs.getByText("Elo rating")).toBeVisible();
         await expect(tabs.getByText("Matches casted")).toBeVisible();
 

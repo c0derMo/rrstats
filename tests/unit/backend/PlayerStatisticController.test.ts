@@ -34,6 +34,7 @@ describe("PlayerStatisticController", () => {
         expect.soft(stats.winrate).toBe(0.7782258064516129);
         expect.soft(stats.mapWinrate).toBe(0.6801801801801802);
         expect.soft(stats.bestPlacement).toBe(1);
+        expect.soft(stats.bestPlacementCompetitions).toEqual(["RR13", "RRWC"]);
         expect.soft(stats.winTieLoss).toEqual({ w: 96, t: 1, l: 27 });
         expect
             .soft(stats.debutMatch!.uuid)
