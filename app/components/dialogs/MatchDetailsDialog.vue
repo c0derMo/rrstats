@@ -108,7 +108,7 @@
                         :style="getMapBackground(map.map)"
                     >
                         <div
-                            class="grid grid-cols-3 px-4 py-4 bg-black/70 rounded-md"
+                            class="grid grid-cols-3 px-4 py-4 dark:bg-black/70 bg-white/60 rounded-md"
                         >
                             <div>
                                 <MapTag :map="getMap(map.map)!" full-name />
