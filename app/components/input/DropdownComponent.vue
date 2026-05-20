@@ -13,24 +13,26 @@
             class="w-full"
             @click="showDropdown = !showDropdown"
         >
-            <div class="text-nowrap flex flex-nowrap min-h-6">
-                <span class="flex-grow">
-                    {{
-                        buttonText ??
-                        (convertedItems.find((i) => i.value === modelValue)
-                            ?.text ||
-                            modelValue)
-                    }}
-                </span>
-                <FontAwesomeIcon
-                    v-if="buttonText === null"
-                    :icon="['fas', 'chevron-down']"
-                    :class="{
-                        'rotate-180': showDropdown,
-                    }"
-                    class="transition float-right ml-2 mt-1"
-                />
-            </div>
+            <slot name="button-content">
+                <div class="text-nowrap flex flex-nowrap min-h-6">
+                    <span class="flex-grow">
+                        {{
+                            buttonText ??
+                            (convertedItems.find((i) => i.value === modelValue)
+                                ?.text ||
+                                modelValue)
+                        }}
+                    </span>
+                    <FontAwesomeIcon
+                        v-if="buttonText === null"
+                        :icon="['fas', 'chevron-down']"
+                        :class="{
+                            'rotate-180': showDropdown,
+                        }"
+                        class="transition float-right ml-2 mt-1"
+                    />
+                </div>
+            </slot>
         </ButtonComponent>
         <ClientOnly>
             <div class="relative">
@@ -41,6 +43,7 @@
                         'scale-y-100 opacity-100': showDropdown,
                         'origin-top': !shouldDropUp,
                         'origin-bottom': shouldDropUp,
+                        'right-0': alignRight,
                     }"
                     :style="shouldDropUp ? dropupHeight : dropdownHeight"
                 >
@@ -73,11 +76,13 @@ const props = withDefaults(
         modelValue?: number | string;
         buttonText?: string | null;
         buttonClass?: string;
+        alignRight?: boolean;
     }>(),
     {
         modelValue: undefined,
         buttonText: null,
         buttonClass: "",
+        alignRight: false,
     },
 );
 defineEmits<{

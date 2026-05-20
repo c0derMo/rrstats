@@ -36,6 +36,7 @@
                 <template #[`Matches`]>
                     <IndefiniteProgressBar v-if="stillLoading" />
                     <DataTableComponent
+                        v-if="localSettings.initialized()"
                         :headers="headers"
                         :rows="sortedMatches"
                         :enable-sorting="false"
@@ -43,12 +44,26 @@
                         :selected-rows-per-page="25"
                     >
                         <template #header-actions>
-                            <ButtonComponent @click="showDownload = true">
-                                <FontAwesomeIcon
-                                    :icon="['fas', 'download']"
-                                    size="xs"
-                                />
-                            </ButtonComponent>
+                            <div class="flex flex-row">
+                                <DropdownComponent
+                                    v-model="localSettings.spoilerMode.value"
+                                    :items="spoilerOptions"
+                                    align-right
+                                >
+                                    <template #button-content>
+                                        <FontAwesomeIcon
+                                            :icon="['fas', 'eye-low-vision']"
+                                            size="xs"
+                                        />
+                                    </template>
+                                </DropdownComponent>
+                                <ButtonComponent @click="showDownload = true">
+                                    <FontAwesomeIcon
+                                        :icon="['fas', 'download']"
+                                        size="xs"
+                                    />
+                                </ButtonComponent>
+                            </div>
                         </template>
 
                         <template #timestamp="{ value }">
@@ -64,10 +79,17 @@
                         </template>
 
                         <template #score="{ row }">
-                            <span class="whitespace-nowrap">
+                            <span
+                                v-if="shouldShowMatch(row)"
+                                class="whitespace-nowrap"
+                            >
                                 {{ row.playerOneScore }} -
                                 {{ row.playerTwoScore }}
                             </span>
+                            <FontAwesomeIcon
+                                v-else
+                                :icon="['fas', 'eye-slash']"
+                            />
                         </template>
 
                         <template #playerTwo="{ value }">
@@ -102,7 +124,10 @@
                                 row: IMatch;
                             }"
                         >
-                            <div class="flex flex-wrap">
+                            <div
+                                v-if="shouldShowMatch(row)"
+                                class="flex flex-wrap"
+                            >
                                 <MatchMapsTooltip
                                     :maps="value"
                                     :players="[row.playerOne, row.playerTwo]"
@@ -118,6 +143,10 @@
                                     />
                                 </MatchMapsTooltip>
                             </div>
+                            <FontAwesomeIcon
+                                v-else
+                                :icon="['fas', 'eye-slash']"
+                            />
                         </template>
 
                         <template
@@ -203,6 +232,7 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ld from "lodash";
 import { DateTime } from "luxon";
+import { localSettings, SpoilerSettings } from "~/composables/localSettings";
 
 definePageMeta({
     key: (route) => route.fullPath,
@@ -306,4 +336,31 @@ onMounted(async () => {
         stillLoading.value = false;
     }
 });
+
+const spoilerOptions = [
+    { text: "Show all", value: SpoilerSettings.SHOW_ALL },
+    { text: "Hide last day", value: SpoilerSettings.HIDE_LAST_DAY },
+    { text: "Hide last week", value: SpoilerSettings.HIDE_LAST_WEEK },
+    { text: "Hide all", value: SpoilerSettings.HIDE_ALL },
+];
+
+function shouldShowMatch(match: IMatch) {
+    const ts = DateTime.fromMillis(match.timestamp);
+    if (
+        localSettings.spoilerMode.value === SpoilerSettings.HIDE_LAST_DAY &&
+        ts.diffNow().as("hours") > -24
+    ) {
+        return false;
+    }
+    if (
+        localSettings.spoilerMode.value === SpoilerSettings.HIDE_LAST_WEEK &&
+        ts.diffNow().as("days") > -7
+    ) {
+        return false;
+    }
+    if (localSettings.spoilerMode.value === SpoilerSettings.HIDE_ALL) {
+        return false;
+    }
+    return true;
+}
 </script>

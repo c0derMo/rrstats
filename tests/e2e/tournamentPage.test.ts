@@ -245,4 +245,180 @@ test.describe("Tournament Page", () => {
             1,
         );
     });
+
+    test("Spoiler settings working properly", async ({ page }) => {
+        await page.goto("/");
+        await page.evaluate(() => localStorage.setItem("consent", "consented"));
+        await page.clock.setFixedTime(1733763600000);
+        await page.goto("/tournament/RRWC2024");
+
+        const matchesTable = page.locator("table.min-w-full");
+
+        // Default: hide last day
+        await expectTableRow(matchesTable.locator("tbody").first(), [
+            "Dec 8, 2024, 7:00 PM",
+            "Grand Final",
+            "Scruffy",
+            "",
+            "Music Inc",
+            ["MUM", "PAR", "MEN", "BKK"],
+            "",
+            "In4Fun, Joats, Cabben, DeadlyMuffin_Man, CurryMaker, OhShitMan",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(1), [
+            "Dec 7, 2024, 7:00 PM",
+            "3rd Place Playoff",
+            "In4Fun",
+            "4 - 8",
+            "The Rieper 47",
+            ["BER", "DAR"],
+            ["DUB", "SAP", "CHO", "COL", "HOK", "AMB"],
+            "Cabben, DeadlyMuffin_Man",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(2), [
+            "Dec 2, 2024, 8:00 PM",
+            "Semi-Finals",
+            "In4Fun",
+            "6 - 12",
+            "Scruffy",
+            ["MAR", "HAV", "NY", "PAR"],
+            ["MEN", "CHO", "WC", "BER", "BKK", "HOK", "COL", "SAP", "DUB"],
+            "Moo, ChrisX3",
+        ]);
+
+        // Hide last week
+        await page.locator(".fa-eye-low-vision").click();
+        await page.getByText("Hide last week").click();
+        await expectTableRow(matchesTable.locator("tbody").first(), [
+            "Dec 8, 2024, 7:00 PM",
+            "Grand Final",
+            "Scruffy",
+            "",
+            "Music Inc",
+            ["MUM", "PAR", "MEN", "BKK"],
+            "",
+            "In4Fun, Joats, Cabben, DeadlyMuffin_Man, CurryMaker, OhShitMan",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(1), [
+            "Dec 7, 2024, 7:00 PM",
+            "3rd Place Playoff",
+            "In4Fun",
+            "",
+            "The Rieper 47",
+            ["BER", "DAR"],
+            "",
+            "Cabben, DeadlyMuffin_Man",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(3), [
+            "Dec 1, 2024, 8:00 PM",
+            "Semi-Finals",
+            "The Rieper 47",
+            "8 - 12",
+            "Music Inc",
+            ["DUB", "MUM", "CHO", "BKK"],
+            [
+                "SAP",
+                "NY",
+                "PAR",
+                "WC",
+                "MIA",
+                "COL",
+                "BER",
+                "SGA",
+                "HOK",
+                "HAV",
+            ],
+            "OhShitMan, Joats",
+        ]);
+
+        // Hide all
+        await page.locator(".fa-eye-low-vision").click();
+        await page.getByText("Hide all").click();
+        await expectTableRow(matchesTable.locator("tbody").first(), [
+            "Dec 8, 2024, 7:00 PM",
+            "Grand Final",
+            "Scruffy",
+            "",
+            "Music Inc",
+            ["MUM", "PAR", "MEN", "BKK"],
+            "",
+            "In4Fun, Joats, Cabben, DeadlyMuffin_Man, CurryMaker, OhShitMan",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(1), [
+            "Dec 7, 2024, 7:00 PM",
+            "3rd Place Playoff",
+            "In4Fun",
+            "",
+            "The Rieper 47",
+            ["BER", "DAR"],
+            "",
+            "Cabben, DeadlyMuffin_Man",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(3), [
+            "Dec 1, 2024, 8:00 PM",
+            "Semi-Finals",
+            "The Rieper 47",
+            "",
+            "Music Inc",
+            ["DUB", "MUM", "CHO", "BKK"],
+            "",
+            "OhShitMan, Joats",
+        ]);
+
+        // Show all
+        await page.locator(".fa-eye-low-vision").click();
+        await page.getByText("Show all").click();
+        await expectTableRow(matchesTable.locator("tbody").first(), [
+            "Dec 8, 2024, 7:00 PM",
+            "Grand Final",
+            "Scruffy",
+            "14 - 6",
+            "Music Inc",
+            ["MUM", "PAR", "MEN", "BKK"],
+            [
+                "NY",
+                "DUB",
+                "BER",
+                "SF",
+                "CHO",
+                "HAV",
+                "AMB",
+                "SGA",
+                "SAP",
+                "COL",
+            ],
+            "In4Fun, Joats, Cabben, DeadlyMuffin_Man, CurryMaker, OhShitMan",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(1), [
+            "Dec 7, 2024, 7:00 PM",
+            "3rd Place Playoff",
+            "In4Fun",
+            "",
+            "The Rieper 47",
+            ["BER", "DAR"],
+            [],
+            "Cabben, DeadlyMuffin_Man",
+        ]);
+        await expectTableRow(matchesTable.locator("tbody").nth(3), [
+            "Dec 1, 2024, 8:00 PM",
+            "Semi-Finals",
+            "The Rieper 47",
+            "8 - 12",
+            "Music Inc",
+            ["DUB", "MUM", "CHO", "BKK"],
+            [
+                "SAP",
+                "NY",
+                "PAR",
+                "WC",
+                "MIA",
+                "COL",
+                "BER",
+                "SGA",
+                "HOK",
+                "HAV",
+            ],
+            "OhShitMan, Joats",
+        ]);
+    });
 });

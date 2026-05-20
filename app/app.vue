@@ -64,7 +64,7 @@
                         />
                         <SwitchComponent
                             id="light-dark"
-                            v-model="lightDarkSwitch"
+                            v-model="localSettings.darkMode.value"
                         />
                         <FontAwesomeIcon
                             :icon="['fas', 'moon']"
@@ -81,11 +81,9 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { localSettings } from "./composables/localSettings";
 
-const isDarkMode = ref(true);
-const lightDarkSwitch = ref(true);
 const showForm = ref(false);
-const initialized = ref(false);
 const route = useRoute();
 
 const { data: user } = useFetch("/api/auth/user", {
@@ -93,45 +91,18 @@ const { data: user } = useFetch("/api/auth/user", {
 });
 
 const actualIsDarkMode = computed(() => {
-    return isDarkMode.value && route.fullPath != "/MrMike";
+    return localSettings.darkMode.value && route.fullPath != "/MrMike";
 });
 
 onMounted(() => {
-    isDarkMode.value =
-        window.localStorage.getItem("theme") === "dark" ||
-        (window.localStorage.getItem("theme") === null &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches);
-    lightDarkSwitch.value = isDarkMode.value;
-    nextTick(() => {
-        initialized.value = true;
+    localSettings.read();
+    localSettings.registerConsentRequester(() => {
+        showForm.value = true;
     });
 });
 
-watch(isDarkMode, () => {
-    if (!initialized.value) {
-        return;
-    }
-    window.localStorage.setItem("theme", isDarkMode.value ? "dark" : "light");
-});
-
-watch(lightDarkSwitch, (newValue, oldValue) => {
-    if (showForm.value || !initialized.value) {
-        return;
-    }
-    if (window.localStorage.getItem("consent") === null) {
-        showForm.value = true;
-        nextTick(() => {
-            lightDarkSwitch.value = oldValue;
-        });
-    } else {
-        isDarkMode.value = newValue;
-    }
-});
-
 function consentToLocalStorage() {
-    window.localStorage.setItem("consent", "consented");
+    localSettings.setConsent(true);
     showForm.value = false;
 }
-
-provide("lightDarkSwitch", lightDarkSwitch);
 </script>
