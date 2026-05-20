@@ -39,7 +39,7 @@ export default defineEventHandler<Promise<IMatch[] | IMatch | null>>(
             const matches = await Match.find({
                 where: { competition: query.tournament },
                 select: selectedFields,
-                order: { timestamp: "DESC" },
+                order: { timestamp: "DESC", uuid: "DESC" },
             });
             return matches;
         } else if (query.player != null) {

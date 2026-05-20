@@ -16,7 +16,7 @@ export default defineEventHandler<Promise<IMatch[]>>(async (event) => {
     }
 
     const matches = await Match.find({
-        order: { timestamp: "DESC" },
+        order: { timestamp: "DESC", uuid: "DESC" },
     });
 
     return matches;
