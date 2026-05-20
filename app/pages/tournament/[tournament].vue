@@ -232,7 +232,7 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ld from "lodash";
 import { DateTime } from "luxon";
-import { localSettings } from "~/composables/localSettings";
+import { localSettings, SpoilerSettings } from "~/composables/localSettings";
 
 definePageMeta({
     key: (route) => route.fullPath,

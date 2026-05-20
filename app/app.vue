@@ -94,12 +94,11 @@ const actualIsDarkMode = computed(() => {
     return localSettings.darkMode.value && route.fullPath != "/MrMike";
 });
 
-localSettings.registerConsentRequester(() => {
-    showForm.value = true;
-});
-
 onMounted(() => {
     localSettings.read();
+    localSettings.registerConsentRequester(() => {
+        showForm.value = true;
+    });
 });
 
 function consentToLocalStorage() {

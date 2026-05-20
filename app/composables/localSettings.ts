@@ -33,7 +33,7 @@ class LocalSettings {
         });
     }
 
-    private writeOrRequestConsent(
+    private writeOrRequestConsent<T>(
         ref: Ref<T>,
         key: string,
         oldValue: T,
