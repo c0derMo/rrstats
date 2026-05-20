@@ -81,6 +81,7 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { settings } from "./composables/localSettings";
 
 const isDarkMode = ref(true);
 const lightDarkSwitch = ref(true);
@@ -96,40 +97,36 @@ const actualIsDarkMode = computed(() => {
     return isDarkMode.value && route.fullPath != "/MrMike";
 });
 
+settings.registerWriteCallback(() => {
+    showForm.value = true;
+});
+
 onMounted(() => {
-    isDarkMode.value =
-        window.localStorage.getItem("theme") === "dark" ||
-        (window.localStorage.getItem("theme") === null &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches);
+    settings.read();
+    isDarkMode.value = settings.darkMode;
     lightDarkSwitch.value = isDarkMode.value;
     nextTick(() => {
         initialized.value = true;
     });
 });
 
-watch(isDarkMode, () => {
-    if (!initialized.value) {
-        return;
-    }
-    window.localStorage.setItem("theme", isDarkMode.value ? "dark" : "light");
-});
-
 watch(lightDarkSwitch, (newValue, oldValue) => {
     if (showForm.value || !initialized.value) {
         return;
     }
-    if (window.localStorage.getItem("consent") === null) {
-        showForm.value = true;
+    if (settings.hasConsented()) {
+        settings.darkMode = newValue;
+        isDarkMode.value = newValue;
+    } else {
+        settings.requestConsent();
         nextTick(() => {
             lightDarkSwitch.value = oldValue;
         });
-    } else {
-        isDarkMode.value = newValue;
     }
 });
 
 function consentToLocalStorage() {
-    window.localStorage.setItem("consent", "consented");
+    settings.setConsent(true);
     showForm.value = false;
 }
 

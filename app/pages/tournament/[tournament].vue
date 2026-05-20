@@ -43,12 +43,26 @@
                         :selected-rows-per-page="25"
                     >
                         <template #header-actions>
-                            <ButtonComponent @click="showDownload = true">
-                                <FontAwesomeIcon
-                                    :icon="['fas', 'download']"
-                                    size="xs"
-                                />
-                            </ButtonComponent>
+                            <div class="flex flex-row">
+                                <DropdownComponent
+                                    v-model="spoilerMode"
+                                    :items="spoilerOptions"
+                                    align-right
+                                >
+                                    <template #button-content>
+                                        <FontAwesomeIcon
+                                            :icon="['fas', 'eye-low-vision']"
+                                            size="xs"
+                                        />
+                                    </template>
+                                </DropdownComponent>
+                                <ButtonComponent @click="showDownload = true">
+                                    <FontAwesomeIcon
+                                        :icon="['fas', 'download']"
+                                        size="xs"
+                                    />
+                                </ButtonComponent>
+                            </div>
                         </template>
 
                         <template #timestamp="{ value }">
@@ -64,10 +78,17 @@
                         </template>
 
                         <template #score="{ row }">
-                            <span class="whitespace-nowrap">
+                            <span
+                                v-if="shouldShowMatch(row)"
+                                class="whitespace-nowrap"
+                            >
                                 {{ row.playerOneScore }} -
                                 {{ row.playerTwoScore }}
                             </span>
+                            <FontAwesomeIcon
+                                v-else
+                                :icon="['fas', 'eye-slash']"
+                            />
                         </template>
 
                         <template #playerTwo="{ value }">
@@ -102,7 +123,10 @@
                                 row: IMatch;
                             }"
                         >
-                            <div class="flex flex-wrap">
+                            <div
+                                v-if="shouldShowMatch(row)"
+                                class="flex flex-wrap"
+                            >
                                 <MatchMapsTooltip
                                     :maps="value"
                                     :players="[row.playerOne, row.playerTwo]"
@@ -118,6 +142,10 @@
                                     />
                                 </MatchMapsTooltip>
                             </div>
+                            <FontAwesomeIcon
+                                v-else
+                                :icon="['fas', 'eye-slash']"
+                            />
                         </template>
 
                         <template
@@ -210,6 +238,8 @@ definePageMeta({
 
 const matchToShow: Ref<IMatch | null> = ref(null);
 const showDownload = ref(false);
+const spoilerMode = ref(settings.spoilerMode);
+const ignoreNextSpoilerChange = ref(false);
 const uM = "Upcoming matches";
 
 const headers = [
@@ -306,4 +336,48 @@ onMounted(async () => {
         stillLoading.value = false;
     }
 });
+
+const spoilerOptions = [
+    { text: "Show all", value: SpoilerSettings.SHOW_ALL },
+    { text: "Hide last day", value: SpoilerSettings.HIDE_LAST_DAY },
+    { text: "Hide last week", value: SpoilerSettings.HIDE_LAST_WEEK },
+    { text: "Hide all", value: SpoilerSettings.HIDE_ALL },
+];
+
+watch(spoilerMode, (newValue, oldValue) => {
+    if (ignoreNextSpoilerChange.value) {
+        ignoreNextSpoilerChange.value = false;
+        return;
+    }
+    console.log("Watcher triggered");
+    if (settings.hasConsented()) {
+        settings.spoilerMode = newValue;
+    } else {
+        settings.requestConsent();
+        ignoreNextSpoilerChange.value = true;
+        nextTick(() => {
+            spoilerMode.value = oldValue;
+        });
+    }
+});
+
+function shouldShowMatch(match: IMatch) {
+    const ts = DateTime.fromMillis(match.timestamp);
+    if (
+        spoilerMode.value === SpoilerSettings.HIDE_LAST_DAY &&
+        ts.diffNow().as("hours") > -24
+    ) {
+        return false;
+    }
+    if (
+        spoilerMode.value === SpoilerSettings.HIDE_LAST_WEEK &&
+        ts.diffNow().as("days") > -7
+    ) {
+        return false;
+    }
+    if (spoilerMode.value === SpoilerSettings.HIDE_ALL) {
+        return false;
+    }
+    return true;
+}
 </script>
