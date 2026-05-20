@@ -36,6 +36,7 @@
                 <template #[`Matches`]>
                     <IndefiniteProgressBar v-if="stillLoading" />
                     <DataTableComponent
+                        v-if="localSettings.initialized()"
                         :headers="headers"
                         :rows="sortedMatches"
                         :enable-sorting="false"
@@ -45,7 +46,7 @@
                         <template #header-actions>
                             <div class="flex flex-row">
                                 <DropdownComponent
-                                    v-model="spoilerMode"
+                                    v-model="localSettings.spoilerMode.value"
                                     :items="spoilerOptions"
                                     align-right
                                 >
@@ -231,6 +232,7 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ld from "lodash";
 import { DateTime } from "luxon";
+import { localSettings } from "~/composables/localSettings";
 
 definePageMeta({
     key: (route) => route.fullPath,
@@ -238,8 +240,6 @@ definePageMeta({
 
 const matchToShow: Ref<IMatch | null> = ref(null);
 const showDownload = ref(false);
-const spoilerMode = ref(settings.spoilerMode);
-const ignoreNextSpoilerChange = ref(false);
 const uM = "Upcoming matches";
 
 const headers = [
@@ -344,38 +344,21 @@ const spoilerOptions = [
     { text: "Hide all", value: SpoilerSettings.HIDE_ALL },
 ];
 
-watch(spoilerMode, (newValue, oldValue) => {
-    if (ignoreNextSpoilerChange.value) {
-        ignoreNextSpoilerChange.value = false;
-        return;
-    }
-    console.log("Watcher triggered");
-    if (settings.hasConsented()) {
-        settings.spoilerMode = newValue;
-    } else {
-        settings.requestConsent();
-        ignoreNextSpoilerChange.value = true;
-        nextTick(() => {
-            spoilerMode.value = oldValue;
-        });
-    }
-});
-
 function shouldShowMatch(match: IMatch) {
     const ts = DateTime.fromMillis(match.timestamp);
     if (
-        spoilerMode.value === SpoilerSettings.HIDE_LAST_DAY &&
+        localSettings.spoilerMode.value === SpoilerSettings.HIDE_LAST_DAY &&
         ts.diffNow().as("hours") > -24
     ) {
         return false;
     }
     if (
-        spoilerMode.value === SpoilerSettings.HIDE_LAST_WEEK &&
+        localSettings.spoilerMode.value === SpoilerSettings.HIDE_LAST_WEEK &&
         ts.diffNow().as("days") > -7
     ) {
         return false;
     }
-    if (spoilerMode.value === SpoilerSettings.HIDE_ALL) {
+    if (localSettings.spoilerMode.value === SpoilerSettings.HIDE_ALL) {
         return false;
     }
     return true;

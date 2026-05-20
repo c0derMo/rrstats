@@ -47,7 +47,7 @@
                     />
                     <SwitchComponent
                         id="light-dark"
-                        v-model="lightDarkSwitch"
+                        v-model="localSettings.darkMode.value"
                     />
                     <FontAwesomeIcon
                         :icon="['fas', 'moon']"
@@ -75,6 +75,8 @@
 </template>
 
 <script setup lang="ts">
+import { localSettings } from "~/composables/localSettings";
+
 definePageMeta({
     layout: false,
 });
@@ -88,7 +90,6 @@ const { data: numbers } = await useFetch("/api/onlyNumbers");
 
 const nextAlertId = ref(0);
 const alerts: Ref<{ text: string; type?: string; alertId: number }[]> = ref([]);
-const lightDarkSwitch = inject<Ref<boolean>>("lightDarkSwitch")!;
 
 if (props.user == null) {
     navigateTo("/api/auth/discord_login?to=/backend", { external: true });

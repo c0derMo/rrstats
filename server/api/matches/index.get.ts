@@ -49,7 +49,7 @@ export default defineEventHandler<Promise<IMatch[] | IMatch | null>>(
                     { playerTwo: query.player },
                 ],
                 select: selectedFields,
-                order: { timestamp: "DESC" },
+                order: { timestamp: "DESC", uuid: "DESC" },
             });
             return matches;
         } else if (query.players != null) {
@@ -59,7 +59,7 @@ export default defineEventHandler<Promise<IMatch[] | IMatch | null>>(
                     playerTwo: In(query.players),
                 },
                 select: selectedFields,
-                order: { timestamp: "DESC" },
+                order: { timestamp: "DESC", uuid: "DESC" },
             });
             return matches;
         } else {

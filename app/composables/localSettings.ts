@@ -6,9 +6,58 @@ export enum SpoilerSettings {
 }
 
 class LocalSettings {
-    private _darkMode = ref(true);
-    private _spoilerMode = ref(SpoilerSettings.HIDE_LAST_DAY);
-    private _listener = ref<(() => unknown)[]>([]);
+    readonly darkMode = ref(true);
+    readonly spoilerMode = ref(SpoilerSettings.HIDE_LAST_DAY);
+    private readonly consented = ref(false);
+    private isInitialized = ref(false);
+    private consentRequesters = ref<(() => unknown)[]>([]);
+    private currentlyPatching = ref<Set<string>>(new Set());
+
+    constructor() {
+        watch(this.darkMode, (newValue, oldValue) => {
+            this.writeOrRequestConsent(
+                this.darkMode,
+                "darkMode",
+                oldValue,
+                newValue,
+            );
+        });
+
+        watch(this.spoilerMode, (newValue, oldValue) => {
+            this.writeOrRequestConsent(
+                this.spoilerMode,
+                "spoilerMode",
+                oldValue,
+                newValue,
+            );
+        });
+    }
+
+    private writeOrRequestConsent(
+        ref: Ref<T>,
+        key: string,
+        oldValue: T,
+        newValue: T,
+    ) {
+        if (!this.isInitialized.value) {
+            return;
+        }
+        if (this.currentlyPatching.value.has(key)) {
+            this.currentlyPatching.value.delete(key);
+            return;
+        }
+
+        this.currentlyPatching.value.add(key);
+        if (this.hasConsented()) {
+            ref.value = newValue;
+            this.write();
+        } else {
+            this.requestConsent();
+            nextTick(() => {
+                ref.value = oldValue;
+            });
+        }
+    }
 
     private readValueOrDefaultAndTransform<T>(
         key: string,
@@ -37,23 +86,34 @@ class LocalSettings {
     }
 
     read() {
-        this._darkMode.value = this.readValueOrDefaultAndTransform(
+        this.consented.value =
+            window.localStorage.getItem("consent") === "consented";
+
+        this.darkMode.value = this.readValueOrDefaultAndTransform(
             "theme",
             window.matchMedia("(prefers-color-scheme: dark)").matches,
             (val) => val === "dark",
         );
-        this._spoilerMode.value = this.readValueOrDefault(
+        this.spoilerMode.value = this.readValueOrDefaultAndTransform(
             "spoiler",
             SpoilerSettings.HIDE_LAST_DAY,
+            (val) =>
+                Object.values(SpoilerSettings).includes(val as SpoilerSettings)
+                    ? val
+                    : SpoilerSettings.HIDE_LAST_DAY,
         ) as SpoilerSettings;
+
+        nextTick(() => {
+            this.isInitialized.value = true;
+        });
     }
 
     hasConsented() {
-        return window.localStorage.getItem("consent") === "consented";
+        return this.consented.value;
     }
 
     requestConsent() {
-        for (const cb of this._listener.value) {
+        for (const cb of this.consentRequesters.value) {
             cb();
         }
     }
@@ -66,12 +126,13 @@ class LocalSettings {
 
         window.localStorage.setItem(
             "theme",
-            this._darkMode.value ? "dark" : "light",
+            this.darkMode.value ? "dark" : "light",
         );
-        window.localStorage.setItem("spoiler", this._spoilerMode.value);
+        window.localStorage.setItem("spoiler", this.spoilerMode.value);
     }
 
     setConsent(val: boolean) {
+        this.consented.value = val;
         if (val) {
             window.localStorage.setItem("consent", "consented");
         } else {
@@ -79,35 +140,13 @@ class LocalSettings {
         }
     }
 
-    registerWriteCallback(callback: () => unknown) {
-        this._listener.value.push(callback);
+    registerConsentRequester(callback: () => unknown) {
+        this.consentRequesters.value.push(callback);
     }
 
-    get darkMode() {
-        return this._darkMode.value;
-    }
-
-    set darkMode(value: boolean) {
-        if (this.hasConsented()) {
-            this._darkMode.value = value;
-            this.write();
-        } else {
-            this.requestConsent();
-        }
-    }
-
-    get spoilerMode() {
-        return this._spoilerMode.value;
-    }
-
-    set spoilerMode(value: SpoilerSettings) {
-        if (this.hasConsented()) {
-            this._spoilerMode.value = value;
-            this.write();
-        } else {
-            this.requestConsent();
-        }
+    initialized(): boolean {
+        return this.isInitialized.value;
     }
 }
 
-export const settings = new LocalSettings();
+export const localSettings = new LocalSettings();

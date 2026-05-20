@@ -64,7 +64,7 @@
                         />
                         <SwitchComponent
                             id="light-dark"
-                            v-model="lightDarkSwitch"
+                            v-model="localSettings.darkMode.value"
                         />
                         <FontAwesomeIcon
                             :icon="['fas', 'moon']"
@@ -81,12 +81,9 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { settings } from "./composables/localSettings";
+import { localSettings } from "./composables/localSettings";
 
-const isDarkMode = ref(true);
-const lightDarkSwitch = ref(true);
 const showForm = ref(false);
-const initialized = ref(false);
 const route = useRoute();
 
 const { data: user } = useFetch("/api/auth/user", {
@@ -94,41 +91,19 @@ const { data: user } = useFetch("/api/auth/user", {
 });
 
 const actualIsDarkMode = computed(() => {
-    return isDarkMode.value && route.fullPath != "/MrMike";
+    return localSettings.darkMode.value && route.fullPath != "/MrMike";
 });
 
-settings.registerWriteCallback(() => {
+localSettings.registerConsentRequester(() => {
     showForm.value = true;
 });
 
 onMounted(() => {
-    settings.read();
-    isDarkMode.value = settings.darkMode;
-    lightDarkSwitch.value = isDarkMode.value;
-    nextTick(() => {
-        initialized.value = true;
-    });
-});
-
-watch(lightDarkSwitch, (newValue, oldValue) => {
-    if (showForm.value || !initialized.value) {
-        return;
-    }
-    if (settings.hasConsented()) {
-        settings.darkMode = newValue;
-        isDarkMode.value = newValue;
-    } else {
-        settings.requestConsent();
-        nextTick(() => {
-            lightDarkSwitch.value = oldValue;
-        });
-    }
+    localSettings.read();
 });
 
 function consentToLocalStorage() {
-    settings.setConsent(true);
+    localSettings.setConsent(true);
     showForm.value = false;
 }
-
-provide("lightDarkSwitch", lightDarkSwitch);
 </script>
