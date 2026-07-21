@@ -7,6 +7,7 @@ import {
     type InsertEvent,
     type UpdateEvent,
 } from "typeorm";
+import { PlayerRouletteRankings } from "./leaderboardStatistics/player/RouletteRankings";
 import { PlayerWinrate } from "./leaderboardStatistics/player/Winrate";
 import { PlayerMapWinrate } from "./leaderboardStatistics/player/MapWinrate";
 import { CountryPlayers } from "./leaderboardStatistics/country/Players";
@@ -101,6 +102,7 @@ export default class LeaderboardController {
     > = new Map();
 
     static readonly statistics: LeaderboardStatistic[] = [
+        new PlayerRouletteRankings(),
         new PlayerWinrate(),
         new PlayerMapWinrate(),
         new PlayerRRAppearances(),
