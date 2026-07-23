@@ -12,6 +12,7 @@ import EloController from "./EloController";
 import { isReady } from "../readyListener";
 import MatchCollection from "#shared/utils/playerStatistics/MatchCollection";
 import PlacementCollection from "#shared/utils/playerStatistics/PlacementCollection";
+import LeaderboardController from "./LeaderboardController";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();
@@ -44,6 +45,22 @@ export default class PlayerStatisticController {
         return stats;
     }
 
+    private static getRankingBadge(score: number, placement: number): string {
+        if (score <= 0 || placement < 0) {
+            return "/rankingBadges/bronze.png";
+        }
+        if (placement <= 10) {
+            return "/rankingBadges/master.png";
+        }
+        if (score >= 60) {
+            return "/rankingBadges/gold.png";
+        }
+        if (score >= 30) {
+            return "/rankingBadges/silver.png";
+        }
+        return "/rankingBadges/bronze.png";
+    }
+
     @Log("PlayerStatisticController.calculate")
     private static async calculate(uuid: string) {
         const matches = await Match.find({
@@ -60,6 +77,19 @@ export default class PlayerStatisticController {
             placements,
             competitions,
         );
+
+        const rankings = (await LeaderboardController.getEntries(
+            "Roulette Rankings",
+        )) as LeaderboardPlayerEntry[];
+        const playersRanking = rankings.find(
+            (ranking) => ranking.player === uuid,
+        ) ?? {
+            player: uuid,
+            sortingScore: 0,
+            displayScore: "0",
+        };
+        const playersRankingSpot =
+            rankings.findIndex((ranking) => ranking.player === uuid) ?? -1;
 
         PlayerStatisticController.cache.set(uuid, {
             winrate: matchCollection.winrate(),
@@ -84,6 +114,14 @@ export default class PlayerStatisticController {
             mapPBs: matchCollection.mapPBs(),
             eloProgression:
                 EloController.getInstance().getEloProgressionOfPlayer(uuid),
+            ranking: {
+                placement: playersRankingSpot,
+                score: parseInt(playersRanking.displayScore),
+                badgeUrl: this.getRankingBadge(
+                    parseInt(playersRanking.displayScore),
+                    playersRankingSpot,
+                ),
+            },
         });
     }
 }

@@ -125,14 +125,16 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
 
         const sortedRankings = ld.orderBy(
             Object.values(ranking).map((ranking) => {
-                const sortedEntries = ranking.entries.sort((a, b) => {
-                    return (
-                        (a.placement ?? Number.MAX_SAFE_INTEGER) -
-                        (b.placement ?? Number.MAX_SAFE_INTEGER)
-                    );
+                const sortedEntries = ranking.entries.toSorted((a, b) => {
+                    return (a.placement ?? 33) - (b.placement ?? 33);
                 });
+                const sortedEntriesByScore = ranking.entries.toSorted(
+                    (a, b) => {
+                        return b.score - a.score;
+                    },
+                );
                 const filteredScore = ld
-                    .take(sortedEntries, 3)
+                    .take(sortedEntriesByScore, 3)
                     .reduce((prev, cur) => prev + cur.score, 0);
 
                 return {
@@ -143,10 +145,18 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
             }),
             [
                 "totalScore",
-                (e) => e.entries[0]?.placement ?? Number.MAX_SAFE_INTEGER,
-                (e) => e.entries[1]?.placement ?? Number.MAX_SAFE_INTEGER,
-                (e) => e.entries[2]?.placement ?? Number.MAX_SAFE_INTEGER,
-                (e) => e.entries[3]?.placement ?? Number.MAX_SAFE_INTEGER,
+                (e) =>
+                    (e.entries[0] ?? { placement: Number.MAX_SAFE_INTEGER })
+                        .placement ?? 33,
+                (e) =>
+                    (e.entries[1] ?? { placement: Number.MAX_SAFE_INTEGER })
+                        .placement ?? 33,
+                (e) =>
+                    (e.entries[2] ?? { placement: Number.MAX_SAFE_INTEGER })
+                        .placement ?? 33,
+                (e) =>
+                    (e.entries[3] ?? { placement: Number.MAX_SAFE_INTEGER })
+                        .placement ?? 33,
             ],
             ["desc", "asc", "asc", "asc", "asc"],
         );
@@ -159,13 +169,14 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
                 sortingScore: sortedRankings.findIndex((p) => {
                     return (
                         p.totalScore === rankedPlayer.totalScore &&
-                        p.entries[0]?.score ===
-                            rankedPlayer.entries[0]?.score &&
-                        p.entries[1]?.score ===
-                            rankedPlayer.entries[1]?.score &&
-                        p.entries[2]?.score ===
-                            rankedPlayer.entries[2]?.score &&
-                        p.entries[3]?.score === rankedPlayer.entries[3]?.score
+                        p.entries[0]?.placement ===
+                            rankedPlayer.entries[0]?.placement &&
+                        p.entries[1]?.placement ===
+                            rankedPlayer.entries[1]?.placement &&
+                        p.entries[2]?.placement ===
+                            rankedPlayer.entries[2]?.placement &&
+                        p.entries[3]?.placement ===
+                            rankedPlayer.entries[3]?.placement
                     );
                 }),
             });

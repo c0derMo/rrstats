@@ -31,9 +31,37 @@
                             />
                         </div>
                         <div class="flex-grow ml-5">
-                            <h1 class="text-5xl">
-                                {{ player?.primaryName ?? route.params.player }}
-                            </h1>
+                            <div class="flex flex-row items-center">
+                                <h1 class="text-5xl">
+                                    {{
+                                        player?.primaryName ??
+                                        route.params.player
+                                    }}
+                                </h1>
+
+                                <template v-if="statistics?.ranking != null">
+                                    <img
+                                        :src="statistics.ranking.badgeUrl"
+                                        class="ml-4 h-8 inline"
+                                    />
+                                    <div
+                                        class="border-r border-neutral-500 px-2"
+                                    >
+                                        Ranking:
+                                        {{ statistics.ranking.score }} (#{{
+                                            statistics.ranking.placement
+                                        }})
+                                    </div>
+                                </template>
+
+                                <div class="px-2">
+                                    Elo:
+                                    {{
+                                        ld.last(statistics?.eloProgression)
+                                            ?.elo ?? 1000
+                                    }}
+                                </div>
+                            </div>
                             <h3 class="mt-1">
                                 <TooltipComponent
                                     v-if="accoladeDescription != null"
@@ -51,13 +79,13 @@
                                 <FontAwesomeIcon
                                     v-if="canEditAccolade"
                                     :icon="['fas', 'pen']"
-                                    class="text-xs"
+                                    class="ml-1 text-xs"
                                     @click="selectingAccolade = true"
                                 />
                                 <FontAwesomeIcon
                                     v-else-if="user == null"
                                     :icon="['fas', 'pen']"
-                                    class="text-xs"
+                                    class="ml-1 text-xs"
                                     @click="
                                         navigateTo(
                                             `/api/auth/discord_login?to=${route.path}`,
@@ -121,12 +149,6 @@
                             ? formatPlacement(statistics.bestPlacement)
                             : "n/a"
                     }}
-                </div>
-                <div
-                    class="flex-grow text-center md:border-x border-neutral-500"
-                >
-                    Elo rating:
-                    {{ ld.last(statistics?.eloProgression)?.elo ?? 1000 }}
                 </div>
                 <div
                     class="flex-grow text-center md:border-x border-neutral-500"
