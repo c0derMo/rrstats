@@ -82,7 +82,7 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
             .where(
                 new Brackets((qb) => {
                     return qb
-                        .where("comp.updateWithHitmaps == FALSE")
+                        .where("comp.updateWithHitmaps = FALSE")
                         .orWhere("comp.updateWithHitmaps IS NULL");
                 }),
             )
