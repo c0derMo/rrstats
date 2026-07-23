@@ -89,7 +89,7 @@ export default class PlayerStatisticController {
             displayScore: "0",
         };
         const playersRankingSpot =
-            rankings.findIndex((ranking) => ranking.player === uuid) ?? -1;
+            (rankings.findIndex((ranking) => ranking.player === uuid) ?? -2) + 1;
 
         PlayerStatisticController.cache.set(uuid, {
             winrate: matchCollection.winrate(),
