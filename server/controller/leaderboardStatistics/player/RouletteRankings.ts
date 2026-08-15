@@ -38,18 +38,18 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
 
     getRowColor(score: number, placement: number): string {
         if (score <= 0 || placement < 0) {
-            return "bg-orange-200 dark:bg-orange-800";
+            return "bg-orange-200 dark:bg-amber-950";
         }
         if (placement <= 10) {
-            return "bg-fuchsia-200 dark:bg-fuchsia-600";
+            return "bg-fuchsia-200 dark:bg-fuchsia-900";
         }
         if (score >= 60) {
-            return "bg-yellow-100 dark:bg-yellow-700";
+            return "bg-yellow-100 dark:bg-yellow-800";
         }
         if (score >= 30) {
             return "bg-gray-200 dark:bg-gray-700";
         }
-        return "bg-orange-200 dark:bg-orange-800";
+        return "bg-orange-200 dark:bg-amber-950";
     }
 
     getScoreForPlacement(placement: number | undefined, competition: string) {
@@ -231,7 +231,7 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
             explanatoryText: "Official Roulette Rankings, using the 3 best placements of the last 4 tournaments.",
             columns: [
                 { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
-                { name: "Badge", type: LeaderboardColumnType.IMAGE },
+                { name: "Badge", type: LeaderboardColumnType.IMAGE, colored: true },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Score", type: LeaderboardColumnType.TEXT },
             ]

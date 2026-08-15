@@ -14,7 +14,7 @@
                     :items="dropdownCompetitions"
                 />
             </div>
-            <div class="flex-grow mr-3 text-right">
+            <div class="grow mr-3 text-right">
                 <ButtonComponent
                     @click="
                         selectedMinComp = 5;
@@ -24,7 +24,7 @@
                     Include all 3 seasons (RR5+)
                 </ButtonComponent>
             </div>
-            <div class="flex-grow ml-3 text-left">
+            <div class="grow ml-3 text-left">
                 <ButtonComponent
                     @click="
                         selectedMinComp = 10;
@@ -89,7 +89,7 @@
                         :key="idx"
                         class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300"
                     >
-                        <div class="flex-grow">
+                        <div class="grow">
                             {{
                                 competitions.slice(
                                     invertedMinComp,
@@ -97,7 +97,7 @@
                                 )[idx].name
                             }}
                         </div>
-                        <div class="flex-grow text-right">
+                        <div class="grow text-right">
                             {{ score }}
                         </div>
                     </div>

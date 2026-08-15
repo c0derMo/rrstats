@@ -2,7 +2,7 @@
     <div class="relative h-fit">
         <input
             ref="input"
-            class="rounded py-1 px-3 peer w-full outline-none bg-neutral-100 dark:bg-neutral-800"
+            class="rounded-sm py-1 px-3 peer w-full outline-hidden bg-neutral-100 dark:bg-neutral-800"
             :class="{
                 'bg-neutral-400 dark:bg-neutral-900': disabled,
             }"
@@ -37,27 +37,27 @@
             class="absolute flex w-full h-full top-0 left-0 pointer-events-none"
         >
             <div
-                class="h-full w-3 inline-block border rounded-l border-r-0 border-neutral-500"
+                class="h-full w-3 inline-block border rounded-l-sm border-r-0 border-neutral-500"
                 :class="{
-                    '!border-blue-700': isFocused,
-                    '!border-red-600': error,
+                    'border-blue-700!': isFocused,
+                    'border-red-600!': error,
                 }"
             />
             <div
                 class="h-full w-fit inline-block border border-l-0 border-r-0 text-transparent text-xs border-neutral-500"
                 :class="{
-                    '!border-blue-700': isFocused,
+                    'border-blue-700!': isFocused,
                     'border-t-0': nonEmptyOrFocussed,
-                    '!border-red-600': error,
+                    'border-red-600!': error,
                 }"
             >
                 {{ placeholder }}
             </div>
             <div
-                class="h-full grow inline-block border border-l-0 rounded-r border-neutral-500"
+                class="h-full grow inline-block border border-l-0 rounded-r-sm border-neutral-500"
                 :class="{
-                    '!border-blue-700': isFocused,
-                    '!border-red-600': error,
+                    'border-blue-700!': isFocused,
+                    'border-red-600!': error,
                 }"
             />
         </div>

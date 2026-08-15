@@ -5,10 +5,10 @@
             :class="{ flex: tabs.length <= 4, hidden: tabs.length > 4 }"
         >
             <div
-                class="absolute w-full h-full bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded"
+                class="absolute w-full h-full bg-gray-300 dark:bg-gray-500 opacity-80 dark:opacity-20 rounded-sm"
             />
             <div
-                class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded scale-y-75 transition-all duration-200"
+                class="absolute h-full dark:bg-gray-700 bg-gray-100 w-10 rounded-sm scale-y-75 transition-all duration-200"
                 :style="selectorStyle"
             />
             <div
@@ -19,9 +19,9 @@
                     v-for="thisTab in tabs"
                     :key="thisTab"
                     :class="{
-                        'hover:!bg-opacity-40': selectedTab !== thisTab,
+                        'hover:dark:bg-gray-700/40 hover:bg-gray-100/40': selectedTab !== thisTab,
                     }"
-                    class="flex-grow text-center py-1 rounded z-10 !bg-opacity-0 dark:bg-gray-700 bg-gray-100"
+                    class="grow text-center py-1 rounded-sm z-10 dark:bg-gray-700/0 bg-gray-100/0"
                     @click="(e) => changeTab(thisTab, e)"
                 >
                     {{ thisTab }}

@@ -67,25 +67,25 @@ const spreadsheetTableRows = computed<Row[]>(() => {
             const columns: Cell[] = [];
             const searchables: string[] = [];
 
-            const sharedOptions: CellStyle = {};
-            if (row.backgroundColor != null) {
-                sharedOptions.backgroundColor = row.backgroundColor;
-            }
-            if (row.color != null) {
-                sharedOptions.color = row.color;
-            }
-
             for (const column of props.tableDefinition.columns) {
                 if (row.columns[column.name] != null) {
+                    const cellStyle: CellStyle = {};
                     let value = row.columns[column.name];
 
                     if (column.type === LeaderboardColumnType.PLAYER_NAME) {
                         value = players.get(value as string);
                         searchables.push(value as string);
                     }
+                    
+                    if (column.colored && row.backgroundColor != null) {
+                        cellStyle.backgroundColor = row.backgroundColor;
+                    }
+                    if (column.colored && row.color != null) {
+                        cellStyle.color = row.color;
+                    }
 
                     columns.push({
-                        ...sharedOptions,
+                        ...cellStyle,
                         content: value
                     });
                 }

@@ -32,7 +32,7 @@
                         <div
                             v-for="(level, idx) in achievement.completion"
                             :key="idx"
-                            class="absolute left-0 h-full rounded-md leading-10 text-right text-transparent hover:text-black hover:bg-opacity-100 hover:z-50 text-clip transition text-nowrap border-r border-gray-500"
+                            class="absolute left-0 h-full rounded-md leading-10 text-right text-transparent hover:text-black hover:z-50 text-clip transition text-nowrap border-r border-gray-500"
                             :style="
                                 getBarStyle(idx, level, achievement.achievement)
                             "

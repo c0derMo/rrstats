@@ -148,7 +148,7 @@ test.describe("Quick Navigation", () => {
         await expect(
             page
                 .locator(
-                    ".relative.w-full > .p-2 > .text-nowrap.flex.flex-nowrap.min-h-6 > .flex-grow",
+                    ".relative.w-full > .p-2 > .text-nowrap.flex.flex-nowrap.min-h-6 > .grow",
                 )
                 .filter({ hasText: "Paris" }),
         ).toBeVisible();

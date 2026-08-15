@@ -21,7 +21,7 @@
                         'rotate-180':
                             sortingOrder === 'ASC' &&
                             sortingBy?.key === header.key,
-                        '!opacity-100': sortingBy?.key === header.key,
+                        'opacity-100!': sortingBy?.key === header.key,
                         'group-hover:opacity-40':
                             enableSorting && !header.disableSort,
                     }"

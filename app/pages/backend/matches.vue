@@ -21,7 +21,7 @@
             <TextInputComponent
                 v-model="search"
                 placeholder="Search for player, competition, round..."
-                class="flex-grow"
+                class="grow"
             />
         </div>
 

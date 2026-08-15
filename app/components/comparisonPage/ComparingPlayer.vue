@@ -5,7 +5,7 @@
             :class="{ 'xl:flex-row': !reverse, 'xl:flex-row-reverse': reverse }"
         >
             <div
-                class="flex-grow flex flex-col"
+                class="grow flex flex-col"
                 :class="{
                     'md:flex-row': !reverse,
                     'md:flex-row-reverse': reverse,
@@ -16,7 +16,7 @@
                     :src="playerAvatar"
                     alt="Player Avatar"
                 />
-                <div class="flex-grow mx-5" :class="{ 'text-right': reverse }">
+                <div class="grow mx-5" :class="{ 'text-right': reverse }">
                     <h1 class="text-5xl">{{ player.primaryName }}</h1>
                     <h3 class="mt-1">
                         {{ player.accolade }}
@@ -35,7 +35,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">Winrate</span>
+                    <span class="grow font-light">Winrate</span>
                     <span :class="getAheadBehindClass(getWinrate)">
                         {{ Math.round(getWinrate(Player.SELF) * 100) }}%
                     </span>
@@ -48,7 +48,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">Map-Winrate</span>
+                    <span class="grow font-light">Map-Winrate</span>
                     <span :class="getAheadBehindClass(getMapWinrate)">
                         {{ Math.round(getMapWinrate(Player.SELF) * 100) }}%
                     </span>
@@ -61,7 +61,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">Matches played</span>
+                    <span class="grow font-light">Matches played</span>
                     <span :class="getAheadBehindClass(getMatchesPlayed)">
                         {{ getMatchesPlayed(Player.SELF) }}
                     </span>
@@ -74,7 +74,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">Maps played</span>
+                    <span class="grow font-light">Maps played</span>
                     <span :class="getAheadBehindClass(getMapsPlayed)">
                         {{ getMapsPlayed(Player.SELF) }}
                     </span>
@@ -87,7 +87,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">W-T-L</span>
+                    <span class="grow font-light">W-T-L</span>
                     <span>
                         {{ getWTL(Player.SELF) }}
                     </span>
@@ -100,7 +100,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">Head-2-Head</span>
+                    <span class="grow font-light">Head-2-Head</span>
                     <span :class="getAheadBehindClass(getH2HWR)">
                         {{ getH2H(Player.SELF) }}
                     </span>
@@ -113,7 +113,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">Elo Rating</span>
+                    <span class="grow font-light">Elo Rating</span>
                     <span :class="getAheadBehindClass(getElo)">
                         {{ getElo(Player.SELF) }}
                     </span>
@@ -126,7 +126,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">RRs played</span>
+                    <span class="grow font-light">RRs played</span>
                     <span :class="getAheadBehindClass(getRRAmount)">
                         {{ getRRAmount(Player.SELF) }}
                     </span>
@@ -139,7 +139,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">RRs won</span>
+                    <span class="grow font-light">RRs won</span>
                     <span :class="getAheadBehindClass(getRRWins)">
                         {{ getRRWins(Player.SELF) }}
                     </span>
@@ -152,7 +152,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light">Best RR placement</span>
+                    <span class="grow font-light">Best RR placement</span>
                     <span
                         :class="getAheadBehindClass(getBestRRPlacement, true)"
                     >
@@ -172,7 +172,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="flex-grow font-light"
+                    <span class="grow font-light"
                         >Average RR placement</span
                     >
                     <span

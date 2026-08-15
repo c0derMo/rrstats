@@ -1,7 +1,7 @@
 <template>
-    <div class="p-5 rounded relative" :class="backgroundColor">
+    <div class="p-5 rounded-sm relative" :class="backgroundColor">
         <div
-            class="h-1 bg-white dark:bg-black dark:bg-opacity-50 bg-opacity-50 absolute top-0 left-0 rounded"
+            class="h-1 bg-white/50 dark:bg-black/50 absolute top-0 left-0 rounded-sm"
             :style="style"
         />
         <slot />

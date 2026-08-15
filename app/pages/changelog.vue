@@ -13,7 +13,7 @@
         >
             <div class="flex flex-row gap-5 items-end mb-2">
                 <div class="text-2xl">Version {{ entry.version }}</div>
-                <div class="flex-grow text-3xl bold">
+                <div class="grow text-3xl bold">
                     {{ entry.versionTitle }}
                 </div>
                 <div class="text-lg italic">{{ isoToString(entry.date) }}</div>
@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { DateTime } from "luxon";
 
-const { data } = await useAsyncData(() =>
+const { data } = await useAsyncData("changelogCollection", () =>
     queryCollection("changelog").order("date", "DESC").all(),
 );
 

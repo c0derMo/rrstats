@@ -10,11 +10,11 @@
         <Transition name="fade" @enter="updatePosition">
             <div
                 v-if="showTooltip"
-                class="fixed z-50 w-fit max-w-[800px] min-w-[650px]"
+                class="fixed z-50 w-fit max-w-200 min-w-162.5"
                 :style="tooltipStyle"
             >
                 <div
-                    class="p-1 rounded dark:bg-neutral-800/95 bg-neutral-100/95"
+                    class="p-1 rounded-sm dark:bg-neutral-800/95 bg-neutral-100/95"
                 >
                     <div
                         class="grid inverse-three-columns items-center w-full font-bold text-xl my-2 px-3"
@@ -50,7 +50,7 @@
                         <div
                             v-for="map in maps"
                             :key="map.index"
-                            class="grid three-columns w-full bg-center bg-cover bg-opacity-20"
+                            class="grid three-columns w-full bg-center bg-cover"
                             :style="getMapBackground(map.map)"
                         >
                             <div

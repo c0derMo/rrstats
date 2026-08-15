@@ -87,7 +87,7 @@
                         genericFilter !== '' &&
                         isRetiredRecord(genericFilter as GenericRecordType)
                     "
-                    class="p-2 mx-5 my-2 border border-yellow-300 rounded"
+                    class="p-2 mx-5 my-2 border border-yellow-300 rounded-sm"
                 >
                     This record is retired. Only edit these records if there's
                     anything wrong with them.

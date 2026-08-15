@@ -15,7 +15,7 @@
         >
             <slot name="button-content">
                 <div class="text-nowrap flex flex-nowrap min-h-6">
-                    <span class="flex-grow">
+                    <span class="grow">
                         {{
                             buttonText ??
                             (convertedItems.find((i) => i.value === modelValue)
@@ -38,7 +38,7 @@
             <div class="relative">
                 <div
                     ref="dropdown"
-                    class="z-50 absolute bg-neutral-100 dark:bg-neutral-700 rounded-sm overflow-y-auto flex-col w-fit min-w-full scale-y-0 opacity-0 transition-all"
+                    class="z-50 absolute bg-neutral-100 dark:bg-neutral-700 rounded-xs overflow-y-auto flex-col w-fit min-w-full scale-y-0 opacity-0 transition-all"
                     :class="{
                         'scale-y-100 opacity-100': showDropdown,
                         'origin-top': !shouldDropUp,

@@ -19,7 +19,7 @@
                 <div
                     v-for="(error, errorId) in result.errors"
                     :key="errorId"
-                    class="border rounded p-1 border-red-500 px-2"
+                    class="border rounded-sm p-1 border-red-500 px-2"
                 >
                     <FontAwesomeIcon
                         :icon="['fas', 'triangle-exclamation']"
@@ -31,7 +31,7 @@
                 <div
                     v-for="(issue, issueId) in result.issues"
                     :key="issueId"
-                    class="border rounded p-1 border-yellow-500 px-2"
+                    class="border rounded-sm p-1 border-yellow-500 px-2"
                 >
                     <FontAwesomeIcon
                         :icon="['fas', 'question']"
@@ -44,7 +44,7 @@
                     v-if="
                         result.issues.length === 0 && result.errors.length === 0
                     "
-                    class="border rounded p-1 border-green-500 px-2"
+                    class="border rounded-sm p-1 border-green-500 px-2"
                 >
                     <FontAwesomeIcon
                         :icon="['fas', 'check-double']"

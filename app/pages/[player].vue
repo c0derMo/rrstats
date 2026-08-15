@@ -30,7 +30,7 @@
                                 alt="Player nationality"
                             />
                         </div>
-                        <div class="flex-grow ml-5">
+                        <div class="grow ml-5">
                             <div class="flex flex-row items-center">
                                 <h1 class="text-5xl">
                                     {{
@@ -142,7 +142,7 @@
             </div>
 
             <CardComponent class="flex md:flex-row w-3/5 mx-auto flex-col">
-                <div class="flex-grow md:text-left text-center md:pl-10">
+                <div class="grow md:text-left text-center md:pl-10">
                     Best RR Placement:
                     {{
                         statistics?.bestPlacement
@@ -151,24 +151,24 @@
                     }}
                 </div>
                 <div
-                    class="flex-grow text-center md:border-x border-neutral-500"
+                    class="grow text-center md:border-x border-neutral-500"
                 >
                     Maps played:
                     {{ statistics?.mapCount }}
                 </div>
                 <div
-                    class="flex-grow text-center md:border-x border-neutral-500"
+                    class="grow text-center md:border-x border-neutral-500"
                 >
                     Matches played:
                     {{ statistics?.matchCount }}
                 </div>
-                <div class="flex-grow md:text-right text-center md:pr-10">
+                <div class="grow md:text-right text-center md:pr-10">
                     W-T-L: {{ wtl }}
                 </div>
             </CardComponent>
 
             <div class="flex 2xl:flex-row gap-5 flex-col-reverse">
-                <CardComponent class="2xl:w-3/12 w-full !overflow-visible">
+                <CardComponent class="2xl:w-3/12 w-full overflow-visible!">
                     <TabbedContainer
                         :tabs="['Competitions', 'Opponents', 'Records']"
                     >
@@ -189,7 +189,7 @@
                         </template>
                     </TabbedContainer>
                 </CardComponent>
-                <CardComponent class="flex-grow !overflow-visible relative">
+                <CardComponent class="grow overflow-visible! relative">
                     <IndefiniteProgressBar
                         v-if="stillLoading"
                         class="mb-2 absolute top-0 left-0"
@@ -201,7 +201,7 @@
                 </CardComponent>
             </div>
 
-            <CardComponent class="!overflow-visible">
+            <CardComponent class="overflow-visible!">
                 <TabbedContainer
                     :tabs="[
                         'Maps',

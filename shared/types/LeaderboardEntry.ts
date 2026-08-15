@@ -32,6 +32,7 @@ export type LeaderboardRow = {
 export type LeaderboardColumnDefinition = {
     name: string;
     type: LeaderboardColumnType;
+    colored?: boolean;
 }
 
 export enum LeaderboardColumnType {

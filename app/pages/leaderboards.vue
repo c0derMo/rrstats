@@ -25,7 +25,7 @@
                 </div>
             </CardComponent>
 
-            <CardComponent class="flex-grow !overflow-visible relative flex flex-col gap-2">
+            <CardComponent class="grow overflow-visible! relative flex flex-col gap-2">
                 <!-- <SpreadsheetLeaderboardTable
                     v-if="isPlayerLB(filteredLeaderboardData)"
                     :table-definition="{
@@ -189,10 +189,10 @@
                                 :key="idx"
                                 class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300"
                             >
-                                <div class="flex-grow">
+                                <div class="grow">
                                     {{ playerLookup.get(player.player) }}
                                 </div>
-                                <div class="flex-grow text-right">
+                                <div class="grow text-right">
                                     {{ player.displayScore }}
                                 </div>
                             </div>

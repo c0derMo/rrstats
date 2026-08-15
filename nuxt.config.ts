@@ -1,3 +1,5 @@
+import tailwindcss from "@tailwindcss/vite";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devtools: { enabled: true, timeline: { enabled: true } },
@@ -19,7 +21,6 @@ export default defineNuxtConfig({
         },
     },
     modules: [
-        "@nuxtjs/tailwindcss",
         "@nuxt/eslint",
         "@nuxt/test-utils/module",
         "@nuxt/content",
@@ -70,7 +71,7 @@ export default defineNuxtConfig({
         },
     },
 
-    css: ["@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
+    css: ["@/assets/main.css", "@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
 
     build: {
         transpile: ["@fortawesome/vue-fontawesome"],
@@ -99,6 +100,9 @@ export default defineNuxtConfig({
                 "chart.js",
             ],
         },
+        plugins: [
+            tailwindcss()
+        ]
     },
 
     compatibilityDate: "2024-08-10",

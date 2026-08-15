@@ -19,7 +19,7 @@
                 :items="settings.groups.map((g, idx) => `Group ${idx + 1}`)"
             />
 
-            <div class="flex-grow" />
+            <div class="grow" />
 
             <ButtonComponent @click="removeGroup()"
                 ><FontAwesomeIcon :icon="['fa', 'trash']" class="text-red-500"
@@ -60,7 +60,7 @@
                 >
                     <TextInputComponent
                         v-model="playersInGroups[selectedGroupIndex][idx]"
-                        class="flex-grow"
+                        class="grow"
                         :error="playersIncorrect[selectedGroupIndex][idx]"
                         @update:model-value="
                             (val) =>

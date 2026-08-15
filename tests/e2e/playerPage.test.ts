@@ -349,7 +349,7 @@ test.describe("Player Page", () => {
             await page.locator(".grid > div").first().textContent(),
         ).toContain("Getting Mileage V");
         await page
-            .locator("span.flex-grow", { hasText: "Sort by completion" })
+            .locator("span.grow", { hasText: "Sort by completion" })
             .click();
         await page.getByText("Sort by name").click();
 
@@ -357,7 +357,7 @@ test.describe("Player Page", () => {
             await page.locator(".grid > div").first().textContent(),
         ).toContain("Against the World V");
         await page
-            .locator("span.flex-grow", { hasText: "Sort by name" })
+            .locator("span.grow", { hasText: "Sort by name" })
             .click();
         await page.getByText("Sort by rarity").click();
 
@@ -365,7 +365,7 @@ test.describe("Player Page", () => {
             await page.locator(".grid > div").nth(1).textContent(),
         ).toContain("Against the World V");
         await page
-            .locator("span.flex-grow", { hasText: "Sort by rarity" })
+            .locator("span.grow", { hasText: "Sort by rarity" })
             .click();
         await page.getByText("Sort by completion").click();
 

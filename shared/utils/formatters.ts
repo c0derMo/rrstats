@@ -36,7 +36,7 @@ export function getPlacementTagColor(placement: number) {
     if (placement === 3) {
         return "rgb(167, 112, 68)";
     }
-    return "rgb(85, 85, 85)";
+    return "rgb(105, 105, 105)";
 }
 
 export function getColorOfTier(tier: AchievementTier | -1) {

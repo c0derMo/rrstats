@@ -70,37 +70,30 @@ const barStyle = computed(() => {
 });
 </script>
 
-<style scoped lang="scss">
-.track {
-    @apply bg-none;
-}
-
-.thumb {
-    @apply pointer-events-auto bg-blue-500 w-5 h-5 rounded-full;
-}
+<style scoped>
+@reference "@/assets/main.css";
 
 .slider {
     @apply pointer-events-none bg-none;
     background: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
 
-    &::-webkit-slider-runnable-track,
-    &::-webkit-slider-thumb,
-    & {
-        -webkit-appearance: none;
-    }
+.slider::-webkit-slider-runnable-track {
+    @apply bg-none;
+}
 
-    &::-webkit-slider-runnable-track {
-        @apply track;
-    }
-    &::-moz-range-track {
-        @apply track;
-    }
+.slider::-moz-range-track {
+    @apply bg-none;
+}
 
-    &::-webkit-slider-thumb {
-        @apply thumb;
-    }
-    &::-moz-range-thumb {
-        @apply thumb;
-    }
+.slider::-webkit-slider-thumb {
+    @apply pointer-events-auto bg-blue-500 w-5 h-5 rounded-full;
+    -webkit-appearance: none;
+}
+
+.slider::-moz-range-thumb {
+    @apply pointer-events-auto bg-blue-500 w-5 h-5 rounded-full;
 }
 </style>

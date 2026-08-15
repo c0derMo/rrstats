@@ -37,6 +37,8 @@
 </template>
 
 <style scoped>
+@reference "@/assets/main.css";
+
 .cell {
     @apply border border-neutral-200 dark:border-neutral-500;
 }

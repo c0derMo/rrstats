@@ -1,8 +1,8 @@
 <template>
     <div class="w-full h-full relative">
         <textarea
-            class="w-full h-full bg-neutral-100 dark:bg-neutral-800 border dark:border-neutral-500 rounded p-2"
-            :class="{ '!border-red-700': error }"
+            class="w-full h-full bg-neutral-100 dark:bg-neutral-800 border dark:border-neutral-500 rounded-sm p-2"
+            :class="{ 'border-red-700!': error }"
             :value="modelValue"
             :maxlength="maxLength"
             @input="

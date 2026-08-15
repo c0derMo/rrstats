@@ -25,7 +25,7 @@
         </RangeSelector>
 
         <div class="flex lg:flex-row flex-col gap-5">
-            <div class="flex-grow">
+            <div class="grow">
                 <DataTableComponent
                     v-model:selected-rows-per-page="selectedMapsPerPage"
                     :headers="pickedHeaders"
@@ -35,7 +35,7 @@
                     default-sorting-key="Picked"
                 />
             </div>
-            <div class="flex-grow">
+            <div class="grow">
                 <DataTableComponent
                     v-model:selected-rows-per-page="selectedMapsPerPage"
                     :headers="winrateHeaders"
@@ -47,7 +47,7 @@
                     <template #Winrate="{ value }"> {{ value }}% </template>
                 </DataTableComponent>
             </div>
-            <div class="flex-grow">
+            <div class="grow">
                 <DataTableComponent
                     v-model:selected-rows-per-page="selectedMapsPerPage"
                     :headers="bannedHeaders"
