@@ -23,6 +23,7 @@ export type LeaderboardMapEntry = {
 
 export type LeaderboardRow = {
     columns: Record<string, unknown>;
+    expandableRows?: unknown[][];
     backgroundColor?: string;
     color?: string;
     value: unknown;

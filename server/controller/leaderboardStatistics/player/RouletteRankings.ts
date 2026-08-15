@@ -209,6 +209,12 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
                 );
             });
 
+            const sortedEntriesByScore = rankedPlayer.entries.toSorted(
+                (a, b) => {
+                    return b.score - a.score;
+                },
+            );
+
             result.push({
                 columns: {
                     "Placement": placement + 1,
@@ -219,6 +225,15 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
                 order: placement,
                 value: rankedPlayer.totalScore,
                 backgroundColor: this.getRowColor(rankedPlayer.totalScore, placement + 1),
+                expandableRows: [
+                    rankedPlayer.entries.map((entry) => {
+                        if (entry.competition === sortedEntriesByScore[3]?.competition) {
+                            return `(${entry.competition}: ${entry.score} (${formatPlacement(entry.placement)}))`;
+                        } else {
+                            return `${entry.competition}: ${entry.score} (${formatPlacement(entry.placement)})`;
+                        }
+                    })
+                ]
             });
         }
 

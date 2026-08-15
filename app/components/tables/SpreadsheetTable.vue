@@ -14,7 +14,7 @@
                 :class="getCellClasses(cell, cellIndex)"
             >
                 <slot :name="getColumnName(cellIndex)" :content="cell.content" :cell="cell">
-                    <template v-if="cell.expansionButton">
+                    <template v-if="cell.expansionButton && row.expandable">
                         <div @click="expandRow(rowIndex)">
                             <FontAwesomeIcon
                                 :icon="['fas', 'chevron-down']"
