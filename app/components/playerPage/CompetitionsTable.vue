@@ -15,9 +15,7 @@
             </template>
 
             <template #placement="{ row }">
-                <Tag :color="getTagColor(row.placement)" :narrow="true">
-                    {{ formatPlacement(row.placement) }}
-                </Tag>
+                <PlacementTag narrow :placement="row.placement" />
             </template>
         </DataTableComponent>
     </div>
@@ -51,17 +49,4 @@ const filteredCompetitions = computed(() => {
         );
     });
 });
-
-function getTagColor(placement?: number) {
-    if (placement === 1) {
-        return "rgb(214, 175, 54)";
-    }
-    if (placement === 2) {
-        return "rgb(167, 167, 167)";
-    }
-    if (placement === 3) {
-        return "rgb(167, 112, 68)";
-    }
-    return "rgb(85, 85, 85)";
-}
 </script>
