@@ -25,7 +25,35 @@
                 </div>
             </CardComponent>
 
-            <CardComponent class="flex-grow !overflow-visible relative">
+            <CardComponent class="flex-grow !overflow-visible relative flex flex-col gap-2">
+                <!-- <SpreadsheetLeaderboardTable
+                    v-if="isPlayerLB(filteredLeaderboardData)"
+                    :table-definition="{
+                        columns: [
+                            { name: 'Placement', type: LeaderboardColumnType.PLACEMENT_TAG },
+                            { name: 'Player', type: LeaderboardColumnType.PLAYER_NAME },
+                            { name: 'Score', type: LeaderboardColumnType.TEXT },
+                        ]
+                    }"
+
+                    :rows="
+                        filteredLeaderboardData.slice(0, 20).map((data) => {
+                            return {
+                                columns: {
+                                    'Placement': filteredLeaderboardData.findIndex(
+                                        (p) =>
+                                            p.sortingScore === data.sortingScore,
+                                        ) + 1,
+                                    'Player': data.player,
+                                    'Score': data.sortingScore
+                                },
+                                value: data.sortingScore,
+                                order: data.sortingScore
+                            }
+                        })
+                    "
+                /> -->
+                
                 <IndefiniteProgressBar
                     v-if="leaderboardLoading"
                     class="absolute top-0 left-0"
@@ -34,6 +62,7 @@
                 <div class="text-center font-bold text-2xl">
                     {{ selectedCategory.name }}
                 </div>
+
                 <div
                     v-if="selectedCategory.explanatoryText != null"
                     class="text-center italic"
@@ -41,7 +70,12 @@
                     {{ selectedCategory.explanatoryText }}
                 </div>
 
-                <div
+                <SpreadsheetLeaderboardTable
+                    :table-definition="selectedCategory"
+                    :rows="filteredLeaderboardData"
+                />
+
+                <!-- <div
                     class="flex flex-col gap-2 md:flex-row mt-4 justify-stretch items-center"
                 >
                     <TextInputComponent
@@ -66,9 +100,9 @@
                         class="w-full"
                         :items="selectableMaps"
                     />
-                </div>
+                </div> -->
 
-                <DataTableComponent
+                <!-- <DataTableComponent
                     v-if="isPlayerLB(searchedLeaderboardData)"
                     :headers="playerTableHeaders"
                     :rows="searchedLeaderboardData"
@@ -77,33 +111,21 @@
                     :enable-sorting="false"
                 >
                     <template #placement="{ row }">
-                        <Tag
-                            :color="
-                                getPlacementTagColor(
-                                    filteredLeaderboardData.findIndex(
-                                        (p) =>
-                                            p.sortingScore === row.sortingScore,
-                                    ) + 1,
-                                )
-                            "
-                            >{{
-                                formatPlacement(
-                                    filteredLeaderboardData.findIndex(
-                                        (p) =>
-                                            p.sortingScore === row.sortingScore,
-                                    ) + 1,
-                                )
-                            }}</Tag
-                        >
+                        <PlacementTag
+                            :placement="filteredLeaderboardData.findIndex(
+                                (p) =>
+                                    p.sortingScore === row.sortingScore,
+                                ) + 1"
+                        />
                     </template>
                     <template #player="{ value }">
                         <PlayerLinkTag
                             :player="playerLookup.get(value, value)"
                         />
                     </template>
-                </DataTableComponent>
+                </DataTableComponent> -->
 
-                <DataTableComponent
+                <!-- <DataTableComponent
                     v-else-if="isCountryLB(searchedLeaderboardData)"
                     :headers="countryTableHeaders"
                     :rows="searchedLeaderboardData"
@@ -176,28 +198,18 @@
                             </div>
                         </div>
                     </template>
-                </DataTableComponent>
+                </DataTableComponent> -->
 
-                <MapLeaderboard
+                <!-- <MapLeaderboard
                     v-if="isMapLB(leaderboardData)"
                     :leaderboard-data="leaderboardData"
-                />
+                /> -->
             </CardComponent>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-interface CategoryData {
-    name: string;
-    hasMaps?: boolean;
-    mapOptional?: boolean;
-    type: string;
-    secondaryFilter?: string;
-    explanatoryText?: string;
-    defaultSecondaryFilter?: number;
-}
-
 useHead({
     title: `Leaderboards - RRStats`,
 });
@@ -209,12 +221,11 @@ const countryCategories = await navigatorInfo.getCountryLeaderboards();
 const mapCategories = await navigatorInfo.getMapLeaderboards();
 
 const selectedTab = ref("Players");
-const selectedCategory: Ref<CategoryData> = ref(playerCategories[0]);
-const leaderboardData: Ref<
-    (LeaderboardPlayerEntry | LeaderboardCountryEntry | LeaderboardMapEntry)[]
-> = ref([]);
+const selectedCategory: Ref<LeaderboardTableDefinition> = ref(playerCategories[0]);
+const leaderboardData: Ref<LeaderboardRow[]> = ref([]);
 const leaderboardLoading = ref(false);
-const secondaryFilter = ref(playerCategories[0].defaultSecondaryFilter ?? 0);
+// const secondaryFilter = ref(playerCategories[0].defaultSecondaryFilter ?? 0);
+const secondaryFilter = ref(0);
 const selectedMap: Ref<number> = ref(HitmanMap.PARIS);
 const search = ref("");
 const expandedCountry = ref("");
@@ -222,44 +233,44 @@ const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
 
-const setHash = useHash(async (hash) => {
-    let categories: CategoryData[] = [];
-    if (hash[0] === "#player") {
-        selectedTab.value = "Players";
-        categories = playerCategories;
-    } else if (hash[0] === "#country") {
-        selectedTab.value = "Countries";
-        categories = countryCategories;
-    } else if (hash[0] === "#map") {
-        selectedTab.value = "Maps";
-        categories = mapCategories;
-    } else {
-        return;
-    }
+// const setHash = useHash(async (hash) => {
+//     let categories: LeaderboardTableDefinition[] = [];
+//     if (hash[0] === "#player") {
+//         selectedTab.value = "Players";
+//         categories = playerCategories;
+//     } else if (hash[0] === "#country") {
+//         selectedTab.value = "Countries";
+//         categories = countryCategories;
+//     } else if (hash[0] === "#map") {
+//         selectedTab.value = "Maps";
+//         categories = mapCategories;
+//     } else {
+//         return;
+//     }
 
-    let category: CategoryData | null = null;
-    if (hash.length > 1) {
-        // Trying to find the referenced category
-        category =
-            categories.find((cat) => {
-                return cat.name === hash[1];
-            }) ?? null;
-    }
+//     let category: LeaderboardTableDefinition | null = null;
+//     if (hash.length > 1) {
+//         // Trying to find the referenced category
+//         category =
+//             categories.find((cat) => {
+//                 return cat.name === hash[1];
+//             }) ?? null;
+//     }
 
-    if (category != null) {
-        await selectCategory(category);
-    } else {
-        await selectCategory(categories[0]);
-    }
-});
+//     if (category != null) {
+//         await selectCategory(category);
+//     } else {
+//         await selectCategory(categories[0]);
+//     }
+// });
 
 const selectableMaps = computed(() => {
     const maps = getAllMaps().map((map) => {
         return { value: map, text: getMap(map)!.name };
     });
-    if (selectedCategory.value.mapOptional) {
-        return [{ value: -1, text: "All maps" }, ...maps];
-    }
+    // if (selectedCategory.value.mapOptional) {
+    //     return [{ value: -1, text: "All maps" }, ...maps];
+    // }
     return maps;
 });
 
@@ -269,12 +280,12 @@ const playerTableHeaders = computed(() => {
         { title: "Player", key: "player" },
         { title: "Score", key: "displayScore" },
     ];
-    if (selectedCategory.value.secondaryFilter != null) {
-        headers.push({
-            title: selectedCategory.value.secondaryFilter,
-            key: "secondaryScore",
-        });
-    }
+    // if (selectedCategory.value.secondaryFilter != null) {
+    //     headers.push({
+    //         title: selectedCategory.value.secondaryFilter,
+    //         key: "secondaryScore",
+    //     });
+    // }
     return headers;
 });
 
@@ -284,12 +295,12 @@ const countryTableHeaders = computed(() => {
         { title: "Country", key: "country" },
         { title: "Score", key: "displayScore" },
     ];
-    if (selectedCategory.value.secondaryFilter != null) {
-        headers.push({
-            title: selectedCategory.value.secondaryFilter,
-            key: "secondaryScore",
-        });
-    }
+    // if (selectedCategory.value.secondaryFilter != null) {
+    //     headers.push({
+    //         title: selectedCategory.value.secondaryFilter,
+    //         key: "secondaryScore",
+    //     });
+    // }
     headers.push({
         title: "",
         key: "expand",
@@ -311,52 +322,53 @@ const shownCategories = computed(() => {
 });
 
 const selectedCategoryType = computed(() => {
-    return selectedCategory.value.type;
+    return "Player";
+    // return selectedCategory.value.type;
 });
 
 const filteredLeaderboardData = computed(() => {
-    if (
-        selectedCategory.value.secondaryFilter != null &&
-        selectedCategory.value.secondaryFilter != ""
-    ) {
-        return leaderboardData.value.filter(
-            (data) => (data.secondaryScore ?? 0) >= secondaryFilter.value,
-        );
-    }
+    // if (
+    //     selectedCategory.value.secondaryFilter != null &&
+    //     selectedCategory.value.secondaryFilter != ""
+    // ) {
+    //     return leaderboardData.value.filter(
+    //         (data) => (data.secondaryScore ?? 0) >= secondaryFilter.value,
+    //     );
+    // }
     return leaderboardData.value;
 });
 
 const searchedLeaderboardData = computed(() => {
-    if (search.value === "") {
+    // if (search.value === "") {
         return filteredLeaderboardData.value;
-    }
-    return filteredLeaderboardData.value.filter((data) => {
-        return (
-            playerLookup
-                .get(
-                    (data as LeaderboardPlayerEntry).player,
-                    (data as LeaderboardPlayerEntry).player,
-                )
-                ?.toLowerCase()
-                .includes(search.value.toLowerCase()) ||
-            (data as LeaderboardCountryEntry).country
-                ?.toLowerCase()
-                .includes(search.value.toLowerCase()) ||
-            (data as LeaderboardCountryEntry).countryCode
-                ?.toLowerCase()
-                .includes(search.value.toLowerCase())
-        );
-    });
+    // }
+    // return filteredLeaderboardData.value.filter((data) => {
+    //     return (
+    //         playerLookup
+    //             .get(
+    //                 (data as LeaderboardPlayerEntry).player,
+    //                 (data as LeaderboardPlayerEntry).player,
+    //             )
+    //             ?.toLowerCase()
+    //             .includes(search.value.toLowerCase()) ||
+    //         (data as LeaderboardCountryEntry).country
+    //             ?.toLowerCase()
+    //             .includes(search.value.toLowerCase()) ||
+    //         (data as LeaderboardCountryEntry).countryCode
+    //             ?.toLowerCase()
+    //             .includes(search.value.toLowerCase())
+    //     );
+    // });
 });
 
-async function selectCategory(category: CategoryData) {
+async function selectCategory(category: LeaderboardTableDefinition) {
     selectedCategory.value = category;
-    setHash(`#${category.type}.${category.name}`);
-    if (selectedCategory.value.defaultSecondaryFilter != null) {
-        secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
-    } else {
-        secondaryFilter.value = 0;
-    }
+    // setHash(`#${category.type}.${category.name}`);
+    // if (selectedCategory.value.defaultSecondaryFilter != null) {
+    //     secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
+    // } else {
+    //     secondaryFilter.value = 0;
+    // }
     await loadLeaderboardData(true);
 }
 
@@ -375,21 +387,21 @@ async function loadLeaderboardData(updateMap: boolean) {
 
     leaderboardLoading.value = true;
 
-    if (selectedCategory.value.hasMaps && updateMap) {
-        if (selectedCategory.value.mapOptional) {
-            selectedMap.value = OptionalMap.NO_MAP;
-        } else {
-            selectedMap.value = HitmanMap.PARIS;
-        }
-    }
+    // if (selectedCategory.value.hasMaps && updateMap) {
+    //     if (selectedCategory.value.mapOptional) {
+    //         selectedMap.value = OptionalMap.NO_MAP;
+    //     } else {
+    //         selectedMap.value = HitmanMap.PARIS;
+    //     }
+    // }
 
     try {
         const leaderboardRequest = await $fetch(`/api/leaderboards/category`, {
             query: {
                 category: selectedCategory.value.name,
-                map: selectedCategory.value.hasMaps
-                    ? selectedMap.value
-                    : undefined,
+                // map: selectedCategory.value.hasMaps
+                //     ? selectedMap.value
+                //     : undefined,
             },
         });
         leaderboardData.value = leaderboardRequest;
@@ -429,11 +441,11 @@ function isCountryLB(
 }
 
 watch(selectedCategory, async () => {
-    if (selectedCategory.value.defaultSecondaryFilter != null) {
-        secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
-    } else {
-        secondaryFilter.value = 0;
-    }
+    // if (selectedCategory.value.defaultSecondaryFilter != null) {
+    //     secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
+    // } else {
+    //     secondaryFilter.value = 0;
+    // }
     await loadLeaderboardData(true);
 });
 watch(selectedMap, async () => {

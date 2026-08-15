@@ -20,6 +20,38 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
 
     basedOn = ["placement" as const, "comp" as const];
 
+    getRankingBadge(score: number, placement: number): string {
+        if (score <= 0 || placement < 0) {
+            return "/rankingBadges/bronze.png";
+        }
+        if (placement <= 10) {
+            return "/rankingBadges/master.png";
+        }
+        if (score >= 60) {
+            return "/rankingBadges/gold.png";
+        }
+        if (score >= 30) {
+            return "/rankingBadges/silver.png";
+        }
+        return "/rankingBadges/bronze.png";
+    }
+
+    getRowColor(score: number, placement: number): string {
+        if (score <= 0 || placement < 0) {
+            return "bg-orange-200 dark:bg-orange-800";
+        }
+        if (placement <= 10) {
+            return "bg-fuchsia-200 dark:bg-fuchsia-600";
+        }
+        if (score >= 60) {
+            return "bg-yellow-100 dark:bg-yellow-700";
+        }
+        if (score >= 30) {
+            return "bg-gray-200 dark:bg-gray-700";
+        }
+        return "bg-orange-200 dark:bg-orange-800";
+    }
+
     getScoreForPlacement(placement: number | undefined, competition: string) {
         if (competition.toLowerCase().startsWith("rrwc")) {
             if (placement == null) {
@@ -76,7 +108,7 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
         }
     }
 
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<LeaderboardRow[]> {
         const validCompetitions = await Competition.createQueryBuilder("comp")
             .orderBy("comp.startingTimestamp", "DESC")
             .where(
@@ -161,27 +193,48 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
             ["desc", "asc", "asc", "asc", "asc"],
         );
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
         for (const rankedPlayer of sortedRankings) {
+            const placement = sortedRankings.findIndex((p) => {
+                return (
+                    p.totalScore === rankedPlayer.totalScore &&
+                    p.entries[0]?.placement ===
+                        rankedPlayer.entries[0]?.placement &&
+                    p.entries[1]?.placement ===
+                        rankedPlayer.entries[1]?.placement &&
+                    p.entries[2]?.placement ===
+                        rankedPlayer.entries[2]?.placement &&
+                    p.entries[3]?.placement ===
+                        rankedPlayer.entries[3]?.placement
+                );
+            });
+
             result.push({
-                player: rankedPlayer.player,
-                displayScore: rankedPlayer.totalScore.toString(),
-                sortingScore: sortedRankings.findIndex((p) => {
-                    return (
-                        p.totalScore === rankedPlayer.totalScore &&
-                        p.entries[0]?.placement ===
-                            rankedPlayer.entries[0]?.placement &&
-                        p.entries[1]?.placement ===
-                            rankedPlayer.entries[1]?.placement &&
-                        p.entries[2]?.placement ===
-                            rankedPlayer.entries[2]?.placement &&
-                        p.entries[3]?.placement ===
-                            rankedPlayer.entries[3]?.placement
-                    );
-                }),
+                columns: {
+                    "Placement": placement + 1,
+                    "Player": rankedPlayer.player,
+                    "Score": rankedPlayer.totalScore,
+                    "Badge": this.getRankingBadge(rankedPlayer.totalScore, placement + 1),
+                },
+                order: placement,
+                value: rankedPlayer.totalScore,
+                backgroundColor: this.getRowColor(rankedPlayer.totalScore, placement + 1),
             });
         }
 
         return result;
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Roulette Rankings",
+            explanatoryText: "Official Roulette Rankings, using the 3 best placements of the last 4 tournaments.",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Badge", type: LeaderboardColumnType.IMAGE },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Score", type: LeaderboardColumnType.TEXT },
+            ]
+        }
     }
 }

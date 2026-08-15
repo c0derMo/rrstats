@@ -20,3 +20,29 @@ export type LeaderboardMapEntry = {
     tournamentBreakdown: number[];
     secondaryScore?: number;
 };
+
+export type LeaderboardRow = {
+    columns: Record<string, unknown>;
+    backgroundColor?: string;
+    color?: string;
+    value: unknown;
+    order: number;
+}
+
+export type LeaderboardColumnDefinition = {
+    name: string;
+    type: LeaderboardColumnType;
+}
+
+export enum LeaderboardColumnType {
+    TEXT = 'text',
+    PLAYER_NAME = 'player',
+    PLACEMENT_TAG = 'placement_tag',
+    IMAGE = 'image',
+}
+
+export type LeaderboardTableDefinition = {
+    name: string;
+    explanatoryText?: string;
+    columns: LeaderboardColumnDefinition[];
+}

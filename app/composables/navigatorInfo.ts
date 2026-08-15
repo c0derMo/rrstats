@@ -9,20 +9,18 @@ export const useNavigatorInfo = () => {
             | "tag"
             | "startingTimestamp"
         >[];
-        playerLeaderboards?: StatisticData<"player">[];
-        countryLeaderboards?: StatisticData<"country">[];
-        mapLeaderboards?: StatisticData<"map">[];
+        leaderboards?: LeaderboardTableDefinition[];
+        // playerLeaderboards?: StatisticData<"player">[];
+        // countryLeaderboards?: StatisticData<"country">[];
+        // mapLeaderboards?: StatisticData<"map">[];
     }>("navigator", () => ({}));
 
     async function fetchLeaderboards() {
-        const leaderboards = (await $fetch("/api/leaderboards/list")) ?? {
-            map: [],
-            player: [],
-            country: [],
-        };
-        navInfo.value.playerLeaderboards = leaderboards.player;
-        navInfo.value.countryLeaderboards = leaderboards.country;
-        navInfo.value.mapLeaderboards = leaderboards.map;
+        const leaderboards = (await $fetch("/api/leaderboards/list")) ?? [];
+        navInfo.value.leaderboards = leaderboards;
+        // navInfo.value.playerLeaderboards = leaderboards.player;
+        // navInfo.value.countryLeaderboards = leaderboards.country;
+        // navInfo.value.mapLeaderboards = leaderboards.map;
     }
 
     const getPlayers = async () => {
@@ -42,24 +40,24 @@ export const useNavigatorInfo = () => {
     };
 
     const getPlayerLeaderboards = async () => {
-        if (navInfo.value.playerLeaderboards == null) {
+        if (navInfo.value.leaderboards == null) {
             await fetchLeaderboards();
         }
-        return navInfo.value.playerLeaderboards!;
+        return navInfo.value.leaderboards!;
     };
 
     const getCountryLeaderboards = async () => {
-        if (navInfo.value.countryLeaderboards == null) {
+        if (navInfo.value.leaderboards == null) {
             await fetchLeaderboards();
         }
-        return navInfo.value.countryLeaderboards!;
+        return navInfo.value.leaderboards!;
     };
 
     const getMapLeaderboards = async () => {
-        if (navInfo.value.mapLeaderboards == null) {
+        if (navInfo.value.leaderboards == null) {
             await fetchLeaderboards();
         }
-        return navInfo.value.mapLeaderboards!;
+        return navInfo.value.leaderboards!;
     };
 
     return {
