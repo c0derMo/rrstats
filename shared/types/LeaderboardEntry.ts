@@ -26,14 +26,26 @@ export type LeaderboardRow = {
     expandableRows?: unknown[][];
     backgroundColor?: string;
     color?: string;
-    value: unknown;
     order: number;
+    value: number;
 }
 
 export type LeaderboardColumnDefinition = {
     name: string;
     type: LeaderboardColumnType;
     colored?: boolean;
+    filterable?: LeaderboardFilterType;
+    defaultFilter?: unknown;
+    serverSideFilter?: boolean;
+    searchable?: boolean;
+}
+
+export enum LeaderboardFilterType {
+    TEXT = 'text',
+    NUMERIC = 'numeric',
+    MAP = 'map',
+    MAP_OPTIONAL = 'map_optional',
+    COMPETITION_RANGE = 'competition_range',
 }
 
 export enum LeaderboardColumnType {
@@ -41,6 +53,8 @@ export enum LeaderboardColumnType {
     PLAYER_NAME = 'player',
     PLACEMENT_TAG = 'placement_tag',
     IMAGE = 'image',
+    MAP = 'map',
+    HIDDEN = 'hidden',
 }
 
 export type LeaderboardTableDefinition = {

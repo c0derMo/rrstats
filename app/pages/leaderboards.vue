@@ -70,37 +70,24 @@
                     {{ selectedCategory.explanatoryText }}
                 </div>
 
-                <SpreadsheetLeaderboardTable
+                <LeaderboardFilters
+                    :key="selectedCategory.name"
+                    v-model:search="search"
                     :table-definition="selectedCategory"
-                    :rows="filteredLeaderboardData"
+                    @update-local-filters="(f) => localFilters = f"
+                    @update-external-filters="updateExternalFilters"
                 />
 
-                <!-- <div
-                    class="flex flex-col gap-2 md:flex-row mt-4 justify-stretch items-center"
-                >
-                    <TextInputComponent
-                        v-if="
-                            selectedCategory.secondaryFilter != null &&
-                            selectedCategory.secondaryFilter != ''
-                        "
-                        v-model="secondaryFilter"
-                        type="number"
-                        class="w-full"
-                        :placeholder="`Minimum ${selectedCategory.secondaryFilter.toLowerCase()}`"
-                    />
-                    <TextInputComponent
-                        v-if="selectedCategoryType !== 'map'"
-                        v-model="search"
-                        class="w-full"
-                        :placeholder="`Search for ${selectedCategoryType}...`"
-                    />
-                    <DropdownComponent
-                        v-if="selectedCategory.hasMaps"
-                        v-model="selectedMap"
-                        class="w-full"
-                        :items="selectableMaps"
-                    />
-                </div> -->
+                <SpreadsheetLeaderboardTable
+                    v-if="!leaderboardLoading"
+                    :key="selectedCategory.name"
+                    :table-definition="selectedCategory"
+                    :rows="leaderboardData"
+                    :external-filters="externalFilters"
+                    :search="search"
+                    :filters="localFilters"
+                    @update-filters="updateExternalFilters"
+                />
 
                 <!-- <DataTableComponent
                     v-if="isPlayerLB(searchedLeaderboardData)"
@@ -224,11 +211,9 @@ const selectedTab = ref("Players");
 const selectedCategory: Ref<LeaderboardTableDefinition> = ref(playerCategories[0]);
 const leaderboardData: Ref<LeaderboardRow[]> = ref([]);
 const leaderboardLoading = ref(false);
-// const secondaryFilter = ref(playerCategories[0].defaultSecondaryFilter ?? 0);
-const secondaryFilter = ref(0);
-const selectedMap: Ref<number> = ref(HitmanMap.PARIS);
+const externalFilters: Ref<Record<string, unknown>> = ref({});
+const localFilters: Ref<Record<string, unknown>> = ref({});
 const search = ref("");
-const expandedCountry = ref("");
 const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
@@ -264,50 +249,6 @@ await playerLookup.queryAll();
 //     }
 // });
 
-const selectableMaps = computed(() => {
-    const maps = getAllMaps().map((map) => {
-        return { value: map, text: getMap(map)!.name };
-    });
-    // if (selectedCategory.value.mapOptional) {
-    //     return [{ value: -1, text: "All maps" }, ...maps];
-    // }
-    return maps;
-});
-
-const playerTableHeaders = computed(() => {
-    const headers = [
-        { title: "", key: "placement" },
-        { title: "Player", key: "player" },
-        { title: "Score", key: "displayScore" },
-    ];
-    // if (selectedCategory.value.secondaryFilter != null) {
-    //     headers.push({
-    //         title: selectedCategory.value.secondaryFilter,
-    //         key: "secondaryScore",
-    //     });
-    // }
-    return headers;
-});
-
-const countryTableHeaders = computed(() => {
-    const headers = [
-        { title: "", key: "placement" },
-        { title: "Country", key: "country" },
-        { title: "Score", key: "displayScore" },
-    ];
-    // if (selectedCategory.value.secondaryFilter != null) {
-    //     headers.push({
-    //         title: selectedCategory.value.secondaryFilter,
-    //         key: "secondaryScore",
-    //     });
-    // }
-    headers.push({
-        title: "",
-        key: "expand",
-    });
-    return headers;
-});
-
 const shownCategories = computed(() => {
     if (selectedTab.value === "Players") {
         return playerCategories;
@@ -321,87 +262,47 @@ const shownCategories = computed(() => {
     return [];
 });
 
-const selectedCategoryType = computed(() => {
-    return "Player";
-    // return selectedCategory.value.type;
-});
-
-const filteredLeaderboardData = computed(() => {
-    // if (
-    //     selectedCategory.value.secondaryFilter != null &&
-    //     selectedCategory.value.secondaryFilter != ""
-    // ) {
-    //     return leaderboardData.value.filter(
-    //         (data) => (data.secondaryScore ?? 0) >= secondaryFilter.value,
-    //     );
-    // }
-    return leaderboardData.value;
-});
-
-const searchedLeaderboardData = computed(() => {
-    // if (search.value === "") {
-        return filteredLeaderboardData.value;
-    // }
-    // return filteredLeaderboardData.value.filter((data) => {
-    //     return (
-    //         playerLookup
-    //             .get(
-    //                 (data as LeaderboardPlayerEntry).player,
-    //                 (data as LeaderboardPlayerEntry).player,
-    //             )
-    //             ?.toLowerCase()
-    //             .includes(search.value.toLowerCase()) ||
-    //         (data as LeaderboardCountryEntry).country
-    //             ?.toLowerCase()
-    //             .includes(search.value.toLowerCase()) ||
-    //         (data as LeaderboardCountryEntry).countryCode
-    //             ?.toLowerCase()
-    //             .includes(search.value.toLowerCase())
-    //     );
-    // });
-});
-
 async function selectCategory(category: LeaderboardTableDefinition) {
     selectedCategory.value = category;
+    externalFilters.value = {};
+    localFilters.value = {};
+    search.value = "";
+
     // setHash(`#${category.type}.${category.name}`);
     // if (selectedCategory.value.defaultSecondaryFilter != null) {
     //     secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
     // } else {
     //     secondaryFilter.value = 0;
     // }
-    await loadLeaderboardData(true);
+
+    await loadLeaderboardData();
 }
 
-function expandCountry(row: LeaderboardCountryEntry) {
-    if (expandedCountry.value === row.country) {
-        expandedCountry.value = "";
-    } else {
-        expandedCountry.value = row.country;
-    }
+async function updateExternalFilters(filters: Record<string, unknown>) {
+    externalFilters.value = filters;
+    await loadLeaderboardData();
 }
 
-async function loadLeaderboardData(updateMap: boolean) {
+async function loadLeaderboardData() {
     if (leaderboardLoading.value) {
         return;
     }
 
     leaderboardLoading.value = true;
 
-    // if (selectedCategory.value.hasMaps && updateMap) {
-    //     if (selectedCategory.value.mapOptional) {
-    //         selectedMap.value = OptionalMap.NO_MAP;
-    //     } else {
-    //         selectedMap.value = HitmanMap.PARIS;
-    //     }
-    // }
+    const defaultExternalFilters: Record<string, unknown> = {};
+    for (const column of selectedCategory.value.columns) {
+        if (column.serverSideFilter) {
+            defaultExternalFilters[column.name] = column.defaultFilter;
+        }
+    }
+    Object.assign(defaultExternalFilters, externalFilters.value);
 
     try {
         const leaderboardRequest = await $fetch(`/api/leaderboards/category`, {
             query: {
                 category: selectedCategory.value.name,
-                // map: selectedCategory.value.hasMaps
-                //     ? selectedMap.value
-                //     : undefined,
+                filters: JSON.stringify(defaultExternalFilters),
             },
         });
         leaderboardData.value = leaderboardRequest;
@@ -410,47 +311,5 @@ async function loadLeaderboardData(updateMap: boolean) {
     }
 }
 
-function isMapLB(
-    _: (
-        | LeaderboardPlayerEntry
-        | LeaderboardCountryEntry
-        | LeaderboardMapEntry
-    )[],
-): _ is LeaderboardMapEntry[] {
-    return selectedCategoryType.value === "map";
-}
-
-function isPlayerLB(
-    _: (
-        | LeaderboardPlayerEntry
-        | LeaderboardCountryEntry
-        | LeaderboardMapEntry
-    )[],
-): _ is LeaderboardPlayerEntry[] {
-    return selectedCategoryType.value === "player";
-}
-
-function isCountryLB(
-    _: (
-        | LeaderboardPlayerEntry
-        | LeaderboardCountryEntry
-        | LeaderboardMapEntry
-    )[],
-): _ is LeaderboardCountryEntry[] {
-    return selectedCategoryType.value === "country";
-}
-
-watch(selectedCategory, async () => {
-    // if (selectedCategory.value.defaultSecondaryFilter != null) {
-    //     secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
-    // } else {
-    //     secondaryFilter.value = 0;
-    // }
-    await loadLeaderboardData(true);
-});
-watch(selectedMap, async () => {
-    await loadLeaderboardData(false);
-});
-
-await loadLeaderboardData(true);
+await loadLeaderboardData();
 </script>

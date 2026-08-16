@@ -1,17 +1,17 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
+export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
     type = "player" as const;
     name = "Winning streak on a map";
     hasMaps = true;
     mapOptional = true;
 
-    basedOn = ["match" as const, "map" as const];
+    basedOn() {
+        return ["match" as const, "map" as const];
+    };
 
-    async calculate(): Promise<
-        Record<HitmanMap | OptionalMap, LeaderboardPlayerEntry[]>
-    > {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
             .select([
@@ -45,39 +45,50 @@ export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result = {} as Record<
-            HitmanMap | OptionalMap,
-            LeaderboardPlayerEntry[]
-        >;
-        for (const map of getAllMaps()) {
-            result[map] = [];
-        }
-        result[-1] = [];
+        const result: LeaderboardRow[] = [];
 
         streaks.mapAll((player, playerStreaks) => {
             playerStreaks.mapAll((map, streak) => {
-                if (streak.getLongestStreak() > 1) {
-                    result[-1].push({
-                        player: player,
-                        displayScore: `${streak
-                            .getLongestStreak()
-                            .toString()} (${getMap(map)!.abbreviation})`,
-                        sortingScore: streak.getLongestStreak(),
-                    });
-                    result[map as HitmanMap].push({
-                        player: player,
-                        displayScore: streak.getLongestStreak().toString(),
-                        sortingScore: streak.getLongestStreak(),
-                    });
+                for (const singleStreak of streak.getAllStreaks()) {
+                    if (singleStreak >= 5) {
+                        result.push({
+                            columns: {
+                                "Player": player,
+                                "Streak": singleStreak,
+                                "Map": map
+                            },
+                            order: 0,
+                            value: singleStreak,
+                        });
+                    }
+                    // if (streak.getLongestStreak() > 1) {
+                    //     result.push({
+                    //         columns: {
+                    //             "Player": player,
+                    //             "Streak": streak.getLongestStreak(),
+                    //             "Map": map
+                    //         },
+                    //         order: 0,
+                    //         value: streak.getLongestStreak(),
+                    //     });
+                    // }
                 }
             });
         });
+        this.sortAndInferPlacementByValue(result);
 
-        for (const map of getAllMaps()) {
-            result[map].sort((a, b) => b.sortingScore - a.sortingScore);
-        }
-        result[-1].sort((a, b) => b.sortingScore - a.sortingScore);
-
-        return result;
+        this.cache = result;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Winning streak on a map",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Streak", type: LeaderboardColumnType.TEXT },
+                { name: "Map", type: LeaderboardColumnType.MAP, filterable: LeaderboardFilterType.MAP_OPTIONAL, defaultFilter: OptionalMap.NO_MAP },
+            ]
+        }
+    };
 }

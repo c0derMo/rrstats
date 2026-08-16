@@ -1,18 +1,20 @@
 import { Player } from "~~/server/model/Player";
-import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
 import MapperService from "../../MapperService";
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class CountryTitles implements LeaderboardCountryStatistic {
+export class CountryTitles extends BaseLeaderboardStatistic {
     type = "country" as const;
     name = "Titles per country";
     hasMaps = false;
 
-    basedOn = ["player" as const, "placement" as const];
+    basedOn() {
+        return ["player" as const, "placement" as const];
+    }
 
-    async calculate(): Promise<LeaderboardCountryEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
-            .select(["player.uuid", "player.nationality"])
+            .select(["player.uuid", "player.nationality", "player.primaryName"])
             .getMany();
         const placements = await CompetitionPlacement.createQueryBuilder(
             "placement",
@@ -30,7 +32,12 @@ export class CountryTitles implements LeaderboardCountryStatistic {
             players,
             "uuid",
             "nationality",
-        ) as Record<string, string>;
+        );
+        const nameMap = MapperService.createStringMapFromList(
+            players,
+            "uuid",
+            "primaryName"
+        );
 
         const titlesPerCountry: DefaultedMap<
             string,
@@ -48,28 +55,27 @@ export class CountryTitles implements LeaderboardCountryStatistic {
             }
         }
 
-        const result: LeaderboardCountryEntry[] = titlesPerCountry.mapAll(
+        const result: LeaderboardRow[] = titlesPerCountry.mapAll(
             (country, players) => {
+                const sum = getSumOfValues(players);
                 return {
-                    countryCode: country,
-                    country: this.getCountryName(country),
-                    displayScore: getSumOfValues(players).toString(),
-                    sortingScore: getSumOfValues(players),
-                    players: players
-                        .mapAll((key, value) => {
-                            return {
-                                player: key,
-                                sortingScore: value,
-                                displayScore: value.toString(),
-                            };
+                    columns: {
+                        "Flag": `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
+                        "Country": this.getCountryName(country),
+                        "Titles": sum
+                    },
+                    value: sum,
+                    order: 0,
+                    expandableRows: players.mapAll((key, value) => {
+                            return { player: key, score: value }
                         })
-                        .sort((a, b) => b.sortingScore - a.sortingScore),
+                        .toSorted((a, b) => b.score - a.score)
+                        .map((player) => [nameMap[player.player] ?? player.player, player.score.toString()])
                 };
             },
         );
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
-
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
 
     private getCountryName(code: string) {
@@ -78,5 +84,17 @@ export class CountryTitles implements LeaderboardCountryStatistic {
                 code.toUpperCase(),
             ) ?? `Unknown country: ${code}`
         );
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Titles per country",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Flag", type: LeaderboardColumnType.IMAGE },
+                { name: "Country", type: LeaderboardColumnType.TEXT, searchable: true },
+                { name: "Titles", type: LeaderboardColumnType.TEXT },
+            ],
+        }
     }
 }

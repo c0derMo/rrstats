@@ -11,9 +11,10 @@ import {
 } from "typeorm";
 import { isReady } from "../readyListener";
 import consola from "consola";
+import type { BaseLeaderboardStatistic } from "./leaderboardStatistics/BaseLeaderboardStatistic";
 import { PlayerRouletteRankings } from "./leaderboardStatistics/player/RouletteRankings";
-// import { PlayerWinrate } from "./leaderboardStatistics/player/Winrate";
-// import { PlayerMapWinrate } from "./leaderboardStatistics/player/MapWinrate";
+import { PlayerWinrate } from "./leaderboardStatistics/player/Winrate";
+import { PlayerMapWinrate } from "./leaderboardStatistics/player/MapWinrate";
 // import { CountryPlayers } from "./leaderboardStatistics/country/Players";
 // import { PlayerSweeps } from "./leaderboardStatistics/player/Sweeps";
 // import { PlayerSweeps6 } from "./leaderboardStatistics/player/Sweeps6";
@@ -29,21 +30,21 @@ import { PlayerRouletteRankings } from "./leaderboardStatistics/player/RouletteR
 // import { PlayerWROpponentMaps } from "./leaderboardStatistics/player/WROpponentMaps";
 // import { PlayerMatchesWonInARow } from "./leaderboardStatistics/player/MatchesWonInARow";
 // import { PlayerMapsWonInARow } from "./leaderboardStatistics/player/MapsWonInARow";
-// import { PlayerSpecificMapPlayed } from "./leaderboardStatistics/player/SpecificMapPlayed";
+import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
+import { PlayerSpecificMapPlayed } from "./leaderboardStatistics/player/SpecificMapPlayed";
 // import { PlayerSpecificMapWinrate } from "./leaderboardStatistics/player/SpecificMapWinrate";
 // import { CountryMatches } from "./leaderboardStatistics/country/Matches";
 // import { CountryWins } from "./leaderboardStatistics/country/Wins";
 // import { CountryWinrate } from "./leaderboardStatistics/country/Winrate";
-// import { CountryTitles } from "./leaderboardStatistics/country/Titles";
+import { CountryTitles } from "./leaderboardStatistics/country/Titles";
 // import { PlayerAveragePlacement } from "./leaderboardStatistics/player/AveragePlacement";
 // import { PlayerElo } from "./leaderboardStatistics/player/Elo";
 // import { PlayerMatchesCasted } from "./leaderboardStatistics/player/MatchesCasted";
 // import { MapPicked } from "./leaderboardStatistics/map/Picked";
 // import { MapBanned } from "./leaderboardStatistics/map/Banned";
-// import { MapPlayed } from "./leaderboardStatistics/map/Played";
+import { MapPlayed } from "./leaderboardStatistics/map/Played";
 // import { MapRNG } from "./leaderboardStatistics/map/RNG";
 // import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
-// import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
 // import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
 // import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
 // import { PlayerMapPBTime } from "./leaderboardStatistics/player/MapPBTime";
@@ -60,16 +61,14 @@ interface GenericLeaderboardStatistic<
         | "placement"
         | "achievement"
     )[];
-    calculate: () =>
-        | Promise<Record<HitmanMap, R[]>>
-        | Promise<Record<HitmanMap | OptionalMap, R[]>>
-        | Promise<R[]>;
+    hasServerSideFilters?: boolean;
+    calculate: () => Promise<R[]>;
     getTableDefinition: () => LeaderboardTableDefinition;
 }
 
 export type LeaderboardPlayerStatistic = GenericLeaderboardStatistic<
     "player",
-    LeaderboardRow
+    LeaderboardRow | FilterableLeaderboardRows
 >;
 export type LeaderboardCountryStatistic = GenericLeaderboardStatistic<
     "country",
@@ -80,15 +79,17 @@ export type LeaderboardMapStatistic = GenericLeaderboardStatistic<
     LeaderboardMapEntry
 >;
 
-export type LeaderboardStatistic =
-    | LeaderboardPlayerStatistic
-    | LeaderboardCountryStatistic
-    | LeaderboardMapStatistic;
+export type LeaderboardStatistic = LeaderboardPlayerStatistic;
 
 export type LeaderboardEntry =
     | LeaderboardPlayerEntry
     | LeaderboardCountryEntry
     | LeaderboardMapEntry;
+
+export type FilterableLeaderboardRows = {
+    filter: Record<string, unknown>,
+    rows: LeaderboardRow[]
+}
 
 const logger = consola.withTag("rrstats:leaderboards");
 
@@ -96,17 +97,13 @@ export default class LeaderboardController {
     private static cache: Map<
         string,
         | LeaderboardRow[]
-        | LeaderboardPlayerEntry[]
-        | LeaderboardCountryEntry[]
-        | LeaderboardMapEntry[]
-        | Record<HitmanMap, LeaderboardEntry[]>
-        | Record<HitmanMap | OptionalMap, LeaderboardEntry[]>
+        | FilterableLeaderboardRows[]
     > = new Map();
 
-    static readonly statistics: LeaderboardStatistic[] = [
+    static readonly statistics: BaseLeaderboardStatistic[] = [
         new PlayerRouletteRankings(),
-        // new PlayerWinrate(),
-        // new PlayerMapWinrate(),
+        new PlayerWinrate(),
+        new PlayerMapWinrate(),
         // new PlayerRRAppearances(),
         // new PlayerRRWCAppearances(),
         // new PlayerAveragePlacement(),
@@ -120,11 +117,11 @@ export default class LeaderboardController {
         // new PlayerWROpponentMaps(),
         // new PlayerMatchesWonInARow(),
         // new PlayerMapsWonInARow(),
-        // new PlayerSameMapWonInARow(),
+        new PlayerSameMapWonInARow(),
         // new PlayerSweeps6(),
         // new PlayerSweeps(),
         // new PlayerReverseSweeps(),
-        // new PlayerSpecificMapPlayed(),
+        new PlayerSpecificMapPlayed(),
         // new PlayerSpecificMapWinrate(),
         // new PlayerMapPBTime(),
         // new PlayerElo(),
@@ -135,11 +132,11 @@ export default class LeaderboardController {
         // new CountryMatches(),
         // new CountryWins(),
         // new CountryWinrate(),
-        // new CountryTitles(),
+        new CountryTitles(),
 
         // new MapPicked(),
         // new MapBanned(),
-        // new MapPlayed(),
+        new MapPlayed(),
         // new MapRNG(),
         // new MapAppearance(),
     ];
@@ -149,106 +146,31 @@ export default class LeaderboardController {
     ) {
         let count = 0;
         for (const statistic of LeaderboardController.statistics) {
-            if (statistic.basedOn.includes(type)) {
+            if (statistic.basedOn().includes(type)) {
                 count++;
-                LeaderboardController.cache.delete(statistic.name);
+                statistic.invalidate();
             }
         }
         logger.log("Cleaned %d statistics with %s type.", count, type);
     }
 
-    // public static async getCategories(): Promise<{
-    //     player: StatisticData<"player">[];
-    //     country: StatisticData<"country">[];
-    //     map: StatisticData<"map">[];
-    // }> {
     public static async getCategories(): Promise<LeaderboardTableDefinition[]> {
         return LeaderboardController.statistics.map((stat) => stat.getTableDefinition());
-        // return {
-        //     player: LeaderboardController.statistics
-        //         .filter((stat) => stat.type === "player")
-        //         .map((stat) => {
-        //             return {
-        //                 name: stat.name,
-        //                 hasMaps: stat.hasMaps ?? false,
-        //                 mapOptional: stat.mapOptional ?? false,
-        //                 secondaryFilter: stat.secondaryFilter,
-        //                 type: "player",
-        //                 explanatoryText: stat.explanatoryText,
-        //                 defaultSecondaryFilter: stat.defaultSecondaryFilter,
-        //             };
-        //         }),
-        //     country: LeaderboardController.statistics
-        //         .filter((stat) => stat.type === "country")
-        //         .map((stat) => {
-        //             return {
-        //                 name: stat.name,
-        //                 hasMaps: stat.hasMaps ?? false,
-        //                 mapOptional: stat.mapOptional ?? false,
-        //                 secondaryFilter: stat.secondaryFilter,
-        //                 type: "country",
-        //                 explanatoryText: stat.explanatoryText,
-        //                 defaultSecondaryFilter: stat.defaultSecondaryFilter,
-        //             };
-        //         }),
-        //     map: LeaderboardController.statistics
-        //         .filter((stat) => stat.type === "map")
-        //         .map((stat) => {
-        //             return {
-        //                 name: stat.name,
-        //                 hasMaps: false,
-        //                 mapOptional: false,
-        //                 secondaryFilter: stat.secondaryFilter,
-        //                 type: "map",
-        //                 explanatoryText: stat.explanatoryText,
-        //                 defaultSecondaryFilter: stat.defaultSecondaryFilter,
-        //             };
-        //         }),
-        // };
     }
 
     @Log("LeaderboardController.getEntries", true)
     public static async getEntries(
         category: string,
-        map?: HitmanMap | OptionalMap,
+        serverSideFilters?: Record<string, unknown>,
     ): Promise<LeaderboardRow[]> {
         const statistic = LeaderboardController.statistics.find(
-            (stat) => stat.name === category,
+            (stat) => stat.getTableDefinition().name === category,
         );
         if (statistic == null) {
             return [];
         }
 
-        if (!LeaderboardController.cache.has(category)) {
-            LeaderboardController.cache.set(
-                category,
-                await statistic.calculate() as LeaderboardRow[],
-            );
-        }
-
-        // if (statistic.hasMaps) {
-        //     if (map == null) {
-        //         return [];
-        //     } else if (map === OptionalMap.NO_MAP) {
-        //         return (
-        //             LeaderboardController.cache.get(category) as Record<
-        //                 HitmanMap | OptionalMap,
-        //                 LeaderboardEntry[]
-        //             >
-        //         )[OptionalMap.NO_MAP];
-        //     } else {
-        //         return (
-        //             LeaderboardController.cache.get(category) as Record<
-        //                 HitmanMap,
-        //                 LeaderboardEntry[]
-        //             >
-        //         )[map];
-        //     }
-        // } else {
-            return LeaderboardController.cache.get(
-                category,
-            ) as LeaderboardRow[];
-        // }
+        return await statistic.get(serverSideFilters);
     }
 }
 

@@ -1,16 +1,15 @@
-import LeaderboardController, {
-    type LeaderboardEntry,
-} from "../../controller/LeaderboardController";
+import LeaderboardController from "../../controller/LeaderboardController";
 
-export default defineEventHandler<Promise<LeaderboardEntry[]>>(
+export default defineEventHandler<Promise<LeaderboardRow[]>>(
     async (event) => {
         const query = getQuery<{
             category: string;
-            map: HitmanMap;
+            filters: string;
         }>(event);
 
         const category = decodeURIComponent(query.category);
+        const filters = JSON.parse(query.filters);
 
-        return await LeaderboardController.getEntries(category, query.map);
+        return await LeaderboardController.getEntries(category, filters);
     },
 );

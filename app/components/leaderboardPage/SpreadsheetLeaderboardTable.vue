@@ -1,25 +1,23 @@
 <template>
     <div class="flex flex-col gap-2">
-        <TextInputComponent
-            v-model="search"
-            class="w-full"
-            :placeholder="`Search for player...`"
-        />
-
         <SpreadsheetTable
             :columns="spreadsheetTableColumns"
             :rows="paginatedSpreadsheetTableRows"
         >
             <template #placement="{ content }">
-                <PlacementTag narrow :placement="unknownToNumber(content)" />
+                <PlacementTag narrow :placement="castUnknown(content)" />
             </template>
 
             <template #image="{ content }">
-                <img class="h-6 aspect-auto mx-auto" :src="unknownAsString(content)" />
+                <img class="h-6 aspect-auto mx-auto" :src="castUnknown(content)" />
             </template>
 
             <template #player="{ content }">
-                <PlayerLinkTag :player="unknownAsString(content)" />
+                <PlayerLinkTag :player="castUnknown(content)" />
+            </template>
+
+            <template #map="{ content }">
+                <MapTag :map="getMap(castUnknown(content))!" full-name narrow />
             </template>
 
             <template #rowExpansion="{ row }">
@@ -60,6 +58,8 @@ const players = usePlayers();
 const props = defineProps<{
     tableDefinition: LeaderboardTableDefinition;
     rows: LeaderboardRow[];
+    filters: Record<string, unknown>;
+    search: string;
 }>();
 
 const amountOfItems = computed(() => {
@@ -73,7 +73,6 @@ const selectableRowsPerPage = [
     { text: "All", value: -1 },
 ];
 
-const search = ref("");
 const selectedRowsPerPage = ref(15);
 const pageIndex = ref(0);
 
@@ -89,34 +88,39 @@ const endIndex = computed(() => {
 });
 
 const spreadsheetTableColumns = computed<ColumnDefinition[]>(() => {
-    const columnDefinitions = props.tableDefinition.columns.map((column) => {
-        const columnDefinition: ColumnDefinition = {
-            name: column.name,
-            title: column.name,
-            width: 'auto',
-            textAlign: 'left',
-        };
+    const columnDefinitions = props.tableDefinition.columns
+        .filter((column) => column.type !== LeaderboardColumnType.HIDDEN)
+        .map((column) => {
+            const columnDefinition: ColumnDefinition = {
+                name: column.name,
+                title: column.name,
+                width: 'auto',
+                textAlign: 'left'
+            };
 
-        if (column.type === LeaderboardColumnType.PLACEMENT_TAG) {
-            columnDefinition.name = 'placement';
-            columnDefinition.title = '';
-            columnDefinition.width = '100px';
-            columnDefinition.textAlign = 'right';
-        }
+            if (column.type === LeaderboardColumnType.PLACEMENT_TAG) {
+                columnDefinition.name = 'placement';
+                columnDefinition.title = '';
+                columnDefinition.width = '100px';
+                columnDefinition.textAlign = 'right';
+            }
 
-        if (column.type === LeaderboardColumnType.IMAGE) {
-            columnDefinition.name = 'image';
-            columnDefinition.title = '';
-            columnDefinition.width = '50px';
-            columnDefinition.textAlign = 'center';
-        }
+            if (column.type === LeaderboardColumnType.IMAGE) {
+                columnDefinition.name = 'image';
+                columnDefinition.title = '';
+                columnDefinition.width = '50px';
+                columnDefinition.textAlign = 'center';
+            }
 
-        if (column.type === LeaderboardColumnType.PLAYER_NAME) {
-            columnDefinition.name = 'player';
-        }
+            if (column.type === LeaderboardColumnType.PLAYER_NAME) {
+                columnDefinition.name = 'player';
+            }
+            if (column.type === LeaderboardColumnType.MAP) {
+                columnDefinition.name = 'map';
+            }
 
-        return columnDefinition;
-    });
+            return columnDefinition;
+        });
 
     if (props.rows.some((row) => row.expandableRows != null)) {
         columnDefinitions.push({
@@ -129,11 +133,38 @@ const spreadsheetTableColumns = computed<ColumnDefinition[]>(() => {
     return columnDefinitions;
 });
 
-const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][] })[]>(() => {
+const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][]})[]>(() => {
     return props.rows
-        .map((row) => {
+        .filter((row) => {
+            return props.tableDefinition.columns.map((column) => {
+                if (column.serverSideFilter === true || column.filterable == null || props.filters[column.name] == null) {
+                    return true;
+                }
+                switch (column.filterable) {
+                    case LeaderboardFilterType.TEXT:
+                        if (typeof row.columns[column.name] !== "string") {
+                            return true;
+                        }
+                        return (row.columns[column.name] as string).toLowerCase().includes(props.filters[column.name] as string ?? "");
+                    case LeaderboardFilterType.MAP:
+                    case LeaderboardFilterType.MAP_OPTIONAL:
+                        if (typeof row.columns[column.name] !== "number" || props.filters[column.name] as number < 0) {
+                            return true;
+                        }
+                        return (row.columns[column.name] as number) === props.filters[column.name];
+                    case LeaderboardFilterType.NUMERIC:
+                        if (typeof row.columns[column.name] !== "number" || props.filters[column.name] as number < 0) {
+                            return true;
+                        }
+                        return (row.columns[column.name] as number) >= (props.filters[column.name] as number);
+                }
+                return true;
+            }).reduce((prev, cur) => prev && cur);
+        })
+        .map((row, _, array) => {
             const columns: Cell[] = [];
             const searchables: string[] = [];
+            const placement = array.findIndex((search) => search.order === row.order) + 1;
 
             for (const column of props.tableDefinition.columns) {
                 if (row.columns[column.name] != null) {
@@ -151,10 +182,18 @@ const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][
                     if (column.colored && row.color != null) {
                         cellStyle.color = row.color;
                     }
+                    if (column.searchable) {
+                        searchables.push(value as string);
+                    }
 
                     columns.push({
                         ...cellStyle,
                         content: value
+                    });
+                }
+                if (column.type === LeaderboardColumnType.PLACEMENT_TAG) {
+                    columns.push({
+                        content: placement
                     });
                 }
             }
@@ -176,8 +215,8 @@ const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][
         .sort((a, b) => a.order - b.order)
         .filter(
             (row) => {
-                return search.value === '' ||
-                    row.searchables.some((searchable) => searchable.toLowerCase().includes(search.value.toLowerCase()))
+                return props.search === '' ||
+                    row.searchables.some((searchable) => searchable.toLowerCase().includes(props.search.toLowerCase()))
             }
         )
         .map((row) => ({
@@ -219,11 +258,7 @@ function previousPage() {
     );
 }
 
-function unknownToNumber(val: unknown): number {
-    return val as number;
-}
-
-function unknownAsString(val: unknown): string {
-    return val as string;
+function castUnknown<T>(val: unknown): T {
+    return val as T;
 }
 </script>

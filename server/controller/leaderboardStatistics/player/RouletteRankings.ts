@@ -1,7 +1,7 @@
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import ld from "lodash";
 import { Brackets } from "typeorm";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
 interface Ranking {
     player: string;
@@ -13,12 +13,10 @@ interface Ranking {
     }[];
 }
 
-export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Roulette Rankings";
-    hasMaps = false;
-
-    basedOn = ["placement" as const, "comp" as const];
+export class PlayerRouletteRankings extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["placement" as const, "comp" as const];
+    };
 
     getRankingBadge(score: number, placement: number): string {
         if (score <= 0 || placement < 0) {
@@ -108,7 +106,7 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
         }
     }
 
-    async calculate(): Promise<LeaderboardRow[]> {
+    async calculate(): Promise<void> {
         const validCompetitions = await Competition.createQueryBuilder("comp")
             .orderBy("comp.startingTimestamp", "DESC")
             .where(
@@ -217,12 +215,11 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
 
             result.push({
                 columns: {
-                    "Placement": placement + 1,
                     "Player": rankedPlayer.player,
                     "Score": rankedPlayer.totalScore,
                     "Badge": this.getRankingBadge(rankedPlayer.totalScore, placement + 1),
                 },
-                order: placement,
+                order: placement + 1,
                 value: rankedPlayer.totalScore,
                 backgroundColor: this.getRowColor(rankedPlayer.totalScore, placement + 1),
                 expandableRows: [
@@ -236,8 +233,9 @@ export class PlayerRouletteRankings implements LeaderboardPlayerStatistic {
                 ]
             });
         }
+        result.sort((a, b) => a.order - b.order);
 
-        return result;
+        this.cache = result;
     }
 
     getTableDefinition(): LeaderboardTableDefinition {
