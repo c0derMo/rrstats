@@ -4,10 +4,6 @@ import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
 export class CountryTitles extends BaseLeaderboardStatistic {
-    type = "country" as const;
-    name = "Titles per country";
-    hasMaps = false;
-
     basedOn() {
         return ["player" as const, "placement" as const];
     }
@@ -89,6 +85,7 @@ export class CountryTitles extends BaseLeaderboardStatistic {
     getTableDefinition(): LeaderboardTableDefinition {
         return {
             name: "Titles per country",
+            category: "country",
             columns: [
                 { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
                 { name: "Flag", type: LeaderboardColumnType.IMAGE },

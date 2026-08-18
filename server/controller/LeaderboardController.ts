@@ -12,42 +12,45 @@ import {
 import { isReady } from "../readyListener";
 import consola from "consola";
 import type { BaseLeaderboardStatistic } from "./leaderboardStatistics/BaseLeaderboardStatistic";
+
 import { PlayerRouletteRankings } from "./leaderboardStatistics/player/RouletteRankings";
+import { PlayerElo } from "./leaderboardStatistics/player/Elo";
+import { PlayerMatchesPlayed } from "./leaderboardStatistics/player/MatchesPlayed";
+import { PlayerMatchesWon } from "./leaderboardStatistics/player/MatchesWon";
 import { PlayerWinrate } from "./leaderboardStatistics/player/Winrate";
+import { PlayerMapsPlayed } from "./leaderboardStatistics/player/MapsPlayed";
+import { PlayerMapsWon } from "./leaderboardStatistics/player/MapsWon";
 import { PlayerMapWinrate } from "./leaderboardStatistics/player/MapWinrate";
-// import { CountryPlayers } from "./leaderboardStatistics/country/Players";
-// import { PlayerSweeps } from "./leaderboardStatistics/player/Sweeps";
-// import { PlayerSweeps6 } from "./leaderboardStatistics/player/Sweeps6";
-// import { PlayerReverseSweeps } from "./leaderboardStatistics/player/ReverseSweeps";
-// import { PlayerRRAppearances } from "./leaderboardStatistics/player/RRAppearances";
-// import { PlayerRRWCAppearances } from "./leaderboardStatistics/player/RRWCAppearances";
-// import { PlayerGFAppearances } from "./leaderboardStatistics/player/GFAppearances";
-// import { PlayerMatchesPlayed } from "./leaderboardStatistics/player/MatchesPlayed";
-// import { PlayerMatchesWon } from "./leaderboardStatistics/player/MatchesWon";
-// import { PlayerMapsPlayed } from "./leaderboardStatistics/player/MapsPlayed";
-// import { PlayerMapsWon } from "./leaderboardStatistics/player/MapsWon";
 // import { PlayerWROwnMaps } from "./leaderboardStatistics/player/WROwnMaps";
 // import { PlayerWROpponentMaps } from "./leaderboardStatistics/player/WROpponentMaps";
-// import { PlayerMatchesWonInARow } from "./leaderboardStatistics/player/MatchesWonInARow";
-// import { PlayerMapsWonInARow } from "./leaderboardStatistics/player/MapsWonInARow";
-import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
 import { PlayerSpecificMapPlayed } from "./leaderboardStatistics/player/SpecificMapPlayed";
 // import { PlayerSpecificMapWinrate } from "./leaderboardStatistics/player/SpecificMapWinrate";
+// import { PlayerMapPBTime } from "./leaderboardStatistics/player/MapPBTime";
+import { PlayerRRAppearances } from "./leaderboardStatistics/player/RRAppearances";
+// import { PlayerRRWCAppearances } from "./leaderboardStatistics/player/RRWCAppearances";
+// import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
+// import { PlayerGFAppearances } from "./leaderboardStatistics/player/GFAppearances";
+import { PlayerAveragePlacement } from "./leaderboardStatistics/player/AveragePlacement";
+import { PlayerMatchesWonInARow } from "./leaderboardStatistics/player/MatchesWonInARow";
+// import { PlayerMapsWonInARow } from "./leaderboardStatistics/player/MapsWonInARow";
+import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
+import { PlayerSweeps } from "./leaderboardStatistics/player/Sweeps";
+import { PlayerSweeps6 } from "./leaderboardStatistics/player/Sweeps6";
+// import { PlayerReverseSweeps } from "./leaderboardStatistics/player/ReverseSweeps";
+import { PlayerMatchesCasted } from "./leaderboardStatistics/player/MatchesCasted";
+import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
+
+// import { CountryPlayers } from "./leaderboardStatistics/country/Players";
 // import { CountryMatches } from "./leaderboardStatistics/country/Matches";
 // import { CountryWins } from "./leaderboardStatistics/country/Wins";
 // import { CountryWinrate } from "./leaderboardStatistics/country/Winrate";
 import { CountryTitles } from "./leaderboardStatistics/country/Titles";
-// import { PlayerAveragePlacement } from "./leaderboardStatistics/player/AveragePlacement";
-// import { PlayerElo } from "./leaderboardStatistics/player/Elo";
-// import { PlayerMatchesCasted } from "./leaderboardStatistics/player/MatchesCasted";
+
 // import { MapPicked } from "./leaderboardStatistics/map/Picked";
 // import { MapBanned } from "./leaderboardStatistics/map/Banned";
 import { MapPlayed } from "./leaderboardStatistics/map/Played";
 // import { MapRNG } from "./leaderboardStatistics/map/RNG";
 // import { MapAppearance } from "./leaderboardStatistics/map/Appearances";
-// import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
-// import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
-// import { PlayerMapPBTime } from "./leaderboardStatistics/player/MapPBTime";
 
 interface GenericLeaderboardStatistic<
     T extends string,
@@ -102,31 +105,37 @@ export default class LeaderboardController {
 
     static readonly statistics: BaseLeaderboardStatistic[] = [
         new PlayerRouletteRankings(),
+        new PlayerElo(),
+
+        new PlayerMatchesPlayed(),
+        new PlayerMatchesWon(),
         new PlayerWinrate(),
+
+        new PlayerMapsPlayed(),
+        new PlayerMapsWon(),
         new PlayerMapWinrate(),
-        // new PlayerRRAppearances(),
-        // new PlayerRRWCAppearances(),
-        // new PlayerAveragePlacement(),
-        // new PlayerGFAppearances(),
-        // new PlayerTitlesWon(),
-        // new PlayerMatchesPlayed(),
-        // new PlayerMatchesWon(),
-        // new PlayerMapsPlayed(),
-        // new PlayerMapsWon(),
         // new PlayerWROwnMaps(),
         // new PlayerWROpponentMaps(),
-        // new PlayerMatchesWonInARow(),
-        // new PlayerMapsWonInARow(),
-        new PlayerSameMapWonInARow(),
-        // new PlayerSweeps6(),
-        // new PlayerSweeps(),
-        // new PlayerReverseSweeps(),
         new PlayerSpecificMapPlayed(),
         // new PlayerSpecificMapWinrate(),
         // new PlayerMapPBTime(),
-        // new PlayerElo(),
-        // new PlayerAchievements(),
-        // new PlayerMatchesCasted(),
+
+        new PlayerRRAppearances(),
+        // new PlayerRRWCAppearances(),
+        // new PlayerTitlesWon(),
+        // new PlayerGFAppearances(),
+        new PlayerAveragePlacement(),
+
+        new PlayerMatchesWonInARow(),
+        // new PlayerMapsWonInARow(),
+        new PlayerSameMapWonInARow(),
+        
+        new PlayerSweeps(),
+        new PlayerSweeps6(),
+        // new PlayerReverseSweeps(),
+        
+        new PlayerAchievements(),
+        new PlayerMatchesCasted(),
 
         // new CountryPlayers(),
         // new CountryMatches(),

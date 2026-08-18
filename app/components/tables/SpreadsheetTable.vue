@@ -3,6 +3,8 @@
         <template v-if="hasHeaders">
             <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="cell header" :class="getCellClasses({ ...column.headerStyle, content: '' }, columnIndex)">
                 {{ column.title ?? '' }}
+
+                <slot name="header-suffix" :column="column" :index="columnIndex" />
             </div>
         </template>
 

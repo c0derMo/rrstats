@@ -2,12 +2,6 @@ import { Match } from "~~/server/model/Match";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
 export class PlayerWinrate extends BaseLeaderboardStatistic {
-    type = "player" as const;
-    name = "Winrate";
-    hasMaps = false;
-    secondaryFilter = "Matches played";
-    defaultSecondaryFilter = 5;
-
     basedOn() {
         return ["match" as const];
     }
@@ -54,7 +48,7 @@ export class PlayerWinrate extends BaseLeaderboardStatistic {
                 return {
                     columns: {
                         "Player": player,
-                        "Score": `${((matches.wins / matches.matches) * 100).toFixed(2)}%`,
+                        "Winrate": `${((matches.wins / matches.matches) * 100).toFixed(2)}%`,
                         "Matches played": matches.matches
                     },
                     order: 0,
@@ -70,10 +64,12 @@ export class PlayerWinrate extends BaseLeaderboardStatistic {
     getTableDefinition(): LeaderboardTableDefinition {
         return {
             name: "Winrate",
+            category: "player",
+            subcategory: "Matches",
             columns: [
                 { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
-                { name: "Score", type: LeaderboardColumnType.TEXT },
+                { name: "Winrate", type: LeaderboardColumnType.TEXT },
                 { name: "Matches played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 5 },
             ]
         }

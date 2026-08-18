@@ -2,11 +2,6 @@ import { Match } from "~~/server/model/Match";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
 export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
-    type = "player" as const;
-    name = "Winning streak on a map";
-    hasMaps = true;
-    mapOptional = true;
-
     basedOn() {
         return ["match" as const, "map" as const];
     };
@@ -83,6 +78,8 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
     getTableDefinition(): LeaderboardTableDefinition {
         return {
             name: "Winning streak on a map",
+            category: "player",
+            subcategory: "Streaks",
             columns: [
                 { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },

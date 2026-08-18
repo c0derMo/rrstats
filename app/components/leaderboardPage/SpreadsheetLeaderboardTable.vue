@@ -4,6 +4,19 @@
             :columns="spreadsheetTableColumns"
             :rows="paginatedSpreadsheetTableRows"
         >
+            <template #header-suffix="{ index }">
+                <FontAwesomeIcon
+                    v-if="isColumnSortable(index)"
+                    :icon="['fas', 'chevron-right']"
+                    class="transition"
+                    :class="{
+                        'rotate-90': currentSortIndex === index && !reverseSort,
+                        '-rotate-90': currentSortIndex === index && reverseSort,
+                    }"
+                    @click="toggleSort(index)"
+                />
+            </template>
+
             <template #placement="{ content }">
                 <PlacementTag narrow :placement="castUnknown(content)" />
             </template>
@@ -18,6 +31,10 @@
 
             <template #map="{ content }">
                 <MapTag :map="getMap(castUnknown(content))!" full-name narrow />
+            </template>
+
+            <template #percentage="{ content }">
+                {{ (castUnknown<number>(content) * 100).toFixed(2) }}%
             </template>
 
             <template #rowExpansion="{ row }">
@@ -73,8 +90,14 @@ const selectableRowsPerPage = [
     { text: "All", value: -1 },
 ];
 
+const currentSort = ref<string | null>(null);
+const reverseSort = ref(false);
 const selectedRowsPerPage = ref(15);
 const pageIndex = ref(0);
+
+const currentSortIndex = computed(() => {
+    return props.tableDefinition.columns.findIndex((column) => column.name === currentSort.value);
+});
 
 const startIndex = computed(() => {
     return pageIndex.value * selectedRowsPerPage.value;
@@ -117,6 +140,9 @@ const spreadsheetTableColumns = computed<ColumnDefinition[]>(() => {
             }
             if (column.type === LeaderboardColumnType.MAP) {
                 columnDefinition.name = 'map';
+            }
+            if (column.type === LeaderboardColumnType.PERCENTAGE) {
+                columnDefinition.name = 'percentage';
             }
 
             return columnDefinition;
@@ -172,7 +198,7 @@ const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][
                     let value = row.columns[column.name];
 
                     if (column.type === LeaderboardColumnType.PLAYER_NAME) {
-                        value = players.get(value as string);
+                        value = players.get(value as string, value as string);
                         searchables.push(value as string);
                     }
                     
@@ -209,10 +235,25 @@ const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][
                 columns,
                 searchables,
                 order: row.order,
+                rawColumns: row.columns,
                 expansionRows: row.expandableRows as string[][]
             };
         })
-        .sort((a, b) => a.order - b.order)
+        .sort((a, b) => {
+            if (currentSort.value == null) {
+                return a.order - b.order;
+            } else {
+                const valA = a.rawColumns[currentSort.value] as string | number;
+                const valB = b.rawColumns[currentSort.value] as string | number;
+                if ((valA > valB && !reverseSort.value) || (valA < valB && reverseSort.value)) {
+                    return -1;
+                } else if ((valB > valA && !reverseSort.value) || (valB < valA && reverseSort.value)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        })
         .filter(
             (row) => {
                 return props.search === '' ||
@@ -256,6 +297,24 @@ function previousPage() {
         pageIndex.value - 1,
         0
     );
+}
+
+function isColumnSortable(columnIndex: number) {
+    return props.tableDefinition.columns[columnIndex]?.sortable ?? false;
+}
+
+function toggleSort(columnIndex: number) {
+    const columnName = props.tableDefinition.columns[columnIndex]?.name;
+
+    if (currentSort.value !== columnName) {
+        reverseSort.value = false;
+        currentSort.value = columnName;
+    } else if (reverseSort.value === false) {
+        reverseSort.value = true;
+    } else {
+        currentSort.value = null;
+        reverseSort.value = false;
+    }
 }
 
 function castUnknown<T>(val: unknown): T {

@@ -1,14 +1,12 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Most matches won in a row";
-    hasMaps = false;
+export class PlayerMatchesWonInARow extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const];
+    };
 
-    basedOn = ["match" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .select([
                 "match.playerOne",
@@ -35,17 +33,37 @@ export class PlayerMatchesWonInARow implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = streakInfo
-            .mapAll((player, streak) => {
-                return {
-                    player: player,
-                    sortingScore: streak.getLongestStreak(),
-                    displayScore: streak.getLongestStreak().toString(),
-                };
-            })
-            .filter((s) => s.sortingScore > 1);
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
+        const result: LeaderboardRow[] = [];
 
-        return result;
+        streakInfo.forEach((player, counter) => {
+            for (const streak of counter.getAllStreaks()) {
+                if (streak >= 5) {
+                    result.push({
+                        columns: {
+                            "Player": player,
+                            "Winning streak": streak,
+                        },
+                        order: 0,
+                        value: streak
+                    })
+                }
+            }
+        });
+
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most matches won in a row",
+            category: "player",
+            subcategory: "Streaks",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Winning streak", type: LeaderboardColumnType.TEXT },
+            ]
+        }
+    };
 }

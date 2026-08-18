@@ -2,10 +2,6 @@ import { Match } from "~~/server/model/Match";
 import { ServerSideFilteredLeaderboardStatistic, type FilterableLeaderboardRows } from "../ServerSideFilteredLeaderboardStatistic";
 
 export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatistic {
-    type = "player" as const;
-    name = "Spins played on specific map";
-    hasMaps = true;
-
     basedOn() {
         return ["match" as const, "map" as const];
     }
@@ -86,6 +82,8 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
     getTableDefinition(): LeaderboardTableDefinition {
         return {
             name: "Spins played on specific map",
+            category: "player",
+            subcategory: "Map",
             columns: [
                 { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },

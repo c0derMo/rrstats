@@ -5,55 +5,19 @@
         <h1 class="text-center text-5xl bold">Leaderboards</h1>
 
         <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">
-            <CardComponent class="md:w-72">
+            <CardComponent class="md:w-80">
                 <TabbedContainer
                     v-model:tab="selectedTab"
                     :tabs="['Players', 'Countries', 'Maps']"
                 />
 
-                <div
-                    v-for="(category, idx) of shownCategories"
-                    :key="idx"
-                    :class="{
-                        'bg-neutral-200 dark:bg-neutral-500':
-                            selectedCategory === category,
-                    }"
-                    class="p-1 w-full border-b last:border-0 dark:border-neutral-500 border-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-600 transition ease-in-out duration-600"
-                    @click="selectCategory(category)"
-                >
-                    {{ category.name }}
-                </div>
+                <LeaderboardList 
+                    v-model="selectedCategory"
+                    :leaderboards="shownCategories"
+                />
             </CardComponent>
 
-            <CardComponent class="grow overflow-visible! relative flex flex-col gap-2">
-                <!-- <SpreadsheetLeaderboardTable
-                    v-if="isPlayerLB(filteredLeaderboardData)"
-                    :table-definition="{
-                        columns: [
-                            { name: 'Placement', type: LeaderboardColumnType.PLACEMENT_TAG },
-                            { name: 'Player', type: LeaderboardColumnType.PLAYER_NAME },
-                            { name: 'Score', type: LeaderboardColumnType.TEXT },
-                        ]
-                    }"
-
-                    :rows="
-                        filteredLeaderboardData.slice(0, 20).map((data) => {
-                            return {
-                                columns: {
-                                    'Placement': filteredLeaderboardData.findIndex(
-                                        (p) =>
-                                            p.sortingScore === data.sortingScore,
-                                        ) + 1,
-                                    'Player': data.player,
-                                    'Score': data.sortingScore
-                                },
-                                value: data.sortingScore,
-                                order: data.sortingScore
-                            }
-                        })
-                    "
-                /> -->
-                
+            <CardComponent class="grow overflow-visible! relative flex flex-col gap-2">            
                 <IndefiniteProgressBar
                     v-if="leaderboardLoading"
                     class="absolute top-0 left-0"
@@ -262,8 +226,7 @@ const shownCategories = computed(() => {
     return [];
 });
 
-async function selectCategory(category: LeaderboardTableDefinition) {
-    selectedCategory.value = category;
+watch(selectedCategory, async () => {
     externalFilters.value = {};
     localFilters.value = {};
     search.value = "";
@@ -276,7 +239,7 @@ async function selectCategory(category: LeaderboardTableDefinition) {
     // }
 
     await loadLeaderboardData();
-}
+});
 
 async function updateExternalFilters(filters: Record<string, unknown>) {
     externalFilters.value = filters;

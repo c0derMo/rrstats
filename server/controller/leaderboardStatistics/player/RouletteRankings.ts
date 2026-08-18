@@ -241,6 +241,7 @@ export class PlayerRouletteRankings extends BaseLeaderboardStatistic {
     getTableDefinition(): LeaderboardTableDefinition {
         return {
             name: "Roulette Rankings",
+            category: "player",
             explanatoryText: "Official Roulette Rankings, using the 3 best placements of the last 4 tournaments.",
             columns: [
                 { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },

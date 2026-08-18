@@ -38,6 +38,7 @@ export type LeaderboardColumnDefinition = {
     defaultFilter?: unknown;
     serverSideFilter?: boolean;
     searchable?: boolean;
+    sortable?: boolean;
 }
 
 export enum LeaderboardFilterType {
@@ -55,10 +56,13 @@ export enum LeaderboardColumnType {
     IMAGE = 'image',
     MAP = 'map',
     HIDDEN = 'hidden',
+    PERCENTAGE = 'percentage',
 }
 
 export type LeaderboardTableDefinition = {
     name: string;
+    category: 'player' | 'country' | 'map';
+    subcategory?: string;
     explanatoryText?: string;
     columns: LeaderboardColumnDefinition[];
 }

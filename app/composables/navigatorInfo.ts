@@ -9,18 +9,17 @@ export const useNavigatorInfo = () => {
             | "tag"
             | "startingTimestamp"
         >[];
-        leaderboards?: LeaderboardTableDefinition[];
-        // playerLeaderboards?: StatisticData<"player">[];
-        // countryLeaderboards?: StatisticData<"country">[];
-        // mapLeaderboards?: StatisticData<"map">[];
+        playerLeaderboards?: LeaderboardTableDefinition[];
+        countryLeaderboards?: LeaderboardTableDefinition[];
+        mapLeaderboards?: LeaderboardTableDefinition[];
     }>("navigator", () => ({}));
 
     async function fetchLeaderboards() {
-        const leaderboards = (await $fetch("/api/leaderboards/list")) ?? [];
-        navInfo.value.leaderboards = leaderboards;
-        // navInfo.value.playerLeaderboards = leaderboards.player;
-        // navInfo.value.countryLeaderboards = leaderboards.country;
-        // navInfo.value.mapLeaderboards = leaderboards.map;
+        const leaderboards = (await $fetch<LeaderboardTableDefinition[]>("/api/leaderboards/list")) ?? [];
+
+        navInfo.value.playerLeaderboards = leaderboards.filter((lb) => lb.category === "player");
+        navInfo.value.countryLeaderboards = leaderboards.filter((lb) => lb.category === "country");
+        navInfo.value.mapLeaderboards = leaderboards.filter((lb) => lb.category === "map");
     }
 
     const getPlayers = async () => {
@@ -40,24 +39,24 @@ export const useNavigatorInfo = () => {
     };
 
     const getPlayerLeaderboards = async () => {
-        if (navInfo.value.leaderboards == null) {
+        if (navInfo.value.playerLeaderboards == null) {
             await fetchLeaderboards();
         }
-        return navInfo.value.leaderboards!;
+        return navInfo.value.playerLeaderboards!;
     };
 
     const getCountryLeaderboards = async () => {
-        if (navInfo.value.leaderboards == null) {
+        if (navInfo.value.countryLeaderboards == null) {
             await fetchLeaderboards();
         }
-        return navInfo.value.leaderboards!;
+        return navInfo.value.countryLeaderboards!;
     };
 
     const getMapLeaderboards = async () => {
-        if (navInfo.value.leaderboards == null) {
+        if (navInfo.value.mapLeaderboards == null) {
             await fetchLeaderboards();
         }
-        return navInfo.value.leaderboards!;
+        return navInfo.value.mapLeaderboards!;
     };
 
     return {

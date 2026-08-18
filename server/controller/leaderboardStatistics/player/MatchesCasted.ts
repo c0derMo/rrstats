@@ -1,14 +1,12 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerMatchesCasted implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Matches casted";
-    hasMaps = false;
+export class PlayerMatchesCasted extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const];
+    };
 
-    basedOn = ["match" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .select(["match.shoutcasters"])
             .getMany();
@@ -25,17 +23,33 @@ export class PlayerMatchesCasted implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = matchesCasted.mapAll(
+        const result: LeaderboardRow[] = matchesCasted.mapAll(
             (caster, matchesCasted) => {
                 return {
-                    player: caster,
-                    displayScore: matchesCasted.toString(),
-                    sortingScore: matchesCasted,
+                    columns: {
+                        "Caster": caster,
+                        "Matches casted": matchesCasted
+                    },
+                    value: matchesCasted,
+                    order: 0,
                 };
             },
         );
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
 
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most matches casted",
+            category: "player",
+            subcategory: "Other",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Caster", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Matches casted", type: LeaderboardColumnType.TEXT },
+            ]
+        }
+    };
 }

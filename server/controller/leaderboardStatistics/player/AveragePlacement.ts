@@ -1,16 +1,12 @@
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerAveragePlacement implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Average RR Placement";
-    hasMaps = false;
-    secondaryFilter = "Competitions played";
-    defaultSecondaryFilter = 3;
+export class PlayerAveragePlacement extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["placement" as const];
+    };
 
-    basedOn = ["placement" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const placements = await CompetitionPlacement.createQueryBuilder(
             "placement",
         )
@@ -31,7 +27,7 @@ export class PlayerAveragePlacement implements LeaderboardPlayerStatistic {
             placementsOfPlayers[placement.player].push(placement.placement);
         }
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
         for (const player in placementsOfPlayers) {
             const allPlacements = placementsOfPlayers[player].reduce(
                 (prev, cur) => prev + cur,
@@ -39,14 +35,30 @@ export class PlayerAveragePlacement implements LeaderboardPlayerStatistic {
             );
             const average = allPlacements / placementsOfPlayers[player].length;
             result.push({
-                player: player,
-                displayScore: average.toFixed(1),
-                sortingScore: average,
-                secondaryScore: placementsOfPlayers[player].length,
+                columns: {
+                    "Player": player,
+                    "Average placement": Math.round(average * 100) / 100,
+                    "Competitions played": placementsOfPlayers[player].length,
+                },
+                order: 0,
+                value: average
             });
         }
-        result.sort((a, b) => a.sortingScore - b.sortingScore);
-
-        return result;
+        this.sortAndInferPlacementByValue(result, 'ASC');
+        this.cache = result;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Average RR Placement",
+            category: "player",
+            subcategory: "Participation",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Average placement", type: LeaderboardColumnType.TEXT },
+                { name: "Competitions played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 3 },
+            ]
+        }
+    };
 }

@@ -1,15 +1,13 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { Player } from "~~/server/model/Player";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerMatchesWon implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Matches won";
-    hasMaps = false;
+export class PlayerMatchesWon extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "player" as const];
+    };
 
-    basedOn = ["match" as const, "player" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
             .select(["player.uuid"])
             .getMany();
@@ -23,33 +21,61 @@ export class PlayerMatchesWon implements LeaderboardPlayerStatistic {
             .getMany();
 
         const matchesPerPlayer: Record<string, number> = {};
+        const winsPerPlayer: Record<string, number> = {};
 
         for (const match of matches) {
             matchesPerPlayer[match.playerOne] ??= 0;
             matchesPerPlayer[match.playerTwo] ??= 0;
+            winsPerPlayer[match.playerOne] ??= 0;
+            winsPerPlayer[match.playerTwo] ??= 0;
+
+            matchesPerPlayer[match.playerOne] += 1;
+            matchesPerPlayer[match.playerTwo] += 1;
 
             if (match.playerOneScore > match.playerTwoScore) {
-                matchesPerPlayer[match.playerOne] += 1;
+                winsPerPlayer[match.playerOne] += 1;
             } else if (match.playerTwoScore > match.playerOneScore) {
-                matchesPerPlayer[match.playerTwo] += 1;
+                winsPerPlayer[match.playerTwo] += 1;
             } else {
-                matchesPerPlayer[match.playerOne] += 0.5;
-                matchesPerPlayer[match.playerTwo] += 0.5;
+                winsPerPlayer[match.playerOne] += 0.5;
+                winsPerPlayer[match.playerTwo] += 0.5;
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
 
         for (const player of players) {
             result.push({
-                player: player.uuid,
-                displayScore: matchesPerPlayer[player.uuid]?.toString() ?? "0",
-                sortingScore: matchesPerPlayer[player.uuid] ?? 0,
+                columns: {
+                    "Player": player.uuid,
+                    "Wins": winsPerPlayer[player.uuid] ?? 0,
+                    "Matches played": matchesPerPlayer[player.uuid] ?? 0,
+                },
+                order: 0,
+                value: winsPerPlayer[player.uuid] ?? 0
             });
         }
 
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
-
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
+
+    
+    type = "player" as const;
+    name = "Matches won";
+    hasMaps = false;
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most matches won",
+            category: "player",
+            subcategory: "Matches",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Wins", type: LeaderboardColumnType.TEXT },
+                { name: "Matches played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 1 },
+            ]
+        }
+    };
 }

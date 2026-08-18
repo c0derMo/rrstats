@@ -1,15 +1,13 @@
 import { Player } from "~~/server/model/Player";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { PlayedMap } from "~~/server/model/PlayedMap";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerMapsWon implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Maps won";
-    hasMaps = false;
+export class PlayerMapsWon extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const, "player" as const];
+    }
 
-    basedOn = ["match" as const, "map" as const, "player" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
             .select(["player.uuid"])
             .getMany();
@@ -35,26 +33,48 @@ export class PlayerMapsWon implements LeaderboardPlayerStatistic {
             }>();
 
         const maps: Record<string, number> = {};
+        const wins: Record<string, number> = {};
 
         for (const match of matches) {
             maps[match.playerOne] ??= 0;
             maps[match.playerTwo] ??= 0;
-            maps[match.playerOne] += match.p1Win + 0.5 * match.drawnMaps;
-            maps[match.playerTwo] += match.p2Win + 0.5 * match.drawnMaps;
+            wins[match.playerOne] ??= 0;
+            wins[match.playerTwo] ??= 0;
+            maps[match.playerOne] += 1;
+            maps[match.playerTwo] += 1;
+            wins[match.playerOne] += match.p1Win + 0.5 * match.drawnMaps;
+            wins[match.playerTwo] += match.p2Win + 0.5 * match.drawnMaps;
         }
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
 
         for (const player of players) {
             result.push({
-                player: player.uuid,
-                displayScore: maps[player.uuid]?.toString() ?? "0",
-                sortingScore: maps[player.uuid] ?? 0,
+                columns: {
+                    "Player": player.uuid,
+                    "Wins": wins[player.uuid] ?? 0,
+                    "Maps played": maps[player.uuid] ?? 0
+                },
+                order: 0,
+                value: wins[player.uuid] ?? 0,
             });
         }
-
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
-
-        return result;
+        
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most maps won",
+            category: "player",
+            subcategory: "Maps",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Wins", type: LeaderboardColumnType.TEXT },
+                { name: "Maps played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 1 },
+            ]
+        }
+    };
 }

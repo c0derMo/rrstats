@@ -81,6 +81,7 @@ export class MapPlayed extends MapLeaderboardStatistic<DefaultedMap<HitmanMap, n
     getTableDefinition(): LeaderboardTableDefinition {
         return {
             name: "Played",
+            category: "map",
             columns: [
                 { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
                 { name: "Map", type: LeaderboardColumnType.MAP },
