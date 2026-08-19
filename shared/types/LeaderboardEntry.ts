@@ -5,7 +5,7 @@ export type LeaderboardRow = {
     color?: string;
     order: number;
     value: number;
-}
+};
 
 export type LeaderboardColumnDefinition = {
     name: string;
@@ -16,31 +16,31 @@ export type LeaderboardColumnDefinition = {
     serverSideFilter?: boolean;
     searchable?: boolean;
     sortable?: boolean;
-}
+};
 
 export enum LeaderboardFilterType {
-    TEXT = 'text',
-    NUMERIC = 'numeric',
-    MAP = 'map',
-    MAP_OPTIONAL = 'map_optional',
-    COMPETITION_RANGE = 'competition_range',
+    TEXT = "text",
+    NUMERIC = "numeric",
+    MAP = "map",
+    MAP_OPTIONAL = "map_optional",
+    COMPETITION_RANGE = "competition_range",
 }
 
 export enum LeaderboardColumnType {
-    TEXT = 'text',
-    PLAYER_NAME = 'player',
-    PLACEMENT_TAG = 'placement_tag',
-    IMAGE = 'image',
-    MAP = 'map',
-    HIDDEN = 'hidden',
-    PERCENTAGE = 'percentage',
-    TIME = 'time',
+    TEXT = "text",
+    PLAYER_NAME = "player",
+    PLACEMENT_TAG = "placement_tag",
+    IMAGE = "image",
+    MAP = "map",
+    HIDDEN = "hidden",
+    PERCENTAGE = "percentage",
+    TIME = "time",
 }
 
 export type LeaderboardTableDefinition = {
     name: string;
-    category: 'player' | 'country' | 'map';
+    category: "player" | "country" | "map";
     subcategory?: string;
     explanatoryText?: string;
     columns: LeaderboardColumnDefinition[];
-}
+};

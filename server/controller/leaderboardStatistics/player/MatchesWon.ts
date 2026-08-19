@@ -5,7 +5,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerMatchesWon extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "player" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
@@ -47,12 +47,12 @@ export class PlayerMatchesWon extends BaseLeaderboardStatistic {
         for (const player of players) {
             result.push({
                 columns: {
-                    "Player": player.uuid,
-                    "Wins": winsPerPlayer[player.uuid] ?? 0,
+                    Player: player.uuid,
+                    Wins: winsPerPlayer[player.uuid] ?? 0,
                     "Matches played": matchesPerPlayer[player.uuid] ?? 0,
                 },
                 order: 0,
-                value: winsPerPlayer[player.uuid] ?? 0
+                value: winsPerPlayer[player.uuid] ?? 0,
             });
         }
 
@@ -60,7 +60,6 @@ export class PlayerMatchesWon extends BaseLeaderboardStatistic {
         this.cache = result;
     }
 
-    
     type = "player" as const;
     name = "Matches won";
     hasMaps = false;
@@ -71,11 +70,19 @@ export class PlayerMatchesWon extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Matches",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Wins", type: LeaderboardColumnType.TEXT },
-                { name: "Matches played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 1 },
-            ]
-        }
-    };
+                {
+                    name: "Matches played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 1,
+                },
+            ],
+        };
+    }
 }

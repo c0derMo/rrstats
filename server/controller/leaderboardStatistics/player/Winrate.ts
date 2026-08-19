@@ -47,9 +47,9 @@ export class PlayerWinrate extends BaseLeaderboardStatistic {
             (player, matches) => {
                 return {
                     columns: {
-                        "Player": player,
-                        "Winrate": `${((matches.wins / matches.matches) * 100).toFixed(2)}%`,
-                        "Matches played": matches.matches
+                        Player: player,
+                        Winrate: `${((matches.wins / matches.matches) * 100).toFixed(2)}%`,
+                        "Matches played": matches.matches,
                     },
                     order: 0,
                     value: matches.wins / matches.matches,
@@ -67,11 +67,19 @@ export class PlayerWinrate extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Matches",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.TEXT },
-                { name: "Matches played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 5 },
-            ]
-        }
-    };
+                {
+                    name: "Matches played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
+            ],
+        };
+    }
 }

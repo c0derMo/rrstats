@@ -37,12 +37,12 @@ export class PlayerMapsWonInARow extends BaseLeaderboardStatistic {
                 if (streak >= 5) {
                     result.push({
                         columns: {
-                            "Player": player,
-                            "Streak": streak
+                            Player: player,
+                            Streak: streak,
                         },
                         value: streak,
                         order: 0,
-                    })
+                    });
                 }
             }
         });
@@ -57,10 +57,13 @@ export class PlayerMapsWonInARow extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Streaks",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Streak", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

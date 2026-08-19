@@ -60,8 +60,8 @@ export class PlayerReverseSweeps extends BaseLeaderboardStatistic {
         for (const player in playerMap) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Reverse Sweeps": playerMap[player]
+                    Player: player,
+                    "Reverse Sweeps": playerMap[player],
                 },
                 value: playerMap[player],
                 order: 0,
@@ -77,12 +77,16 @@ export class PlayerReverseSweeps extends BaseLeaderboardStatistic {
             name: "Reverse sweeps",
             category: "player",
             subcategory: "Sweeps",
-            explanatoryText: "Winning the match with 6 or more points after losing the first half of the maps.",
+            explanatoryText:
+                "Winning the match with 6 or more points after losing the first half of the maps.",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Reverse Sweeps", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

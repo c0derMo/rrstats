@@ -356,17 +356,13 @@ test.describe("Player Page", () => {
         expect(
             await page.locator(".grid > div").first().textContent(),
         ).toContain("Against the World V");
-        await page
-            .locator("span.grow", { hasText: "Sort by name" })
-            .click();
+        await page.locator("span.grow", { hasText: "Sort by name" }).click();
         await page.getByText("Sort by rarity").click();
 
         expect(
             await page.locator(".grid > div").nth(1).textContent(),
         ).toContain("Against the World V");
-        await page
-            .locator("span.grow", { hasText: "Sort by rarity" })
-            .click();
+        await page.locator("span.grow", { hasText: "Sort by rarity" }).click();
         await page.getByText("Sort by completion").click();
 
         // Categories

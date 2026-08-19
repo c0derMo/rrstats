@@ -30,8 +30,8 @@ export class PlayerTitlesWon extends BaseLeaderboardStatistic {
         for (const player in appearances) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Titles won": appearances[player]
+                    Player: player,
+                    "Titles won": appearances[player],
                 },
                 value: appearances[player],
                 order: 0,
@@ -48,10 +48,13 @@ export class PlayerTitlesWon extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Participation",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Titles won", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

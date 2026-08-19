@@ -2,7 +2,11 @@ import { SimpleMapLeaderboardStatistic } from "./SimpleMapLeaderboardStatistic";
 
 export class MapAppearance extends SimpleMapLeaderboardStatistic {
     constructor() {
-        super("Apperances", "Appearances", "Total of map picked, map banned & map played as random map");
+        super(
+            "Apperances",
+            "Appearances",
+            "Total of map picked, map banned & map played as random map",
+        );
     }
 
     computeMapStats(competitions: ICompetition[], matches: IMatch[]): void {

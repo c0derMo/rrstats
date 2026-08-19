@@ -1,10 +1,24 @@
 <template>
     <div class="table" :style="wrapperStyle">
         <template v-if="hasHeaders">
-            <div v-for="(column, columnIndex) in columns" :key="columnIndex" class="cell header" :class="getCellClasses({ ...column.headerStyle, content: '' }, columnIndex)">
-                {{ column.title ?? '' }}
+            <div
+                v-for="(column, columnIndex) in columns"
+                :key="columnIndex"
+                class="cell header"
+                :class="
+                    getCellClasses(
+                        { ...column.headerStyle, content: '' },
+                        columnIndex,
+                    )
+                "
+            >
+                {{ column.title ?? "" }}
 
-                <slot name="header-suffix" :column="column" :index="columnIndex" />
+                <slot
+                    name="header-suffix"
+                    :column="column"
+                    :index="columnIndex"
+                />
             </div>
         </template>
 
@@ -15,13 +29,19 @@
                 class="cell"
                 :class="getCellClasses(cell, cellIndex)"
             >
-                <slot :name="getColumnName(cellIndex)" :content="cell.content" :cell="cell">
+                <slot
+                    :name="getColumnName(cellIndex)"
+                    :content="cell.content"
+                    :cell="cell"
+                >
                     <template v-if="cell.expansionButton && row.expandable">
                         <div @click="expandRow(rowIndex)">
                             <FontAwesomeIcon
                                 :icon="['fas', 'chevron-down']"
                                 class="transition"
-                                :class="{ 'rotate-180': expandedRow === rowIndex }"
+                                :class="{
+                                    'rotate-180': expandedRow === rowIndex,
+                                }"
                             />
                         </div>
                     </template>
@@ -31,9 +51,12 @@
                 </slot>
             </div>
 
-                <div v-if="expandedRow === rowIndex && row.expandable" class="expansion-container">
-                    <slot name="rowExpansion" :row="row" :index="rowIndex" />
-                </div>
+            <div
+                v-if="expandedRow === rowIndex && row.expandable"
+                class="expansion-container"
+            >
+                <slot name="rowExpansion" :row="row" :index="rowIndex" />
+            </div>
         </template>
     </div>
 </template>
@@ -61,7 +84,7 @@
 
 <script setup lang="ts" generic="R extends Row">
 export interface CellStyle {
-    textAlign?: 'left' | 'center' | 'right';
+    textAlign?: "left" | "center" | "right";
     backgroundColor?: string;
     color?: string;
     paddingY?: number;
@@ -95,8 +118,10 @@ const expandedRow = ref(-1);
 
 const wrapperStyle = computed(() => {
     return {
-        "grid-template-columns": props.columns.map((col) => col.width).join(" "),
-    }
+        "grid-template-columns": props.columns
+            .map((col) => col.width)
+            .join(" "),
+    };
 });
 
 const hasHeaders = computed<boolean>(() => {
@@ -109,9 +134,9 @@ function getColumnName(columnIndex: number): string {
 
 function getCellClasses(cell: Cell, columnIndex: number): string[] {
     const defaultOptions: Required<CellStyle> = {
-        textAlign: 'left',
-        backgroundColor: '',
-        color: '',
+        textAlign: "left",
+        backgroundColor: "",
+        color: "",
         paddingX: 2,
         paddingY: 1,
     };
@@ -124,25 +149,28 @@ function getCellClasses(cell: Cell, columnIndex: number): string[] {
     const resultingClasses: string[] = [];
 
     switch (defaultOptions.textAlign) {
-        case 'left':
-            resultingClasses.push('text-left');
+        case "left":
+            resultingClasses.push("text-left");
             break;
-        case 'center':
-            resultingClasses.push('text-center');
+        case "center":
+            resultingClasses.push("text-center");
             break;
-        case 'right':
-            resultingClasses.push('text-right');
+        case "right":
+            resultingClasses.push("text-right");
             break;
     }
 
-    if (defaultOptions.backgroundColor != '') {
+    if (defaultOptions.backgroundColor != "") {
         resultingClasses.push(...defaultOptions.backgroundColor.split(" "));
     }
-    if (defaultOptions.color != '') {
+    if (defaultOptions.color != "") {
         resultingClasses.push(...defaultOptions.color.split(" "));
     }
 
-    resultingClasses.push(`px-${defaultOptions.paddingX}`, `py-${defaultOptions.paddingY}`);
+    resultingClasses.push(
+        `px-${defaultOptions.paddingX}`,
+        `py-${defaultOptions.paddingY}`,
+    );
 
     return resultingClasses;
 }

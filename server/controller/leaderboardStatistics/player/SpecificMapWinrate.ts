@@ -1,10 +1,13 @@
 import { Match } from "~~/server/model/Match";
-import { type FilterableLeaderboardRows, ServerSideFilteredLeaderboardStatistic } from "../ServerSideFilteredLeaderboardStatistic";
+import {
+    type FilterableLeaderboardRows,
+    ServerSideFilteredLeaderboardStatistic,
+} from "../ServerSideFilteredLeaderboardStatistic";
 
 export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "map" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
@@ -51,12 +54,13 @@ export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStati
                 if (mapCount[player][map] > 0) {
                     result[map].push({
                         columns: {
-                            "Player": player,
-                            "Winrate": mapWins[player][map] / mapCount[player][map],
-                            "Spins played": mapCount[player][map]
+                            Player: player,
+                            Winrate:
+                                mapWins[player][map] / mapCount[player][map],
+                            "Spins played": mapCount[player][map],
                         },
                         order: 0,
-                        value: mapWins[player][map] / mapCount[player][map]
+                        value: mapWins[player][map] / mapCount[player][map],
                     });
                 }
             }
@@ -66,8 +70,8 @@ export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStati
         const listifiedResult: FilterableLeaderboardRows[] = [];
         for (const map of getAllMaps()) {
             listifiedResult.push({
-                filter: { "Map": map },
-                rows: result[map]
+                filter: { Map: map },
+                rows: result[map],
             });
         }
 
@@ -106,12 +110,26 @@ export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStati
             category: "player",
             subcategory: "Map",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
-                { name: "Spins played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 5 },
-                { name: "Map", type: LeaderboardColumnType.HIDDEN, filterable: LeaderboardFilterType.MAP, defaultFilter: HitmanMap.PARIS, serverSideFilter: true },
-            ]
-        }
-    };
+                {
+                    name: "Spins played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.HIDDEN,
+                    filterable: LeaderboardFilterType.MAP,
+                    defaultFilter: HitmanMap.PARIS,
+                    serverSideFilter: true,
+                },
+            ],
+        };
+    }
 }

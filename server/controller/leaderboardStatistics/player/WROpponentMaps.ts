@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerWROpponentMaps extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "map" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
@@ -43,8 +43,8 @@ export class PlayerWROpponentMaps extends BaseLeaderboardStatistic {
         for (const player in playedMaps) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Winrate": playedMaps[player].won / playedMaps[player].played,
+                    Player: player,
+                    Winrate: playedMaps[player].won / playedMaps[player].played,
                     "Opponent map picks played": playedMaps[player].played,
                 },
                 order: 0,
@@ -62,11 +62,19 @@ export class PlayerWROpponentMaps extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Maps",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
-                { name: "Opponent map picks played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 5 },
-            ]
-        }
-    };
+                {
+                    name: "Opponent map picks played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
+            ],
+        };
+    }
 }

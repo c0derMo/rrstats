@@ -78,17 +78,18 @@ export default class PlayerStatisticController {
             competitions,
         );
 
-        const rankings = (await LeaderboardController.getEntries(
-            "Roulette Rankings",
-        ));
+        const rankings =
+            await LeaderboardController.getEntries("Roulette Rankings");
         const playersRanking = rankings.find(
             (ranking) => ranking.columns["Player"] === uuid,
         ) ?? {
             columns: {},
-            value: 0
+            value: 0,
         };
         const playersRankingSpot =
-            (rankings.findIndex((ranking) => ranking.columns["Player"] === uuid) ?? -2) + 1;
+            (rankings.findIndex(
+                (ranking) => ranking.columns["Player"] === uuid,
+            ) ?? -2) + 1;
 
         PlayerStatisticController.cache.set(uuid, {
             winrate: matchCollection.winrate(),

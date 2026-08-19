@@ -1,5 +1,8 @@
 import { PlayedMap } from "~~/server/model/PlayedMap";
-import { type FilterableLeaderboardRows, ServerSideFilteredLeaderboardStatistic } from "../ServerSideFilteredLeaderboardStatistic";
+import {
+    type FilterableLeaderboardRows,
+    ServerSideFilteredLeaderboardStatistic,
+} from "../ServerSideFilteredLeaderboardStatistic";
 
 export class PlayerMapPBTime extends ServerSideFilteredLeaderboardStatistic {
     basedOn() {
@@ -70,23 +73,23 @@ export class PlayerMapPBTime extends ServerSideFilteredLeaderboardStatistic {
             for (const player in mapPbs[map]) {
                 mapLB.push({
                     columns: {
-                        "Player": player,
-                        "Personal best": mapPbs[map][player]
+                        Player: player,
+                        "Personal best": mapPbs[map][player],
                     },
                     order: 0,
                     value: mapPbs[map][player],
                 });
             }
 
-            this.sortAndInferPlacementByValue(mapLB, 'ASC');
+            this.sortAndInferPlacementByValue(mapLB, "ASC");
             result[map] = mapLB;
         }
 
         const listifiedResult: FilterableLeaderboardRows[] = [];
         for (const map of getAllMaps()) {
             listifiedResult.push({
-                filter: { "Map": map },
-                rows: result[map]
+                filter: { Map: map },
+                rows: result[map],
             });
         }
 
@@ -99,11 +102,20 @@ export class PlayerMapPBTime extends ServerSideFilteredLeaderboardStatistic {
             category: "player",
             subcategory: "Map",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Personal best", type: LeaderboardColumnType.TIME },
-                { name: "Map", type: LeaderboardColumnType.HIDDEN, filterable: LeaderboardFilterType.MAP, defaultFilter: HitmanMap.PARIS, serverSideFilter: true },
-            ]
-        }
-    };
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.HIDDEN,
+                    filterable: LeaderboardFilterType.MAP,
+                    defaultFilter: HitmanMap.PARIS,
+                    serverSideFilter: true,
+                },
+            ],
+        };
+    }
 }

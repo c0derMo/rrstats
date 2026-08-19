@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "map" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
@@ -48,9 +48,9 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
                     if (singleStreak >= 5) {
                         result.push({
                             columns: {
-                                "Player": player,
-                                "Streak": singleStreak,
-                                "Map": map
+                                Player: player,
+                                Streak: singleStreak,
+                                Map: map,
                             },
                             order: 0,
                             value: singleStreak,
@@ -81,11 +81,19 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Streaks",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Streak", type: LeaderboardColumnType.TEXT },
-                { name: "Map", type: LeaderboardColumnType.MAP, filterable: LeaderboardFilterType.MAP_OPTIONAL, defaultFilter: OptionalMap.NO_MAP },
-            ]
-        }
-    };
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.MAP,
+                    filterable: LeaderboardFilterType.MAP_OPTIONAL,
+                    defaultFilter: OptionalMap.NO_MAP,
+                },
+            ],
+        };
+    }
 }

@@ -105,9 +105,7 @@
             v-else-if="currentProgress > 0"
             class="italic flex flex-row mx-5 gap-3 h-5"
         >
-            <div
-                class="relative h-1 w-full grow bg-gray-900 rounded-full mt-2"
-            >
+            <div class="relative h-1 w-full grow bg-gray-900 rounded-full mt-2">
                 <div
                     class="h-1 rounded-full left-0 top-0 absolute bg-blue-700"
                     :style="`width: ${currentProgress * 100}%`"

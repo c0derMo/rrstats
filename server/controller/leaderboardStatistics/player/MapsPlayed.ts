@@ -5,7 +5,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerMapsPlayed extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "map" as const, "player" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
@@ -47,9 +47,10 @@ export class PlayerMapsPlayed extends BaseLeaderboardStatistic {
         for (const player of players) {
             result.push({
                 columns: {
-                    "Player": player.uuid,
+                    Player: player.uuid,
                     "Maps played": maps[player.uuid] ?? 0,
-                    "Competitions played": competitionsPerPlayer[player.uuid]?.size ?? 0,
+                    "Competitions played":
+                        competitionsPerPlayer[player.uuid]?.size ?? 0,
                 },
                 order: 0,
                 value: maps[player.uuid] ?? 0,
@@ -66,11 +67,19 @@ export class PlayerMapsPlayed extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Maps",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Maps played", type: LeaderboardColumnType.TEXT },
-                { name: "Competitions played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 1 },
-            ]
-        }
-    };
+                {
+                    name: "Competitions played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 1,
+                },
+            ],
+        };
+    }
 }

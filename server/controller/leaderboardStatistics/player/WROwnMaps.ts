@@ -43,8 +43,8 @@ export class PlayerWROwnMaps extends BaseLeaderboardStatistic {
         for (const player in playedMaps) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Winrate": playedMaps[player].won / playedMaps[player].played,
+                    Player: player,
+                    Winrate: playedMaps[player].won / playedMaps[player].played,
                     "Own map picks played": playedMaps[player].played,
                 },
                 order: 0,
@@ -62,11 +62,19 @@ export class PlayerWROwnMaps extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Maps",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
-                { name: "Own map picks played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 5 },
-            ]
-        }
-    };
+                {
+                    name: "Own map picks played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
+            ],
+        };
+    }
 }

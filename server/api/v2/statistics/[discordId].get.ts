@@ -78,11 +78,13 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
 
     for (let mapIdx = 0; mapIdx < statistics.mapPBs.length; mapIdx++) {
         const pb = statistics.mapPBs[mapIdx];
-        const mapPBs = (await LeaderboardController.getEntries(
+        const mapPBs = await LeaderboardController.getEntries(
             "Personal best on map",
-            { "Map": mapIdx },
-        ));
-        const playerIndex = mapPBs.findIndex((p) => p.columns["Player"] === player.uuid);
+            { Map: mapIdx },
+        );
+        const playerIndex = mapPBs.findIndex(
+            (p) => p.columns["Player"] === player.uuid,
+        );
         if (playerIndex < 0) {
             pb.placement = -1;
         } else {

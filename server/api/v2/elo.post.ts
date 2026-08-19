@@ -38,9 +38,7 @@ export default defineEventHandler<EloResponse>(async (event) => {
         "uuid",
     );
 
-    const eloLB = (await LeaderboardController.getEntries(
-        "Elo rating",
-    ));
+    const eloLB = await LeaderboardController.getEntries("Elo rating");
     const eloByPlayer = new Map<string, number>(
         eloLB.map((entry) => [entry.columns["Player"] as string, entry.value]),
     );

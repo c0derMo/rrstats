@@ -19,7 +19,8 @@
                     v-for="thisTab in tabs"
                     :key="thisTab"
                     :class="{
-                        'hover:dark:bg-gray-700/40 hover:bg-gray-100/40': selectedTab !== thisTab,
+                        'hover:dark:bg-gray-700/40 hover:bg-gray-100/40':
+                            selectedTab !== thisTab,
                     }"
                     class="grow text-center py-1 rounded-sm z-10 dark:bg-gray-700/0 bg-gray-100/0"
                     @click="(e) => changeTab(thisTab, e)"

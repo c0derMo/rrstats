@@ -5,7 +5,14 @@ export abstract class BaseLeaderboardStatistic {
         this.cache = null;
     }
 
-    abstract basedOn(): ("player" | "match" | "map" | "comp" | "placement" | "achievement")[];
+    abstract basedOn(): (
+        | "player"
+        | "match"
+        | "map"
+        | "comp"
+        | "placement"
+        | "achievement"
+    )[];
     abstract getTableDefinition(): LeaderboardTableDefinition;
     abstract calculate(): Promise<void>;
 
@@ -20,14 +27,18 @@ export abstract class BaseLeaderboardStatistic {
         this.cache = null;
     }
 
-    protected sortAndInferPlacementByValue(rows: LeaderboardRow[], order: 'ASC' | 'DESC' = 'DESC') {
+    protected sortAndInferPlacementByValue(
+        rows: LeaderboardRow[],
+        order: "ASC" | "DESC" = "DESC",
+    ) {
         rows.sort((a, b) => b.value - a.value);
-        if (order === 'ASC') {
+        if (order === "ASC") {
             rows.reverse();
         }
 
         rows.forEach((row) => {
-            const placement = rows.findIndex((compare) => compare.value === row.value) + 1;
+            const placement =
+                rows.findIndex((compare) => compare.value === row.value) + 1;
             row.order = placement;
         });
     }

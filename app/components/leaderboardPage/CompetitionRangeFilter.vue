@@ -3,7 +3,6 @@
         <DoubleEndedSlider
             v-model:min-value="selectedMinComp"
             v-model:max-value="selectedMaxComp"
-
             class="w-full mb-2"
             :max="competitions.length - 1"
         />
@@ -18,14 +17,21 @@
 
             <div class="grow text-right">
                 <ButtonComponent
-                    @click="emits('update:modelValue', [5, competitions.length - 1])"
+                    @click="
+                        emits('update:modelValue', [5, competitions.length - 1])
+                    "
                 >
                     Include all 3 seasons (RR5+)
                 </ButtonComponent>
             </div>
             <div class="grow text-left">
                 <ButtonComponent
-                    @click="emits('update:modelValue', [10, competitions.length - 1])"
+                    @click="
+                        emits('update:modelValue', [
+                            10,
+                            competitions.length - 1,
+                        ])
+                    "
                 >
                     Include Ambrose Island (RR9+)
                 </ButtonComponent>
@@ -74,8 +80,8 @@ const selectedMinComp = computed<number>({
     },
     set: (val: number) => {
         model.value[0] = val;
-        emits('update:modelValue', model.value);
-    }
+        emits("update:modelValue", model.value);
+    },
 });
 
 const selectedMaxComp = computed<number>({
@@ -87,7 +93,7 @@ const selectedMaxComp = computed<number>({
     },
     set: (val: number) => {
         model.value[1] = val;
-        emits('update:modelValue', model.value);
-    }
+        emits("update:modelValue", model.value);
+    },
 });
 </script>

@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerSweeps extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
@@ -37,8 +37,8 @@ export class PlayerSweeps extends BaseLeaderboardStatistic {
         for (const player in playerMap) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Sweeps": playerMap[player],
+                    Player: player,
+                    Sweeps: playerMap[player],
                     "Matches played": playerMatches[player],
                     "Sweep rate": playerMap[player] / playerMatches[player],
                 },
@@ -50,7 +50,7 @@ export class PlayerSweeps extends BaseLeaderboardStatistic {
         this.sortAndInferPlacementByValue(result);
         this.cache = result;
     }
-    
+
     getTableDefinition(): LeaderboardTableDefinition {
         return {
             name: "Most matches swept",
@@ -58,12 +58,24 @@ export class PlayerSweeps extends BaseLeaderboardStatistic {
             subcategory: "Sweeps",
             explanatoryText: "Winning a match while the opponent has 0 points.",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Sweeps", type: LeaderboardColumnType.TEXT },
-                { name: "Matches played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 1 },
-                { name: "Sweep rate", type: LeaderboardColumnType.PERCENTAGE, sortable: true },
-            ]
-        }
-    };
+                {
+                    name: "Matches played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 1,
+                },
+                {
+                    name: "Sweep rate",
+                    type: LeaderboardColumnType.PERCENTAGE,
+                    sortable: true,
+                },
+            ],
+        };
+    }
 }

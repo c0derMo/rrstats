@@ -1,5 +1,8 @@
 import { Match } from "~~/server/model/Match";
-import { ServerSideFilteredLeaderboardStatistic, type FilterableLeaderboardRows } from "../ServerSideFilteredLeaderboardStatistic";
+import {
+    ServerSideFilteredLeaderboardStatistic,
+    type FilterableLeaderboardRows,
+} from "../ServerSideFilteredLeaderboardStatistic";
 
 export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatistic {
     basedOn() {
@@ -31,8 +34,8 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
                 if (mapCount[player][map] > 0) {
                     result[map].push({
                         columns: {
-                            "Player": player,
-                            "Played": mapCount[player][map]
+                            Player: player,
+                            Played: mapCount[player][map],
                         },
                         order: 0,
                         value: mapCount[player][map],
@@ -45,8 +48,8 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
         const listifiedResult: FilterableLeaderboardRows[] = [];
         for (const map of getAllMaps()) {
             listifiedResult.push({
-                filter: { "Map": map },
-                rows: result[map]
+                filter: { Map: map },
+                rows: result[map],
             });
         }
 
@@ -85,11 +88,20 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
             category: "player",
             subcategory: "Map",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Played", type: LeaderboardColumnType.TEXT },
-                { name: "Map", type: LeaderboardColumnType.HIDDEN, filterable: LeaderboardFilterType.MAP, defaultFilter: HitmanMap.PARIS, serverSideFilter: true },
-            ]
-        }
-    };
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.HIDDEN,
+                    filterable: LeaderboardFilterType.MAP,
+                    defaultFilter: HitmanMap.PARIS,
+                    serverSideFilter: true,
+                },
+            ],
+        };
+    }
 }

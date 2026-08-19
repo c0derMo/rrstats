@@ -6,7 +6,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class CountryWins extends BaseLeaderboardStatistic {
     basedOn() {
         return ["player" as const, "match" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
@@ -28,7 +28,7 @@ export class CountryWins extends BaseLeaderboardStatistic {
         const nameMap = MapperService.createStringMapFromList(
             players,
             "uuid",
-            "primaryName"
+            "primaryName",
         );
 
         const winsPerCountry: DefaultedMap<
@@ -74,17 +74,21 @@ export class CountryWins extends BaseLeaderboardStatistic {
                 const sum = getSumOfValues(players);
                 return {
                     columns: {
-                        "Flag": `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
-                        "Country": this.getCountryName(country),
-                        "Wins": sum
+                        Flag: `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
+                        Country: this.getCountryName(country),
+                        Wins: sum,
                     },
                     value: sum,
                     order: 0,
-                    expandableRows: players.mapAll((player, wins) => {
-                            return { player, wins }
+                    expandableRows: players
+                        .mapAll((player, wins) => {
+                            return { player, wins };
                         })
                         .toSorted((a, b) => b.wins - a.wins)
-                        .map((player) => [nameMap[player.player] ?? player.player, player.wins.toString()]),
+                        .map((player) => [
+                            nameMap[player.player] ?? player.player,
+                            player.wins.toString(),
+                        ]),
                 };
             },
         );
@@ -116,11 +120,18 @@ export class CountryWins extends BaseLeaderboardStatistic {
             name: "Wins per country",
             category: "country",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Flag", type: LeaderboardColumnType.IMAGE },
-                { name: "Country", type: LeaderboardColumnType.TEXT, searchable: true },
+                {
+                    name: "Country",
+                    type: LeaderboardColumnType.TEXT,
+                    searchable: true,
+                },
                 { name: "Wins", type: LeaderboardColumnType.TEXT },
             ],
-        }
+        };
     }
 }

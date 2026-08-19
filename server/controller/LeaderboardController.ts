@@ -81,11 +81,11 @@ export default class LeaderboardController {
         new PlayerMatchesWonInARow(),
         new PlayerMapsWonInARow(),
         new PlayerSameMapWonInARow(),
-        
+
         new PlayerSweeps(),
         new PlayerSweeps6(),
         new PlayerReverseSweeps(),
-        
+
         new PlayerAchievements(),
         new PlayerMatchesCasted(),
 
@@ -116,7 +116,9 @@ export default class LeaderboardController {
     }
 
     public static async getCategories(): Promise<LeaderboardTableDefinition[]> {
-        return LeaderboardController.statistics.map((stat) => stat.getTableDefinition());
+        return LeaderboardController.statistics.map((stat) =>
+            stat.getTableDefinition(),
+        );
     }
 
     @Log("LeaderboardController.getEntries", true)

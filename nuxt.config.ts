@@ -71,7 +71,11 @@ export default defineNuxtConfig({
         },
     },
 
-    css: ["@/assets/main.css", "@fortawesome/fontawesome-svg-core/styles.css", "@/assets/fonts.css"],
+    css: [
+        "@/assets/main.css",
+        "@fortawesome/fontawesome-svg-core/styles.css",
+        "@/assets/fonts.css",
+    ],
 
     build: {
         transpile: ["@fortawesome/vue-fontawesome"],
@@ -100,9 +104,7 @@ export default defineNuxtConfig({
                 "chart.js",
             ],
         },
-        plugins: [
-            tailwindcss()
-        ]
+        plugins: [tailwindcss()],
     },
 
     compatibilityDate: "2024-08-10",

@@ -2,9 +2,13 @@
     <div class="flex flex-col gap-2">
         <template v-for="(col, idx) of tableDefinition.columns" :key="idx">
             <CompetitionRangeFilter
-                v-if="col.filterable === LeaderboardFilterType.COMPETITION_RANGE"
+                v-if="
+                    col.filterable === LeaderboardFilterType.COMPETITION_RANGE
+                "
                 :model-value="castUnknown(filters[col.name])"
-                @update:model-value="(v) => updateFilter(col.name, v, col.serverSideFilter)"
+                @update:model-value="
+                    (v) => updateFilter(col.name, v, col.serverSideFilter)
+                "
             />
         </template>
 
@@ -22,7 +26,9 @@
                     class="grow"
                     :placeholder="`Filter by ${col.name.toLowerCase()}`"
                     :model-value="castUnknown(filters[col.name])"
-                    @update:model-value="(v) => updateFilter(col.name, v, col.serverSideFilter)"
+                    @update:model-value="
+                        (v) => updateFilter(col.name, v, col.serverSideFilter)
+                    "
                 />
 
                 <TextInputComponent
@@ -31,15 +37,22 @@
                     class="grow"
                     :placeholder="`Minimum ${col.name.toLowerCase()}`"
                     :model-value="castUnknown(filters[col.name])"
-                    @update:model-value="(v) => updateFilter(col.name, v, col.serverSideFilter)"
+                    @update:model-value="
+                        (v) => updateFilter(col.name, v, col.serverSideFilter)
+                    "
                 />
 
                 <DropdownComponent
-                    v-if="col.filterable === LeaderboardFilterType.MAP || col.filterable === LeaderboardFilterType.MAP_OPTIONAL"
+                    v-if="
+                        col.filterable === LeaderboardFilterType.MAP ||
+                        col.filterable === LeaderboardFilterType.MAP_OPTIONAL
+                    "
                     class="grow"
                     :model-value="castUnknown(filters[col.name])"
                     :items="selectableMapsFor(col)"
-                    @update:model-value="(v) => updateFilter(col.name, v, col.serverSideFilter)"
+                    @update:model-value="
+                        (v) => updateFilter(col.name, v, col.serverSideFilter)
+                    "
                 />
             </template>
         </div>
@@ -68,21 +81,30 @@ emits("update-local-filters", getInternalFilters());
 
 const hasSearchable = computed<boolean>(() => {
     return props.tableDefinition.columns.some((column) => {
-        return column.type === LeaderboardColumnType.PLAYER_NAME || column.searchable;
+        return (
+            column.type === LeaderboardColumnType.PLAYER_NAME ||
+            column.searchable
+        );
     });
 });
 
 const searchableEntity = computed<string>(() => {
     return props.tableDefinition.columns
         .filter((column) => {
-            return column.type === LeaderboardColumnType.PLAYER_NAME || column.searchable;
+            return (
+                column.type === LeaderboardColumnType.PLAYER_NAME ||
+                column.searchable
+            );
         })
         .map((column) => column.name.toLowerCase())
         .join(", ");
 });
 
 function selectableMapsFor(col: LeaderboardColumnDefinition) {
-    if (col.filterable !== LeaderboardFilterType.MAP && col.filterable !== LeaderboardFilterType.MAP_OPTIONAL) {
+    if (
+        col.filterable !== LeaderboardFilterType.MAP &&
+        col.filterable !== LeaderboardFilterType.MAP_OPTIONAL
+    ) {
         return [];
     }
 
@@ -97,7 +119,7 @@ function selectableMapsFor(col: LeaderboardColumnDefinition) {
 
 function getExternalFilters() {
     const externalFilters: Record<string, unknown> = {};
-    
+
     for (const col of props.tableDefinition.columns) {
         if (col.serverSideFilter) {
             externalFilters[col.name] = filters.value[col.name];
@@ -109,7 +131,7 @@ function getExternalFilters() {
 
 function getInternalFilters() {
     const internalFilters: Record<string, unknown> = {};
-    
+
     for (const col of props.tableDefinition.columns) {
         if (col.serverSideFilter == null || !col.serverSideFilter) {
             internalFilters[col.name] = filters.value[col.name];

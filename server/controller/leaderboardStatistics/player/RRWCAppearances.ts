@@ -32,8 +32,8 @@ export class PlayerRRWCAppearances extends BaseLeaderboardStatistic {
         for (const player in appearances) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Appearances": appearances[player].size
+                    Player: player,
+                    Appearances: appearances[player].size,
                 },
                 value: appearances[player].size,
                 order: 0,
@@ -50,10 +50,13 @@ export class PlayerRRWCAppearances extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Participation",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Appearances", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

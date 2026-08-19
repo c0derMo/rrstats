@@ -17,7 +17,7 @@ export class MapPicked extends SimpleMapLeaderboardStatistic {
             for (const map of match.playedMaps) {
                 if (map.picked === ChoosingPlayer.RANDOM) continue;
 
-                this.mapCache!.get(map.map)[compIndex] += 1
+                this.mapCache!.get(map.map)[compIndex] += 1;
             }
         }
     }

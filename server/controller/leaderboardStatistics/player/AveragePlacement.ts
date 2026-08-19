@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerAveragePlacement extends BaseLeaderboardStatistic {
     basedOn() {
         return ["placement" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const placements = await CompetitionPlacement.createQueryBuilder(
@@ -36,15 +36,15 @@ export class PlayerAveragePlacement extends BaseLeaderboardStatistic {
             const average = allPlacements / placementsOfPlayers[player].length;
             result.push({
                 columns: {
-                    "Player": player,
+                    Player: player,
                     "Average placement": Math.round(average * 100) / 100,
                     "Competitions played": placementsOfPlayers[player].length,
                 },
                 order: 0,
-                value: average
+                value: average,
             });
         }
-        this.sortAndInferPlacementByValue(result, 'ASC');
+        this.sortAndInferPlacementByValue(result, "ASC");
         this.cache = result;
     }
 
@@ -54,11 +54,19 @@ export class PlayerAveragePlacement extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Participation",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Average placement", type: LeaderboardColumnType.TEXT },
-                { name: "Competitions played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 3 },
-            ]
-        }
-    };
+                {
+                    name: "Competitions played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 3,
+                },
+            ],
+        };
+    }
 }

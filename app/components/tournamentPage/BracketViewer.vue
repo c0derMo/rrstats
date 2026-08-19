@@ -26,7 +26,7 @@
                     v-for="(match, mIdx) in round.matches"
                     :key="match.id"
                     class="flex flex-col justify-center"
-                    :class="{ 'grow': bracket.advancementBracket }"
+                    :class="{ grow: bracket.advancementBracket }"
                 >
                     <div class="flex flex-row h-full items-center">
                         <BracketMatch

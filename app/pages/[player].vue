@@ -150,15 +150,11 @@
                             : "n/a"
                     }}
                 </div>
-                <div
-                    class="grow text-center md:border-x border-neutral-500"
-                >
+                <div class="grow text-center md:border-x border-neutral-500">
                     Maps played:
                     {{ statistics?.mapCount }}
                 </div>
-                <div
-                    class="grow text-center md:border-x border-neutral-500"
-                >
+                <div class="grow text-center md:border-x border-neutral-500">
                     Matches played:
                     {{ statistics?.matchCount }}
                 </div>

@@ -11,13 +11,15 @@
                     :tabs="['Players', 'Countries', 'Maps']"
                 />
 
-                <LeaderboardList 
+                <LeaderboardList
                     v-model="selectedCategory"
                     :leaderboards="shownCategories"
                 />
             </CardComponent>
 
-            <CardComponent class="grow overflow-visible! relative flex flex-col gap-2">            
+            <CardComponent
+                class="grow overflow-visible! relative flex flex-col gap-2"
+            >
                 <IndefiniteProgressBar
                     v-if="leaderboardLoading"
                     class="absolute top-0 left-0"
@@ -38,7 +40,7 @@
                     :key="selectedCategory.name"
                     v-model:search="search"
                     :table-definition="selectedCategory"
-                    @update-local-filters="(f) => localFilters = f"
+                    @update-local-filters="(f) => (localFilters = f)"
                     @update-external-filters="updateExternalFilters"
                 />
 
@@ -69,7 +71,9 @@ const countryCategories = await navigatorInfo.getCountryLeaderboards();
 const mapCategories = await navigatorInfo.getMapLeaderboards();
 
 const selectedTab = ref("Players");
-const selectedCategory: Ref<LeaderboardTableDefinition> = ref(playerCategories[0]);
+const selectedCategory: Ref<LeaderboardTableDefinition> = ref(
+    playerCategories[0],
+);
 const leaderboardData: Ref<LeaderboardRow[]> = ref([]);
 const leaderboardLoading = ref(false);
 const externalFilters: Ref<Record<string, unknown>> = ref({});
@@ -128,7 +132,10 @@ watch(selectedCategory, async () => {
     localFilters.value = {};
     search.value = "";
 
-    setHash(`#${selectedCategory.value.category}.${selectedCategory.value.name}`, true);
+    setHash(
+        `#${selectedCategory.value.category}.${selectedCategory.value.name}`,
+        true,
+    );
 
     await loadLeaderboardData();
 });

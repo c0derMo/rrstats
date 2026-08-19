@@ -8,7 +8,7 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
 
     basedOn() {
         return ["placement" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const placements = await CompetitionPlacement.createQueryBuilder(
@@ -38,8 +38,8 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
         for (const player in appearances) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Finals played": appearances[player].size
+                    Player: player,
+                    "Finals played": appearances[player].size,
                 },
                 value: appearances[player].size,
                 order: 0,
@@ -56,10 +56,13 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Participation",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Finals played", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

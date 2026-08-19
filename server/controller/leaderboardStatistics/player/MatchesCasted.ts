@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerMatchesCasted extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
@@ -27,8 +27,8 @@ export class PlayerMatchesCasted extends BaseLeaderboardStatistic {
             (caster, matchesCasted) => {
                 return {
                     columns: {
-                        "Caster": caster,
-                        "Matches casted": matchesCasted
+                        Caster: caster,
+                        "Matches casted": matchesCasted,
                     },
                     value: matchesCasted,
                     order: 0,
@@ -46,10 +46,13 @@ export class PlayerMatchesCasted extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Other",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Caster", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Matches casted", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

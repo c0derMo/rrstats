@@ -17,5 +17,5 @@ const text = computed(() => {
 
 const color = computed(() => {
     return getPlacementTagColor(props.placement ?? 4);
-})
+});
 </script>

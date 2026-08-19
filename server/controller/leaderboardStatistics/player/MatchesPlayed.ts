@@ -5,7 +5,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerMatchesPlayed extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "player" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
@@ -41,9 +41,10 @@ export class PlayerMatchesPlayed extends BaseLeaderboardStatistic {
         for (const player of players) {
             result.push({
                 columns: {
-                    "Player": player.uuid,
+                    Player: player.uuid,
                     "Matches played": matchesPerPlayer[player.uuid] ?? 0,
-                    "Competitions played": competitionsPerPlayer[player.uuid]?.size ?? 0
+                    "Competitions played":
+                        competitionsPerPlayer[player.uuid]?.size ?? 0,
                 },
                 order: 0,
                 value: matchesPerPlayer[player.uuid] ?? 0,
@@ -60,11 +61,19 @@ export class PlayerMatchesPlayed extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Matches",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Matches played", type: LeaderboardColumnType.TEXT },
-                { name: "Competitions played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 1 },
-            ]
-        }
-    };
+                {
+                    name: "Competitions played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 1,
+                },
+            ],
+        };
+    }
 }

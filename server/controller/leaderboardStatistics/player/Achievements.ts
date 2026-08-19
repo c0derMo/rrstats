@@ -4,11 +4,11 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
 interface AchievementCount extends LeaderboardRow {
     columns: {
-        "Player": string,
-        "Platinum": number,
-        "Gold": number,
-        "Silver": number,
-        "Bronze": number
+        Player: string;
+        Platinum: number;
+        Gold: number;
+        Silver: number;
+        Bronze: number;
     };
 }
 
@@ -67,11 +67,11 @@ export class PlayerAchievements extends BaseLeaderboardStatistic {
                 .reduce((l, r) => l + r, 0);
             result.push({
                 columns: {
-                    "Player": player.uuid,
-                    "Platinum": achievedPlatinum,
-                    "Gold": achievedGold,
-                    "Silver": achievedSilver,
-                    "Bronze": achievedBronze
+                    Player: player.uuid,
+                    Platinum: achievedPlatinum,
+                    Gold: achievedGold,
+                    Silver: achievedSilver,
+                    Bronze: achievedBronze,
                 },
                 order: 0,
                 value: achievedPlatinum,
@@ -103,15 +103,19 @@ export class PlayerAchievements extends BaseLeaderboardStatistic {
             name: "Most achievements",
             category: "player",
             subcategory: "Other",
-            explanatoryText: "Number of achievements, ranked by Platinum, Gold, Silver and Bronze.",
+            explanatoryText:
+                "Number of achievements, ranked by Platinum, Gold, Silver and Bronze.",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Platinum", type: LeaderboardColumnType.TEXT },
                 { name: "Gold", type: LeaderboardColumnType.TEXT },
                 { name: "Silver", type: LeaderboardColumnType.TEXT },
                 { name: "Bronze", type: LeaderboardColumnType.TEXT },
-            ]
-        }
+            ],
+        };
     }
 }

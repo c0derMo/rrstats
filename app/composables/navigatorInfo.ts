@@ -15,11 +15,20 @@ export const useNavigatorInfo = () => {
     }>("navigator", () => ({}));
 
     async function fetchLeaderboards() {
-        const leaderboards = (await $fetch<LeaderboardTableDefinition[]>("/api/leaderboards/list")) ?? [];
+        const leaderboards =
+            (await $fetch<LeaderboardTableDefinition[]>(
+                "/api/leaderboards/list",
+            )) ?? [];
 
-        navInfo.value.playerLeaderboards = leaderboards.filter((lb) => lb.category === "player");
-        navInfo.value.countryLeaderboards = leaderboards.filter((lb) => lb.category === "country");
-        navInfo.value.mapLeaderboards = leaderboards.filter((lb) => lb.category === "map");
+        navInfo.value.playerLeaderboards = leaderboards.filter(
+            (lb) => lb.category === "player",
+        );
+        navInfo.value.countryLeaderboards = leaderboards.filter(
+            (lb) => lb.category === "country",
+        );
+        navInfo.value.mapLeaderboards = leaderboards.filter(
+            (lb) => lb.category === "map",
+        );
     }
 
     const getPlayers = async () => {

@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerMatchesWonInARow extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
@@ -40,12 +40,12 @@ export class PlayerMatchesWonInARow extends BaseLeaderboardStatistic {
                 if (streak >= 5) {
                     result.push({
                         columns: {
-                            "Player": player,
+                            Player: player,
                             "Winning streak": streak,
                         },
                         order: 0,
-                        value: streak
-                    })
+                        value: streak,
+                    });
                 }
             }
         });
@@ -60,10 +60,13 @@ export class PlayerMatchesWonInARow extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Streaks",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winning streak", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

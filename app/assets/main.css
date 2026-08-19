@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /*
   Row colors of roulette rankings - since these are built serverside, these aren't automatically included
@@ -11,8 +11,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-josefinSans: Josefin Sans, sans-serif;
-  --font-titilliumWeb: Titillium Web, sans-serif;
+    --font-josefinSans: Josefin Sans, sans-serif;
+    --font-titilliumWeb: Titillium Web, sans-serif;
 }
 
 /*
@@ -24,11 +24,11 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
 }

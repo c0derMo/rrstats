@@ -21,7 +21,9 @@ describe("LeaderboardController", () => {
     test("Performance: Individual leaderboard calculations", async () => {
         for (const statistic of LeaderboardController.statistics) {
             const startTime = DateTime.now();
-            await LeaderboardController.getEntries(statistic.getTableDefinition().name);
+            await LeaderboardController.getEntries(
+                statistic.getTableDefinition().name,
+            );
             expect
                 .soft(startTime.diffNow().as("milliseconds"))
                 .toBeLessThan(500);
@@ -31,9 +33,15 @@ describe("LeaderboardController", () => {
     test("Correct leaderboard categories", { timeout: 10000 }, async () => {
         const categories = await LeaderboardController.getCategories();
 
-        const countryCategories = categories.filter((category) => category.category === 'country');
-        const mapCategories = categories.filter((category) => category.category === 'map');
-        const playerCategories = categories.filter((category) => category.category === 'player');
+        const countryCategories = categories.filter(
+            (category) => category.category === "country",
+        );
+        const mapCategories = categories.filter(
+            (category) => category.category === "map",
+        );
+        const playerCategories = categories.filter(
+            (category) => category.category === "player",
+        );
         expect(countryCategories.length).toBe(5);
         expect(mapCategories.length).toBe(5);
         expect(playerCategories.length).toBe(25);

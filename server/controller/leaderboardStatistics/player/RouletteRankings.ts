@@ -16,7 +16,7 @@ interface Ranking {
 export class PlayerRouletteRankings extends BaseLeaderboardStatistic {
     basedOn() {
         return ["placement" as const, "comp" as const];
-    };
+    }
 
     getRankingBadge(score: number, placement: number): string {
         if (score <= 0 || placement < 0) {
@@ -215,22 +215,31 @@ export class PlayerRouletteRankings extends BaseLeaderboardStatistic {
 
             result.push({
                 columns: {
-                    "Player": rankedPlayer.player,
-                    "Score": rankedPlayer.totalScore,
-                    "Badge": this.getRankingBadge(rankedPlayer.totalScore, placement + 1),
+                    Player: rankedPlayer.player,
+                    Score: rankedPlayer.totalScore,
+                    Badge: this.getRankingBadge(
+                        rankedPlayer.totalScore,
+                        placement + 1,
+                    ),
                 },
                 order: placement + 1,
                 value: rankedPlayer.totalScore,
-                backgroundColor: this.getRowColor(rankedPlayer.totalScore, placement + 1),
+                backgroundColor: this.getRowColor(
+                    rankedPlayer.totalScore,
+                    placement + 1,
+                ),
                 expandableRows: [
                     rankedPlayer.entries.map((entry) => {
-                        if (entry.competition === sortedEntriesByScore[3]?.competition) {
+                        if (
+                            entry.competition ===
+                            sortedEntriesByScore[3]?.competition
+                        ) {
                             return `(${entry.competition}: ${entry.score} (${formatPlacement(entry.placement)}))`;
                         } else {
                             return `${entry.competition}: ${entry.score} (${formatPlacement(entry.placement)})`;
                         }
-                    })
-                ]
+                    }),
+                ],
             });
         }
         result.sort((a, b) => a.order - b.order);
@@ -242,13 +251,21 @@ export class PlayerRouletteRankings extends BaseLeaderboardStatistic {
         return {
             name: "Roulette Rankings",
             category: "player",
-            explanatoryText: "Official Roulette Rankings, using the 3 best placements of the last 4 tournaments.",
+            explanatoryText:
+                "Official Roulette Rankings, using the 3 best placements of the last 4 tournaments.",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
-                { name: "Badge", type: LeaderboardColumnType.IMAGE, colored: true },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                {
+                    name: "Badge",
+                    type: LeaderboardColumnType.IMAGE,
+                    colored: true,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Score", type: LeaderboardColumnType.TEXT },
-            ]
-        }
+            ],
+        };
     }
 }

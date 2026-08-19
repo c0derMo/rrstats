@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerRRAppearances extends BaseLeaderboardStatistic {
     basedOn() {
         return ["placement" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const placements = await CompetitionPlacement.createQueryBuilder(
@@ -30,10 +30,12 @@ export class PlayerRRAppearances extends BaseLeaderboardStatistic {
         for (const player in appearances) {
             result.push({
                 columns: {
-                    "Player": player,
-                    "Participations": appearances[player].size,
-                    "First": [...appearances[player]][0],
-                    "Last": [...appearances[player]][appearances[player].size - 1],
+                    Player: player,
+                    Participations: appearances[player].size,
+                    First: [...appearances[player]][0],
+                    Last: [...appearances[player]][
+                        appearances[player].size - 1
+                    ],
                 },
                 order: 0,
                 value: appearances[player].size,
@@ -50,12 +52,15 @@ export class PlayerRRAppearances extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Participation",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Participations", type: LeaderboardColumnType.TEXT },
                 { name: "First", type: LeaderboardColumnType.TEXT },
                 { name: "Last", type: LeaderboardColumnType.TEXT },
-            ]
-        }
-    };
+            ],
+        };
+    }
 }

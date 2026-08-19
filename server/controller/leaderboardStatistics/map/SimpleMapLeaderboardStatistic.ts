@@ -3,7 +3,9 @@ import { Match } from "~~/server/model/Match";
 import ld from "lodash";
 import { MapLeaderboardStatistic } from "./MapLeaderboardStatistic";
 
-export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatistic<DefaultedMap<HitmanMap, number[]>> {
+export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatistic<
+    DefaultedMap<HitmanMap, number[]>
+> {
     private competitionAmount: number;
     private columnName: string;
     private leaderboardName: string;
@@ -21,7 +23,10 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
         return ["match" as const, "map" as const, "comp" as const];
     }
 
-    abstract computeMapStats(competitions: ICompetition[], matches: IMatch[]): void;
+    abstract computeMapStats(
+        competitions: ICompetition[],
+        matches: IMatch[],
+    ): void;
 
     async calculate(): Promise<void> {
         const officialCompetitions = await Competition.createQueryBuilder(
@@ -33,7 +38,12 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
             .getMany();
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
-            .select(["match.competition", "map.map", "map.picked", "match.bannedMaps"])
+            .select([
+                "match.competition",
+                "map.map",
+                "map.picked",
+                "match.bannedMaps",
+            ])
             .getMany();
         this.mapCache = new DefaultedMap(() =>
             Array(officialCompetitions.length).fill(0),
@@ -45,7 +55,12 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
     }
 
     buildRows(filter?: Record<string, unknown>): LeaderboardRow[] {
-        if (filter == null || filter["Competition"] == null || !ld.isArray(filter["Competition"]) || filter["Competition"].length !== 2) {
+        if (
+            filter == null ||
+            filter["Competition"] == null ||
+            !ld.isArray(filter["Competition"]) ||
+            filter["Competition"].length !== 2
+        ) {
             return [];
         }
 
@@ -55,22 +70,22 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
             endingCompetition = this.competitionAmount + endingCompetition;
         }
 
-        const result: LeaderboardRow[] = this.mapCache?.mapAll((map, compPicks) => {
-            const score = compPicks
-                .slice(startingCompetition, endingCompetition + 1)
-                .reduce((prev, cur) => prev + cur, 0);
+        const result: LeaderboardRow[] =
+            this.mapCache?.mapAll((map, compPicks) => {
+                const score = compPicks
+                    .slice(startingCompetition, endingCompetition + 1)
+                    .reduce((prev, cur) => prev + cur, 0);
 
-            const preBuilt: LeaderboardRow = {
-                columns: {
-                    "Map": map,
-                },
-                value: score,
-                order: 0
-            };
-            preBuilt.columns[this.columnName] = score;
-            return preBuilt;
-
-        }) ?? [];
+                const preBuilt: LeaderboardRow = {
+                    columns: {
+                        Map: map,
+                    },
+                    value: score,
+                    order: 0,
+                };
+                preBuilt.columns[this.columnName] = score;
+                return preBuilt;
+            }) ?? [];
 
         this.sortAndInferPlacementByValue(result);
         return result;
@@ -82,11 +97,20 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
             category: "map",
             explanatoryText: this.explanatoryText,
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Map", type: LeaderboardColumnType.MAP },
                 { name: this.columnName, type: LeaderboardColumnType.TEXT },
-                { name: "Competition", type: LeaderboardColumnType.HIDDEN, filterable: LeaderboardFilterType.COMPETITION_RANGE, defaultFilter: [0, -1], serverSideFilter: true }
-            ]
-        }
-    };
+                {
+                    name: "Competition",
+                    type: LeaderboardColumnType.HIDDEN,
+                    filterable: LeaderboardFilterType.COMPETITION_RANGE,
+                    defaultFilter: [0, -1],
+                    serverSideFilter: true,
+                },
+            ],
+        };
+    }
 }

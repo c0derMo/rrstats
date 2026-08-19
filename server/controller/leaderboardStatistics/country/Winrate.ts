@@ -6,7 +6,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class CountryWinrate extends BaseLeaderboardStatistic {
     basedOn() {
         return ["player" as const, "match" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
@@ -28,7 +28,7 @@ export class CountryWinrate extends BaseLeaderboardStatistic {
         const nameMap = MapperService.createStringMapFromList(
             players,
             "uuid",
-            "primaryName"
+            "primaryName",
         );
 
         const winratePerCountry: DefaultedMap<
@@ -114,18 +114,27 @@ export class CountryWinrate extends BaseLeaderboardStatistic {
 
                 return {
                     columns: {
-                        "Flag": `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
-                        "Country": this.getCountryName(country),
-                        "Winrate": totalWins / totalMatches,
+                        Flag: `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
+                        Country: this.getCountryName(country),
+                        Winrate: totalWins / totalMatches,
                         "Total matches": totalMatches,
                     },
                     value: totalWins / totalMatches,
                     order: 0,
-                    expandableRows: players.mapAll((player, value) => {
-                            return { player, wr: value.wins / value.matches, matches: value.matches };
+                    expandableRows: players
+                        .mapAll((player, value) => {
+                            return {
+                                player,
+                                wr: value.wins / value.matches,
+                                matches: value.matches,
+                            };
                         })
                         .toSorted((a, b) => b.wr - a.wr)
-                        .map((player) => [nameMap[player.player] ?? player.player, (player.wr * 100).toFixed(2) + "%", player.matches]),
+                        .map((player) => [
+                            nameMap[player.player] ?? player.player,
+                            (player.wr * 100).toFixed(2) + "%",
+                            player.matches,
+                        ]),
                 };
             },
         );
@@ -158,12 +167,24 @@ export class CountryWinrate extends BaseLeaderboardStatistic {
             name: "Winrate per country",
             category: "country",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Flag", type: LeaderboardColumnType.IMAGE },
-                { name: "Country", type: LeaderboardColumnType.TEXT, searchable: true },
+                {
+                    name: "Country",
+                    type: LeaderboardColumnType.TEXT,
+                    searchable: true,
+                },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
-                { name: "Total matches", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 5 },
+                {
+                    name: "Total matches",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
             ],
-        }
+        };
     }
 }

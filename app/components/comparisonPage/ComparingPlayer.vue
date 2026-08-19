@@ -172,9 +172,7 @@
                         'flex-row-reverse': reverse,
                     }"
                 >
-                    <span class="grow font-light"
-                        >Average RR placement</span
-                    >
+                    <span class="grow font-light">Average RR placement</span>
                     <span
                         :class="
                             getAheadBehindClass(getAverageRRPlacement, true)

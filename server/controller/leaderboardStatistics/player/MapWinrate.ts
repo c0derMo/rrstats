@@ -4,7 +4,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 export class PlayerMapWinrate extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "map" as const];
-    };
+    }
 
     async calculate(): Promise<void> {
         const maps = await PlayedMap.createQueryBuilder("map")
@@ -48,19 +48,17 @@ export class PlayerMapWinrate extends BaseLeaderboardStatistic {
         }
 
         // Calculating score from that
-        const result: LeaderboardRow[] = mapsAndWins.mapAll(
-            (player, maps) => {
-                return {
-                    columns: {
-                        "Player": player,
-                        "Winrate": maps.wins / maps.maps,
-                        "Maps played": maps.maps,
-                    },
-                    value: maps.wins / maps.maps,
-                    order: 0,
-                };
-            },
-        );
+        const result: LeaderboardRow[] = mapsAndWins.mapAll((player, maps) => {
+            return {
+                columns: {
+                    Player: player,
+                    Winrate: maps.wins / maps.maps,
+                    "Maps played": maps.maps,
+                },
+                value: maps.wins / maps.maps,
+                order: 0,
+            };
+        });
         this.sortAndInferPlacementByValue(result);
 
         this.cache = result;
@@ -72,11 +70,19 @@ export class PlayerMapWinrate extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Maps",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
-                { name: "Maps played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 10 },
-            ]
-        }
-    };
+                {
+                    name: "Maps played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 10,
+                },
+            ],
+        };
+    }
 }

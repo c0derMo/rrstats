@@ -51,15 +51,15 @@ export class PlayerMapsWon extends BaseLeaderboardStatistic {
         for (const player of players) {
             result.push({
                 columns: {
-                    "Player": player.uuid,
-                    "Wins": wins[player.uuid] ?? 0,
-                    "Maps played": maps[player.uuid] ?? 0
+                    Player: player.uuid,
+                    Wins: wins[player.uuid] ?? 0,
+                    "Maps played": maps[player.uuid] ?? 0,
                 },
                 order: 0,
                 value: wins[player.uuid] ?? 0,
             });
         }
-        
+
         this.sortAndInferPlacementByValue(result);
         this.cache = result;
     }
@@ -70,11 +70,19 @@ export class PlayerMapsWon extends BaseLeaderboardStatistic {
             category: "player",
             subcategory: "Maps",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Wins", type: LeaderboardColumnType.TEXT },
-                { name: "Maps played", type: LeaderboardColumnType.TEXT, filterable: LeaderboardFilterType.NUMERIC, defaultFilter: 1 },
-            ]
-        }
-    };
+                {
+                    name: "Maps played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 1,
+                },
+            ],
+        };
+    }
 }

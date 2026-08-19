@@ -32,7 +32,7 @@ export class CountryTitles extends BaseLeaderboardStatistic {
         const nameMap = MapperService.createStringMapFromList(
             players,
             "uuid",
-            "primaryName"
+            "primaryName",
         );
 
         const titlesPerCountry: DefaultedMap<
@@ -56,17 +56,21 @@ export class CountryTitles extends BaseLeaderboardStatistic {
                 const sum = getSumOfValues(players);
                 return {
                     columns: {
-                        "Flag": `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
-                        "Country": this.getCountryName(country),
-                        "Titles": sum
+                        Flag: `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
+                        Country: this.getCountryName(country),
+                        Titles: sum,
                     },
                     value: sum,
                     order: 0,
-                    expandableRows: players.mapAll((key, value) => {
-                            return { player: key, score: value }
+                    expandableRows: players
+                        .mapAll((key, value) => {
+                            return { player: key, score: value };
                         })
                         .toSorted((a, b) => b.score - a.score)
-                        .map((player) => [nameMap[player.player] ?? player.player, player.score.toString()])
+                        .map((player) => [
+                            nameMap[player.player] ?? player.player,
+                            player.score.toString(),
+                        ]),
                 };
             },
         );
@@ -87,11 +91,18 @@ export class CountryTitles extends BaseLeaderboardStatistic {
             name: "Titles per country",
             category: "country",
             columns: [
-                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
                 { name: "Flag", type: LeaderboardColumnType.IMAGE },
-                { name: "Country", type: LeaderboardColumnType.TEXT, searchable: true },
+                {
+                    name: "Country",
+                    type: LeaderboardColumnType.TEXT,
+                    searchable: true,
+                },
                 { name: "Titles", type: LeaderboardColumnType.TEXT },
             ],
-        }
+        };
     }
 }

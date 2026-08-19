@@ -1,6 +1,8 @@
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export abstract class MapLeaderboardStatistic<T> extends BaseLeaderboardStatistic {
+export abstract class MapLeaderboardStatistic<
+    T,
+> extends BaseLeaderboardStatistic {
     protected mapCache: T | null;
 
     constructor() {
@@ -8,9 +10,11 @@ export abstract class MapLeaderboardStatistic<T> extends BaseLeaderboardStatisti
         this.mapCache = null;
     }
 
-    abstract buildRows(filter?: Record<string, unknown>): LeaderboardRow[];    
+    abstract buildRows(filter?: Record<string, unknown>): LeaderboardRow[];
 
-    override async get(filter?: Record<string, unknown>): Promise<LeaderboardRow[]> {
+    override async get(
+        filter?: Record<string, unknown>,
+    ): Promise<LeaderboardRow[]> {
         if (this.mapCache == null) {
             await this.calculate();
         }
