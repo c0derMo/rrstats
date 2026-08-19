@@ -40,9 +40,9 @@ export default defineEventHandler<EloResponse>(async (event) => {
 
     const eloLB = (await LeaderboardController.getEntries(
         "Elo rating",
-    )) as LeaderboardPlayerEntry[];
+    ));
     const eloByPlayer = new Map<string, number>(
-        eloLB.map((entry) => [entry.player, entry.sortingScore]),
+        eloLB.map((entry) => [entry.columns["Player"] as string, entry.value]),
     );
     const result: { discordId: string; elo: number }[] = [];
     for (const player of players) {

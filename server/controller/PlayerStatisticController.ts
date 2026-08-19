@@ -80,16 +80,15 @@ export default class PlayerStatisticController {
 
         const rankings = (await LeaderboardController.getEntries(
             "Roulette Rankings",
-        )) as LeaderboardPlayerEntry[];
+        ));
         const playersRanking = rankings.find(
-            (ranking) => ranking.player === uuid,
+            (ranking) => ranking.columns["Player"] === uuid,
         ) ?? {
-            player: uuid,
-            sortingScore: 0,
-            displayScore: "0",
+            columns: {},
+            value: 0
         };
         const playersRankingSpot =
-            (rankings.findIndex((ranking) => ranking.player === uuid) ?? -2) + 1;
+            (rankings.findIndex((ranking) => ranking.columns["Player"] === uuid) ?? -2) + 1;
 
         PlayerStatisticController.cache.set(uuid, {
             winrate: matchCollection.winrate(),
@@ -116,9 +115,9 @@ export default class PlayerStatisticController {
                 EloController.getInstance().getEloProgressionOfPlayer(uuid),
             ranking: {
                 placement: playersRankingSpot,
-                score: parseInt(playersRanking.displayScore),
+                score: playersRanking.value,
                 badgeUrl: this.getRankingBadge(
-                    parseInt(playersRanking.displayScore),
+                    playersRanking.value,
                     playersRankingSpot,
                 ),
             },

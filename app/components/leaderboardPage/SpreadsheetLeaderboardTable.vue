@@ -8,8 +8,10 @@
                 <FontAwesomeIcon
                     v-if="isColumnSortable(index)"
                     :icon="['fas', 'chevron-right']"
-                    class="transition"
+                    class="transition scale-75 opacity-40"
                     :class="{
+                        'hover:scale-90 opacity-80': currentSortIndex !== index,
+                        'scale-100 opacity-100': currentSortIndex === index,
                         'rotate-90': currentSortIndex === index && !reverseSort,
                         '-rotate-90': currentSortIndex === index && reverseSort,
                     }"
@@ -35,6 +37,10 @@
 
             <template #percentage="{ content }">
                 {{ (castUnknown<number>(content) * 100).toFixed(2) }}%
+            </template>
+
+            <template #time="{ content }">
+                {{ secondsToTime(castUnknown(content)) }}
             </template>
 
             <template #rowExpansion="{ row }">
@@ -143,6 +149,9 @@ const spreadsheetTableColumns = computed<ColumnDefinition[]>(() => {
             }
             if (column.type === LeaderboardColumnType.PERCENTAGE) {
                 columnDefinition.name = 'percentage';
+            }
+            if (column.type === LeaderboardColumnType.TIME) {
+                columnDefinition.name = 'time';
             }
 
             return columnDefinition;
@@ -272,7 +281,7 @@ const paginatedSpreadsheetTableRows = computed<(Row & { expansionRows?: string[]
         return filteredSpreadsheetTableRows.value;
     }
     return filteredSpreadsheetTableRows.value
-        .slice(startIndex.value, endIndex.value + 1);
+        .slice(startIndex.value, endIndex.value);
 });
 
 function getGridColsOfRow(row: Row & { expansionRows?: string[][] }) {

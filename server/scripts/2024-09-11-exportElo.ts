@@ -33,14 +33,14 @@ async function main() {
         "primaryName",
     );
 
-    const eloStats = await new PlayerElo().calculate();
+    const eloStats = await new PlayerElo().get();
 
-    eloStats.sort((a, b) => a.sortingScore - b.sortingScore);
+    eloStats.sort((a, b) => a.value - b.value);
 
     const rows = eloStats.map((p) => {
         return {
-            player: playerLookupMap[p.player],
-            elo: p.sortingScore,
+            player: playerLookupMap[p.columns["Player"] as string],
+            elo: p.value,
         };
     });
 

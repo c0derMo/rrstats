@@ -82,6 +82,7 @@ const subcategories = computed<{ name: string, leaderboards: LeaderboardTableDef
 
 function toggleSubcategory(subcategory: string) {
     if (model.value?.subcategory === subcategory) {
+        expandedSubcategories.value.add(subcategory);
         return;
     }
 
@@ -91,4 +92,13 @@ function toggleSubcategory(subcategory: string) {
         expandedSubcategories.value.add(subcategory);
     }
 }
+
+watch(model, (to) => {
+    if (to?.subcategory == null) {
+        return;
+    }
+    if (!expandedSubcategories.value.has(to.subcategory)) {
+        expandedSubcategories.value.add(to.subcategory);
+    }
+});
 </script>

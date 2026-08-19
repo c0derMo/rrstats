@@ -1,18 +1,16 @@
 import { Player } from "~~/server/model/Player";
-import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
 import MapperService from "../../MapperService";
 import { Match } from "~~/server/model/Match";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class CountryWins implements LeaderboardCountryStatistic {
-    type = "country" as const;
-    name = "Wins per country";
-    hasMaps = false;
+export class CountryWins extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["player" as const, "match" as const];
+    };
 
-    basedOn = ["player" as const, "match" as const];
-
-    async calculate(): Promise<LeaderboardCountryEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
-            .select(["player.uuid", "player.nationality"])
+            .select(["player.uuid", "player.nationality", "player.primaryName"])
             .getMany();
         const matches = await Match.createQueryBuilder("match")
             .select([
@@ -27,6 +25,11 @@ export class CountryWins implements LeaderboardCountryStatistic {
             "uuid",
             "nationality",
         ) as Record<string, string>;
+        const nameMap = MapperService.createStringMapFromList(
+            players,
+            "uuid",
+            "primaryName"
+        );
 
         const winsPerCountry: DefaultedMap<
             string,
@@ -66,28 +69,28 @@ export class CountryWins implements LeaderboardCountryStatistic {
             }
         }
 
-        const result: LeaderboardCountryEntry[] = winsPerCountry.mapAll(
+        const result: LeaderboardRow[] = winsPerCountry.mapAll(
             (country, players) => {
+                const sum = getSumOfValues(players);
                 return {
-                    countryCode: country,
-                    country: this.getCountryName(country),
-                    displayScore: getSumOfValues(players).toString(),
-                    sortingScore: getSumOfValues(players),
-                    players: players
-                        .mapAll((player, wins) => {
-                            return {
-                                player: player,
-                                sortingScore: wins,
-                                displayScore: wins.toString(),
-                            };
+                    columns: {
+                        "Flag": `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
+                        "Country": this.getCountryName(country),
+                        "Wins": sum
+                    },
+                    value: sum,
+                    order: 0,
+                    expandableRows: players.mapAll((player, wins) => {
+                            return { player, wins }
                         })
-                        .sort((a, b) => b.sortingScore - a.sortingScore),
+                        .toSorted((a, b) => b.wins - a.wins)
+                        .map((player) => [nameMap[player.player] ?? player.player, player.wins.toString()]),
                 };
             },
         );
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
 
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
 
     private getCountryName(code: string) {
@@ -106,5 +109,18 @@ export class CountryWins implements LeaderboardCountryStatistic {
     ) {
         if (keyOne == null || keyTwo == null) return;
         map.get(keyOne).set(keyTwo, map.get(keyOne).get(keyTwo) + increase);
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Wins per country",
+            category: "country",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Flag", type: LeaderboardColumnType.IMAGE },
+                { name: "Country", type: LeaderboardColumnType.TEXT, searchable: true },
+                { name: "Wins", type: LeaderboardColumnType.TEXT },
+            ],
+        }
     }
 }

@@ -21,7 +21,7 @@ describe("LeaderboardController", () => {
     test("Performance: Individual leaderboard calculations", async () => {
         for (const statistic of LeaderboardController.statistics) {
             const startTime = DateTime.now();
-            await LeaderboardController.getEntries(statistic.name);
+            await LeaderboardController.getEntries(statistic.getTableDefinition().name);
             expect
                 .soft(startTime.diffNow().as("milliseconds"))
                 .toBeLessThan(500);
@@ -31,25 +31,28 @@ describe("LeaderboardController", () => {
     test("Correct leaderboard categories", { timeout: 10000 }, async () => {
         const categories = await LeaderboardController.getCategories();
 
-        expect(categories.country.length).toBe(5);
-        expect(categories.map.length).toBe(5);
-        expect(categories.player.length).toBe(25);
+        const countryCategories = categories.filter((category) => category.category === 'country');
+        const mapCategories = categories.filter((category) => category.category === 'map');
+        const playerCategories = categories.filter((category) => category.category === 'player');
+        expect(countryCategories.length).toBe(5);
+        expect(mapCategories.length).toBe(5);
+        expect(playerCategories.length).toBe(25);
 
-        expect(categories.country.map((c) => c.name)).toEqual([
+        expect(countryCategories.map((c) => c.name)).toEqual([
             "Players per country",
             "Matches per country",
             "Wins per country",
             "Winrate per country",
             "Titles per country",
         ]);
-        expect(categories.map.map((c) => c.name)).toEqual([
+        expect(mapCategories.map((c) => c.name)).toEqual([
             "Picked",
             "Banned",
             "Played",
             "Played as random map",
             "Appearances",
         ]);
-        expect(categories.player.map((c) => c.name)).toEqual([
+        expect(playerCategories.map((c) => c.name)).toEqual([
             "Winrate",
             "Map Winrate",
             "Roulette Rivals Participations",

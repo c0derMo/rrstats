@@ -1,14 +1,12 @@
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerTitlesWon implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Titles won";
-    hasMaps = false;
+export class PlayerTitlesWon extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["placement" as const];
+    }
 
-    basedOn = ["placement" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const placements = await CompetitionPlacement.createQueryBuilder(
             "placement",
         )
@@ -28,16 +26,32 @@ export class PlayerTitlesWon implements LeaderboardPlayerStatistic {
             appearances[placement.player] += 1;
         }
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
         for (const player in appearances) {
             result.push({
-                player: player,
-                displayScore: appearances[player].toString(),
-                sortingScore: appearances[player],
+                columns: {
+                    "Player": player,
+                    "Titles won": appearances[player]
+                },
+                value: appearances[player],
+                order: 0,
             });
         }
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
 
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Titles won",
+            category: "player",
+            subcategory: "Participation",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Titles won", type: LeaderboardColumnType.TEXT },
+            ]
+        }
+    };
 }

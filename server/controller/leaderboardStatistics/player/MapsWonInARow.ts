@@ -1,14 +1,12 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Most maps won in a row";
-    hasMaps = false;
+export class PlayerMapsWonInARow extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const];
+    }
 
-    basedOn = ["match" as const, "map" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
             .select(["match.playerOne", "match.playerTwo", "map.winner"])
@@ -33,17 +31,36 @@ export class PlayerMapsWonInARow implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = streakInfo
-            .mapAll((player, streak) => {
-                return {
-                    player: player,
-                    sortingScore: streak.getLongestStreak(),
-                    displayScore: streak.getLongestStreak().toString(),
-                };
-            })
-            .filter((s) => s.sortingScore > 1);
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
+        const result: LeaderboardRow[] = [];
+        streakInfo.forEach((player, streakCounter) => {
+            for (const streak of streakCounter.getAllStreaks()) {
+                if (streak >= 5) {
+                    result.push({
+                        columns: {
+                            "Player": player,
+                            "Streak": streak
+                        },
+                        value: streak,
+                        order: 0,
+                    })
+                }
+            }
+        });
 
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most maps won in a row",
+            category: "player",
+            subcategory: "Streaks",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Streak", type: LeaderboardColumnType.TEXT },
+            ]
+        }
+    };
 }

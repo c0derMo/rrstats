@@ -161,7 +161,7 @@ async function main() {
             await result;
         }
         const time = DateTime.now().diff(start).toMillis();
-        console.log(`${statistic.name}: ${time}ms`);
+        console.log(`${statistic.getTableDefinition().name}: ${time}ms`);
     }
 }
 

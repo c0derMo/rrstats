@@ -1,16 +1,14 @@
 import { Player } from "~~/server/model/Player";
-import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class CountryPlayers implements LeaderboardCountryStatistic {
-    type = "country" as const;
-    name = "Players per country";
-    hasMaps = false;
+export class CountryPlayers extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["player" as const];
+    };
 
-    basedOn = ["player" as const];
-
-    async calculate(): Promise<LeaderboardCountryEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
-            .select(["player.uuid", "player.nationality"])
+            .select(["player.uuid", "player.nationality", "player.primaryName"])
             .getMany();
 
         const countryMap: DefaultedMap<string, string[]> = new DefaultedMap(
@@ -18,29 +16,33 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
         );
         for (const player of players) {
             if (player.nationality == null) continue;
-            countryMap.get(player.nationality).push(player.uuid);
+            countryMap.get(player.nationality).push(player.primaryName);
         }
 
-        const result: LeaderboardCountryEntry[] = countryMap.mapAll(
+        const result: LeaderboardRow[] = countryMap.mapAll(
             (key, value) => {
+                const columnPlayers: string[][] = [];
+                for (let i = 0; i < Math.ceil(value.length / 3); i++) {
+                    const p1 = value[i * 3] ?? "";
+                    const p2 = value[i * 3 + 1] ?? "";
+                    const p3 = value[i * 3 + 2] ?? "";
+                    columnPlayers.push([p1, p2, p3]);
+                }
+
                 return {
-                    countryCode: key,
-                    country: this.getCountryName(key),
-                    displayScore: value.length.toString(),
-                    sortingScore: value.length,
-                    players: value.map((player) => {
-                        return {
-                            player,
-                            displayScore: "",
-                            sortingScore: 0,
-                        };
-                    }),
+                    columns: {
+                        "Flag": `https://flagicons.lipis.dev/flags/4x3/${key}.svg`,
+                        "Country": this.getCountryName(key),
+                        "Players": value.length
+                    },
+                    value: value.length,
+                    order: 0,
+                    expandableRows: columnPlayers,
                 };
             },
         );
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
-
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
 
     private getCountryName(code: string) {
@@ -49,5 +51,18 @@ export class CountryPlayers implements LeaderboardCountryStatistic {
                 code.toUpperCase(),
             ) ?? `Unknown country: ${code}`
         );
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Players per country",
+            category: "country",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Flag", type: LeaderboardColumnType.IMAGE },
+                { name: "Country", type: LeaderboardColumnType.TEXT, searchable: true },
+                { name: "Players", type: LeaderboardColumnType.TEXT },
+            ],
+        }
     }
 }

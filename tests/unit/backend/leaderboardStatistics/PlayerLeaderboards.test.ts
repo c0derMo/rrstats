@@ -472,7 +472,7 @@ describe("Player Leaderboards", () => {
     test("Winning streak on a map - all maps", async () => {
         const players = await LeaderboardController.getEntries(
             "Winning streak on a map",
-            OptionalMap.NO_MAP,
+            { "Map": OptionalMap.NO_MAP },
         );
 
         expect(players.length).toBe(1048);
@@ -503,7 +503,7 @@ describe("Player Leaderboards", () => {
     test("Winning streak on a map - Paris", async () => {
         const players = await LeaderboardController.getEntries(
             "Winning streak on a map",
-            HitmanMap.PARIS,
+            { "Map": HitmanMap.PARIS },
         );
 
         expect(players.length).toBe(65);
@@ -534,7 +534,7 @@ describe("Player Leaderboards", () => {
     test("Spins played on specific map - Sapienza", async () => {
         const players = await LeaderboardController.getEntries(
             "Spins played on specific map",
-            HitmanMap.SAPIENZA,
+            { "Map": HitmanMap.SAPIENZA },
         );
 
         expect(players.length).toBe(180);
@@ -565,7 +565,7 @@ describe("Player Leaderboards", () => {
     test("Winrate on specific map - Marrakesh", async () => {
         const players = await LeaderboardController.getEntries(
             "Winrate on specific map",
-            HitmanMap.MARRAKESH,
+            { "Map": HitmanMap.MARRAKESH },
         );
 
         expect(players.length).toBe(161);
@@ -600,7 +600,7 @@ describe("Player Leaderboards", () => {
     test("Personal best on map - Colorado", async () => {
         const players = await LeaderboardController.getEntries(
             "Personal best on map",
-            HitmanMap.COLORADO,
+            { "Map": HitmanMap.COLORADO },
         );
 
         expect(players.length).toBe(117);

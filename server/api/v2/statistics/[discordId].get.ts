@@ -80,9 +80,9 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
         const pb = statistics.mapPBs[mapIdx];
         const mapPBs = (await LeaderboardController.getEntries(
             "Personal best on map",
-            mapIdx,
-        )) as LeaderboardPlayerEntry[];
-        const playerIndex = mapPBs.findIndex((p) => p.player === player.uuid);
+            { "Map": mapIdx },
+        ));
+        const playerIndex = mapPBs.findIndex((p) => p.columns["Player"] === player.uuid);
         if (playerIndex < 0) {
             pb.placement = -1;
         } else {

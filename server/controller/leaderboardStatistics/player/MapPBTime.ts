@@ -1,13 +1,12 @@
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { PlayedMap } from "~~/server/model/PlayedMap";
+import { type FilterableLeaderboardRows, ServerSideFilteredLeaderboardStatistic } from "../ServerSideFilteredLeaderboardStatistic";
 
-export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Personal best on map";
-    hasMaps = true;
-    basedOn = ["match" as const, "map" as const, "player" as const];
+export class PlayerMapPBTime extends ServerSideFilteredLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const, "player" as const];
+    }
 
-    async calculate(): Promise<Record<HitmanMap, LeaderboardPlayerEntry[]>> {
+    async calculate(): Promise<void> {
         const p1Maps = await PlayedMap.createQueryBuilder("map")
             .innerJoin("map.match", "match")
             .select("match.playerOne", "player")
@@ -65,22 +64,46 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: Record<number, LeaderboardPlayerEntry[]> = {};
+        const result: Record<number, LeaderboardRow[]> = {};
         for (const map of getAllMaps()) {
-            const mapLB: LeaderboardPlayerEntry[] = [];
+            const mapLB: LeaderboardRow[] = [];
             for (const player in mapPbs[map]) {
                 mapLB.push({
-                    player: player,
-                    sortingScore: mapPbs[map][player],
-                    displayScore: secondsToTime(mapPbs[map][player]),
+                    columns: {
+                        "Player": player,
+                        "Personal best": mapPbs[map][player]
+                    },
+                    order: 0,
+                    value: mapPbs[map][player],
                 });
             }
 
-            mapLB.sort((a, b) => a.sortingScore - b.sortingScore);
-
+            this.sortAndInferPlacementByValue(mapLB, 'ASC');
             result[map] = mapLB;
         }
 
-        return result;
+        const listifiedResult: FilterableLeaderboardRows[] = [];
+        for (const map of getAllMaps()) {
+            listifiedResult.push({
+                filter: { "Map": map },
+                rows: result[map]
+            });
+        }
+
+        this.filterableCache = listifiedResult;
     }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Personal best on map",
+            category: "player",
+            subcategory: "Map",
+            columns: [
+                { name: "Placement", type: LeaderboardColumnType.PLACEMENT_TAG },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Personal best", type: LeaderboardColumnType.TIME },
+                { name: "Map", type: LeaderboardColumnType.HIDDEN, filterable: LeaderboardFilterType.MAP, defaultFilter: HitmanMap.PARIS, serverSideFilter: true },
+            ]
+        }
+    };
 }

@@ -52,109 +52,6 @@
                     :filters="localFilters"
                     @update-filters="updateExternalFilters"
                 />
-
-                <!-- <DataTableComponent
-                    v-if="isPlayerLB(searchedLeaderboardData)"
-                    :headers="playerTableHeaders"
-                    :rows="searchedLeaderboardData"
-                    :rows-per-page="[10, 25, 50]"
-                    :selected-rows-per-page="10"
-                    :enable-sorting="false"
-                >
-                    <template #placement="{ row }">
-                        <PlacementTag
-                            :placement="filteredLeaderboardData.findIndex(
-                                (p) =>
-                                    p.sortingScore === row.sortingScore,
-                                ) + 1"
-                        />
-                    </template>
-                    <template #player="{ value }">
-                        <PlayerLinkTag
-                            :player="playerLookup.get(value, value)"
-                        />
-                    </template>
-                </DataTableComponent> -->
-
-                <!-- <DataTableComponent
-                    v-else-if="isCountryLB(searchedLeaderboardData)"
-                    :headers="countryTableHeaders"
-                    :rows="searchedLeaderboardData"
-                    :rows-per-page="[10, 25, 50]"
-                    :selected-rows-per-page="10"
-                    :enable-sorting="false"
-                    @click-row="expandCountry"
-                >
-                    <template #placement="{ row }">
-                        <Tag
-                            :color="
-                                getPlacementTagColor(
-                                    filteredLeaderboardData.findIndex(
-                                        (p) =>
-                                            p.sortingScore === row.sortingScore,
-                                    ) + 1,
-                                )
-                            "
-                        >
-                            {{
-                                formatPlacement(
-                                    filteredLeaderboardData.findIndex(
-                                        (p) =>
-                                            p.sortingScore === row.sortingScore,
-                                    ) + 1,
-                                )
-                            }}
-                        </Tag>
-                    </template>
-
-                    <template #country="{ row }">
-                        <img
-                            v-if="row.countryCode != null"
-                            class="w-6 h-6 inline mr-2"
-                            :src="`https://flagicons.lipis.dev/flags/4x3/${row.countryCode}.svg`"
-                            alt="Country flag"
-                        />
-                        {{ row.country }}
-                    </template>
-
-                    <template #expand="{ row }">
-                        <div class="text-right">
-                            <FontAwesomeIcon
-                                :icon="['fas', 'chevron-down']"
-                                class="transition"
-                                :class="{
-                                    'rotate-180':
-                                        expandedCountry === row.country,
-                                }"
-                            />
-                        </div>
-                    </template>
-
-                    <template #after-row="{ row }">
-                        <div
-                            v-if="expandedCountry === row.country"
-                            class="flex flex-col"
-                        >
-                            <div
-                                v-for="(player, idx) in row.players"
-                                :key="idx"
-                                class="flex flex-row mx-5 border-b last:border-b-0 dark:border-neutral-500 border-neutral-300"
-                            >
-                                <div class="grow">
-                                    {{ playerLookup.get(player.player) }}
-                                </div>
-                                <div class="grow text-right">
-                                    {{ player.displayScore }}
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </DataTableComponent> -->
-
-                <!-- <MapLeaderboard
-                    v-if="isMapLB(leaderboardData)"
-                    :leaderboard-data="leaderboardData"
-                /> -->
             </CardComponent>
         </div>
     </div>
@@ -182,36 +79,36 @@ const playerLookup = usePlayers();
 
 await playerLookup.queryAll();
 
-// const setHash = useHash(async (hash) => {
-//     let categories: LeaderboardTableDefinition[] = [];
-//     if (hash[0] === "#player") {
-//         selectedTab.value = "Players";
-//         categories = playerCategories;
-//     } else if (hash[0] === "#country") {
-//         selectedTab.value = "Countries";
-//         categories = countryCategories;
-//     } else if (hash[0] === "#map") {
-//         selectedTab.value = "Maps";
-//         categories = mapCategories;
-//     } else {
-//         return;
-//     }
+const setHash = useHash(async (hash) => {
+    let categories: LeaderboardTableDefinition[] = [];
+    if (hash[0] === "#player") {
+        selectedTab.value = "Players";
+        categories = playerCategories;
+    } else if (hash[0] === "#country") {
+        selectedTab.value = "Countries";
+        categories = countryCategories;
+    } else if (hash[0] === "#map") {
+        selectedTab.value = "Maps";
+        categories = mapCategories;
+    } else {
+        return;
+    }
 
-//     let category: LeaderboardTableDefinition | null = null;
-//     if (hash.length > 1) {
-//         // Trying to find the referenced category
-//         category =
-//             categories.find((cat) => {
-//                 return cat.name === hash[1];
-//             }) ?? null;
-//     }
+    let category: LeaderboardTableDefinition | null = null;
+    if (hash.length > 1) {
+        // Trying to find the referenced category
+        category =
+            categories.find((cat) => {
+                return cat.name === hash[1];
+            }) ?? null;
+    }
 
-//     if (category != null) {
-//         await selectCategory(category);
-//     } else {
-//         await selectCategory(categories[0]);
-//     }
-// });
+    if (category != null) {
+        selectedCategory.value = category;
+    } else {
+        selectedCategory.value = categories[0];
+    }
+});
 
 const shownCategories = computed(() => {
     if (selectedTab.value === "Players") {
@@ -231,12 +128,7 @@ watch(selectedCategory, async () => {
     localFilters.value = {};
     search.value = "";
 
-    // setHash(`#${category.type}.${category.name}`);
-    // if (selectedCategory.value.defaultSecondaryFilter != null) {
-    //     secondaryFilter.value = selectedCategory.value.defaultSecondaryFilter;
-    // } else {
-    //     secondaryFilter.value = 0;
-    // }
+    setHash(`#${selectedCategory.value.category}.${selectedCategory.value.name}`, true);
 
     await loadLeaderboardData();
 });
