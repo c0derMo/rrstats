@@ -63,7 +63,7 @@ export class PlayerWinrate extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Winrate",
+            name: "Highest winrate",
             category: "player",
             subcategory: "Matches",
             columns: [

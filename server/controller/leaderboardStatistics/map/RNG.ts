@@ -2,7 +2,7 @@ import { SimpleMapLeaderboardStatistic } from "./SimpleMapLeaderboardStatistic";
 
 export class MapRNG extends SimpleMapLeaderboardStatistic {
     constructor() {
-        super("Played as random map", "Played as random map");
+        super("Played as random map", "Most times played as random map");
     }
 
     computeMapStats(competitions: ICompetition[], matches: IMatch[]): void {

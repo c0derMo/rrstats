@@ -12,6 +12,7 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
             .select([
                 "match.playerOne",
                 "match.playerTwo",
+                "match.timestamp",
                 "map.map",
                 "map.winner",
                 "map.forfeit",
@@ -20,7 +21,7 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
             .getMany();
         const streaks = new DefaultedMap<
             string,
-            DefaultedMap<number, StreakCounter>
+            DefaultedMap<number, StreakCounter<number>>
         >(() => new DefaultedMap(() => new StreakCounter()));
 
         for (const match of matches) {
@@ -28,10 +29,16 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
                 if (map.forfeit) continue;
 
                 if (map.winner === WinningPlayer.PLAYER_ONE) {
-                    streaks.get(match.playerOne).get(map.map).increaseStreak();
+                    streaks
+                        .get(match.playerOne)
+                        .get(map.map)
+                        .increaseStreak(match.timestamp);
                     streaks.get(match.playerTwo).get(map.map).resetStreak();
                 } else if (map.winner === WinningPlayer.PLAYER_TWO) {
-                    streaks.get(match.playerTwo).get(map.map).increaseStreak();
+                    streaks
+                        .get(match.playerTwo)
+                        .get(map.map)
+                        .increaseStreak(match.timestamp);
                     streaks.get(match.playerOne).get(map.map).resetStreak();
                 } else if (map.winner === WinningPlayer.DRAW) {
                     streaks.get(match.playerTwo).get(map.map).resetStreak();
@@ -43,30 +50,35 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
         const result: LeaderboardRow[] = [];
 
         streaks.mapAll((player, playerStreaks) => {
-            playerStreaks.mapAll((map, streak) => {
-                for (const singleStreak of streak.getAllStreaks()) {
-                    if (singleStreak >= 5) {
+            playerStreaks.mapAll((map, counter) => {
+                for (const streak of counter.getFinishedStreaks()) {
+                    if (streak.length >= 5) {
                         result.push({
                             columns: {
                                 Player: player,
-                                Streak: singleStreak,
+                                "Winning streak": streak.length,
+                                Active: false,
+                                "Last match": streak.value,
                                 Map: map,
                             },
                             order: 0,
-                            value: singleStreak,
+                            value: streak.length,
                         });
                     }
-                    // if (streak.getLongestStreak() > 1) {
-                    //     result.push({
-                    //         columns: {
-                    //             "Player": player,
-                    //             "Streak": streak.getLongestStreak(),
-                    //             "Map": map
-                    //         },
-                    //         order: 0,
-                    //         value: streak.getLongestStreak(),
-                    //     });
-                    // }
+                }
+
+                if (counter.getActiveStreak().length >= 5) {
+                    result.push({
+                        columns: {
+                            Player: player,
+                            "Winning streak": counter.getActiveStreak().length,
+                            Active: true,
+                            "Last match": counter.getActiveStreak().value,
+                            Map: map,
+                        },
+                        order: 0,
+                        value: counter.getActiveStreak().length,
+                    });
                 }
             });
         });
@@ -77,7 +89,7 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Winning streak on a map",
+            name: "Longest map winning streak (specific map)",
             category: "player",
             subcategory: "Streaks",
             columns: [
@@ -86,7 +98,18 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
                     type: LeaderboardColumnType.PLACEMENT_TAG,
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
-                { name: "Streak", type: LeaderboardColumnType.TEXT },
+                { name: "Winning streak", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Active",
+                    type: LeaderboardColumnType.BOOLEAN,
+                    filterable: LeaderboardFilterType.BOOLEAN,
+                    defaultFilter: false,
+                },
+                {
+                    name: "Last match",
+                    type: LeaderboardColumnType.DATE,
+                    sortable: true,
+                },
                 {
                     name: "Map",
                     type: LeaderboardColumnType.MAP,

@@ -88,7 +88,7 @@ export class CountryTitles extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Titles per country",
+            name: "Most titles per country",
             category: "country",
             columns: [
                 {

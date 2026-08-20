@@ -24,6 +24,7 @@ export enum LeaderboardFilterType {
     MAP = "map",
     MAP_OPTIONAL = "map_optional",
     COMPETITION_RANGE = "competition_range",
+    BOOLEAN = "boolean",
 }
 
 export enum LeaderboardColumnType {
@@ -35,6 +36,8 @@ export enum LeaderboardColumnType {
     HIDDEN = "hidden",
     PERCENTAGE = "percentage",
     TIME = "time",
+    BOOLEAN = "boolean",
+    DATE = "date",
 }
 
 export type LeaderboardTableDefinition = {

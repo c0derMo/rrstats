@@ -17,6 +17,7 @@ export class PlayerRRWCAppearances extends BaseLeaderboardStatistic {
             )
             .where("competition.officialCompetition = TRUE")
             .select(["placement.player", "placement.competition"])
+            .orderBy("competition.startingTimestamp", "ASC")
             .getMany();
         const appearances: Record<string, Set<string>> = {};
 
@@ -34,6 +35,10 @@ export class PlayerRRWCAppearances extends BaseLeaderboardStatistic {
                 columns: {
                     Player: player,
                     Appearances: appearances[player].size,
+                    First: [...appearances[player]][0],
+                    Last: [...appearances[player]][
+                        appearances[player].size - 1
+                    ],
                 },
                 value: appearances[player].size,
                 order: 0,
@@ -46,7 +51,7 @@ export class PlayerRRWCAppearances extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "RRWC Participations",
+            name: "Most RRWCs played",
             category: "player",
             subcategory: "Participation",
             columns: [
@@ -56,6 +61,8 @@ export class PlayerRRWCAppearances extends BaseLeaderboardStatistic {
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Appearances", type: LeaderboardColumnType.TEXT },
+                { name: "First", type: LeaderboardColumnType.TEXT },
+                { name: "Last", type: LeaderboardColumnType.TEXT },
             ],
         };
     }

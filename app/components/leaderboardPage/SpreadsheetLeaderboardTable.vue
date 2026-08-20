@@ -19,7 +19,7 @@
                 />
             </template>
 
-            <template #placement="{ content }">
+            <template #placement_tag="{ content }">
                 <PlacementTag narrow :placement="castUnknown(content)" />
             </template>
 
@@ -41,6 +41,17 @@
 
             <template #time="{ content }">
                 {{ secondsToTime(castUnknown(content)) }}
+            </template>
+
+            <template #boolean="{ content }">
+                <FontAwesomeIcon
+                    :icon="content ? ['fas', 'check'] : ['fas', 'xmark']"
+                    :class="content ? 'text-green-500' : 'text-red-500'"
+                />
+            </template>
+
+            <template #date="{ content }">
+                {{ DateTime.fromMillis(castUnknown(content)).toLocaleString(DateTime.DATETIME_MED) }}
             </template>
 
             <template #rowExpansion="{ row }">
@@ -74,6 +85,7 @@
 </template>
 
 <script setup lang="ts">
+import { DateTime } from 'luxon';
 import type { Cell, CellStyle, ColumnDefinition, Row } from '../tables/SpreadsheetTable.vue';
 
 const players = usePlayers();
@@ -128,30 +140,19 @@ const spreadsheetTableColumns = computed<ColumnDefinition[]>(() => {
             };
 
             if (column.type === LeaderboardColumnType.PLACEMENT_TAG) {
-                columnDefinition.name = 'placement';
                 columnDefinition.title = '';
                 columnDefinition.width = '100px';
                 columnDefinition.textAlign = 'right';
             }
 
             if (column.type === LeaderboardColumnType.IMAGE) {
-                columnDefinition.name = 'image';
                 columnDefinition.title = '';
                 columnDefinition.width = '50px';
                 columnDefinition.textAlign = 'center';
             }
 
-            if (column.type === LeaderboardColumnType.PLAYER_NAME) {
-                columnDefinition.name = 'player';
-            }
-            if (column.type === LeaderboardColumnType.MAP) {
-                columnDefinition.name = 'map';
-            }
-            if (column.type === LeaderboardColumnType.PERCENTAGE) {
-                columnDefinition.name = 'percentage';
-            }
-            if (column.type === LeaderboardColumnType.TIME) {
-                columnDefinition.name = 'time';
+            if (column.type !== LeaderboardColumnType.TEXT) {
+                columnDefinition.name = column.type;
             }
 
             return columnDefinition;
@@ -192,6 +193,11 @@ const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][
                             return true;
                         }
                         return (row.columns[column.name] as number) >= (props.filters[column.name] as number);
+                    case LeaderboardFilterType.BOOLEAN:
+                        if (typeof row.columns[column.name] !== "boolean") {
+                            return true;
+                        }
+                        return row.columns[column.name] || !props.filters[column.name];
                 }
                 return true;
             }).reduce((prev, cur) => prev && cur);

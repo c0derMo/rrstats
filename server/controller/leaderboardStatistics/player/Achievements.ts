@@ -21,7 +21,6 @@ export class PlayerAchievements extends BaseLeaderboardStatistic {
         const players = await Player.createQueryBuilder("player")
             .select(["player.uuid"])
             .getMany();
-        // const result: LeaderboardPlayerEntry[] = [];
 
         const result: AchievementCount[] = [];
         for (const player of players) {
@@ -112,9 +111,21 @@ export class PlayerAchievements extends BaseLeaderboardStatistic {
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Platinum", type: LeaderboardColumnType.TEXT },
-                { name: "Gold", type: LeaderboardColumnType.TEXT },
-                { name: "Silver", type: LeaderboardColumnType.TEXT },
-                { name: "Bronze", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Gold",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
+                    name: "Silver",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
+                    name: "Bronze",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
             ],
         };
     }

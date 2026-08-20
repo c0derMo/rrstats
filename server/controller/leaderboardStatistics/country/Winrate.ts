@@ -164,7 +164,7 @@ export class CountryWinrate extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Winrate per country",
+            name: "Best winrate per country",
             category: "country",
             columns: [
                 {

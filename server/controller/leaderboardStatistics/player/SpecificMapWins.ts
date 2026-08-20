@@ -1,10 +1,10 @@
 import { Match } from "~~/server/model/Match";
 import {
-    ServerSideFilteredLeaderboardStatistic,
     type FilterableLeaderboardRows,
+    ServerSideFilteredLeaderboardStatistic,
 } from "../ServerSideFilteredLeaderboardStatistic";
 
-export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatistic {
+export class PlayerSpecificMapWins extends ServerSideFilteredLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "map" as const];
     }
@@ -12,17 +12,37 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
     async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
-            .select(["match.playerOne", "match.playerTwo", "map.map"])
+            .select([
+                "match.playerOne",
+                "match.playerTwo",
+                "map.map",
+                "map.winner",
+            ])
             .getMany();
         const mapCount: Record<string, Record<HitmanMap, number>> = {};
+        const mapWins: Record<string, Record<HitmanMap, number>> = {};
 
         for (const match of matches) {
             mapCount[match.playerOne] ??= this.getDefaultMapRecord(0);
             mapCount[match.playerTwo] ??= this.getDefaultMapRecord(0);
+            mapWins[match.playerOne] ??= this.getDefaultMapRecord(0);
+            mapWins[match.playerTwo] ??= this.getDefaultMapRecord(0);
 
             for (const map of match.playedMaps) {
                 mapCount[match.playerOne][map.map] += 1;
                 mapCount[match.playerTwo][map.map] += 1;
+                switch (map.winner) {
+                    case WinningPlayer.PLAYER_ONE:
+                        mapWins[match.playerOne][map.map] += 1;
+                        break;
+                    case WinningPlayer.PLAYER_TWO:
+                        mapWins[match.playerTwo][map.map] += 1;
+                        break;
+                    case WinningPlayer.DRAW:
+                        mapWins[match.playerOne][map.map] += 0.5;
+                        mapWins[match.playerTwo][map.map] += 0.5;
+                        break;
+                }
             }
         }
 
@@ -35,10 +55,11 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
                     result[map].push({
                         columns: {
                             Player: player,
-                            Played: mapCount[player][map],
+                            Wins: mapWins[player][map],
+                            "Map played": mapCount[player][map],
                         },
                         order: 0,
-                        value: mapCount[player][map],
+                        value: mapWins[player][map],
                     });
                 }
             }
@@ -84,7 +105,7 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Most maps played (specific map)",
+            name: "Most maps won (specific map)",
             category: "player",
             subcategory: "Maps",
             columns: [
@@ -93,7 +114,13 @@ export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatis
                     type: LeaderboardColumnType.PLACEMENT_TAG,
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
-                { name: "Played", type: LeaderboardColumnType.TEXT },
+                { name: "Wins", type: LeaderboardColumnType.PERCENTAGE },
+                {
+                    name: "Map played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
                 {
                     name: "Map",
                     type: LeaderboardColumnType.HIDDEN,

@@ -54,6 +54,16 @@
                         (v) => updateFilter(col.name, v, col.serverSideFilter)
                     "
                 />
+
+                <SwitchComponent
+                    v-if="col.filterable === LeaderboardFilterType.BOOLEAN"
+                    :id="`lb-filter-${col.name}`"
+                    :model-value="castUnknown(filters[col.name])"
+                    :label="`Only ${col.name.toLowerCase()}`"
+                    @update:model-value="
+                        (v) => updateFilter(col.name, v, col.serverSideFilter)
+                    "
+                />
             </template>
         </div>
     </div>

@@ -74,7 +74,7 @@ export class PlayerReverseSweeps extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Reverse sweeps",
+            name: "Most matches reverse swept (6+ points)",
             category: "player",
             subcategory: "Sweeps",
             explanatoryText:

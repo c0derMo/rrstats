@@ -57,7 +57,7 @@ export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStati
                             Player: player,
                             Winrate:
                                 mapWins[player][map] / mapCount[player][map],
-                            "Spins played": mapCount[player][map],
+                            "Map played": mapCount[player][map],
                         },
                         order: 0,
                         value: mapWins[player][map] / mapCount[player][map],
@@ -106,9 +106,9 @@ export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStati
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Winrate on specific map",
+            name: "Best map winrate (specific map)",
             category: "player",
-            subcategory: "Map",
+            subcategory: "Maps",
             columns: [
                 {
                     name: "Placement",
@@ -117,7 +117,7 @@ export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStati
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
                 {
-                    name: "Spins played",
+                    name: "Map played",
                     type: LeaderboardColumnType.TEXT,
                     filterable: LeaderboardFilterType.NUMERIC,
                     defaultFilter: 5,

@@ -21,6 +21,7 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
             )
             .where("competition.officialCompetition = TRUE")
             .andWhere("placement.placement <= 2")
+            .orderBy("competition.startingTimestamp", "ASC")
             .select([
                 "placement.player",
                 "placement.placement",
@@ -39,7 +40,11 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
             result.push({
                 columns: {
                     Player: player,
-                    "Finals played": appearances[player].size,
+                    "Grand finals played": appearances[player].size,
+                    First: [...appearances[player]][0],
+                    Last: [...appearances[player]][
+                        appearances[player].size - 1
+                    ],
                 },
                 value: appearances[player].size,
                 order: 0,
@@ -52,7 +57,7 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Grand Final Appearances",
+            name: "Most grand finals played",
             category: "player",
             subcategory: "Participation",
             columns: [
@@ -61,7 +66,12 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
                     type: LeaderboardColumnType.PLACEMENT_TAG,
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
-                { name: "Finals played", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Grand finals played",
+                    type: LeaderboardColumnType.TEXT,
+                },
+                { name: "First", type: LeaderboardColumnType.TEXT },
+                { name: "Last", type: LeaderboardColumnType.TEXT },
             ],
         };
     }

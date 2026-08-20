@@ -89,7 +89,7 @@ export class CountryMatches extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Matches per country",
+            name: "Most matches per country",
             category: "country",
             columns: [
                 {

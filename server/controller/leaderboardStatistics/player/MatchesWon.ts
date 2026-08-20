@@ -1,5 +1,4 @@
 import { Match } from "~~/server/model/Match";
-import { Player } from "~~/server/model/Player";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
 export class PlayerMatchesWon extends BaseLeaderboardStatistic {
@@ -8,9 +7,6 @@ export class PlayerMatchesWon extends BaseLeaderboardStatistic {
     }
 
     async calculate(): Promise<void> {
-        const players = await Player.createQueryBuilder("player")
-            .select(["player.uuid"])
-            .getMany();
         const matches = await Match.createQueryBuilder("match")
             .select([
                 "match.playerOne",
@@ -20,49 +16,44 @@ export class PlayerMatchesWon extends BaseLeaderboardStatistic {
             ])
             .getMany();
 
-        const matchesPerPlayer: Record<string, number> = {};
-        const winsPerPlayer: Record<string, number> = {};
+        const wtlPerPlayer = new DefaultedMap<
+            string,
+            { w: number; t: number; l: number }
+        >(() => {
+            return { w: 0, t: 0, l: 0 };
+        });
 
         for (const match of matches) {
-            matchesPerPlayer[match.playerOne] ??= 0;
-            matchesPerPlayer[match.playerTwo] ??= 0;
-            winsPerPlayer[match.playerOne] ??= 0;
-            winsPerPlayer[match.playerTwo] ??= 0;
-
-            matchesPerPlayer[match.playerOne] += 1;
-            matchesPerPlayer[match.playerTwo] += 1;
-
             if (match.playerOneScore > match.playerTwoScore) {
-                winsPerPlayer[match.playerOne] += 1;
+                wtlPerPlayer.get(match.playerOne).w += 1;
+                wtlPerPlayer.get(match.playerTwo).l += 1;
             } else if (match.playerTwoScore > match.playerOneScore) {
-                winsPerPlayer[match.playerTwo] += 1;
+                wtlPerPlayer.get(match.playerOne).l += 1;
+                wtlPerPlayer.get(match.playerTwo).w += 1;
             } else {
-                winsPerPlayer[match.playerOne] += 0.5;
-                winsPerPlayer[match.playerTwo] += 0.5;
+                wtlPerPlayer.get(match.playerOne).t += 1;
+                wtlPerPlayer.get(match.playerTwo).t += 1;
             }
         }
 
-        const result: LeaderboardRow[] = [];
-
-        for (const player of players) {
-            result.push({
+        const result: LeaderboardRow[] = wtlPerPlayer.mapAll((player, wtl) => {
+            const sum = wtl.w + wtl.l + wtl.t;
+            return {
                 columns: {
-                    Player: player.uuid,
-                    Wins: winsPerPlayer[player.uuid] ?? 0,
-                    "Matches played": matchesPerPlayer[player.uuid] ?? 0,
+                    Player: player,
+                    Wins: wtl.w,
+                    Ties: wtl.t,
+                    Losses: wtl.l,
+                    "Matches played": sum,
                 },
                 order: 0,
-                value: winsPerPlayer[player.uuid] ?? 0,
-            });
-        }
+                value: wtl.w,
+            };
+        });
 
         this.sortAndInferPlacementByValue(result);
         this.cache = result;
     }
-
-    type = "player" as const;
-    name = "Matches won";
-    hasMaps = false;
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
@@ -77,10 +68,21 @@ export class PlayerMatchesWon extends BaseLeaderboardStatistic {
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Wins", type: LeaderboardColumnType.TEXT },
                 {
+                    name: "Ties",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
+                    name: "Losses",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
                     name: "Matches played",
                     type: LeaderboardColumnType.TEXT,
                     filterable: LeaderboardFilterType.NUMERIC,
                     defaultFilter: 1,
+                    sortable: true,
                 },
             ],
         };

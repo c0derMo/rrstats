@@ -1,4 +1,3 @@
-import { Player } from "~~/server/model/Player";
 import { PlayedMap } from "~~/server/model/PlayedMap";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
@@ -8,9 +7,6 @@ export class PlayerMapsWon extends BaseLeaderboardStatistic {
     }
 
     async calculate(): Promise<void> {
-        const players = await Player.createQueryBuilder("player")
-            .select(["player.uuid"])
-            .getMany();
         const matches = await PlayedMap.createQueryBuilder("map")
             .innerJoin("map.match", "match")
             .select("match.playerOne", "playerOne")
@@ -32,33 +28,37 @@ export class PlayerMapsWon extends BaseLeaderboardStatistic {
                 p2Win: number;
             }>();
 
-        const maps: Record<string, number> = {};
-        const wins: Record<string, number> = {};
+        const wtlPerPlayer = new DefaultedMap<
+            string,
+            { w: number; t: number; l: number }
+        >(() => {
+            return { w: 0, t: 0, l: 0 };
+        });
 
         for (const match of matches) {
-            maps[match.playerOne] ??= 0;
-            maps[match.playerTwo] ??= 0;
-            wins[match.playerOne] ??= 0;
-            wins[match.playerTwo] ??= 0;
-            maps[match.playerOne] += 1;
-            maps[match.playerTwo] += 1;
-            wins[match.playerOne] += match.p1Win + 0.5 * match.drawnMaps;
-            wins[match.playerTwo] += match.p2Win + 0.5 * match.drawnMaps;
+            wtlPerPlayer.get(match.playerOne).w += match.p1Win;
+            wtlPerPlayer.get(match.playerOne).t += match.drawnMaps;
+            wtlPerPlayer.get(match.playerOne).l += match.p2Win;
+
+            wtlPerPlayer.get(match.playerTwo).w += match.p2Win;
+            wtlPerPlayer.get(match.playerTwo).t += match.drawnMaps;
+            wtlPerPlayer.get(match.playerTwo).l += match.p1Win;
         }
 
-        const result: LeaderboardRow[] = [];
-
-        for (const player of players) {
-            result.push({
+        const result: LeaderboardRow[] = wtlPerPlayer.mapAll((player, wtl) => {
+            const sum = wtl.w + wtl.t + wtl.l;
+            return {
                 columns: {
-                    Player: player.uuid,
-                    Wins: wins[player.uuid] ?? 0,
-                    "Maps played": maps[player.uuid] ?? 0,
+                    Player: player,
+                    Wins: wtl.w,
+                    Ties: wtl.t,
+                    Losses: wtl.l,
+                    "Maps played": sum,
                 },
                 order: 0,
-                value: wins[player.uuid] ?? 0,
-            });
-        }
+                value: wtl.w,
+            };
+        });
 
         this.sortAndInferPlacementByValue(result);
         this.cache = result;
@@ -77,10 +77,21 @@ export class PlayerMapsWon extends BaseLeaderboardStatistic {
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Wins", type: LeaderboardColumnType.TEXT },
                 {
+                    name: "Ties",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
+                    name: "Losses",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
                     name: "Maps played",
                     type: LeaderboardColumnType.TEXT,
                     filterable: LeaderboardFilterType.NUMERIC,
                     defaultFilter: 1,
+                    sortable: true,
                 },
             ],
         };

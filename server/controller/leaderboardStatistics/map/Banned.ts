@@ -2,7 +2,7 @@ import { SimpleMapLeaderboardStatistic } from "./SimpleMapLeaderboardStatistic";
 
 export class MapBanned extends SimpleMapLeaderboardStatistic {
     constructor() {
-        super("Banned", "Banned");
+        super("Banned", "Most times banned");
     }
 
     computeMapStats(competitions: ICompetition[], matches: IMatch[]): void {

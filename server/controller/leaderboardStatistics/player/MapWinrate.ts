@@ -66,7 +66,7 @@ export class PlayerMapWinrate extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Map Winrate",
+            name: "Highest map winrate",
             category: "player",
             subcategory: "Maps",
             columns: [

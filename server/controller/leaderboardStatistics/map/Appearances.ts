@@ -4,7 +4,7 @@ export class MapAppearance extends SimpleMapLeaderboardStatistic {
     constructor() {
         super(
             "Apperances",
-            "Appearances",
+            "Most times appeared",
             "Total of map picked, map banned & map played as random map",
         );
     }

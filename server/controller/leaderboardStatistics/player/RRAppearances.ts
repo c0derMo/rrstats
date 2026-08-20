@@ -48,7 +48,7 @@ export class PlayerRRAppearances extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Roulette Rivals Participations",
+            name: "Most RRs played",
             category: "player",
             subcategory: "Participation",
             columns: [

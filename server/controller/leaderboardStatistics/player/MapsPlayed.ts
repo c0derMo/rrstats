@@ -78,6 +78,7 @@ export class PlayerMapsPlayed extends BaseLeaderboardStatistic {
                     type: LeaderboardColumnType.TEXT,
                     filterable: LeaderboardFilterType.NUMERIC,
                     defaultFilter: 1,
+                    sortable: true,
                 },
             ],
         };

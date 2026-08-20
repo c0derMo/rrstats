@@ -1,7 +1,7 @@
 import { Match } from "~~/server/model/Match";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerWROpponentMaps extends BaseLeaderboardStatistic {
+export class PlayerWRRNGMaps extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const, "map" as const];
     }
@@ -17,40 +17,39 @@ export class PlayerWROpponentMaps extends BaseLeaderboardStatistic {
             ])
             .getMany();
 
-        const playedMaps: Record<string, { played: number; won: number }> = {};
+        const playedMaps = new DefaultedMap<
+            string,
+            { played: number; won: number }
+        >(() => {
+            return { played: 0, won: 0 };
+        });
 
         for (const match of matches) {
             for (const map of match.playedMaps) {
-                if (map.picked === ChoosingPlayer.RANDOM) continue;
+                if (map.picked !== ChoosingPlayer.RANDOM) continue;
 
-                if (map.picked === ChoosingPlayer.PLAYER_TWO) {
-                    playedMaps[match.playerOne] ??= { played: 0, won: 0 };
-                    playedMaps[match.playerOne].played += 1;
-                    if (map.winner === WinningPlayer.PLAYER_ONE) {
-                        playedMaps[match.playerOne].won += 1;
-                    }
-                } else if (map.picked === ChoosingPlayer.PLAYER_ONE) {
-                    playedMaps[match.playerTwo] ??= { played: 0, won: 0 };
-                    playedMaps[match.playerTwo].played += 1;
-                    if (map.winner === WinningPlayer.PLAYER_TWO) {
-                        playedMaps[match.playerTwo].won += 1;
-                    }
+                playedMaps.get(match.playerOne).played += 1;
+                playedMaps.get(match.playerTwo).played += 1;
+
+                if (map.winner === WinningPlayer.PLAYER_ONE) {
+                    playedMaps.get(match.playerOne).won += 1;
+                } else if (map.winner === WinningPlayer.PLAYER_TWO) {
+                    playedMaps.get(match.playerOne).won += 1;
                 }
             }
         }
 
-        const result: LeaderboardRow[] = [];
-        for (const player in playedMaps) {
-            result.push({
+        const result: LeaderboardRow[] = playedMaps.mapAll((player, stats) => {
+            return {
                 columns: {
                     Player: player,
-                    Winrate: playedMaps[player].won / playedMaps[player].played,
-                    "Opponent picked maps": playedMaps[player].played,
+                    Winrate: stats.won / stats.played,
+                    "Random picked maps": stats.played,
                 },
                 order: 0,
-                value: playedMaps[player].won / playedMaps[player].played,
-            });
-        }
+                value: stats.won / stats.played,
+            };
+        });
 
         this.sortAndInferPlacementByValue(result);
         this.cache = result;
@@ -58,7 +57,7 @@ export class PlayerWROpponentMaps extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Highest map winrate (opponent picks)",
+            name: "Highest map winrate (random picks)",
             category: "player",
             subcategory: "Maps",
             columns: [
@@ -69,7 +68,7 @@ export class PlayerWROpponentMaps extends BaseLeaderboardStatistic {
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
                 {
-                    name: "Opponent picked maps",
+                    name: "Random picked maps",
                     type: LeaderboardColumnType.TEXT,
                     filterable: LeaderboardFilterType.NUMERIC,
                     defaultFilter: 10,

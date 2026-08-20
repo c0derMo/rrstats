@@ -45,7 +45,7 @@ export class PlayerWROwnMaps extends BaseLeaderboardStatistic {
                 columns: {
                     Player: player,
                     Winrate: playedMaps[player].won / playedMaps[player].played,
-                    "Own map picks played": playedMaps[player].played,
+                    "Player picked maps": playedMaps[player].played,
                 },
                 order: 0,
                 value: playedMaps[player].won / playedMaps[player].played,
@@ -58,7 +58,7 @@ export class PlayerWROwnMaps extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Winrate on own-map-picks",
+            name: "Highest map winrate (player picks)",
             category: "player",
             subcategory: "Maps",
             columns: [
@@ -69,10 +69,10 @@ export class PlayerWROwnMaps extends BaseLeaderboardStatistic {
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
                 {
-                    name: "Own map picks played",
+                    name: "Player picked maps",
                     type: LeaderboardColumnType.TEXT,
                     filterable: LeaderboardFilterType.NUMERIC,
-                    defaultFilter: 5,
+                    defaultFilter: 10,
                 },
             ],
         };

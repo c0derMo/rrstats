@@ -23,19 +23,24 @@ import { PlayerMapsWon } from "./leaderboardStatistics/player/MapsWon";
 import { PlayerMapWinrate } from "./leaderboardStatistics/player/MapWinrate";
 import { PlayerWROwnMaps } from "./leaderboardStatistics/player/WROwnMaps";
 import { PlayerWROpponentMaps } from "./leaderboardStatistics/player/WROpponentMaps";
+import { PlayerWRRNGMaps } from "./leaderboardStatistics/player/WRRNGMaps";
 import { PlayerSpecificMapPlayed } from "./leaderboardStatistics/player/SpecificMapPlayed";
+import { PlayerSpecificMapWins } from "./leaderboardStatistics/player/SpecificMapWins";
 import { PlayerSpecificMapWinrate } from "./leaderboardStatistics/player/SpecificMapWinrate";
 import { PlayerMapPBTime } from "./leaderboardStatistics/player/MapPBTime";
 import { PlayerRRAppearances } from "./leaderboardStatistics/player/RRAppearances";
 import { PlayerRRWCAppearances } from "./leaderboardStatistics/player/RRWCAppearances";
 import { PlayerTitlesWon } from "./leaderboardStatistics/player/TitlesWon";
 import { PlayerGFAppearances } from "./leaderboardStatistics/player/GFAppearances";
+import { PlayerMedalsWon } from "./leaderboardStatistics/player/MedalsWon";
+import { PlayerBestPlacement } from "./leaderboardStatistics/player/BestPlacement";
 import { PlayerAveragePlacement } from "./leaderboardStatistics/player/AveragePlacement";
 import { PlayerMatchesWonInARow } from "./leaderboardStatistics/player/MatchesWonInARow";
 import { PlayerMapsWonInARow } from "./leaderboardStatistics/player/MapsWonInARow";
 import { PlayerSameMapWonInARow } from "./leaderboardStatistics/player/SameMapWonInARow";
 import { PlayerSweeps } from "./leaderboardStatistics/player/Sweeps";
 import { PlayerSweeps6 } from "./leaderboardStatistics/player/Sweeps6";
+import { PlayerSweeps8 } from "./leaderboardStatistics/player/Sweeps8";
 import { PlayerReverseSweeps } from "./leaderboardStatistics/player/ReverseSweeps";
 import { PlayerMatchesCasted } from "./leaderboardStatistics/player/MatchesCasted";
 import { PlayerAchievements } from "./leaderboardStatistics/player/Achievements";
@@ -68,7 +73,9 @@ export default class LeaderboardController {
         new PlayerMapWinrate(),
         new PlayerWROwnMaps(),
         new PlayerWROpponentMaps(),
+        new PlayerWRRNGMaps(),
         new PlayerSpecificMapPlayed(),
+        new PlayerSpecificMapWins(),
         new PlayerSpecificMapWinrate(),
         new PlayerMapPBTime(),
 
@@ -76,6 +83,8 @@ export default class LeaderboardController {
         new PlayerRRWCAppearances(),
         new PlayerTitlesWon(),
         new PlayerGFAppearances(),
+        new PlayerMedalsWon(),
+        new PlayerBestPlacement(),
         new PlayerAveragePlacement(),
 
         new PlayerMatchesWonInARow(),
@@ -84,6 +93,7 @@ export default class LeaderboardController {
 
         new PlayerSweeps(),
         new PlayerSweeps6(),
+        new PlayerSweeps8(),
         new PlayerReverseSweeps(),
 
         new PlayerAchievements(),

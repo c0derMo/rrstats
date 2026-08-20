@@ -17,13 +17,14 @@ export class PlayerTitlesWon extends BaseLeaderboardStatistic {
             )
             .where("competition.officialCompetition = TRUE")
             .andWhere("placement.placement = 1")
-            .select(["placement.player"])
+            .orderBy("competition.startingTimestamp", "ASC")
+            .select(["placement.player", "placement.competition"])
             .getMany();
-        const appearances: Record<string, number> = {};
+        const appearances: Record<string, Set<string>> = {};
 
         for (const placement of placements) {
-            appearances[placement.player] ??= 0;
-            appearances[placement.player] += 1;
+            appearances[placement.player] ??= new Set();
+            appearances[placement.player].add(placement.competition);
         }
 
         const result: LeaderboardRow[] = [];
@@ -31,9 +32,13 @@ export class PlayerTitlesWon extends BaseLeaderboardStatistic {
             result.push({
                 columns: {
                     Player: player,
-                    "Titles won": appearances[player],
+                    "Titles won": appearances[player].size,
+                    First: [...appearances[player]][0],
+                    Last: [...appearances[player]][
+                        appearances[player].size - 1
+                    ],
                 },
-                value: appearances[player],
+                value: appearances[player].size,
                 order: 0,
             });
         }
@@ -44,7 +49,7 @@ export class PlayerTitlesWon extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Titles won",
+            name: "Most titles won",
             category: "player",
             subcategory: "Participation",
             columns: [
@@ -54,6 +59,8 @@ export class PlayerTitlesWon extends BaseLeaderboardStatistic {
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Titles won", type: LeaderboardColumnType.TEXT },
+                { name: "First", type: LeaderboardColumnType.TEXT },
+                { name: "Last", type: LeaderboardColumnType.TEXT },
             ],
         };
     }

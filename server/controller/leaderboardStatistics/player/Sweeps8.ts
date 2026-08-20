@@ -1,7 +1,7 @@
 import { Match } from "~~/server/model/Match";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerSweeps6 extends BaseLeaderboardStatistic {
+export class PlayerSweeps8 extends BaseLeaderboardStatistic {
     basedOn() {
         return ["match" as const];
     }
@@ -19,7 +19,7 @@ export class PlayerSweeps6 extends BaseLeaderboardStatistic {
         const playerMatches: Record<string, number> = {};
 
         for (const match of matches) {
-            if (match.playerOneScore < 6 && match.playerTwoScore < 6) {
+            if (match.playerOneScore < 8 && match.playerTwoScore < 8) {
                 continue;
             }
 
@@ -60,11 +60,11 @@ export class PlayerSweeps6 extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Most matches swept (6+ points)",
+            name: "Most matches swept (8+ points)",
             category: "player",
             subcategory: "Sweeps",
             explanatoryText:
-                "Winning with 6 or more points while the opponent has 0 points.",
+                "Winning with 8 or more points while the opponent has 0 points.",
             columns: [
                 {
                     name: "Placement",
