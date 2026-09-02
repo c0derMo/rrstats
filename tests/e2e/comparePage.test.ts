@@ -66,11 +66,11 @@ test.describe("Compare Page", () => {
 
         await expect(leftPlayerStats.getByText("43%")).toHaveCSS(
             "color",
-            "rgb(239, 68, 68)",
+            "oklch(0.637 0.237 25.331)",
         );
         await expect(rightPlayerStats.getByText("78%")).toHaveCSS(
             "color",
-            "rgb(34, 197, 94)",
+            "oklch(0.723 0.219 149.579)",
         );
     });
 
@@ -137,10 +137,10 @@ test.describe("Compare Page", () => {
 
         await expect(leftPlayerTable.getByText("3", { exact: true })).toHaveCSS(
             "color",
-            "rgb(239, 68, 68)",
+            "oklch(0.637 0.237 25.331)",
         );
         await expect(
             rightPlayerTable.getByText("5", { exact: true }),
-        ).toHaveCSS("color", "rgb(34, 197, 94)");
+        ).toHaveCSS("color", "oklch(0.723 0.219 149.579)");
     });
 });

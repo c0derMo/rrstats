@@ -143,7 +143,9 @@ function getAheadBehindClass(
 }
 </script>
 
-<style scoped lang="postcss">
+<style scoped>
+@import "tailwindcss";
+
 .ahead {
     @apply text-green-500;
 }

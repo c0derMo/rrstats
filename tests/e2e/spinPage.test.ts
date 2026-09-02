@@ -25,7 +25,7 @@ test.describe("Spin Page", () => {
         ]);
         await expect(
             table.locator("tbody").nth(0).getByText("Scruffy"),
-        ).toHaveCSS("color", "rgb(22, 163, 74)");
+        ).toHaveCSS("color", "oklch(0.627 0.194 149.214)");
         await expectTableRow(table.locator("tbody").nth(4), [
             "Dec 8, 2024, 7:00 PM",
             "Chongqing",
@@ -36,7 +36,7 @@ test.describe("Spin Page", () => {
         ]);
         await expect(
             table.locator("tbody").nth(4).getByText("Music Inc"),
-        ).toHaveCSS("color", "rgb(22, 163, 74)");
+        ).toHaveCSS("color", "oklch(0.627 0.194 149.214)");
     });
 
     test("Correct statistics without map filter", async ({ page }) => {
@@ -145,7 +145,7 @@ test.describe("Spin Page", () => {
         ]);
         await expect(
             table.locator("tbody").nth(0).getByText("Scruffy"),
-        ).toHaveCSS("color", "rgb(22, 163, 74)");
+        ).toHaveCSS("color", "oklch(0.627 0.194 149.214)");
         await expectTableRow(table.locator("tbody").nth(5), [
             "Nov 14, 2024, 8:00 PM",
             "New York",

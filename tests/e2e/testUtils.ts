@@ -32,3 +32,22 @@ export async function expectTable(
         await expectTableRow(tbody, rows[idx]);
     }
 }
+
+export async function expectSpreadsheetRow(
+    locator: Locator,
+    row: (string | string[] | null)[],
+    index: number,
+) {
+    for (let i = 0; i < row.length; i++) {
+        const td = locator.locator(".cell").nth(row.length * index + i);
+        if (row[i] == null) {
+            continue;
+        } else if (ld.isArray(row[i])) {
+            for (const part of row[i]!) {
+                await expect(td).toContainText(part);
+            }
+        } else {
+            await expect(td).toContainText(row[i]!);
+        }
+    }
+}
