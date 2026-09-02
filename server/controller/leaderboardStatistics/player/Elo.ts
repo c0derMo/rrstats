@@ -31,7 +31,7 @@ export class PlayerElo extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Elo rating",
+            name: "Elo Ratings",
             category: "player",
             explanatoryText:
                 "Elo score based on In4Fun's formula. Note: Players playing on multiple platforms are combined here, which may cause inconsistencies with In4Fun's Elo sheet.",

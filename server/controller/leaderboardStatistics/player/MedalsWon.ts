@@ -50,30 +50,17 @@ export class PlayerMedalsWon extends BaseLeaderboardStatistic {
             return {
                 columns: {
                     Player: player,
+                    Total: medals.gold + medals.silver + medals.bronze,
                     Gold: medals.gold,
                     Silver: medals.silver,
                     Bronze: medals.bronze,
                 },
                 order: 0,
-                value: medals.gold,
+                value: medals.gold + medals.silver + medals.bronze,
             };
         });
 
-        result.sort((a, b) => b.columns["Bronze"] - a.columns["Bronze"]);
-        result.sort((a, b) => b.columns["Silver"] - a.columns["Silver"]);
-        result.sort((a, b) => b.columns["Gold"] - a.columns["Gold"]);
-
-        result.forEach((player) => {
-            const placement = result.findIndex((otherPlayer) => {
-                return (
-                    otherPlayer.columns.Gold === player.columns.Gold &&
-                    otherPlayer.columns.Silver === player.columns.Silver &&
-                    otherPlayer.columns.Bronze === player.columns.Bronze
-                );
-            });
-            player.order = placement;
-        });
-
+        this.sortAndInferPlacementByValue(result);
         this.cache = result;
     }
 
@@ -88,20 +75,24 @@ export class PlayerMedalsWon extends BaseLeaderboardStatistic {
                     type: LeaderboardColumnType.PLACEMENT_TAG,
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Total", type: LeaderboardColumnType.TEXT },
                 {
                     name: "Gold",
                     type: LeaderboardColumnType.TEXT,
                     sortable: true,
+                    color: "bg-golden",
                 },
                 {
                     name: "Silver",
                     type: LeaderboardColumnType.TEXT,
                     sortable: true,
+                    color: "bg-silver",
                 },
                 {
                     name: "Bronze",
                     type: LeaderboardColumnType.TEXT,
                     sortable: true,
+                    color: "bg-bronze",
                 },
             ],
         };

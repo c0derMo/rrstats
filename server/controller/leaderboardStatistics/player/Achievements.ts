@@ -5,6 +5,7 @@ import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 interface AchievementCount extends LeaderboardRow {
     columns: {
         Player: string;
+        Total: number;
         Platinum: number;
         Gold: number;
         Silver: number;
@@ -64,36 +65,26 @@ export class PlayerAchievements extends BaseLeaderboardStatistic {
                     ).length;
                 })
                 .reduce((l, r) => l + r, 0);
+            const total =
+                achievedPlatinum +
+                achievedGold +
+                achievedSilver +
+                achievedBronze;
             result.push({
                 columns: {
                     Player: player.uuid,
+                    Total: total,
                     Platinum: achievedPlatinum,
                     Gold: achievedGold,
                     Silver: achievedSilver,
                     Bronze: achievedBronze,
                 },
                 order: 0,
-                value: achievedPlatinum,
+                value: total,
             });
         }
 
-        result.sort((a, b) => b.columns["Bronze"] - a.columns["Bronze"]);
-        result.sort((a, b) => b.columns["Silver"] - a.columns["Silver"]);
-        result.sort((a, b) => b.columns["Gold"] - a.columns["Gold"]);
-        result.sort((a, b) => b.columns["Platinum"] - a.columns["Platinum"]);
-
-        result.forEach((player) => {
-            const placement = result.findIndex((otherPlayer) => {
-                return (
-                    otherPlayer.columns.Platinum === player.columns.Platinum &&
-                    otherPlayer.columns.Gold === player.columns.Gold &&
-                    otherPlayer.columns.Silver === player.columns.Silver &&
-                    otherPlayer.columns.Bronze === player.columns.Bronze
-                );
-            });
-            player.order = placement;
-        });
-
+        this.sortAndInferPlacementByValue(result);
         this.cache = result;
     }
 
@@ -110,7 +101,12 @@ export class PlayerAchievements extends BaseLeaderboardStatistic {
                     type: LeaderboardColumnType.PLACEMENT_TAG,
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
-                { name: "Platinum", type: LeaderboardColumnType.TEXT },
+                { name: "Total", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Platinum",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
                 {
                     name: "Gold",
                     type: LeaderboardColumnType.TEXT,

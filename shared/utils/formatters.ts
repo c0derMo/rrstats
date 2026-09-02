@@ -26,19 +26,6 @@ export function secondsToTime(seconds: number): string {
     }
 }
 
-export function getPlacementTagColor(placement: number) {
-    if (placement === 1) {
-        return "rgb(214, 175, 54)";
-    }
-    if (placement === 2) {
-        return "rgb(167, 167, 167)";
-    }
-    if (placement === 3) {
-        return "rgb(167, 112, 68)";
-    }
-    return "rgb(105, 105, 105)";
-}
-
 export function getColorOfTier(tier: AchievementTier | -1) {
     switch (tier) {
         case AchievementTier.BRONZE:

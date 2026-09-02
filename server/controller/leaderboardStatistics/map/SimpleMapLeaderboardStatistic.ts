@@ -6,14 +6,14 @@ import { MapLeaderboardStatistic } from "./MapLeaderboardStatistic";
 export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatistic<
     DefaultedMap<HitmanMap, number[]>
 > {
-    private competitionAmount: number;
+    private competitions: string[];
     private columnName: string;
     private leaderboardName: string;
     private explanatoryText?: string;
 
     constructor(columnName: string, lbName: string, explanatoryText?: string) {
         super();
-        this.competitionAmount = 0;
+        this.competitions = [];
         this.columnName = columnName;
         this.leaderboardName = lbName;
         this.explanatoryText = explanatoryText;
@@ -33,7 +33,7 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
             "competition",
         )
             .where("competition.officialCompetition = TRUE")
-            .select(["competition.tag"])
+            .select(["competition.tag", "competition.name"])
             .orderBy("competition.startingTimestamp", "ASC")
             .getMany();
         const matches = await Match.createQueryBuilder("match")
@@ -49,7 +49,7 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
             Array(officialCompetitions.length).fill(0),
         );
 
-        this.competitionAmount = officialCompetitions.length;
+        this.competitions = officialCompetitions.map((comp) => comp.name);
 
         this.computeMapStats(officialCompetitions, matches);
     }
@@ -67,14 +67,16 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
         const startingCompetition = filter["Competition"][0];
         let endingCompetition = filter["Competition"][1];
         if (endingCompetition < 0) {
-            endingCompetition = this.competitionAmount + endingCompetition;
+            endingCompetition = this.competitions.length + endingCompetition;
         }
 
         const result: LeaderboardRow[] =
             this.mapCache?.mapAll((map, compPicks) => {
-                const score = compPicks
-                    .slice(startingCompetition, endingCompetition + 1)
-                    .reduce((prev, cur) => prev + cur, 0);
+                const rawScore = compPicks.slice(
+                    startingCompetition,
+                    endingCompetition + 1,
+                );
+                const score = rawScore.reduce((prev, cur) => prev + cur, 0);
 
                 const preBuilt: LeaderboardRow = {
                     columns: {
@@ -82,6 +84,11 @@ export abstract class SimpleMapLeaderboardStatistic extends MapLeaderboardStatis
                     },
                     value: score,
                     order: 0,
+                    expandableRows: this.competitions
+                        .slice(startingCompetition, endingCompetition + 1)
+                        .map((comp, idx) => {
+                            return [comp, rawScore[idx]];
+                        }),
                 };
                 preBuilt.columns[this.columnName] = score;
                 return preBuilt;

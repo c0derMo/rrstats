@@ -5,7 +5,7 @@
         <h1 class="text-center text-5xl bold">Leaderboards</h1>
 
         <div class="flex flex-col md:flex-row gap-5 lg:mx-20 mx-2">
-            <CardComponent class="md:w-80">
+            <CardComponent class="md:w-96">
                 <TabbedContainer
                     v-model:tab="selectedTab"
                     :tabs="['Players', 'Countries', 'Maps']"

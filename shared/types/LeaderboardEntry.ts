@@ -10,6 +10,7 @@ export type LeaderboardRow = {
 export type LeaderboardColumnDefinition = {
     name: string;
     type: LeaderboardColumnType;
+    color?: string;
     colored?: boolean;
     filterable?: LeaderboardFilterType;
     defaultFilter?: unknown;

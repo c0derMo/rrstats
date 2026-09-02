@@ -63,7 +63,7 @@
                                 >
                                     <FontAwesomeIcon
                                         :icon="['fas', 'trophy']"
-                                        :color="getPlacementTagColor(1)"
+                                        class="text-golden"
                                     />
                                     <div class="flex flex-col">
                                         <MapTag
@@ -156,7 +156,7 @@
                                     </div>
                                     <FontAwesomeIcon
                                         :icon="['fas', 'trophy']"
-                                        :color="getPlacementTagColor(1)"
+                                        class="text-golden"
                                     />
                                 </template>
                                 <FontAwesomeIcon

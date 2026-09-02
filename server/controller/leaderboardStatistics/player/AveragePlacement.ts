@@ -37,7 +37,9 @@ export class PlayerAveragePlacement extends BaseLeaderboardStatistic {
             result.push({
                 columns: {
                     Player: player,
-                    "Average placement": Math.round(average * 100) / 100,
+                    "Average placement": (
+                        Math.round(average * 100) / 100
+                    ).toFixed(2),
                     "Competitions played": placementsOfPlayers[player].length,
                 },
                 order: 0,

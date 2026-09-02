@@ -1,6 +1,16 @@
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
+interface BestPlacementData extends LeaderboardRow {
+    columns: {
+        Player: string;
+        "Best placement": number;
+        "Times achieved": number;
+        "First achieved in competition": string;
+        "Competitions played": number;
+    };
+}
+
 export class PlayerBestPlacement extends BaseLeaderboardStatistic {
     basedOn() {
         return ["placement" as const];
@@ -21,13 +31,24 @@ export class PlayerBestPlacement extends BaseLeaderboardStatistic {
                 "placement.placement",
                 "placement.competition",
             ])
+            .orderBy("competition.startingTimestamp", "ASC")
             .getMany();
 
         const placementsOfPlayer = new DefaultedMap<
             string,
-            { best: number; competition: string; competitionCount: number }
+            {
+                best: number;
+                competition: string;
+                competitionCount: number;
+                amount: number;
+            }
         >(() => {
-            return { best: -1, competition: "", competitionCount: 0 };
+            return {
+                best: -1,
+                competition: "",
+                competitionCount: 0,
+                amount: 0,
+            };
         });
 
         for (const placement of placements) {
@@ -41,23 +62,34 @@ export class PlayerBestPlacement extends BaseLeaderboardStatistic {
                     placement.placement;
                 placementsOfPlayer.get(placement.player).competition =
                     placement.competition;
+                placementsOfPlayer.get(placement.player).amount = 1;
+            } else if (
+                placement.placement ===
+                placementsOfPlayer.get(placement.player).best
+            ) {
+                placementsOfPlayer.get(placement.player).amount += 1;
             }
             placementsOfPlayer.get(placement.player).competitionCount += 1;
         }
 
-        const result: LeaderboardRow[] = placementsOfPlayer.mapAll(
+        const result: BestPlacementData[] = placementsOfPlayer.mapAll(
             (player, stats) => {
                 return {
                     columns: {
                         Player: player,
                         "Best placement": stats.best,
-                        "Achieved in competition": stats.competition,
+                        "Times achieved": stats.amount,
+                        "First achieved in competition": stats.competition,
                         "Competitions played": stats.competitionCount,
                     },
                     order: 0,
                     value: stats.best,
                 };
             },
+        );
+
+        result.sort(
+            (a, b) => b.columns["Times achieved"] - a.columns["Times achieved"],
         );
 
         this.sortAndInferPlacementByValue(result, "ASC");
@@ -76,8 +108,9 @@ export class PlayerBestPlacement extends BaseLeaderboardStatistic {
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Best placement", type: LeaderboardColumnType.TEXT },
+                { name: "Times achieved", type: LeaderboardColumnType.TEXT },
                 {
-                    name: "Achieved in competition",
+                    name: "First achieved in competition",
                     type: LeaderboardColumnType.TEXT,
                 },
                 {

@@ -13,11 +13,12 @@ import consola from "consola";
 let database: DatabaseConnector;
 
 const { $fetchMock } = vi.hoisted(() => {
+    const mock = vi.fn();
+    vi.stubGlobal("$fetch", mock);
     return {
-        $fetchMock: vi.fn(),
+        $fetchMock: mock,
     };
 });
-vi.stubGlobal("$fetch", $fetchMock);
 
 describe("PlayerStatisticController", () => {
     beforeEach(async () => {

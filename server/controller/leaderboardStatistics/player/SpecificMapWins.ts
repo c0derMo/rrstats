@@ -114,7 +114,7 @@ export class PlayerSpecificMapWins extends ServerSideFilteredLeaderboardStatisti
                     type: LeaderboardColumnType.PLACEMENT_TAG,
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
-                { name: "Wins", type: LeaderboardColumnType.PERCENTAGE },
+                { name: "Wins", type: LeaderboardColumnType.TEXT },
                 {
                     name: "Map played",
                     type: LeaderboardColumnType.TEXT,

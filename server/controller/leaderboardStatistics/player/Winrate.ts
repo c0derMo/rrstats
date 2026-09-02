@@ -48,7 +48,7 @@ export class PlayerWinrate extends BaseLeaderboardStatistic {
                 return {
                     columns: {
                         Player: player,
-                        Winrate: `${((matches.wins / matches.matches) * 100).toFixed(2)}%`,
+                        Winrate: matches.wins / matches.matches,
                         "Matches played": matches.matches,
                     },
                     order: 0,
@@ -72,7 +72,7 @@ export class PlayerWinrate extends BaseLeaderboardStatistic {
                     type: LeaderboardColumnType.PLACEMENT_TAG,
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
-                { name: "Winrate", type: LeaderboardColumnType.TEXT },
+                { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
                 {
                     name: "Matches played",
                     type: LeaderboardColumnType.TEXT,

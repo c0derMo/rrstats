@@ -10,6 +10,7 @@ export class PlayerReverseSweeps extends BaseLeaderboardStatistic {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
             .select([
+                "match.timestamp",
                 "match.playerOne",
                 "match.playerOneScore",
                 "match.playerTwo",
@@ -18,7 +19,12 @@ export class PlayerReverseSweeps extends BaseLeaderboardStatistic {
                 "map.index",
             ])
             .getMany();
-        const playerMap: Record<string, number> = {};
+
+        const data = new DefaultedMap<string, { sweeps: number; last: number }>(
+            () => {
+                return { sweeps: 0, last: -1 };
+            },
+        );
 
         for (const match of matches) {
             const scoreDelta = Math.abs(
@@ -47,26 +53,32 @@ export class PlayerReverseSweeps extends BaseLeaderboardStatistic {
 
             if (isReverseSweep) {
                 if (winner === WinningPlayer.PLAYER_ONE) {
-                    playerMap[match.playerOne] ??= 0;
-                    playerMap[match.playerOne] += 1;
+                    data.get(match.playerOne).sweeps += 1;
+                    data.get(match.playerOne).last = Math.max(
+                        data.get(match.playerOne).last,
+                        match.timestamp,
+                    );
                 } else if (winner === WinningPlayer.PLAYER_TWO) {
-                    playerMap[match.playerTwo] ??= 0;
-                    playerMap[match.playerTwo] += 1;
+                    data.get(match.playerTwo).sweeps += 1;
+                    data.get(match.playerTwo).last = Math.max(
+                        data.get(match.playerTwo).last,
+                        match.timestamp,
+                    );
                 }
             }
         }
 
-        const result: LeaderboardRow[] = [];
-        for (const player in playerMap) {
-            result.push({
+        const result: LeaderboardRow[] = data.mapAll((player, sweepData) => {
+            return {
                 columns: {
                     Player: player,
-                    "Reverse Sweeps": playerMap[player],
+                    "Reverse Sweeps": sweepData.sweeps,
+                    "Last Reverse Sweep": sweepData.last,
                 },
-                value: playerMap[player],
+                value: sweepData.sweeps,
                 order: 0,
-            });
-        }
+            };
+        });
 
         this.sortAndInferPlacementByValue(result);
         this.cache = result;
@@ -86,6 +98,11 @@ export class PlayerReverseSweeps extends BaseLeaderboardStatistic {
                 },
                 { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
                 { name: "Reverse Sweeps", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Last Reverse Sweep",
+                    type: LeaderboardColumnType.DATE,
+                    sortable: true,
+                },
             ],
         };
     }

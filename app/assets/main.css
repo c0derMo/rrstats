@@ -3,16 +3,35 @@
 /*
   Row colors of roulette rankings - since these are built serverside, these aren't automatically included
 */
-@source inline("bg-orange-200 dark:bg-amber-950");
-@source inline("bg-fuchsia-200 dark:bg-fuchsia-900");
-@source inline("bg-yellow-100 dark:bg-yellow-800");
-@source inline("bg-gray-200 dark:bg-gray-700");
+@source inline("bg-rankings-master");
+@source inline("bg-rankings-gold");
+@source inline("bg-rankings-silver");
+@source inline("bg-rankings-bronze");
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
+@theme static {
     --font-josefinSans: Josefin Sans, sans-serif;
     --font-titilliumWeb: Titillium Web, sans-serif;
+    --color-golden: oklch(76.85% 0.1397 90.18);
+    --color-silver: oklch(72.84% 0 0);
+    --color-bronze: oklch(59.33% 0.0919 58.4);
+
+    --color-rankings-master: oklch(90.3% 0.076 319.62);
+    --color-rankings-gold: oklch(97.3% 0.071 103.193);
+    --color-rankings-silver: oklch(92.8% 0.006 264.531);
+    --color-rankings-bronze: oklch(90.1% 0.076 70.697);
+}
+
+.dark {
+    --color-golden: oklch(72.66% 0.13166 89.755);
+    --color-silver: oklch(70% 0 0);
+    --color-bronze: oklch(59.33% 0.0919 58.4);
+
+    --color-rankings-master: oklch(40.1% 0.17 325.612);
+    --color-rankings-gold: oklch(47.3% 0.137 46.201);
+    --color-rankings-silver: oklch(37.3% 0.034 259.733);
+    --color-rankings-bronze: oklch(27.9% 0.077 45.635);
 }
 
 /*

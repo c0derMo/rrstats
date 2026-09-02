@@ -36,18 +36,18 @@ export class PlayerRouletteRankings extends BaseLeaderboardStatistic {
 
     getRowColor(score: number, placement: number): string {
         if (score <= 0 || placement < 0) {
-            return "bg-orange-200 dark:bg-amber-950";
+            return "bg-rankings-bronze";
         }
         if (placement <= 10) {
-            return "bg-fuchsia-200 dark:bg-fuchsia-900";
+            return "bg-rankings-master";
         }
         if (score >= 60) {
-            return "bg-yellow-100 dark:bg-yellow-800";
+            return "bg-rankings-gold";
         }
         if (score >= 30) {
-            return "bg-gray-200 dark:bg-gray-700";
+            return "bg-rankings-silver";
         }
-        return "bg-orange-200 dark:bg-amber-950";
+        return "bg-rankings-bronze";
     }
 
     getScoreForPlacement(placement: number | undefined, competition: string) {

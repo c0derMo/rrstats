@@ -44,48 +44,60 @@ describe("LeaderboardController", () => {
         );
         expect(countryCategories.length).toBe(5);
         expect(mapCategories.length).toBe(5);
-        expect(playerCategories.length).toBe(25);
+        expect(playerCategories.length).toBe(31);
 
         expect(countryCategories.map((c) => c.name)).toEqual([
-            "Players per country",
-            "Matches per country",
-            "Wins per country",
-            "Winrate per country",
-            "Titles per country",
+            "Most players per country",
+            "Most matches per country",
+            "Most wins per country",
+            "Best winrate per country",
+            "Most titles per country",
         ]);
         expect(mapCategories.map((c) => c.name)).toEqual([
-            "Picked",
-            "Banned",
-            "Played",
-            "Played as random map",
-            "Appearances",
+            "Most times picked",
+            "Most times banned",
+            "Most times played",
+            "Most times played as random map",
+            "Most times appeared",
         ]);
         expect(playerCategories.map((c) => c.name)).toEqual([
-            "Winrate",
-            "Map Winrate",
-            "Roulette Rivals Participations",
-            "RRWC Participations",
+            "Roulette Rankings",
+            "Elo Ratings",
+
+            "Most matches played",
+            "Most matches won",
+            "Highest winrate",
+
+            "Most maps played",
+            "Most maps won",
+            "Highest map winrate",
+            "Highest map winrate (player picks)",
+            "Highest map winrate (opponent picks)",
+            "Highest map winrate (random picks)",
+            "Most maps played (specific map)",
+            "Most maps won (specific map)",
+            "Best map winrate (specific map)",
+            "Personal Best (specific map)",
+
+            "Most RRs played",
+            "Most RRWCs played",
+            "Most titles won",
+            "Most Grand Finals played",
+            "Most medals won",
+            "Best RR Placement",
             "Average RR Placement",
-            "Grand Final Appearances",
-            "Titles won",
-            "Matches played",
-            "Matches won",
-            "Maps played",
-            "Maps won",
-            "Winrate on own-map-picks",
-            "Winrate on opponent-map-picks",
-            "Most matches won in a row",
-            "Most maps won in a row",
-            "Winning streak on a map",
-            "Sweeps (6+ points)",
-            "Sweeps",
-            "Reverse sweeps",
-            "Spins played on specific map",
-            "Winrate on specific map",
-            "Personal best on map",
-            "Elo rating",
-            "Achievements",
-            "Matches casted",
+
+            "Longest winning streak",
+            "Longest map winning streak",
+            "Longest map winning streak (specific map)",
+
+            "Most matches swept",
+            "Most matches swept (6+ points)",
+            "Most matches swept (8+ points)",
+            "Most matches reverse swept (6+ points)",
+
+            "Most achievements",
+            "Most matches casted",
         ]);
     });
 });

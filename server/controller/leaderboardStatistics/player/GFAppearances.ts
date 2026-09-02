@@ -2,10 +2,6 @@ import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
 import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
 export class PlayerGFAppearances extends BaseLeaderboardStatistic {
-    type = "player" as const;
-    name = "Grand Final Appearances";
-    hasMaps = false;
-
     basedOn() {
         return ["placement" as const];
     }
@@ -57,7 +53,7 @@ export class PlayerGFAppearances extends BaseLeaderboardStatistic {
 
     getTableDefinition(): LeaderboardTableDefinition {
         return {
-            name: "Most grand finals played",
+            name: "Most Grand Finals played",
             category: "player",
             subcategory: "Participation",
             columns: [

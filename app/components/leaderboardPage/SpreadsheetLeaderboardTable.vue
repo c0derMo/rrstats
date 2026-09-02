@@ -136,8 +136,12 @@ const spreadsheetTableColumns = computed<ColumnDefinition[]>(() => {
                 name: column.name,
                 title: column.name,
                 width: 'auto',
-                textAlign: 'left'
+                textAlign: 'left',
             };
+
+            if (column.color != null) {
+                columnDefinition.backgroundColor = column.color;
+            }
 
             if (column.type === LeaderboardColumnType.PLACEMENT_TAG) {
                 columnDefinition.title = '';
