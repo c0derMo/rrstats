@@ -30,6 +30,7 @@ import {
 import { Bracket } from "../model/Bracket";
 import { BracketAndAccoladeAddition1776851396630 } from "../migrations/1776851396630-BracketAndAccoladeAddition";
 import { DatabaseInitialization1577833200000 } from "../migrations/1577833200000-DatabaseInitialization";
+import { RenameLiveTournamentToggle1788438600000 } from "../migrations/1788438600000-RenameLiveCompetitionToggle";
 
 const logger = consola.withTag("rrstats:database");
 
@@ -72,6 +73,7 @@ export default class DatabaseConnector {
             migrations: [
                 DatabaseInitialization1577833200000,
                 BracketAndAccoladeAddition1776851396630,
+                RenameLiveTournamentToggle1788438600000,
             ],
             migrationsRun: true,
             parseInt8: dbType === "postgres" ? true : undefined,

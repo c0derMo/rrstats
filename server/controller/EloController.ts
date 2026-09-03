@@ -73,7 +73,7 @@ class PlayerElo {
             )
         ) {
             if (
-                compList[startingIndex - checkIndex - 1].updateWithHitmaps ===
+                compList[startingIndex - checkIndex - 1].liveCompetition ===
                 false
             ) {
                 decayAmount += 1;

@@ -112,8 +112,8 @@ export class PlayerRouletteRankings extends BaseLeaderboardStatistic {
             .where(
                 new Brackets((qb) => {
                     return qb
-                        .where("comp.updateWithHitmaps = FALSE")
-                        .orWhere("comp.updateWithHitmaps IS NULL");
+                        .where("comp.liveCompetition = FALSE")
+                        .orWhere("comp.liveCompetition IS NULL");
                 }),
             )
             .andWhere("comp.officialCompetition = TRUE")

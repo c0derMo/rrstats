@@ -19,7 +19,7 @@ export type ICompetition = {
 
     hitmapsStatsUrl?: string;
     hitmapsSlug?: string;
-    updateWithHitmaps?: boolean;
+    liveCompetition?: boolean;
 
     backgroundImage?: string;
 

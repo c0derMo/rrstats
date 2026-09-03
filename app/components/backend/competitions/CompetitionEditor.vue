@@ -45,9 +45,9 @@
                         />
 
                         <SwitchComponent
-                            id="updateWithHitmaps"
-                            v-model="compData.updateWithHitmaps"
-                            label="Update with hitmaps:"
+                            id="liveCompetition"
+                            v-model="compData.liveCompetition"
+                            label="Live competition:"
                         />
 
                         <TextInputComponent

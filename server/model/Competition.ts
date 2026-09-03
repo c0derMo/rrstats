@@ -28,7 +28,7 @@ export class Competition extends BaseEntity implements ICompetition {
     @Column("text", { nullable: true })
     hitmapsSlug?: string;
     @Column("boolean", { nullable: true })
-    updateWithHitmaps?: boolean;
+    liveCompetition?: boolean;
 
     @Column("text", { nullable: true })
     backgroundImage?: string;

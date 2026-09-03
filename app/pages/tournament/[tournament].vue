@@ -307,7 +307,7 @@ const tabs = computed(() => {
     const result = ["Matches"];
     if (
         competition.value?.hitmapsSlug != null &&
-        competition.value?.updateWithHitmaps
+        competition.value?.liveCompetition
     ) {
         result.push("Upcoming matches");
     }

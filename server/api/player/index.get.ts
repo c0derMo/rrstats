@@ -22,7 +22,7 @@ export default defineEventHandler<Promise<Retryable<IPlayer>>>(
         let shouldRetry = false;
 
         const competitionsToUpdate = await Competition.find({
-            where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) },
+            where: { liveCompetition: true, hitmapsSlug: Not(IsNull()) },
             select: ["hitmapsSlug", "tag"],
         });
         for (const competitionToUpdate of competitionsToUpdate) {
