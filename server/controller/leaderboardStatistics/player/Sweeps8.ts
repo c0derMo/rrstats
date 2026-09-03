@@ -28,12 +28,12 @@ export class PlayerSweeps8 extends BaseLeaderboardStatistic {
             playerMatches[match.playerOne] += 1;
             playerMatches[match.playerTwo] += 1;
 
-            if (match.playerOneScore >= 6 && match.playerTwoScore === 0) {
+            if (match.playerOneScore >= 8 && match.playerTwoScore === 0) {
                 playerMap[match.playerOne] ??= 0;
                 playerMap[match.playerOne] += 1;
             } else if (
                 match.playerOneScore === 0 &&
-                match.playerTwoScore >= 6
+                match.playerTwoScore >= 8
             ) {
                 playerMap[match.playerTwo] ??= 0;
                 playerMap[match.playerTwo] += 1;

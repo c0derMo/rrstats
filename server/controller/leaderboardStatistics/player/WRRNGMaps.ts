@@ -34,7 +34,7 @@ export class PlayerWRRNGMaps extends BaseLeaderboardStatistic {
                 if (map.winner === WinningPlayer.PLAYER_ONE) {
                     playedMaps.get(match.playerOne).won += 1;
                 } else if (map.winner === WinningPlayer.PLAYER_TWO) {
-                    playedMaps.get(match.playerOne).won += 1;
+                    playedMaps.get(match.playerTwo).won += 1;
                 }
             }
         }

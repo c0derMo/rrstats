@@ -83,13 +83,12 @@ export default class PlayerStatisticController {
         const playersRanking = rankings.find(
             (ranking) => ranking.columns["Player"] === uuid,
         ) ?? {
-            columns: {},
+            columns: {
+                Badge: "/rankingBadges/bronze.png",
+            },
+            order: -1,
             value: 0,
         };
-        const playersRankingSpot =
-            (rankings.findIndex(
-                (ranking) => ranking.columns["Player"] === uuid,
-            ) ?? -2) + 1;
 
         PlayerStatisticController.cache.set(uuid, {
             winrate: matchCollection.winrate(),
@@ -115,12 +114,9 @@ export default class PlayerStatisticController {
             eloProgression:
                 EloController.getInstance().getEloProgressionOfPlayer(uuid),
             ranking: {
-                placement: playersRankingSpot,
+                placement: playersRanking.order,
                 score: playersRanking.value,
-                badgeUrl: this.getRankingBadge(
-                    playersRanking.value,
-                    playersRankingSpot,
-                ),
+                badgeUrl: playersRanking.columns["Badge"] as string,
             },
         });
     }

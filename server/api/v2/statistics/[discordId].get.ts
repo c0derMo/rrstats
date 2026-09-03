@@ -84,7 +84,7 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
     for (let mapIdx = 0; mapIdx < statistics.mapPBs.length; mapIdx++) {
         const pb = statistics.mapPBs[mapIdx];
         const mapPBs = await LeaderboardController.getEntries(
-            "Personal best on map",
+            "Personal Best (specific map)",
             { Map: mapIdx },
         );
         const playerIndex = mapPBs.findIndex(

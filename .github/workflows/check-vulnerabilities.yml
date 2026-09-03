@@ -12,6 +12,6 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: "26"
-                  
+
             - name: Check for Vulnerabilities
               run: npm audit --audit-level high

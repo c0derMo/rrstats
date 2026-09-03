@@ -74,7 +74,7 @@ export default class DiscordAuthIntegration {
             consola.error(e);
             consola.error((e as { data: string }).data);
             throw new Error("Error in token request", {
-                cause: e
+                cause: e,
             });
         }
 
@@ -91,7 +91,7 @@ export default class DiscordAuthIntegration {
             consola.error(e);
             consola.error((e as { data: string }).data);
             throw new Error("Error in user request", {
-                cause: e
+                cause: e,
             });
         }
     }

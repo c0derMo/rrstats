@@ -57,9 +57,13 @@ export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
 });
 
 function doesTargetFulfilFilter(
-    filter: { disguise: string; method: string },
+    filter: { disguise: string; method: string } | undefined,
     target: Spin["targetConditions"][0],
 ): boolean {
+    if (filter == null) {
+        return true;
+    }
+
     if (
         filter?.disguise != null &&
         filter.disguise !== "" &&
