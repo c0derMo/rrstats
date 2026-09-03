@@ -94,9 +94,13 @@ export default class PlacementCollection {
 
     amountCompetitions(): number {
         return this.getCachedOrCalculate("amountCompetitions", () => {
-            return this.placements.filter((placement) =>
+            const differentCompetitions = new Set<string>();
+            this.placements.filter((placement) =>
                 isPlacementOfOfficialCompetition(placement, this.competitions),
-            ).length;
+            ).forEach((placement) => {
+                differentCompetitions.add(placement.competition)
+            });
+            return differentCompetitions.size;
         });
     }
 
