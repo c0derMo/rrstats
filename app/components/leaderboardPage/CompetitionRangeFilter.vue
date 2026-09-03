@@ -62,7 +62,6 @@ onBeforeMount(async () => {
         .filter((comp) => comp.officialCompetition)
         .map((comp) => comp.tag)
         .toReversed();
-    console.log(competitions.value.length);
 });
 
 const dropdownCompetitions = computed(() => {

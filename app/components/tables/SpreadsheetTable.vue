@@ -182,6 +182,5 @@ function expandRow(index: number) {
     } else {
         expandedRow.value = index;
     }
-    console.log(`Expanded ${expandedRow.value}`);
 }
 </script>
