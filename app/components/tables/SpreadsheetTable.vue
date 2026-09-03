@@ -33,6 +33,7 @@
                     :name="getColumnName(cellIndex)"
                     :content="cell.content"
                     :cell="cell"
+                    :index="rowIndex"
                 >
                     <template v-if="cell.expansionButton && row.expandable">
                         <div @click="expandRow(rowIndex)">

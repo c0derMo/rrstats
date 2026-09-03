@@ -55,6 +55,14 @@
         >
             <FontAwesomeIcon :icon="['fa', 'stethoscope']" />
         </BackendButton>
+        <BackendButton
+            v-if="user.permissions.includes(IPermission.EDIT_MATCHES)"
+            title="Casters & VODs"
+            subtitle="Add casters & VOD links to matches quickly"
+            target="/backend/castsVods"
+        >
+            <FontAwesomeIcon :icon="['fa', 'video']" />
+        </BackendButton>
     </div>
 </template>
 
