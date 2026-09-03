@@ -379,7 +379,7 @@ function getAheadBehindClass(
 </script>
 
 <style scoped>
-@import "tailwindcss";
+@reference "@/assets/main.css";
 
 .ahead {
     @apply text-green-500;

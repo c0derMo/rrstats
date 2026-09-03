@@ -9,7 +9,7 @@
 </template>
 
 <style scoped>
-@import "tailwindcss";
+@reference "@/assets/main.css";
 
 @layer components {
     div {
