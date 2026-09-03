@@ -38,7 +38,7 @@ export default defineEventHandler<Promise<PlayerRecord[]>>(async (event) => {
             },
             order: { timestamp: "ASC" },
             select: {
-                timestamp: true
+                timestamp: true,
             },
         });
         allRecords.push({
@@ -58,7 +58,7 @@ export default defineEventHandler<Promise<PlayerRecord[]>>(async (event) => {
             },
             order: { timestamp: "ASC" },
             select: {
-                timestamp: true
+                timestamp: true,
             },
         });
         allRecords.push({

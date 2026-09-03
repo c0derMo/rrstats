@@ -144,14 +144,12 @@ export class PlayerStatisticDatabaseListener implements EntitySubscriberInterfac
         if (!isReady()) {
             return;
         }
-        if (
-            !(
-                entity instanceof Player ||
-                entity instanceof Match ||
-                entity instanceof CompetitionPlacement ||
-                entity instanceof Competition
-            )
-        ) {
+        if (!(
+            entity instanceof Player ||
+            entity instanceof Match ||
+            entity instanceof CompetitionPlacement ||
+            entity instanceof Competition
+        )) {
             return;
         }
 

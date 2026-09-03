@@ -23,7 +23,7 @@ export default defineEventHandler<PlayerResponse>(async (event) => {
 
     const player = await Player.findOne({
         select: {
-            uuid: true
+            uuid: true,
         },
         where: { discordId: playerDiscordId },
     });
@@ -44,7 +44,7 @@ export default defineEventHandler<PlayerResponse>(async (event) => {
             round: true,
             platform: true,
             playedMaps: true,
-            bannedMaps: true
+            bannedMaps: true,
         },
         where: [{ playerOne: player.uuid }, { playerTwo: player.uuid }],
     });
@@ -56,7 +56,7 @@ export default defineEventHandler<PlayerResponse>(async (event) => {
     const players = await Player.find({
         select: {
             uuid: true,
-            discordId: true
+            discordId: true,
         },
         where: { uuid: In(playersToQuery) },
     });

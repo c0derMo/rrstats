@@ -8,7 +8,7 @@
             <div class="grid grid-cols-[max-content_auto] gap-y-3 gap-x-14">
                 <template
                     v-for="achievement in sortedMappedData"
-                    :key="achievement"
+                    :key="achievement.name"
                 >
                     <div
                         :id="normalizeName(achievement.name)"

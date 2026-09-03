@@ -32,7 +32,7 @@ export default defineEventHandler<EloResponse>(async (event) => {
         },
         select: {
             uuid: true,
-            discordId: true
+            discordId: true,
         },
     });
     const discordToPlayer = MapperService.createStringMapFromList(

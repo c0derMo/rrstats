@@ -6,12 +6,7 @@ export abstract class BaseLeaderboardStatistic {
     }
 
     abstract basedOn(): (
-        | "player"
-        | "match"
-        | "map"
-        | "comp"
-        | "placement"
-        | "achievement"
+        "player" | "match" | "map" | "comp" | "placement" | "achievement"
     )[];
     abstract getTableDefinition(): LeaderboardTableDefinition;
     abstract calculate(): Promise<void>;

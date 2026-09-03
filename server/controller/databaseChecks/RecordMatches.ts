@@ -26,7 +26,7 @@ export class RecordMatches implements DatabaseCheck {
         const players = await Player.find({
             select: {
                 uuid: true,
-                primaryName: true
+                primaryName: true,
             },
         });
         for (const player of players) {
@@ -42,7 +42,7 @@ export class RecordMatches implements DatabaseCheck {
                 map: true,
                 player: true,
                 timestamp: true,
-                mapIndex: true
+                mapIndex: true,
             },
         });
         for (const record of mapRecords) {
@@ -53,7 +53,7 @@ export class RecordMatches implements DatabaseCheck {
                     uuid: true,
                     playerOne: true,
                     playerTwo: true,
-                    playedMaps: true
+                    playedMaps: true,
                 },
                 where: { uuid: record.match },
             });
@@ -109,7 +109,7 @@ export class RecordMatches implements DatabaseCheck {
                 record: true,
                 players: true,
                 timestamp: true,
-                maps: true
+                maps: true,
             },
         });
         for (const record of genericRecords) {
@@ -120,7 +120,7 @@ export class RecordMatches implements DatabaseCheck {
                     uuid: true,
                     playerOne: true,
                     playerTwo: true,
-                    playedMaps: true
+                    playedMaps: true,
                 },
                 where: { uuid: record.match },
             });

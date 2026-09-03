@@ -24,7 +24,7 @@ export class MissingVODs implements DatabaseCheck {
         const players = await Player.find({
             select: {
                 uuid: true,
-                primaryName: true
+                primaryName: true,
             },
         });
         for (const player of players) {
@@ -37,7 +37,7 @@ export class MissingVODs implements DatabaseCheck {
                 playerOne: true,
                 playerTwo: true,
                 competition: true,
-                round: true
+                round: true,
             },
             where: [
                 {
@@ -58,7 +58,7 @@ export class MissingVODs implements DatabaseCheck {
                 playerOne: true,
                 playerTwo: true,
                 competition: true,
-                round: true
+                round: true,
             },
             where: [
                 {

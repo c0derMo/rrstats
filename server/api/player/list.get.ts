@@ -30,7 +30,7 @@ export default defineEventHandler<
                 primaryName: true,
                 accolade: true,
                 defaultAccolade: true,
-                nationality: true
+                nationality: true,
             },
         });
 
@@ -39,7 +39,7 @@ export default defineEventHandler<
 
     const rawPlayers = await Player.find({
         select: {
-            primaryName: true
+            primaryName: true,
         },
         where: {
             excludedFromSearch: Not(And(Not(false), Not(IsNull()))),

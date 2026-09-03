@@ -94,7 +94,7 @@ export class RookieAccoladeUpdateSubscriber implements EntitySubscriberInterface
                 select: {
                     accolade: true,
                     defaultAccolade: true,
-                    uuid: true
+                    uuid: true,
                 },
             });
             if (rookiePlayer == null) {

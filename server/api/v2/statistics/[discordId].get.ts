@@ -40,7 +40,7 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
 
     const player = await Player.findOne({
         select: {
-            uuid: true
+            uuid: true,
         },
         where: { discordId: playerDiscordId },
     });
@@ -64,7 +64,7 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
     const players = await Player.find({
         select: {
             uuid: true,
-            discordId: true
+            discordId: true,
         },
         where: { uuid: In(playersToQuery) },
     });

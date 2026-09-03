@@ -172,9 +172,7 @@ class DatabaseInsertUpdateLogger implements EntitySubscriberInterface {
             )
         ) {
             return useRuntimeConfig().databaseLogging as
-                | "full"
-                | "event"
-                | "none";
+                "full" | "event" | "none";
         }
         if (import.meta.dev) {
             return "event";

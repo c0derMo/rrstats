@@ -1,4 +1,8 @@
-import { TableColumn, type MigrationInterface, type QueryRunner } from "typeorm";
+import {
+    TableColumn,
+    type MigrationInterface,
+    type QueryRunner,
+} from "typeorm";
 
 export class RenameLiveTournamentToggle1788438600000 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
@@ -9,8 +13,8 @@ export class RenameLiveTournamentToggle1788438600000 implements MigrationInterfa
             new TableColumn({
                 name: "liveCompetition",
                 type: "boolean",
-                isNullable: true
-            })
+                isNullable: true,
+            }),
         );
     }
 
@@ -22,8 +26,8 @@ export class RenameLiveTournamentToggle1788438600000 implements MigrationInterfa
             new TableColumn({
                 name: "updateWithHitmaps",
                 type: "boolean",
-                isNullable: true
-            })
+                isNullable: true,
+            }),
         );
     }
 }

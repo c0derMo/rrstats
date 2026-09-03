@@ -25,7 +25,7 @@ export default defineEventHandler<Promise<Retryable<IPlayer>>>(
             where: { liveCompetition: true, hitmapsSlug: Not(IsNull()) },
             select: {
                 hitmapsSlug: true,
-                tag: true
+                tag: true,
             },
         });
         for (const competitionToUpdate of competitionsToUpdate) {

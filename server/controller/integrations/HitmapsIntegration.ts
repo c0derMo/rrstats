@@ -223,7 +223,7 @@ export default class HitmapsIntegration {
                 primaryName: true,
                 alternativeNames: true,
                 uuid: true,
-                discordId: true
+                discordId: true,
             },
         });
         if (playerInDb === null) {
@@ -264,7 +264,7 @@ export default class HitmapsIntegration {
                 ),
             },
             select: {
-                hitmapsMatchId: true
+                hitmapsMatchId: true,
             },
         });
 

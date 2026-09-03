@@ -23,7 +23,7 @@ export default defineEventHandler<AccoladeResponse>(async (event) => {
         select: {
             uuid: true,
             defaultAccolade: true,
-            accolade: true
+            accolade: true,
         },
         where: { discordId: playerDiscordId },
     });

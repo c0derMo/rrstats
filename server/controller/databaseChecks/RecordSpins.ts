@@ -25,7 +25,7 @@ export class RecordSpins implements DatabaseCheck {
         const players = await Player.find({
             select: {
                 uuid: true,
-                primaryName: true
+                primaryName: true,
             },
         });
         for (const player of players) {
@@ -42,7 +42,7 @@ export class RecordSpins implements DatabaseCheck {
                 where: { map: map },
                 order: { timestamp: "DESC" },
                 select: {
-                    time: true
+                    time: true,
                 },
             });
             if (topRecord == null) continue;
@@ -62,7 +62,7 @@ export class RecordSpins implements DatabaseCheck {
                     playerTwo: true,
                     competition: true,
                     round: true,
-                    playedMaps: true
+                    playedMaps: true,
                 },
                 where: { uuid: record.match },
             });

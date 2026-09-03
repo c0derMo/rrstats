@@ -112,7 +112,7 @@ async function main() {
             playerOneScore: true,
             playerTwo: true,
             playerTwoScore: true,
-            competition: true
+            competition: true,
         },
         relations: { playedMaps: false },
         order: { timestamp: "ASC" },

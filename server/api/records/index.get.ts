@@ -9,12 +9,16 @@ export default defineEventHandler<
         matches: Record<string, IMatch>;
     }>
 >(async () => {
-    const genericRecordTypes = await GenericRecord.find({ select: {
-        record: true
-    } });
-    const mapsWithRecords = await MapRecord.find({ select: {
-        map: true
-    } });
+    const genericRecordTypes = await GenericRecord.find({
+        select: {
+            record: true,
+        },
+    });
+    const mapsWithRecords = await MapRecord.find({
+        select: {
+            map: true,
+        },
+    });
 
     const genericRecords: IGenericRecord[] = [];
     const mapRecords: IMapRecord[] = [];
@@ -27,7 +31,7 @@ export default defineEventHandler<
                 where: { record: genericRecordType.record },
                 order: { timestamp: "DESC" },
                 select: {
-                    time: true
+                    time: true,
                 },
             });
             const allGenericRecordsWithTime = await GenericRecord.find({
@@ -47,7 +51,7 @@ export default defineEventHandler<
                 where: { map: mapWithRecord.map },
                 order: { timestamp: "DESC" },
                 select: {
-                    time: true
+                    time: true,
                 },
             });
             const allMapRecordsWithTime = await MapRecord.find({

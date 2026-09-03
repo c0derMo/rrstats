@@ -20,7 +20,7 @@ export class NoMatches implements DatabaseCheck {
         const allPlayers = await Player.find({
             select: {
                 uuid: true,
-                primaryName: true
+                primaryName: true,
             },
         });
 

@@ -7,7 +7,7 @@ export default defineEventHandler<Promise<ICompetition[]>>(async () => {
             name: true,
             officialCompetition: true,
             tag: true,
-            startingTimestamp: true
+            startingTimestamp: true,
         },
         order: { startingTimestamp: "DESC" },
     });

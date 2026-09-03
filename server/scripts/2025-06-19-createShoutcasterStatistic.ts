@@ -26,7 +26,7 @@ async function main() {
         select: {
             uuid: true,
             competition: true,
-            shoutcasters: true
+            shoutcasters: true,
         },
         order: {
             timestamp: "ASC",

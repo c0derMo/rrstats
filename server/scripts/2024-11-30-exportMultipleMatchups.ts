@@ -22,7 +22,7 @@ async function main() {
         select: {
             playerOne: true,
             playerTwo: true,
-            uuid: true
+            uuid: true,
         },
     });
     console.log(`Loaded ${matches.length} matches.`);

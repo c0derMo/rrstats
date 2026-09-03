@@ -58,7 +58,7 @@ export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
 
 function doesTargetFulfilFilter(
     filter: { disguise: string; method: string },
-    target: Spin["targetConditions"][0]
+    target: Spin["targetConditions"][0],
 ): boolean {
     if (
         filter?.disguise != null &&
@@ -80,8 +80,7 @@ function doesTargetFulfilFilter(
     if (
         (variant != null &&
             variant !== "" &&
-            filter.method !==
-                `${variant} ${target.killMethod.name}`) ||
+            filter.method !== `${variant} ${target.killMethod.name}`) ||
         ((variant == null || variant === "") &&
             filter.method !== target.killMethod.name)
     ) {
@@ -111,12 +110,14 @@ export function filterBerlinSpins(
 ) {
     return spins.filter((spin) => {
         for (const target in filter) {
-            const doesOneTargetFulfilFilter = spin.spin!.targetConditions.some((spinTarget) => {
-                return doesTargetFulfilFilter(filter[target], spinTarget);
-            });
+            const doesOneTargetFulfilFilter = spin.spin!.targetConditions.some(
+                (spinTarget) => {
+                    return doesTargetFulfilFilter(filter[target], spinTarget);
+                },
+            );
             if (!doesOneTargetFulfilFilter) {
                 return false;
-            } 
+            }
         }
         return true;
     });

@@ -2,12 +2,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     nuxtApp.vueApp.directive("click-outside", {
         beforeMount: function (element, binding) {
             element.clickOutsideEvent = function (event: Event) {
-                if (
-                    !(
-                        element === event.target ||
-                        element.contains(event.target)
-                    )
-                ) {
+                if (!(
+                    element === event.target || element.contains(event.target)
+                )) {
                     binding.value(event);
                 }
             };

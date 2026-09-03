@@ -22,7 +22,7 @@ export class MissingPlacements implements DatabaseCheck {
         const players = await Player.find({
             select: {
                 uuid: true,
-                primaryName: true
+                primaryName: true,
             },
         });
         const uuidsToPlayers: Record<string, string> = {};
@@ -50,7 +50,7 @@ export class MissingPlacements implements DatabaseCheck {
             const placements = (
                 await CompetitionPlacement.find({
                     select: {
-                        competition: true
+                        competition: true,
                     },
                     where: { player: player.uuid },
                 })

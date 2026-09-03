@@ -25,7 +25,7 @@ export class MissingPlayers implements DatabaseCheck {
                 playerOne: true,
                 playerTwo: true,
                 competition: true,
-                round: true
+                round: true,
             },
             where: { competition: Not(In(ignoredCompetitions)) },
         });
@@ -36,7 +36,7 @@ export class MissingPlayers implements DatabaseCheck {
 
         const playerObjects = await Player.find({
             select: {
-                uuid: true
+                uuid: true,
             },
             where: { uuid: In([...dedupedPlayers]) },
         });

@@ -27,7 +27,7 @@ export default defineEventHandler<MapResponse>(async (event) => {
         where: { map: map.map as HitmanMap },
         order: { timestamp: "DESC" },
         select: {
-            time: true
+            time: true,
         },
     });
     if (recordTime == null) {
@@ -47,7 +47,7 @@ export default defineEventHandler<MapResponse>(async (event) => {
     const queriedPlayers = await Player.find({
         select: {
             primaryName: true,
-            uuid: true
+            uuid: true,
         },
         where: { uuid: In(playersToQuery) },
     });
@@ -58,7 +58,7 @@ export default defineEventHandler<MapResponse>(async (event) => {
     const queriedMatches = await Match.find({
         select: {
             competition: true,
-            uuid: true
+            uuid: true,
         },
         where: { uuid: In(matchesToQuery) },
     });

@@ -22,7 +22,7 @@ export default defineEventHandler<Promise<Record<string, string>>>(
                     where: { uuid: In(validUuids) },
                     select: {
                         uuid: true,
-                        primaryName: true
+                        primaryName: true,
                     },
                 });
             } else {
@@ -33,7 +33,7 @@ export default defineEventHandler<Promise<Record<string, string>>>(
                     where: { uuid: query.players },
                     select: {
                         uuid: true,
-                        primaryName: true
+                        primaryName: true,
                     },
                 });
             }
@@ -43,7 +43,7 @@ export default defineEventHandler<Promise<Record<string, string>>>(
                     where: { primaryName: In(query.names) },
                     select: {
                         uuid: true,
-                        primaryName: true
+                        primaryName: true,
                     },
                 });
             } else {
@@ -51,15 +51,17 @@ export default defineEventHandler<Promise<Record<string, string>>>(
                     where: { primaryName: query.names },
                     select: {
                         uuid: true,
-                        primaryName: true
+                        primaryName: true,
                     },
                 });
             }
         } else {
-            rawPlayers = await Player.find({ select: {
-                uuid: true,
-                primaryName: true
-            } });
+            rawPlayers = await Player.find({
+                select: {
+                    uuid: true,
+                    primaryName: true,
+                },
+            });
         }
         const playerMap: Record<string, string> = {};
         for (const player of rawPlayers) {

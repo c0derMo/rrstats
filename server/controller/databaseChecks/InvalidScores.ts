@@ -21,7 +21,7 @@ export class InvalidScores implements DatabaseCheck {
         const players = await Player.find({
             select: {
                 uuid: true,
-                primaryName: true
+                primaryName: true,
             },
         });
         const uuidsToPlayers: Record<string, string> = {};

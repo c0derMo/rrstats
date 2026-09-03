@@ -95,11 +95,16 @@ export default class PlacementCollection {
     amountCompetitions(): number {
         return this.getCachedOrCalculate("amountCompetitions", () => {
             const differentCompetitions = new Set<string>();
-            this.placements.filter((placement) =>
-                isPlacementOfOfficialCompetition(placement, this.competitions),
-            ).forEach((placement) => {
-                differentCompetitions.add(placement.competition)
-            });
+            this.placements
+                .filter((placement) =>
+                    isPlacementOfOfficialCompetition(
+                        placement,
+                        this.competitions,
+                    ),
+                )
+                .forEach((placement) => {
+                    differentCompetitions.add(placement.competition);
+                });
             return differentCompetitions.size;
         });
     }

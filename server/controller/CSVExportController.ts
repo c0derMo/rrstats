@@ -71,10 +71,12 @@ export default class CSVExportController {
     }
 
     private static async regeneratePlayerLookup() {
-        const players = await Player.find({ select: {
-            primaryName: true,
-            uuid: true
-        } });
+        const players = await Player.find({
+            select: {
+                primaryName: true,
+                uuid: true,
+            },
+        });
         this.playerLookup = MapperService.createStringMapFromList(
             players,
             "uuid",
