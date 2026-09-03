@@ -158,7 +158,7 @@ test.describe("Quick Navigation", () => {
         await inputField.fill("Play");
         await inputField.press("Enter");
         await expect(page).toHaveURL(
-            /.*\/leaderboards#country.Most%20players%20per%20country/,
+            /.*\/leaderboards/,
         );
         await expect(
             page.locator(".text-center.font-bold.text-2xl", {

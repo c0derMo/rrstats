@@ -16,10 +16,12 @@ export class StreakCounter<T = null> {
     }
 
     public resetStreak() {
-        this.allStreaks.push({
-            length: this.currentStreakLength,
-            value: this.currentStreakValue,
-        });
+        if (this.currentStreakLength > 0) {
+            this.allStreaks.push({
+                length: this.currentStreakLength,
+                value: this.currentStreakValue,
+            });
+        }
 
         this.currentStreakLength = 0;
         this.currentStreakValue = undefined;

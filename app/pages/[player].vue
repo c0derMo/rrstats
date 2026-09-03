@@ -48,9 +48,12 @@
                                         class="border-r border-neutral-500 px-2"
                                     >
                                         Ranking:
-                                        {{ statistics.ranking.score }} (#{{
-                                            statistics.ranking.placement
-                                        }})
+                                        {{ statistics.ranking.score }}
+                                        <span v-if="statistics.ranking.placement > 0">
+                                            (#{{
+                                                statistics.ranking.placement
+                                            }})
+                                        </span>
                                     </div>
                                 </template>
 

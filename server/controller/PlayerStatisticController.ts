@@ -45,22 +45,6 @@ export default class PlayerStatisticController {
         return stats;
     }
 
-    private static getRankingBadge(score: number, placement: number): string {
-        if (score <= 0 || placement < 0) {
-            return "/rankingBadges/bronze.png";
-        }
-        if (placement <= 10) {
-            return "/rankingBadges/master.png";
-        }
-        if (score >= 60) {
-            return "/rankingBadges/gold.png";
-        }
-        if (score >= 30) {
-            return "/rankingBadges/silver.png";
-        }
-        return "/rankingBadges/bronze.png";
-    }
-
     @Log("PlayerStatisticController.calculate")
     private static async calculate(uuid: string) {
         const matches = await Match.find({

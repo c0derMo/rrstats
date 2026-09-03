@@ -42,6 +42,18 @@ test.describe("Spin Page", () => {
     test("Correct statistics without map filter", async ({ page }) => {
         await page.goto("/spins");
 
+        // To wait for page to be loaded
+        const table = page.locator("table");
+
+        await expectTableRow(table.locator("tbody").nth(0), [
+            "Dec 8, 2024, 7:00 PM",
+            "New York",
+            "Athena Savalas: Tanto as Job Applicant (No Target Pacification)",
+            "02:38",
+            "Scruffy vs Music Inc",
+            "RRWC2024 Grand Final",
+        ]);
+
         await page.getByText("Statistics").first().click();
 
         await expect(page.locator(".mb-10 > span").first()).toHaveText(

@@ -85,6 +85,9 @@ export default class DatabaseConnector {
                           db.pragma("journal_mode = WAL");
                       },
             poolSize: dbType === "postgres" ? 20 : undefined,
+            invalidWhereValuesBehavior: {
+                undefined: "ignore",
+            }
         } as DataSourceOptions);
     }
 

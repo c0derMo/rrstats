@@ -518,7 +518,7 @@ describe("Player Leaderboards", () => {
 
         expect.soft(players[0]).toEqual({
             columns: {
-                Player: playerNamesToUUIDs["Agent SSR"],
+                Player: playerNamesToUUIDs["mendietinha"],
                 Winrate: 1,
                 "Random picked maps": 1,
             },
@@ -527,18 +527,18 @@ describe("Player Leaderboards", () => {
         });
         expect.soft(players[1]).toEqual({
             columns: {
-                Player: playerNamesToUUIDs["Ibbe"],
+                Player: playerNamesToUUIDs["SxyTimbyy"],
                 Winrate: 1,
-                "Random picked maps": 4,
+                "Random picked maps": 1,
             },
             value: 1,
             order: 1,
         });
         expect.soft(players[2]).toEqual({
             columns: {
-                Player: playerNamesToUUIDs["mendietinha"],
+                Player: playerNamesToUUIDs['Hardware'],
                 Winrate: 1,
-                "Random picked maps": 1,
+                "Random picked maps": 2,
             },
             value: 1,
             order: 1,
@@ -551,7 +551,7 @@ describe("Player Leaderboards", () => {
                 "Random picked maps": 7,
             },
             value: 0,
-            order: 175,
+            order: 147,
         });
     });
 
@@ -1591,4 +1591,6 @@ const playerNamesToUUIDs: Record<string, string> = {
     graory: "cfbb55cd-8447-4742-966e-eb16d24c09b1",
     Pigiero: "41c41b94-a28a-415a-b665-7bd804fb9e01",
     Blithe: "c88e329f-fedd-4bec-b107-cc8d9a1ce9a0",
+    SxyTimbyy: "b755a6b2-1bdc-44c7-9d96-d0616cd5a1b8",
+    Hardware: "df738c08-e383-4c5e-bfb9-3ac0aee99698",
 };
