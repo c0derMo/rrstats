@@ -60,7 +60,7 @@
                 v-if="leftPlayerObject !== null || rightPlayerObject !== null"
                 class="col-span-2"
                 :tabs="['Season 1', 'Season 2', 'Season 3']"
-                @change-tab="(val) => (selectedSeason = val)"
+                @update:tab="(val) => (selectedSeason = val)"
             />
 
             <MapComparison

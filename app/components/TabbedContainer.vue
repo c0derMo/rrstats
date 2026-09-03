@@ -60,7 +60,6 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-    changeTab: [value: string];
     "update:tab": [value: string];
 }>();
 
@@ -77,12 +76,8 @@ function changeTab(tab: string, event?: MouseEvent) {
     if (event != null) {
         tabElement.value = event.target as HTMLDivElement;
     }
-}
-
-watch(selectedTab, () => {
-    emits("changeTab", selectedTab.value);
     emits("update:tab", selectedTab.value);
-});
+}
 
 onMounted(() => {
     tabElement.value =
