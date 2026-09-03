@@ -1,16 +1,12 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Winrate on own-map-picks";
-    hasMaps = false;
-    secondaryFilter = "Own-map-picks played";
-    defaultSecondaryFilter = 5;
+export class PlayerWROwnMaps extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const];
+    }
 
-    basedOn = ["match" as const, "map" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
             .select([
@@ -43,21 +39,42 @@ export class PlayerWROwnMaps implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
         for (const player in playedMaps) {
             result.push({
-                player: player,
-                displayScore:
-                    (
-                        (playedMaps[player].won / playedMaps[player].played) *
-                        100
-                    ).toFixed(2) + "%",
-                sortingScore:
-                    playedMaps[player].won / playedMaps[player].played,
-                secondaryScore: playedMaps[player].played,
+                columns: {
+                    Player: player,
+                    Winrate: playedMaps[player].won / playedMaps[player].played,
+                    "Player picked maps": playedMaps[player].played,
+                },
+                order: 0,
+                value: playedMaps[player].won / playedMaps[player].played,
             });
         }
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
-        return result;
+
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Highest map winrate (player picks)",
+            category: "player",
+            subcategory: "Maps",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
+                {
+                    name: "Player picked maps",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 10,
+                },
+            ],
+        };
     }
 }

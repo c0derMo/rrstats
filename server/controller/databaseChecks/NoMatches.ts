@@ -18,7 +18,10 @@ export class NoMatches implements DatabaseCheck {
         knownIssues: string[],
     ): Promise<CheckResult> {
         const allPlayers = await Player.find({
-            select: ["uuid", "primaryName"],
+            select: {
+                uuid: true,
+                primaryName: true,
+            },
         });
 
         const errors: string[] = [];

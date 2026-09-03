@@ -41,6 +41,7 @@ export type IPlayerStatistics = {
     mapPBs: { match: IMatch | null; map: number }[];
     h2hVsOpponent?: { w: number; t: number; l: number };
     eloProgression: { timestamp: number; elo: number }[];
+    ranking: { placement: number; score: number; badgeUrl: string };
 };
 
 export function emptyStatistics(): IPlayerStatistics {
@@ -71,5 +72,6 @@ export function emptyStatistics(): IPlayerStatistics {
             return { match: null, map: -1 };
         }),
         eloProgression: [],
+        ranking: { placement: -1, score: 0, badgeUrl: "" },
     };
 }

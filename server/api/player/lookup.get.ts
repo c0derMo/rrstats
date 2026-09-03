@@ -20,7 +20,10 @@ export default defineEventHandler<Promise<Record<string, string>>>(
                 }
                 rawPlayers = await Player.find({
                     where: { uuid: In(validUuids) },
-                    select: ["uuid", "primaryName"],
+                    select: {
+                        uuid: true,
+                        primaryName: true,
+                    },
                 });
             } else {
                 if (!validate(query.players)) {
@@ -28,23 +31,37 @@ export default defineEventHandler<Promise<Record<string, string>>>(
                 }
                 rawPlayers = await Player.find({
                     where: { uuid: query.players },
-                    select: ["uuid", "primaryName"],
+                    select: {
+                        uuid: true,
+                        primaryName: true,
+                    },
                 });
             }
         } else if (query.names !== undefined) {
             if (Array.isArray(query.names)) {
                 rawPlayers = await Player.find({
                     where: { primaryName: In(query.names) },
-                    select: ["uuid", "primaryName"],
+                    select: {
+                        uuid: true,
+                        primaryName: true,
+                    },
                 });
             } else {
                 rawPlayers = await Player.find({
                     where: { primaryName: query.names },
-                    select: ["uuid", "primaryName"],
+                    select: {
+                        uuid: true,
+                        primaryName: true,
+                    },
                 });
             }
         } else {
-            rawPlayers = await Player.find({ select: ["uuid", "primaryName"] });
+            rawPlayers = await Player.find({
+                select: {
+                    uuid: true,
+                    primaryName: true,
+                },
+            });
         }
         const playerMap: Record<string, string> = {};
         for (const player of rawPlayers) {

@@ -106,14 +106,14 @@ async function main() {
     const matchTime = DateTime.now().diff(queryStart).toMillis();
     queryStart = DateTime.now();
     const _optimizedMatches = await Match.find({
-        select: [
-            "uuid",
-            "playerOne",
-            "playerOneScore",
-            "playerTwo",
-            "playerTwoScore",
-            "competition",
-        ],
+        select: {
+            uuid: true,
+            playerOne: true,
+            playerOneScore: true,
+            playerTwo: true,
+            playerTwoScore: true,
+            competition: true,
+        },
         relations: { playedMaps: false },
         order: { timestamp: "ASC" },
     });
@@ -161,7 +161,7 @@ async function main() {
             await result;
         }
         const time = DateTime.now().diff(start).toMillis();
-        console.log(`${statistic.name}: ${time}ms`);
+        console.log(`${statistic.getTableDefinition().name}: ${time}ms`);
     }
 }
 

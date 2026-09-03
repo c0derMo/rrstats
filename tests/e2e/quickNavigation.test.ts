@@ -53,17 +53,30 @@ test.describe("Quick Navigation", () => {
 
         await inputField.fill("Play");
         await expect(
-            getRecommendation(page, "Map Leaderboard", "Played"),
+            getRecommendation(
+                page,
+                "Country Leaderboard",
+                "Most players per country",
+            ),
+        ).toBeVisible();
+        await expect(
+            getRecommendation(page, "Player Leaderboard", "Most RRs played"),
+        ).toBeVisible();
+        await expect(
+            getRecommendation(page, "Player Leaderboard", "Most maps played"),
         ).toBeVisible();
         await expect(
             getRecommendation(
                 page,
-                "Country Leaderboard",
-                "Players per country",
+                "Player Leaderboard",
+                "Most maps played (specific map)",
             ),
         ).toBeVisible();
         await expect(
-            getRecommendation(page, "Player Leaderboard", "Maps played"),
+            getRecommendation(page, "Player Leaderboard", "Most RRWCs played"),
+        ).toBeVisible();
+        await expect(
+            getRecommendation(page, "Map Leaderboard", "Most times played"),
         ).toBeVisible();
 
         await inputField.fill("Paris");
@@ -96,17 +109,30 @@ test.describe("Quick Navigation", () => {
 
         await inputField.fill("Play");
         await expect(
-            getRecommendation(page, "Map Leaderboard", "Played"),
+            getRecommendation(
+                page,
+                "Country Leaderboard",
+                "Most players per country",
+            ),
+        ).toBeVisible();
+        await expect(
+            getRecommendation(page, "Player Leaderboard", "Most RRs played"),
+        ).toBeVisible();
+        await expect(
+            getRecommendation(page, "Player Leaderboard", "Most maps played"),
         ).toBeVisible();
         await expect(
             getRecommendation(
                 page,
-                "Country Leaderboard",
-                "Players per country",
+                "Player Leaderboard",
+                "Most maps played (specific map)",
             ),
         ).toBeVisible();
         await expect(
-            getRecommendation(page, "Player Leaderboard", "Maps played"),
+            getRecommendation(page, "Player Leaderboard", "Most RRWCs played"),
+        ).toBeVisible();
+        await expect(
+            getRecommendation(page, "Map Leaderboard", "Most times played"),
         ).toBeVisible();
 
         await inputField.fill("Paris");
@@ -131,10 +157,12 @@ test.describe("Quick Navigation", () => {
 
         await inputField.fill("Play");
         await inputField.press("Enter");
-        await expect(page).toHaveURL(/.*\/leaderboards#map.Played/);
+        await expect(page).toHaveURL(
+            /.*\/leaderboards/,
+        );
         await expect(
             page.locator(".text-center.font-bold.text-2xl", {
-                hasText: "Played",
+                hasText: "Most players per country",
             }),
         ).toBeVisible();
 
@@ -148,7 +176,7 @@ test.describe("Quick Navigation", () => {
         await expect(
             page
                 .locator(
-                    ".relative.w-full > .p-2 > .text-nowrap.flex.flex-nowrap.min-h-6 > .flex-grow",
+                    ".relative.w-full > .p-2 > .text-nowrap.flex.flex-nowrap.min-h-6 > .grow",
                 )
                 .filter({ hasText: "Paris" }),
         ).toBeVisible();
@@ -188,7 +216,7 @@ test.describe("Quick Navigation", () => {
         await inputField.press("ArrowDown");
         await inputField.press("Enter");
         await expect(page).toHaveURL(
-            /.*\/compare\?leftPlayer=In4Fun&rightPlayer=Curry/,
+            /.*\/compare\?leftPlayer=In4Fun&rightPlayer=CurryMaker/,
         );
     });
 });

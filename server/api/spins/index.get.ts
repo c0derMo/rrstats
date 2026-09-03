@@ -42,7 +42,11 @@ export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
 
     if (query.filter != null) {
         const actualFilter = JSON.parse(query.filter);
-        spins = filterSpins(spins, actualFilter);
+        if (query.map == HitmanMap.BERLIN) {
+            spins = filterBerlinSpins(spins, actualFilter);
+        } else {
+            spins = filterSpins(spins, actualFilter);
+        }
         count = spins.length;
         spins = ld.take(ld.drop(spins, query.skip), query.take);
     }
@@ -52,6 +56,43 @@ export default defineEventHandler<Promise<PlayedMap[]>>(async (event) => {
     return spins;
 });
 
+function doesTargetFulfilFilter(
+    filter: { disguise: string; method: string } | undefined,
+    target: Spin["targetConditions"][0],
+): boolean {
+    if (filter == null) {
+        return true;
+    }
+
+    if (
+        filter?.disguise != null &&
+        filter.disguise !== "" &&
+        filter.disguise !== target.disguise.name
+    ) {
+        return false;
+    }
+    if (filter?.method == null || filter.method === "") {
+        return true;
+    }
+
+    const anyName = `Any ${target.killMethod.name}`;
+    if (filter.method == anyName) {
+        return true;
+    }
+
+    const variant = target.killMethod.selectedVariant;
+    if (
+        (variant != null &&
+            variant !== "" &&
+            filter.method !== `${variant} ${target.killMethod.name}`) ||
+        ((variant == null || variant === "") &&
+            filter.method !== target.killMethod.name)
+    ) {
+        return false;
+    }
+    return true;
+}
+
 export function filterSpins(
     spins: PlayedMap[],
     filter: Record<string, { disguise: string; method: string }>,
@@ -59,31 +100,26 @@ export function filterSpins(
     return spins.filter((spin) => {
         for (const target of spin.spin!.targetConditions) {
             const targetFilter = filter[target.target.name];
-            if (
-                targetFilter?.disguise != null &&
-                targetFilter.disguise !== "" &&
-                targetFilter.disguise !== target.disguise.name
-            ) {
+            if (!doesTargetFulfilFilter(targetFilter, target)) {
                 return false;
             }
-            if (targetFilter?.method == null || targetFilter.method === "") {
-                continue;
-            }
+        }
+        return true;
+    });
+}
 
-            const anyName = `Any ${target.killMethod.name}`;
-            if (targetFilter.method == anyName) {
-                continue;
-            }
-
-            const variant = target.killMethod.selectedVariant;
-            if (
-                (variant != null &&
-                    variant !== "" &&
-                    targetFilter.method !==
-                        `${variant} ${target.killMethod.name}`) ||
-                ((variant == null || variant === "") &&
-                    targetFilter.method !== target.killMethod.name)
-            ) {
+export function filterBerlinSpins(
+    spins: PlayedMap[],
+    filter: Record<string, { disguise: string; method: string }>,
+) {
+    return spins.filter((spin) => {
+        for (const target in filter) {
+            const doesOneTargetFulfilFilter = spin.spin!.targetConditions.some(
+                (spinTarget) => {
+                    return doesTargetFulfilFilter(filter[target], spinTarget);
+                },
+            );
+            if (!doesOneTargetFulfilFilter) {
                 return false;
             }
         }

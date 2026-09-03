@@ -1,7 +1,7 @@
 <template>
     <div :class="{ dark: isDarkMode }" class="w-full h-full">
         <div
-            class="dark:text-white min-w-screen min-h-screen w-full h-full flex flex-col from-blue-200 to-slate-200 dark:from-blue-950 dark:to-slate-800 bg-gradient-to-b"
+            class="dark:text-white min-w-screen min-h-screen w-full h-full flex flex-col from-blue-200 to-slate-200 dark:from-blue-950 dark:to-slate-800 bg-linear-to-b"
         >
             <NuxtLayout name="center-no-back">
                 <div class="flex flex-col gap-5 text-center place-items-center">

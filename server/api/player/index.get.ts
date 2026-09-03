@@ -22,8 +22,11 @@ export default defineEventHandler<Promise<Retryable<IPlayer>>>(
         let shouldRetry = false;
 
         const competitionsToUpdate = await Competition.find({
-            where: { updateWithHitmaps: true, hitmapsSlug: Not(IsNull()) },
-            select: ["hitmapsSlug", "tag"],
+            where: { liveCompetition: true, hitmapsSlug: Not(IsNull()) },
+            select: {
+                hitmapsSlug: true,
+                tag: true,
+            },
         });
         for (const competitionToUpdate of competitionsToUpdate) {
             const updateRequest = HitmapsIntegration.updateHitmapsTournament(

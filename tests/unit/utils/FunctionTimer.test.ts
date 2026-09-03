@@ -38,7 +38,7 @@ describe("FunctionTimer", () => {
     });
 
     afterEach(() => {
-        DateTime.now = _ogDtNow;
+        DateTime.now = _ogDtNow as () => DateTime<true>;
     });
 
     test("FunctionTimer", () => {

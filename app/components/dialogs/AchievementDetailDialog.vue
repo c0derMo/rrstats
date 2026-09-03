@@ -24,7 +24,7 @@
                                     achievement.achievedAt[tier - 1],
                                 )
                             "
-                            class="!h-8"
+                            class="h-8!"
                         />
                         <div>
                             <div
@@ -64,7 +64,7 @@
                         <div v-else-if="achievement.progression[tier - 1] > 0">
                             <div class="flex flex-col gap-3 h-5">
                                 <div
-                                    class="relative h-1 w-full flex-grow bg-gray-600 rounded-full mt-2 flex-shrink-0"
+                                    class="relative h-1 w-full grow bg-gray-600 rounded-full mt-2 shrink-0"
                                 >
                                     <div
                                         class="h-1 rounded-full left-0 top-0 absolute bg-blue-700"

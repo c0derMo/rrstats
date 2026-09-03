@@ -7,7 +7,7 @@ import MapperService from "../controller/MapperService";
 
 async function main() {
     const dataSource = new DataSource({
-        type: "sqlite",
+        type: "better-sqlite3",
         database: "rrstats.db",
         entities: [Match, PlayedMap, Player, Competition, CompetitionPlacement],
     });
@@ -19,7 +19,11 @@ async function main() {
         where: {
             competition: In(["RR13", "RR14", "RR15", "RRWC2024"]),
         },
-        select: ["playerOne", "playerTwo", "uuid"],
+        select: {
+            playerOne: true,
+            playerTwo: true,
+            uuid: true,
+        },
     });
     console.log(`Loaded ${matches.length} matches.`);
 

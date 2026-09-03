@@ -143,7 +143,9 @@ function getAheadBehindClass(
 }
 </script>
 
-<style scoped lang="postcss">
+<style scoped>
+@reference "@/assets/main.css";
+
 .ahead {
     @apply text-green-500;
 }

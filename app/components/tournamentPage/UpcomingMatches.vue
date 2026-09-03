@@ -31,7 +31,7 @@
                         />
                     </div>
                 </div>
-                <div class="flex-grow text-center flex flex-col time">
+                <div class="grow text-center flex flex-col time">
                     <div class="text-xl font-bold mt-2">
                         {{
                             DateTime.fromISO(match.datetime).toLocaleString(
@@ -79,7 +79,7 @@
                 <div
                     v-for="(map, mapIdx) in match.maps"
                     :key="mapIdx"
-                    class="h-fit lg:h-36 flex-grow bg-cover bg-center"
+                    class="h-fit lg:h-36 grow bg-cover bg-center"
                     :style="getMapBackground(map.map)"
                 >
                     <div

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="rounded bg-gray-200 dark:bg-gray-700 dark:bg-opacity-50 text-center py-2 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-500 overflow-hidden"
+        class="rounded-sm bg-gray-200 dark:bg-gray-700/50 text-center py-2 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-500 overflow-hidden"
         :class="{
             'completed-shadow-plat': completedAll && tier === 3,
             'completed-shadow': completedAll && tier !== 3,
@@ -11,12 +11,12 @@
             <!-- Circles not there, filling inside out -->
             <div
                 v-if="achievedLevel > 4"
-                class="rounded-full bg-gray-900 w-16 h-16 translate-x-[-5.5rem] scale-[70%] absolute"
+                class="rounded-full bg-gray-900 w-16 h-16 -translate-x-22 scale-[70%] absolute"
             >
                 <FontAwesomeIcon
                     :icon="['fas', 'trophy']"
                     :style="getColorOfTier(achievement.tier[achievedLevel - 5])"
-                    class="!h-8 mt-4 opacity-50"
+                    class="h-8! mt-4 opacity-50"
                 />
             </div>
 
@@ -27,7 +27,7 @@
                 <FontAwesomeIcon
                     :icon="['fas', 'trophy']"
                     :style="getColorOfTier(achievement.tier[achievedLevel - 3])"
-                    class="!h-8 mt-4 opacity-50"
+                    class="h-8! mt-4 opacity-50"
                 />
             </div>
 
@@ -38,7 +38,7 @@
                 <FontAwesomeIcon
                     :icon="['fas', 'trophy']"
                     :style="getColorOfTier(achievement.tier[achievedLevel - 1])"
-                    class="!h-8 mt-4 opacity-50"
+                    class="h-8! mt-4 opacity-50"
                 />
             </div>
 
@@ -49,7 +49,7 @@
                 <FontAwesomeIcon
                     :icon="['fas', 'trophy']"
                     :style="getColorOfTier(achievement.tier[achievedLevel - 2])"
-                    class="!h-8 mt-4 opacity-50"
+                    class="h-8! mt-4 opacity-50"
                 />
             </div>
 
@@ -60,18 +60,18 @@
                 <FontAwesomeIcon
                     :icon="['fas', 'trophy']"
                     :style="getColorOfTier(achievement.tier[achievedLevel - 4])"
-                    class="!h-8 mt-4 opacity-50"
+                    class="h-8! mt-4 opacity-50"
                 />
             </div>
 
             <div
                 v-if="achievedLevel > 5"
-                class="rounded-full bg-gray-900 w-16 h-16 translate-x-[5.5rem] scale-[70%] absolute"
+                class="rounded-full bg-gray-900 w-16 h-16 translate-x-22 scale-[70%] absolute"
             >
                 <FontAwesomeIcon
                     :icon="['fas', 'trophy']"
                     :style="getColorOfTier(achievement.tier[achievedLevel - 6])"
-                    class="!h-8 mt-4 opacity-50"
+                    class="h-8! mt-4 opacity-50"
                 />
             </div>
 
@@ -79,7 +79,7 @@
                 <FontAwesomeIcon
                     :icon="['fas', 'trophy']"
                     :style="getColorOfTier(tier)"
-                    class="!h-8 mt-4"
+                    class="h-8! mt-4"
                 />
             </div>
 
@@ -105,9 +105,7 @@
             v-else-if="currentProgress > 0"
             class="italic flex flex-row mx-5 gap-3 h-5"
         >
-            <div
-                class="relative h-1 w-full flex-grow bg-gray-900 rounded-full mt-2"
-            >
+            <div class="relative h-1 w-full grow bg-gray-900 rounded-full mt-2">
                 <div
                     class="h-1 rounded-full left-0 top-0 absolute bg-blue-700"
                     :style="`width: ${currentProgress * 100}%`"

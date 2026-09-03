@@ -22,14 +22,23 @@ export class MissingVODs implements DatabaseCheck {
     ): Promise<CheckResult> {
         this.uuidsToPlayers = {};
         const players = await Player.find({
-            select: ["uuid", "primaryName"],
+            select: {
+                uuid: true,
+                primaryName: true,
+            },
         });
         for (const player of players) {
             this.uuidsToPlayers[player.uuid] = player.primaryName;
         }
 
         const matchesWithoutVODs = await Match.find({
-            select: ["uuid", "playerOne", "playerTwo", "competition", "round"],
+            select: {
+                uuid: true,
+                playerOne: true,
+                playerTwo: true,
+                competition: true,
+                round: true,
+            },
             where: [
                 {
                     vodLink: IsNull(),
@@ -44,7 +53,13 @@ export class MissingVODs implements DatabaseCheck {
             ],
         });
         const matchesWithoutShoutcaster = await Match.find({
-            select: ["uuid", "playerOne", "playerTwo", "competition", "round"],
+            select: {
+                uuid: true,
+                playerOne: true,
+                playerTwo: true,
+                competition: true,
+                round: true,
+            },
             where: [
                 {
                     shoutcasters: IsNull(),

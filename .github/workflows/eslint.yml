@@ -17,8 +17,8 @@ jobs:
             - name: Setup node
               uses: actions/setup-node@v3
               with:
-                  node-version: "24"
-            - run: npm install
+                  node-version: "26"
+            - run: npm ci
             - run: npm run lint -- --output-file eslint_report.json --format json
               continue-on-error: true
             - name: Annotate code linting results

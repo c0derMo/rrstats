@@ -16,7 +16,8 @@ test.describe("Player Page", () => {
         await expect(winrateStats).toContainText("Debut: 4/15/2020 (RR2)");
 
         await expect(page.getByText("Best RR Placement: 1st")).toBeVisible();
-        await expect(page.getByText("Elo rating: 1323")).toBeVisible();
+        await expect(page.getByText("Elo: 1323")).toBeVisible();
+        await expect(page.getByText("Ranking: 260 (#2)")).toBeVisible();
         await expect(page.getByText("Maps played: 444")).toBeVisible();
         await expect(page.getByText("Matches played: 124")).toBeVisible();
         await expect(page.getByText("W-T-L: 96-1-27")).toBeVisible();
@@ -349,24 +350,20 @@ test.describe("Player Page", () => {
             await page.locator(".grid > div").first().textContent(),
         ).toContain("Getting Mileage V");
         await page
-            .locator("span.flex-grow", { hasText: "Sort by completion" })
+            .locator("span.grow", { hasText: "Sort by completion" })
             .click();
         await page.getByText("Sort by name").click();
 
         expect(
             await page.locator(".grid > div").first().textContent(),
         ).toContain("Against the World V");
-        await page
-            .locator("span.flex-grow", { hasText: "Sort by name" })
-            .click();
+        await page.locator("span.grow", { hasText: "Sort by name" }).click();
         await page.getByText("Sort by rarity").click();
 
         expect(
             await page.locator(".grid > div").nth(1).textContent(),
         ).toContain("Against the World V");
-        await page
-            .locator("span.flex-grow", { hasText: "Sort by rarity" })
-            .click();
+        await page.locator("span.grow", { hasText: "Sort by rarity" }).click();
         await page.getByText("Sort by completion").click();
 
         // Categories

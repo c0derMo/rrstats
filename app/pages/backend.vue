@@ -34,7 +34,7 @@
                 </div>
             </div>
 
-            <div class="flex-grow" />
+            <div class="grow" />
 
             <NuxtLink to="/" class="italic px-2">Return to main page</NuxtLink>
 

@@ -1,16 +1,12 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerSweeps6 implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Sweeps (6+ points)";
-    hasMaps = false;
-    explanatoryText =
-        "Winning with 6 or more points while the opponent has 0 points.";
+export class PlayerSweeps6 extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const];
+    }
 
-    basedOn = ["match" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .select([
                 "match.playerOne",
@@ -20,8 +16,18 @@ export class PlayerSweeps6 implements LeaderboardPlayerStatistic {
             ])
             .getMany();
         const playerMap: Record<string, number> = {};
+        const playerMatches: Record<string, number> = {};
 
         for (const match of matches) {
+            if (match.playerOneScore < 6 && match.playerTwoScore < 6) {
+                continue;
+            }
+
+            playerMatches[match.playerOne] ??= 0;
+            playerMatches[match.playerTwo] ??= 0;
+            playerMatches[match.playerOne] += 1;
+            playerMatches[match.playerTwo] += 1;
+
             if (match.playerOneScore >= 6 && match.playerTwoScore === 0) {
                 playerMap[match.playerOne] ??= 0;
                 playerMap[match.playerOne] += 1;
@@ -34,17 +40,50 @@ export class PlayerSweeps6 implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
         for (const player in playerMap) {
             result.push({
-                player: player,
-                sortingScore: playerMap[player],
-                displayScore: playerMap[player].toString(),
+                columns: {
+                    Player: player,
+                    Sweeps: playerMap[player],
+                    "Matches played": playerMatches[player],
+                    "Sweep rate": playerMap[player] / playerMatches[player],
+                },
+                value: playerMap[player],
+                order: 0,
             });
         }
 
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
+    }
 
-        return result;
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most matches swept (6+ points)",
+            category: "player",
+            subcategory: "Sweeps",
+            explanatoryText:
+                "Winning with 6 or more points while the opponent has 0 points.",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Sweeps", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Matches played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 1,
+                },
+                {
+                    name: "Sweep rate",
+                    type: LeaderboardColumnType.PERCENTAGE,
+                    sortable: true,
+                },
+            ],
+        };
     }
 }

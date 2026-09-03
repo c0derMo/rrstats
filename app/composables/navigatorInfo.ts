@@ -9,20 +9,26 @@ export const useNavigatorInfo = () => {
             | "tag"
             | "startingTimestamp"
         >[];
-        playerLeaderboards?: StatisticData<"player">[];
-        countryLeaderboards?: StatisticData<"country">[];
-        mapLeaderboards?: StatisticData<"map">[];
+        playerLeaderboards?: LeaderboardTableDefinition[];
+        countryLeaderboards?: LeaderboardTableDefinition[];
+        mapLeaderboards?: LeaderboardTableDefinition[];
     }>("navigator", () => ({}));
 
     async function fetchLeaderboards() {
-        const leaderboards = (await $fetch("/api/leaderboards/list")) ?? {
-            map: [],
-            player: [],
-            country: [],
-        };
-        navInfo.value.playerLeaderboards = leaderboards.player;
-        navInfo.value.countryLeaderboards = leaderboards.country;
-        navInfo.value.mapLeaderboards = leaderboards.map;
+        const leaderboards =
+            (await $fetch<LeaderboardTableDefinition[]>(
+                "/api/leaderboards/list",
+            )) ?? [];
+
+        navInfo.value.playerLeaderboards = leaderboards.filter(
+            (lb) => lb.category === "player",
+        );
+        navInfo.value.countryLeaderboards = leaderboards.filter(
+            (lb) => lb.category === "country",
+        );
+        navInfo.value.mapLeaderboards = leaderboards.filter(
+            (lb) => lb.category === "map",
+        );
     }
 
     const getPlayers = async () => {

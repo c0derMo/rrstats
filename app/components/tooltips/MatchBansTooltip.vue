@@ -9,10 +9,10 @@
         <Transition name="fade">
             <div
                 v-if="showTooltip"
-                class="absolute z-50 -translate-x-1/4 top-full w-full min-w-[550px]"
+                class="absolute z-50 -translate-x-1/4 top-full w-full min-w-137.5"
             >
                 <div
-                    class="p-1 rounded dark:bg-neutral-800/95 bg-neutral-100/95"
+                    class="p-1 rounded-sm dark:bg-neutral-800/95 bg-neutral-100/95"
                 >
                     <div
                         class="grid grid-cols-2 items-center w-full font-bold text-xl my-2 px-3"
@@ -38,7 +38,7 @@
                     </div>
 
                     <div class="grid grid-cols-2">
-                        <div class="flex-grow flex flex-col">
+                        <div class="grow flex flex-col">
                             <div
                                 v-for="(ban, idx) in leftPlayerBans"
                                 :key="idx"
@@ -57,7 +57,7 @@
                             </div>
                         </div>
 
-                        <div class="flex-grow flex flex-col">
+                        <div class="grow flex flex-col">
                             <div
                                 v-for="(ban, idx) in rightPlayerBans"
                                 :key="idx"

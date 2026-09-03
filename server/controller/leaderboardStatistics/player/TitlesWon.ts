@@ -1,14 +1,12 @@
 import { Competition, CompetitionPlacement } from "~~/server/model/Competition";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerTitlesWon implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Titles won";
-    hasMaps = false;
+export class PlayerTitlesWon extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["placement" as const];
+    }
 
-    basedOn = ["placement" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const placements = await CompetitionPlacement.createQueryBuilder(
             "placement",
         )
@@ -19,25 +17,51 @@ export class PlayerTitlesWon implements LeaderboardPlayerStatistic {
             )
             .where("competition.officialCompetition = TRUE")
             .andWhere("placement.placement = 1")
-            .select(["placement.player"])
+            .orderBy("competition.startingTimestamp", "ASC")
+            .select(["placement.player", "placement.competition"])
             .getMany();
-        const appearances: Record<string, number> = {};
+        const appearances: Record<string, Set<string>> = {};
 
         for (const placement of placements) {
-            appearances[placement.player] ??= 0;
-            appearances[placement.player] += 1;
+            appearances[placement.player] ??= new Set();
+            appearances[placement.player].add(placement.competition);
         }
 
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
         for (const player in appearances) {
             result.push({
-                player: player,
-                displayScore: appearances[player].toString(),
-                sortingScore: appearances[player],
+                columns: {
+                    Player: player,
+                    "Titles won": appearances[player].size,
+                    First: [...appearances[player]][0],
+                    Last: [...appearances[player]][
+                        appearances[player].size - 1
+                    ],
+                },
+                value: appearances[player].size,
+                order: 0,
             });
         }
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
 
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most titles won",
+            category: "player",
+            subcategory: "Participation",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Titles won", type: LeaderboardColumnType.TEXT },
+                { name: "First", type: LeaderboardColumnType.TEXT },
+                { name: "Last", type: LeaderboardColumnType.TEXT },
+            ],
+        };
     }
 }

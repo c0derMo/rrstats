@@ -1,13 +1,13 @@
 <template>
     <div ref="select">
         <div
-            class="p-2 border rounded w-96 h-10 dark:border-neutral-500 relative flex flex-row"
+            class="p-2 border rounded-sm w-96 h-10 dark:border-neutral-500 relative flex flex-row"
             :class="{
                 'bg-neutral-400 dark:bg-neutral-900': disabled,
             }"
             @click="showDropdown = !showDropdown && !disabled"
         >
-            <div class="flex-grow truncate">
+            <div class="grow truncate">
                 {{
                     selected.length > 0
                         ? selected.map((s) => getName(s)).join(", ")

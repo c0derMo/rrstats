@@ -30,10 +30,41 @@
                                 alt="Player nationality"
                             />
                         </div>
-                        <div class="flex-grow ml-5">
-                            <h1 class="text-5xl">
-                                {{ player?.primaryName ?? route.params.player }}
-                            </h1>
+                        <div class="grow ml-5">
+                            <div class="flex flex-row items-center">
+                                <h1 class="text-5xl">
+                                    {{
+                                        player?.primaryName ??
+                                        route.params.player
+                                    }}
+                                </h1>
+
+                                <template v-if="statistics?.ranking != null">
+                                    <img
+                                        :src="statistics.ranking.badgeUrl"
+                                        class="ml-4 h-8 inline"
+                                    />
+                                    <div
+                                        class="border-r border-neutral-500 px-2"
+                                    >
+                                        Ranking:
+                                        {{ statistics.ranking.score }}
+                                        <span v-if="statistics.ranking.placement > 0">
+                                            (#{{
+                                                statistics.ranking.placement
+                                            }})
+                                        </span>
+                                    </div>
+                                </template>
+
+                                <div class="px-2">
+                                    Elo:
+                                    {{
+                                        ld.last(statistics?.eloProgression)
+                                            ?.elo ?? 1000
+                                    }}
+                                </div>
+                            </div>
                             <h3 class="mt-1">
                                 <TooltipComponent
                                     v-if="accoladeDescription != null"
@@ -51,13 +82,13 @@
                                 <FontAwesomeIcon
                                     v-if="canEditAccolade"
                                     :icon="['fas', 'pen']"
-                                    class="text-xs"
+                                    class="ml-1 text-xs"
                                     @click="selectingAccolade = true"
                                 />
                                 <FontAwesomeIcon
                                     v-else-if="user == null"
                                     :icon="['fas', 'pen']"
-                                    class="text-xs"
+                                    class="ml-1 text-xs"
                                     @click="
                                         navigateTo(
                                             `/api/auth/discord_login?to=${route.path}`,
@@ -114,7 +145,7 @@
             </div>
 
             <CardComponent class="flex md:flex-row w-3/5 mx-auto flex-col">
-                <div class="flex-grow md:text-left text-center md:pl-10">
+                <div class="grow md:text-left text-center md:pl-10">
                     Best RR Placement:
                     {{
                         statistics?.bestPlacement
@@ -122,31 +153,21 @@
                             : "n/a"
                     }}
                 </div>
-                <div
-                    class="flex-grow text-center md:border-x border-neutral-500"
-                >
-                    Elo rating:
-                    {{ ld.last(statistics?.eloProgression)?.elo ?? 1000 }}
-                </div>
-                <div
-                    class="flex-grow text-center md:border-x border-neutral-500"
-                >
+                <div class="grow text-center md:border-x border-neutral-500">
                     Maps played:
                     {{ statistics?.mapCount }}
                 </div>
-                <div
-                    class="flex-grow text-center md:border-x border-neutral-500"
-                >
+                <div class="grow text-center md:border-x border-neutral-500">
                     Matches played:
                     {{ statistics?.matchCount }}
                 </div>
-                <div class="flex-grow md:text-right text-center md:pr-10">
+                <div class="grow md:text-right text-center md:pr-10">
                     W-T-L: {{ wtl }}
                 </div>
             </CardComponent>
 
             <div class="flex 2xl:flex-row gap-5 flex-col-reverse">
-                <CardComponent class="2xl:w-3/12 w-full !overflow-visible">
+                <CardComponent class="2xl:w-3/12 w-full overflow-visible!">
                     <TabbedContainer
                         :tabs="['Competitions', 'Opponents', 'Records']"
                     >
@@ -167,7 +188,7 @@
                         </template>
                     </TabbedContainer>
                 </CardComponent>
-                <CardComponent class="flex-grow !overflow-visible relative">
+                <CardComponent class="grow overflow-visible! relative">
                     <IndefiniteProgressBar
                         v-if="stillLoading"
                         class="mb-2 absolute top-0 left-0"
@@ -179,7 +200,7 @@
                 </CardComponent>
             </div>
 
-            <CardComponent class="!overflow-visible">
+            <CardComponent class="overflow-visible!">
                 <TabbedContainer
                     :tabs="[
                         'Maps',

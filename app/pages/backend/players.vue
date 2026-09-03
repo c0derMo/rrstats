@@ -20,7 +20,7 @@
             <TextInputComponent
                 v-model="search"
                 placeholder="Search"
-                class="flex-grow"
+                class="grow"
             />
         </div>
 

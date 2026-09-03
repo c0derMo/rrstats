@@ -3,6 +3,6 @@
         <div class="text-2xl">
             <slot />
         </div>
-        <div class="flex-grow border-b border-gray-600" />
+        <div class="grow border-b border-gray-600" />
     </div>
 </template>

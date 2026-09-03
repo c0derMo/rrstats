@@ -7,7 +7,7 @@ import { writeFile } from "node:fs/promises";
 
 async function main() {
     const dataSource = new DataSource({
-        type: "sqlite",
+        type: "better-sqlite3",
         database: "rrstats.db",
         entities: [Match, Player],
     });

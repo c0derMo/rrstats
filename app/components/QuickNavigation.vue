@@ -20,7 +20,7 @@
                     </div>
                     <div class="flex flex-row my-2">
                         <div
-                            class="text-xl border-t border-l border-b flex items-center pr-4 pl-1 rounded-l border-neutral-400 bg-gray-200 dark:bg-gray-700 w-56 justify-end"
+                            class="text-xl border-t border-l border-b flex items-center pr-4 pl-1 rounded-l-sm border-neutral-400 bg-gray-200 dark:bg-gray-700 w-56 justify-end"
                         >
                             <span>{{
                                 suggestions[selectedSuggestion]?.type ??
@@ -28,7 +28,7 @@
                             }}</span>
                         </div>
                         <div
-                            class="flex flex-row rounded-r border-neutral-500 text-lg bg-neutral-100 dark:bg-neutral-800 border items-center px-5 py-2 whitespace-pre"
+                            class="flex flex-row rounded-r-sm border-neutral-500 text-lg bg-neutral-100 dark:bg-neutral-800 border items-center px-5 py-2 whitespace-pre"
                         >
                             <div class="opacity-40" @click="focus">
                                 {{ suggestionPrefixText }}
@@ -37,11 +37,11 @@
                                 <input
                                     ref="input"
                                     v-model="text"
-                                    class="w-full outline-none bg-neutral-100 dark:bg-neutral-800"
+                                    class="w-full outline-hidden bg-neutral-100 dark:bg-neutral-800"
                                     @keydown="onKeyDown"
                                 />
                                 <div
-                                    class="absolute w-full h-full text-lg top-0 left-[1px] pointer-events-none opacity-40 flex flex-row"
+                                    class="absolute w-full h-full text-lg top-0 left-px pointer-events-none opacity-40 flex flex-row"
                                 >
                                     <div class="opacity-0">{{ text }}</div>
                                     <div>{{ suggestionSuffixText }}</div>
@@ -58,9 +58,9 @@
                         v-for="(suggestion, idx) of suggestions"
                         v-else
                         :key="idx"
-                        class="flex flex-row gap-3 rounded py-1 transition-all duration-150 bg-gray-600 bg-opacity-0 cursor-pointer"
+                        class="flex flex-row gap-3 rounded-sm py-1 transition-all duration-150 bg-gray-600/0 cursor-pointer"
                         :class="{
-                            'bg-opacity-100': selectedSuggestion === idx,
+                            'bg-gray-600/100': selectedSuggestion === idx,
                         }"
                         @click="confirmSelection(suggestion)"
                     >

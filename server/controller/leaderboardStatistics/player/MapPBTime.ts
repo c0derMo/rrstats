@@ -1,18 +1,21 @@
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import { PlayedMap } from "~~/server/model/PlayedMap";
+import {
+    type FilterableLeaderboardRows,
+    ServerSideFilteredLeaderboardStatistic,
+} from "../ServerSideFilteredLeaderboardStatistic";
 
-export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Personal best on map";
-    hasMaps = true;
-    basedOn = ["match" as const, "map" as const, "player" as const];
+export class PlayerMapPBTime extends ServerSideFilteredLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const, "player" as const];
+    }
 
-    async calculate(): Promise<Record<HitmanMap, LeaderboardPlayerEntry[]>> {
+    async calculate(): Promise<void> {
         const p1Maps = await PlayedMap.createQueryBuilder("map")
             .innerJoin("map.match", "match")
             .select("match.playerOne", "player")
             .addSelect("MIN(map.timeTaken)", "time")
             .addSelect("map.map", "map")
+            .addSelect("match.competition", "competition")
             .where(
                 "(map.winner = :winner OR map.winner = :draw) AND map.timeTaken > 0",
                 { winner: WinningPlayer.PLAYER_ONE, draw: WinningPlayer.DRAW },
@@ -23,12 +26,14 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
                 player: string;
                 map: HitmanMap;
                 time: number;
+                competition: string;
             }>();
         const p2Maps = await PlayedMap.createQueryBuilder("map")
             .innerJoin("map.match", "match")
             .select("match.playerTwo", "player")
             .addSelect("MIN(map.timeTaken)", "time")
             .addSelect("map.map", "map")
+            .addSelect("match.competition", "competition")
             .where(
                 "(map.winner = :winner OR map.winner = :draw) AND map.timeTaken > 0",
                 { winner: WinningPlayer.PLAYER_TWO, draw: WinningPlayer.DRAW },
@@ -39,48 +44,90 @@ export class PlayerMapPBTime implements LeaderboardPlayerStatistic {
                 player: string;
                 map: HitmanMap;
                 time: number;
+                competition: string;
             }>();
 
-        const mapPbs: Record<number, Record<string, number>> = {};
+        const mapPbs = new DefaultedMap<
+            HitmanMap,
+            DefaultedMap<string, { pb: number; competition: string }>
+        >(() => {
+            return new DefaultedMap(() => {
+                return { pb: -1, competition: "" };
+            });
+        });
+
         for (const p1 of p1Maps) {
-            mapPbs[p1.map] ??= {};
-            if (mapPbs[p1.map][p1.player] == null) {
-                mapPbs[p1.map][p1.player] = p1.time;
-            } else {
-                mapPbs[p1.map][p1.player] = Math.min(
-                    p1.time,
-                    mapPbs[p1.map][p1.player],
-                );
+            if (
+                !mapPbs.get(p1.map).has(p1.player) ||
+                mapPbs.get(p1.map).get(p1.player).pb > p1.time
+            ) {
+                mapPbs.get(p1.map).get(p1.player).pb = p1.time;
+                mapPbs.get(p1.map).get(p1.player).competition = p1.competition;
             }
         }
+
         for (const p2 of p2Maps) {
-            mapPbs[p2.map] ??= {};
-            if (mapPbs[p2.map][p2.player] == null) {
-                mapPbs[p2.map][p2.player] = p2.time;
-            } else {
-                mapPbs[p2.map][p2.player] = Math.min(
-                    p2.time,
-                    mapPbs[p2.map][p2.player],
-                );
+            if (
+                !mapPbs.get(p2.map).has(p2.player) ||
+                mapPbs.get(p2.map).get(p2.player).pb > p2.time
+            ) {
+                mapPbs.get(p2.map).get(p2.player).pb = p2.time;
+                mapPbs.get(p2.map).get(p2.player).competition = p2.competition;
             }
         }
 
-        const result: Record<number, LeaderboardPlayerEntry[]> = {};
+        const result: Record<number, LeaderboardRow[]> = {};
         for (const map of getAllMaps()) {
-            const mapLB: LeaderboardPlayerEntry[] = [];
-            for (const player in mapPbs[map]) {
-                mapLB.push({
-                    player: player,
-                    sortingScore: mapPbs[map][player],
-                    displayScore: secondsToTime(mapPbs[map][player]),
+            const mapLB: LeaderboardRow[] = mapPbs
+                .get(map)
+                .mapAll((player, stats) => {
+                    return {
+                        columns: {
+                            Player: player,
+                            "Personal Best": stats.pb,
+                            Competition: stats.competition,
+                        },
+                        order: 0,
+                        value: stats.pb,
+                    };
                 });
-            }
 
-            mapLB.sort((a, b) => a.sortingScore - b.sortingScore);
-
+            this.sortAndInferPlacementByValue(mapLB, "ASC");
             result[map] = mapLB;
         }
 
-        return result;
+        const listifiedResult: FilterableLeaderboardRows[] = [];
+        for (const map of getAllMaps()) {
+            listifiedResult.push({
+                filter: { Map: map },
+                rows: result[map],
+            });
+        }
+
+        this.filterableCache = listifiedResult;
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Personal Best (specific map)",
+            category: "player",
+            subcategory: "Maps",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Personal Best", type: LeaderboardColumnType.TIME },
+                { name: "Competition", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.HIDDEN,
+                    filterable: LeaderboardFilterType.MAP,
+                    defaultFilter: HitmanMap.PARIS,
+                    serverSideFilter: true,
+                },
+            ],
+        };
     }
 }

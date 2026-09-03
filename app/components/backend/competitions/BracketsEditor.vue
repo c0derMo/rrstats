@@ -9,7 +9,7 @@
                         value: idx,
                     }))
                 "
-                class="flex-grow"
+                class="grow"
                 @update:model-value="deserializeJSON()"
             />
             <ButtonComponent @click="addBracket()">

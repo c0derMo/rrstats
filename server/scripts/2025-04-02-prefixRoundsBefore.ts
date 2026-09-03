@@ -8,7 +8,7 @@ const PREFIX = "Swiss ";
 
 async function main() {
     const dataSource = new DataSource({
-        type: "sqlite",
+        type: "better-sqlite3",
         database: "rrstats_actual.db",
         entities: [Match, PlayedMap],
     });

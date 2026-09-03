@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
         where: {
             competition: query.tag,
         },
-        select: ["index", "competition", "name"],
+        select: { index: true, competition: true, name: true },
     });
     for (const bracket of body) {
         existingBrackets = existingBrackets.filter(

@@ -1,22 +1,18 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Winning streak on a map";
-    hasMaps = true;
-    mapOptional = true;
+export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const];
+    }
 
-    basedOn = ["match" as const, "map" as const];
-
-    async calculate(): Promise<
-        Record<HitmanMap | OptionalMap, LeaderboardPlayerEntry[]>
-    > {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
             .select([
                 "match.playerOne",
                 "match.playerTwo",
+                "match.timestamp",
                 "map.map",
                 "map.winner",
                 "map.forfeit",
@@ -25,7 +21,7 @@ export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
             .getMany();
         const streaks = new DefaultedMap<
             string,
-            DefaultedMap<number, StreakCounter>
+            DefaultedMap<number, StreakCounter<number>>
         >(() => new DefaultedMap(() => new StreakCounter()));
 
         for (const match of matches) {
@@ -33,10 +29,16 @@ export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
                 if (map.forfeit) continue;
 
                 if (map.winner === WinningPlayer.PLAYER_ONE) {
-                    streaks.get(match.playerOne).get(map.map).increaseStreak();
+                    streaks
+                        .get(match.playerOne)
+                        .get(map.map)
+                        .increaseStreak(match.timestamp);
                     streaks.get(match.playerTwo).get(map.map).resetStreak();
                 } else if (map.winner === WinningPlayer.PLAYER_TWO) {
-                    streaks.get(match.playerTwo).get(map.map).increaseStreak();
+                    streaks
+                        .get(match.playerTwo)
+                        .get(map.map)
+                        .increaseStreak(match.timestamp);
                     streaks.get(match.playerOne).get(map.map).resetStreak();
                 } else if (map.winner === WinningPlayer.DRAW) {
                     streaks.get(match.playerTwo).get(map.map).resetStreak();
@@ -45,39 +47,76 @@ export class PlayerSameMapWonInARow implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result = {} as Record<
-            HitmanMap | OptionalMap,
-            LeaderboardPlayerEntry[]
-        >;
-        for (const map of getAllMaps()) {
-            result[map] = [];
-        }
-        result[-1] = [];
+        const result: LeaderboardRow[] = [];
 
         streaks.mapAll((player, playerStreaks) => {
-            playerStreaks.mapAll((map, streak) => {
-                if (streak.getLongestStreak() > 1) {
-                    result[-1].push({
-                        player: player,
-                        displayScore: `${streak
-                            .getLongestStreak()
-                            .toString()} (${getMap(map)!.abbreviation})`,
-                        sortingScore: streak.getLongestStreak(),
-                    });
-                    result[map as HitmanMap].push({
-                        player: player,
-                        displayScore: streak.getLongestStreak().toString(),
-                        sortingScore: streak.getLongestStreak(),
+            playerStreaks.mapAll((map, counter) => {
+                for (const streak of counter.getFinishedStreaks()) {
+                    if (streak.length >= 5) {
+                        result.push({
+                            columns: {
+                                Player: player,
+                                "Winning streak": streak.length,
+                                Active: false,
+                                "Last match": streak.value,
+                                Map: map,
+                            },
+                            order: 0,
+                            value: streak.length,
+                        });
+                    }
+                }
+
+                if (counter.getActiveStreak().length >= 5) {
+                    result.push({
+                        columns: {
+                            Player: player,
+                            "Winning streak": counter.getActiveStreak().length,
+                            Active: true,
+                            "Last match": counter.getActiveStreak().value,
+                            Map: map,
+                        },
+                        order: 0,
+                        value: counter.getActiveStreak().length,
                     });
                 }
             });
         });
+        this.sortAndInferPlacementByValue(result);
 
-        for (const map of getAllMaps()) {
-            result[map].sort((a, b) => b.sortingScore - a.sortingScore);
-        }
-        result[-1].sort((a, b) => b.sortingScore - a.sortingScore);
+        this.cache = result;
+    }
 
-        return result;
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Longest map winning streak (specific map)",
+            category: "player",
+            subcategory: "Streaks",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Winning streak", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Active",
+                    type: LeaderboardColumnType.BOOLEAN,
+                    filterable: LeaderboardFilterType.BOOLEAN,
+                    defaultFilter: false,
+                },
+                {
+                    name: "Last match",
+                    type: LeaderboardColumnType.DATE,
+                    sortable: true,
+                },
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.MAP,
+                    filterable: LeaderboardFilterType.MAP_OPTIONAL,
+                    defaultFilter: OptionalMap.NO_MAP,
+                },
+            ],
+        };
     }
 }

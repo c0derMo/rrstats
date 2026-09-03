@@ -45,7 +45,7 @@
                         @click="toggleCategory(category)"
                     >
                         <div
-                            class="flex-grow border-b -translate-y-1/2 border-gray-600"
+                            class="grow border-b -translate-y-1/2 border-gray-600"
                         />
                         <Tag
                             narrow
@@ -61,13 +61,13 @@
                             }"
                         />
                         <div
-                            class="flex-grow border-b -translate-y-1/2 border-gray-600"
+                            class="grow border-b -translate-y-1/2 border-gray-600"
                         />
                     </div>
                     <div
                         class="grid grid-cols-2 gap-x-5 gap-y-2 overflow-hidden transition-all max-h-[2200px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 duration-200"
                         :class="{
-                            '!max-h-0': !expandedRows.includes(category),
+                            'max-h-0!': !expandedRows.includes(category),
                         }"
                     >
                         <AchievementBox

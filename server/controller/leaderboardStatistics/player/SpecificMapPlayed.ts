@@ -1,14 +1,15 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import {
+    ServerSideFilteredLeaderboardStatistic,
+    type FilterableLeaderboardRows,
+} from "../ServerSideFilteredLeaderboardStatistic";
 
-export class PlayerSpecificMapPlayed implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Spins played on specific map";
-    hasMaps = true;
+export class PlayerSpecificMapPlayed extends ServerSideFilteredLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const];
+    }
 
-    basedOn = ["match" as const, "map" as const];
-
-    async calculate(): Promise<Record<HitmanMap, LeaderboardPlayerEntry[]>> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
             .select(["match.playerOne", "match.playerTwo", "map.map"])
@@ -25,23 +26,34 @@ export class PlayerSpecificMapPlayed implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: Record<HitmanMap, LeaderboardPlayerEntry[]> =
+        const result: Record<HitmanMap, LeaderboardRow[]> =
             this.getDefaultMapRecord([]);
         for (const map of getAllMaps()) {
             result[map] = [];
             for (const player in mapCount) {
                 if (mapCount[player][map] > 0) {
                     result[map].push({
-                        player: player,
-                        sortingScore: mapCount[player][map],
-                        displayScore: mapCount[player][map].toString(),
+                        columns: {
+                            Player: player,
+                            Played: mapCount[player][map],
+                        },
+                        order: 0,
+                        value: mapCount[player][map],
                     });
                 }
             }
-            result[map].sort((a, b) => b.sortingScore - a.sortingScore);
+            this.sortAndInferPlacementByValue(result[map]);
         }
 
-        return result;
+        const listifiedResult: FilterableLeaderboardRows[] = [];
+        for (const map of getAllMaps()) {
+            listifiedResult.push({
+                filter: { Map: map },
+                rows: result[map],
+            });
+        }
+
+        this.filterableCache = listifiedResult;
     }
 
     private getDefaultMapRecord<T>(value: T): Record<HitmanMap, T> {
@@ -67,6 +79,29 @@ export class PlayerSpecificMapPlayed implements LeaderboardPlayerStatistic {
             [HitmanMap.CHONGQING]: value,
             [HitmanMap.MENDOZA]: value,
             [HitmanMap.AMBROSE_ISLAND]: value,
+        };
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most maps played (specific map)",
+            category: "player",
+            subcategory: "Maps",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Played", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.HIDDEN,
+                    filterable: LeaderboardFilterType.MAP,
+                    defaultFilter: HitmanMap.PARIS,
+                    serverSideFilter: true,
+                },
+            ],
         };
     }
 }

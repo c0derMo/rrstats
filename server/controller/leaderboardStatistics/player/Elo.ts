@@ -1,33 +1,48 @@
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import EloController from "../../EloController";
 import { Player } from "~~/server/model/Player";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerElo implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Elo rating";
-    hasMaps = false;
-    explanatoryText =
-        "Elo score based on In4Fun's formula. Note: Players playing on multiple platforms are combined here, which may cause inconsistencies with In4Fun's Elo sheet.";
+export class PlayerElo extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["player" as const, "match" as const];
+    }
 
-    basedOn = ["player" as const, "match" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
             .select(["player.uuid"])
             .getMany();
-        const result: LeaderboardPlayerEntry[] = [];
+        const result: LeaderboardRow[] = [];
 
         for (const player of players) {
             const elo = EloController.getInstance().getEloOfPlayer(player.uuid);
             result.push({
-                player: player.uuid,
-                displayScore: elo.toString(),
-                sortingScore: elo,
+                columns: {
+                    Player: player.uuid,
+                    Elo: elo,
+                },
+                order: 0,
+                value: elo,
             });
         }
 
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
+    }
 
-        return result;
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Elo Ratings",
+            category: "player",
+            explanatoryText:
+                "Elo score based on In4Fun's formula. Note: Players playing on multiple platforms are combined here, which may cause inconsistencies with In4Fun's Elo sheet.",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Elo", type: LeaderboardColumnType.TEXT },
+            ],
+        };
     }
 }

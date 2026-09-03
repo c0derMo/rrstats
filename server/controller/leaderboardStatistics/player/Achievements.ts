@@ -1,31 +1,29 @@
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
 import AchievementController from "../../AchievementController";
 import { Player } from "~~/server/model/Player";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-interface AchievementCount {
-    player: string;
-    platinum: number;
-    gold: number;
-    silver: number;
-    bronze: number;
+interface AchievementCount extends LeaderboardRow {
+    columns: {
+        Player: string;
+        Total: number;
+        Platinum: number;
+        Gold: number;
+        Silver: number;
+        Bronze: number;
+    };
 }
 
-export class PlayerAchievements implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Achievements";
-    hasMaps = false;
-    explanatoryText =
-        "Number of achievements, ranked by Platinum, Gold, Silver and Bronze.";
+export class PlayerAchievements extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["player" as const, "achievement" as const];
+    }
 
-    basedOn = ["player" as const, "achievement" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
             .select(["player.uuid"])
             .getMany();
-        const result: LeaderboardPlayerEntry[] = [];
 
-        const tmp: AchievementCount[] = [];
+        const result: AchievementCount[] = [];
         for (const player of players) {
             const achievements =
                 await AchievementController.getAchievementsOfPlayer(
@@ -67,36 +65,64 @@ export class PlayerAchievements implements LeaderboardPlayerStatistic {
                     ).length;
                 })
                 .reduce((l, r) => l + r, 0);
-            tmp.push({
-                player: player.uuid,
-                platinum: achievedPlatinum,
-                gold: achievedGold,
-                silver: achievedSilver,
-                bronze: achievedBronze,
-            });
-        }
-
-        tmp.sort((a, b) => b.bronze - a.bronze);
-        tmp.sort((a, b) => b.silver - a.silver);
-        tmp.sort((a, b) => b.gold - a.gold);
-        tmp.sort((a, b) => b.platinum - a.platinum);
-
-        for (const player of tmp) {
-            const sortingScore = tmp.findIndex((count) => {
-                return (
-                    count.platinum === player.platinum &&
-                    count.gold === player.gold &&
-                    count.silver === player.silver &&
-                    count.bronze === player.bronze
-                );
-            });
+            const total =
+                achievedPlatinum +
+                achievedGold +
+                achievedSilver +
+                achievedBronze;
             result.push({
-                player: player.player,
-                sortingScore: sortingScore,
-                displayScore: `${player.platinum} Platinum - ${player.gold} Gold - ${player.silver} Silver - ${player.bronze} Bronze`,
+                columns: {
+                    Player: player.uuid,
+                    Total: total,
+                    Platinum: achievedPlatinum,
+                    Gold: achievedGold,
+                    Silver: achievedSilver,
+                    Bronze: achievedBronze,
+                },
+                order: 0,
+                value: total,
             });
         }
 
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most achievements",
+            category: "player",
+            subcategory: "Other",
+            explanatoryText:
+                "Number of achievements, ranked by Platinum, Gold, Silver and Bronze.",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Total", type: LeaderboardColumnType.TEXT },
+                {
+                    name: "Platinum",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
+                    name: "Gold",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
+                    name: "Silver",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+                {
+                    name: "Bronze",
+                    type: LeaderboardColumnType.TEXT,
+                    sortable: true,
+                },
+            ],
+        };
     }
 }

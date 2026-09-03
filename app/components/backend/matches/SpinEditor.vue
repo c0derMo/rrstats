@@ -275,7 +275,7 @@ async function getTargetEliminations(targets: string[]): Promise<
                     .replace(/\s/g, "-")
                     .replace(/à/g, "a")}&missionSlug=${
                     map.slug
-                }&specificDisguises=true&specificMelee=true&specificFirearms=true&specificAccidents=true&impossibleOrDifficultKills=true&targetName=${encodedTarget}`,
+                }&specificDisguises=true&specificMelee=true&specificFirearms=true&specificAccidents=true&impossibleOrDifficultKills=true&uniqueTargetKills=true&targetName=${encodedTarget}`,
             );
             result.push(
                 request.map((condition) => {

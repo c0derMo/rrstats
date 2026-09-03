@@ -1,18 +1,16 @@
 import { Player } from "~~/server/model/Player";
-import type { LeaderboardCountryStatistic } from "../../LeaderboardController";
 import MapperService from "../../MapperService";
 import { Match } from "~~/server/model/Match";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class CountryMatches implements LeaderboardCountryStatistic {
-    type = "country" as const;
-    name = "Matches per country";
-    hasMaps = false;
+export class CountryMatches extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["player" as const, "match" as const];
+    }
 
-    basedOn = ["player" as const, "match" as const];
-
-    async calculate(): Promise<LeaderboardCountryEntry[]> {
+    async calculate(): Promise<void> {
         const players = await Player.createQueryBuilder("player")
-            .select(["player.uuid", "player.nationality"])
+            .select(["player.uuid", "player.nationality", "player.primaryName"])
             .getMany();
         const matches = await Match.createQueryBuilder("match")
             .select(["match.playerOne", "match.playerTwo"])
@@ -22,7 +20,12 @@ export class CountryMatches implements LeaderboardCountryStatistic {
             players,
             "uuid",
             "nationality",
-        ) as Record<string, string>;
+        );
+        const nameMap = MapperService.createStringMapFromList(
+            players,
+            "uuid",
+            "primaryName",
+        );
 
         const matchesPerCountry: DefaultedMap<
             string,
@@ -48,28 +51,32 @@ export class CountryMatches implements LeaderboardCountryStatistic {
             }
         }
 
-        const result: LeaderboardCountryEntry[] = matchesPerCountry.mapAll(
+        const result: LeaderboardRow[] = matchesPerCountry.mapAll(
             (country, players) => {
+                const sum = getSumOfValues(players);
                 return {
-                    countryCode: country,
-                    country: this.getCountryName(country),
-                    displayScore: getSumOfValues(players).toString(),
-                    sortingScore: getSumOfValues(players),
-                    players: players
+                    columns: {
+                        Flag: `https://flagicons.lipis.dev/flags/4x3/${country}.svg`,
+                        Country: this.getCountryName(country),
+                        Matches: sum,
+                    },
+                    value: sum,
+                    order: 0,
+                    expandableRows: players
                         .mapAll((player, matches) => {
-                            return {
-                                player: player,
-                                displayScore: matches.toString(),
-                                sortingScore: matches,
-                            };
+                            return { player, matches };
                         })
-                        .sort((a, b) => b.sortingScore - a.sortingScore),
+                        .toSorted((a, b) => b.matches - a.matches)
+                        .map((player) => [
+                            nameMap[player.player] ?? player.player,
+                            player.matches.toString(),
+                        ]),
                 };
             },
         );
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
 
-        return result;
+        this.sortAndInferPlacementByValue(result);
+        this.cache = result;
     }
 
     private getCountryName(code: string) {
@@ -78,5 +85,25 @@ export class CountryMatches implements LeaderboardCountryStatistic {
                 code.toUpperCase(),
             ) ?? `Unknown country: ${code}`
         );
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Most matches per country",
+            category: "country",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Flag", type: LeaderboardColumnType.IMAGE },
+                {
+                    name: "Country",
+                    type: LeaderboardColumnType.TEXT,
+                    searchable: true,
+                },
+                { name: "Matches", type: LeaderboardColumnType.TEXT },
+            ],
+        };
     }
 }

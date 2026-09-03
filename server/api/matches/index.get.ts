@@ -1,24 +1,24 @@
 import { type FindOptionsSelect, In } from "typeorm";
 import { Match } from "~~/server/model/Match";
 
-const selectedFields = [
-    "uuid",
-    "timestamp",
-    "playerOne",
-    "playerTwo",
-    "playerOneScore",
-    "playerTwoScore",
-    "annulated",
-    "competition",
-    "round",
-    "platform",
-    "bannedMaps",
-    "notes",
-    "shoutcasters",
-    "vodLink",
-    "playedMaps",
-    "eloChange",
-] as FindOptionsSelect<Match>;
+const selectedFields = {
+    uuid: true,
+    timestamp: true,
+    playerOne: true,
+    playerTwo: true,
+    playerOneScore: true,
+    playerTwoScore: true,
+    annulated: true,
+    competition: true,
+    round: true,
+    platform: true,
+    bannedMaps: true,
+    notes: true,
+    shoutcasters: true,
+    vodLink: true,
+    playedMaps: true,
+    eloChange: true,
+} as FindOptionsSelect<Match>;
 
 export default defineEventHandler<Promise<IMatch[] | IMatch | null>>(
     async (event) => {

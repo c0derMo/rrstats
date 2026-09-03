@@ -1,6 +1,6 @@
 <template>
     <div
-        class="fixed z-50 bg-black bg-opacity-50 w-full h-full top-0 left-0 grid place-items-center"
+        class="fixed z-50 bg-black/50 w-full h-full top-0 left-0 grid place-items-center"
     >
         <div class="absolute w-full h-full" @click="$emit('clickOutside')" />
         <Transition

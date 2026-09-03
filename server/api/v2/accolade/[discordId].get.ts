@@ -20,7 +20,11 @@ export default defineEventHandler<AccoladeResponse>(async (event) => {
     }
 
     const player = await Player.findOne({
-        select: ["uuid", "defaultAccolade", "accolade"],
+        select: {
+            uuid: true,
+            defaultAccolade: true,
+            accolade: true,
+        },
         where: { discordId: playerDiscordId },
     });
     if (player == null) {

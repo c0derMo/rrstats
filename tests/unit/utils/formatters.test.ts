@@ -33,14 +33,6 @@ describe("formatters", () => {
         expect(secondsToTime(3662)).toEqual("01:01:02");
     });
 
-    test("getPlacementTagColor", () => {
-        expect(getPlacementTagColor(1)).toEqual("rgb(214, 175, 54)");
-        expect(getPlacementTagColor(2)).toEqual("rgb(167, 167, 167)");
-        expect(getPlacementTagColor(3)).toEqual("rgb(167, 112, 68)");
-        expect(getPlacementTagColor(4)).toEqual("rgb(85, 85, 85)");
-        expect(getPlacementTagColor(5)).toEqual("rgb(85, 85, 85)");
-    });
-
     test("getColorOfTier", () => {
         expect(getColorOfTier(-1)).toEqual({ color: "#4f4f4f" });
         expect(getColorOfTier(AchievementTier.BRONZE)).toEqual({

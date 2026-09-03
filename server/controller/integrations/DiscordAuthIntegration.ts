@@ -73,7 +73,9 @@ export default class DiscordAuthIntegration {
         } catch (e) {
             consola.error(e);
             consola.error((e as { data: string }).data);
-            throw new Error("Error in token request");
+            throw new Error("Error in token request", {
+                cause: e,
+            });
         }
 
         try {
@@ -88,7 +90,9 @@ export default class DiscordAuthIntegration {
         } catch (e) {
             consola.error(e);
             consola.error((e as { data: string }).data);
-            throw new Error("Error in user request");
+            throw new Error("Error in user request", {
+                cause: e,
+            });
         }
     }
 }

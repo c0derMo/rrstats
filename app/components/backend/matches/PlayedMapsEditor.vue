@@ -102,7 +102,7 @@
                     <TextInputComponent
                         :model-value="hitmapsOverlayUrl"
                         placeholder="Hitmaps Overlay URL"
-                        class="flex-grow"
+                        class="grow"
                         @update:model-value="
                             (v) =>
                                 $emit('update:hitmapsOverlayUrl', v as string)

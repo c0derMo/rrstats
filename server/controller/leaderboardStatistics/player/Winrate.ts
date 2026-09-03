@@ -1,16 +1,12 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import { BaseLeaderboardStatistic } from "../BaseLeaderboardStatistic";
 
-export class PlayerWinrate implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Winrate";
-    hasMaps = false;
-    secondaryFilter = "Matches played";
-    defaultSecondaryFilter = 5;
+export class PlayerWinrate extends BaseLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const];
+    }
 
-    basedOn = ["match" as const];
-
-    async calculate(): Promise<LeaderboardPlayerEntry[]> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .select([
                 "match.playerOne",
@@ -47,18 +43,43 @@ export class PlayerWinrate implements LeaderboardPlayerStatistic {
         }
 
         // Calculating score from that
-        const result: LeaderboardPlayerEntry[] = matchesAndWins.mapAll(
+        const result: LeaderboardRow[] = matchesAndWins.mapAll(
             (player, matches) => {
                 return {
-                    player: player,
-                    sortingScore: matches.wins / matches.matches,
-                    displayScore: `${((matches.wins / matches.matches) * 100).toFixed(2)}%`,
-                    secondaryScore: matches.matches,
+                    columns: {
+                        Player: player,
+                        Winrate: matches.wins / matches.matches,
+                        "Matches played": matches.matches,
+                    },
+                    order: 0,
+                    value: matches.wins / matches.matches,
                 };
             },
         );
-        result.sort((a, b) => b.sortingScore - a.sortingScore);
+        this.sortAndInferPlacementByValue(result);
 
-        return result;
+        this.cache = result;
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Highest winrate",
+            category: "player",
+            subcategory: "Matches",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
+                {
+                    name: "Matches played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
+            ],
+        };
     }
 }

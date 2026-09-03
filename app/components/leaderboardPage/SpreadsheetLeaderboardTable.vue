@@ -1,0 +1,342 @@
+<template>
+    <div class="flex flex-col gap-2">
+        <SpreadsheetTable
+            :columns="spreadsheetTableColumns"
+            :rows="paginatedSpreadsheetTableRows"
+        >
+            <template #header-suffix="{ index }">
+                <FontAwesomeIcon
+                    v-if="isColumnSortable(index)"
+                    :icon="['fas', 'chevron-right']"
+                    class="transition scale-75 opacity-40"
+                    :class="{
+                        'hover:scale-90 opacity-80': currentSortIndex !== index,
+                        'scale-100 opacity-100': currentSortIndex === index,
+                        'rotate-90': currentSortIndex === index && !reverseSort,
+                        '-rotate-90': currentSortIndex === index && reverseSort,
+                    }"
+                    @click="toggleSort(index)"
+                />
+            </template>
+
+            <template #placement_tag="{ content }">
+                <PlacementTag narrow :placement="castUnknown(content)" />
+            </template>
+
+            <template #image="{ content }">
+                <img class="h-6 aspect-auto mx-auto" :src="castUnknown(content)" />
+            </template>
+
+            <template #player="{ content }">
+                <PlayerLinkTag :player="castUnknown(content)" />
+            </template>
+
+            <template #map="{ content }">
+                <MapTag :map="getMap(castUnknown(content))!" full-name narrow />
+            </template>
+
+            <template #percentage="{ content }">
+                {{ (castUnknown<number>(content) * 100).toFixed(2) }}%
+            </template>
+
+            <template #time="{ content }">
+                {{ secondsToTime(castUnknown(content)) }}
+            </template>
+
+            <template #boolean="{ content }">
+                <FontAwesomeIcon
+                    :icon="content ? ['fas', 'check'] : ['fas', 'xmark']"
+                    :class="content ? 'text-green-500' : 'text-red-500'"
+                />
+            </template>
+
+            <template #date="{ content }">
+                {{ DateTime.fromMillis(castUnknown(content)).toLocaleString(DateTime.DATETIME_MED) }}
+            </template>
+
+            <template #rowExpansion="{ row }">
+                <div class="mx-4 grid gap-1" :style="getGridColsOfRow(row)">
+                    <template v-for="expansionRow of row.expansionRows">
+                        <div v-for="(col, colID) of expansionRow" :key="colID" class="text-center">
+                            {{ col }}
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </SpreadsheetTable>
+
+        <div
+            class="flex flex-row mt-3 gap-1 justify-end px-3 h-fit items-center flex-nowrap text-nowrap"
+        >
+            <span class="md:text-base text-sm">Rows per page:</span>
+            <DropdownComponent
+                v-model="selectedRowsPerPage"
+                :items="selectableRowsPerPage"
+            />
+            <div class="md:max-w-3 w-full" />
+            <span class="md:text-base text-sm">
+                {{ startIndex + 1 }} - {{ endIndex }} of {{ amountOfItems }}
+            </span>
+            <div class="md:max-w-3 w-full" />
+            <ButtonComponent @click="previousPage">&lt;</ButtonComponent>
+            <ButtonComponent @click="nextPage">&gt;</ButtonComponent>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { DateTime } from 'luxon';
+import type { Cell, CellStyle, ColumnDefinition, Row } from '../tables/SpreadsheetTable.vue';
+
+const players = usePlayers();
+
+const props = defineProps<{
+    tableDefinition: LeaderboardTableDefinition;
+    rows: LeaderboardRow[];
+    filters: Record<string, unknown>;
+    search: string;
+}>();
+
+const amountOfItems = computed(() => {
+    return filteredSpreadsheetTableRows.value.length;
+});
+
+const selectableRowsPerPage = [
+    { text: "15", value: 15 },
+    { text: "30", value: 30 },
+    { text: "50", value: 50 },
+    { text: "All", value: -1 },
+];
+
+const currentSort = ref<string | null>(null);
+const reverseSort = ref(false);
+const selectedRowsPerPage = ref(15);
+const pageIndex = ref(0);
+
+const currentSortIndex = computed(() => {
+    return props.tableDefinition.columns.findIndex((column) => column.name === currentSort.value);
+});
+
+const startIndex = computed(() => {
+    return pageIndex.value * selectedRowsPerPage.value;
+});
+
+const endIndex = computed(() => {
+    if (selectedRowsPerPage.value <= 0) {
+        return amountOfItems.value;
+    }
+    return Math.min((pageIndex.value + 1) * selectedRowsPerPage.value, amountOfItems.value);
+});
+
+const spreadsheetTableColumns = computed<ColumnDefinition[]>(() => {
+    const columnDefinitions = props.tableDefinition.columns
+        .filter((column) => column.type !== LeaderboardColumnType.HIDDEN)
+        .map((column) => {
+            const columnDefinition: ColumnDefinition = {
+                name: column.name,
+                title: column.name,
+                width: 'auto',
+                textAlign: 'left',
+            };
+
+            if (column.color != null) {
+                columnDefinition.backgroundColor = column.color;
+            }
+
+            if (column.type === LeaderboardColumnType.PLACEMENT_TAG) {
+                columnDefinition.title = '';
+                columnDefinition.width = '100px';
+                columnDefinition.textAlign = 'right';
+            }
+
+            if (column.type === LeaderboardColumnType.IMAGE) {
+                columnDefinition.title = '';
+                columnDefinition.width = '50px';
+                columnDefinition.textAlign = 'center';
+            }
+
+            if (column.type !== LeaderboardColumnType.TEXT) {
+                columnDefinition.name = column.type;
+            }
+
+            return columnDefinition;
+        });
+
+    if (props.rows.some((row) => row.expandableRows != null)) {
+        columnDefinitions.push({
+            name: 'expansion',
+            width: '50px',
+            textAlign: 'center'
+        });
+    }
+
+    return columnDefinitions;
+});
+
+const filteredSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][]})[]>(() => {
+    return props.rows
+        .filter((row) => {
+            return props.tableDefinition.columns.map((column) => {
+                if (column.serverSideFilter === true || column.filterable == null || props.filters[column.name] == null) {
+                    return true;
+                }
+                switch (column.filterable) {
+                    case LeaderboardFilterType.TEXT:
+                        if (typeof row.columns[column.name] !== "string") {
+                            return true;
+                        }
+                        return (row.columns[column.name] as string).toLowerCase().includes(props.filters[column.name] as string ?? "");
+                    case LeaderboardFilterType.MAP:
+                    case LeaderboardFilterType.MAP_OPTIONAL:
+                        if (typeof row.columns[column.name] !== "number" || props.filters[column.name] as number < 0) {
+                            return true;
+                        }
+                        return (row.columns[column.name] as number) === props.filters[column.name];
+                    case LeaderboardFilterType.NUMERIC:
+                        if (typeof row.columns[column.name] !== "number" || props.filters[column.name] as number < 0) {
+                            return true;
+                        }
+                        return (row.columns[column.name] as number) >= (props.filters[column.name] as number);
+                    case LeaderboardFilterType.BOOLEAN:
+                        if (typeof row.columns[column.name] !== "boolean") {
+                            return true;
+                        }
+                        return row.columns[column.name] || !props.filters[column.name];
+                }
+                return true;
+            }).reduce((prev, cur) => prev && cur);
+        })
+        .map((row, _, array) => {
+            const columns: Cell[] = [];
+            const searchables: string[] = [];
+            const placement = array.findIndex((search) => search.order === row.order) + 1;
+
+            for (const column of props.tableDefinition.columns) {
+                if (row.columns[column.name] != null) {
+                    const cellStyle: CellStyle = {};
+                    let value = row.columns[column.name];
+
+                    if (column.type === LeaderboardColumnType.PLAYER_NAME) {
+                        value = players.get(value as string, value as string);
+                        searchables.push(value as string);
+                    }
+                    
+                    if (column.colored && row.backgroundColor != null) {
+                        cellStyle.backgroundColor = row.backgroundColor;
+                    }
+                    if (column.colored && row.color != null) {
+                        cellStyle.color = row.color;
+                    }
+                    if (column.searchable) {
+                        searchables.push(value as string);
+                    }
+
+                    columns.push({
+                        ...cellStyle,
+                        content: value
+                    });
+                }
+                if (column.type === LeaderboardColumnType.PLACEMENT_TAG) {
+                    columns.push({
+                        content: placement
+                    });
+                }
+            }
+
+            if (row.expandableRows != null) {
+                columns.push({
+                    content: "",
+                    expansionButton: true
+                });
+            }
+
+            return {
+                columns,
+                searchables,
+                order: row.order,
+                rawColumns: row.columns,
+                expansionRows: row.expandableRows as string[][]
+            };
+        })
+        .sort((a, b) => {
+            if (currentSort.value == null) {
+                return a.order - b.order;
+            } else {
+                const valA = a.rawColumns[currentSort.value] as string | number;
+                const valB = b.rawColumns[currentSort.value] as string | number;
+                if ((valA > valB && !reverseSort.value) || (valA < valB && reverseSort.value)) {
+                    return -1;
+                } else if ((valB > valA && !reverseSort.value) || (valB < valA && reverseSort.value)) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        })
+        .filter(
+            (row) => {
+                return props.search === '' ||
+                    row.searchables.some((searchable) => searchable.toLowerCase().includes(props.search.toLowerCase()))
+            }
+        )
+        .map((row) => ({
+            cells: row.columns,
+            expansionRows: row.expansionRows,
+            expandable: row.expansionRows != null,
+        }));
+});
+
+const paginatedSpreadsheetTableRows = computed<(Row & { expansionRows?: string[][] })[]>(() => {
+    if (selectedRowsPerPage.value < 0) {
+        return filteredSpreadsheetTableRows.value;
+    }
+    return filteredSpreadsheetTableRows.value
+        .slice(startIndex.value, endIndex.value);
+});
+
+function getGridColsOfRow(row: Row & { expansionRows?: string[][] }) {
+    if (row.expansionRows == null) {
+        return {};
+    }
+
+    return { 
+        'grid-template-columns': "1fr ".repeat(row.expansionRows[0].length)
+    };
+}
+
+function nextPage() {
+    pageIndex.value = Math.min(
+        pageIndex.value + 1,
+        Math.floor(amountOfItems.value / selectedRowsPerPage.value)
+    );
+}
+
+function previousPage() {
+    pageIndex.value = Math.max(
+        pageIndex.value - 1,
+        0
+    );
+}
+
+function isColumnSortable(columnIndex: number) {
+    return props.tableDefinition.columns[columnIndex]?.sortable ?? false;
+}
+
+function toggleSort(columnIndex: number) {
+    const columnName = props.tableDefinition.columns[columnIndex]?.name;
+
+    if (currentSort.value !== columnName) {
+        reverseSort.value = false;
+        currentSort.value = columnName;
+    } else if (reverseSort.value === false) {
+        reverseSort.value = true;
+    } else {
+        currentSort.value = null;
+        reverseSort.value = false;
+    }
+}
+
+function castUnknown<T>(val: unknown): T {
+    return val as T;
+}
+</script>

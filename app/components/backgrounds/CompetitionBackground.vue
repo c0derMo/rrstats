@@ -1,6 +1,6 @@
 <template>
     <div
-        class="fixed w-full h-full pointer-events-none -z-20 bg-cover bg-repeat dark:brightness-50 blur top-0 left-0"
+        class="fixed w-full h-full pointer-events-none -z-20 bg-cover bg-repeat dark:brightness-50 blur-sm top-0 left-0"
         :style="bgStyle"
     >
         <div

@@ -26,7 +26,7 @@ export default defineEventHandler<Promise<Retryable<ICompetition> | null>>(
         let shouldRetry = false;
 
         if (
-            competition?.updateWithHitmaps &&
+            competition?.liveCompetition &&
             competition.hitmapsSlug !== undefined
         ) {
             const promise = HitmapsIntegration.updateHitmapsTournament(

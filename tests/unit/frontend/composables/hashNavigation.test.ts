@@ -128,7 +128,7 @@ describe("useHash()", () => {
         setHash("#some.hash");
 
         await flushPromises();
-        expect(window.localStorage.hash).toBe(undefined);
+        expect(window.location.hash).toBe("");
         expect(navigateTo).toHaveBeenCalledTimes(0);
 
         setHash("#some.hash");

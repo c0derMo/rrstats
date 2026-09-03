@@ -73,7 +73,7 @@ class PlayerElo {
             )
         ) {
             if (
-                compList[startingIndex - checkIndex - 1].updateWithHitmaps ===
+                compList[startingIndex - checkIndex - 1].liveCompetition ===
                 false
             ) {
                 decayAmount += 1;
@@ -369,7 +369,7 @@ function calculateDecayedElo(skippedTournaments: number, elo: number): number {
         return elo;
     }
 
-    let decayAmount = 0;
+    let decayAmount;
     const eloToDecay = elo - 1000;
     switch (skippedTournaments) {
         case 0:
@@ -430,13 +430,11 @@ export class EloDatabaseListener implements EntitySubscriberInterface {
         if (!isReady()) {
             return;
         }
-        if (
-            !(
-                entity instanceof Player ||
-                entity instanceof Match ||
-                entity instanceof Competition
-            )
-        ) {
+        if (!(
+            entity instanceof Player ||
+            entity instanceof Match ||
+            entity instanceof Competition
+        )) {
             return;
         }
 

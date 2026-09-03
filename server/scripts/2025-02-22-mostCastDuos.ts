@@ -12,7 +12,7 @@ function areSetsEqual<T>(set1: Set<T>, set2: Set<T>): boolean {
 
 async function main() {
     const dataSource = new DataSource({
-        type: "sqlite",
+        type: "better-sqlite3",
         database: "rrstats.db",
         entities: [Match, PlayedMap],
     });

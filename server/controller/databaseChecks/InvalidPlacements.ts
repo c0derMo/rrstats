@@ -23,7 +23,9 @@ export class InvalidPlacements implements DatabaseCheck {
         });
         const players = (
             await Player.find({
-                select: ["uuid"],
+                select: {
+                    uuid: true,
+                },
             })
         ).map((p) => p.uuid);
 

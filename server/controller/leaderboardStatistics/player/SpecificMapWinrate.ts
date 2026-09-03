@@ -1,16 +1,15 @@
 import { Match } from "~~/server/model/Match";
-import type { LeaderboardPlayerStatistic } from "../../LeaderboardController";
+import {
+    type FilterableLeaderboardRows,
+    ServerSideFilteredLeaderboardStatistic,
+} from "../ServerSideFilteredLeaderboardStatistic";
 
-export class PlayerSpecificMapWinrate implements LeaderboardPlayerStatistic {
-    type = "player" as const;
-    name = "Winrate on specific map";
-    hasMaps = true;
-    secondaryFilter = "Spins played";
-    defaultSecondaryFilter = 5;
+export class PlayerSpecificMapWinrate extends ServerSideFilteredLeaderboardStatistic {
+    basedOn() {
+        return ["match" as const, "map" as const];
+    }
 
-    basedOn = ["match" as const, "map" as const];
-
-    async calculate(): Promise<Record<HitmanMap, LeaderboardPlayerEntry[]>> {
+    async calculate(): Promise<void> {
         const matches = await Match.createQueryBuilder("match")
             .innerJoin("match.playedMaps", "map")
             .select([
@@ -47,29 +46,36 @@ export class PlayerSpecificMapWinrate implements LeaderboardPlayerStatistic {
             }
         }
 
-        const result: Record<HitmanMap, LeaderboardPlayerEntry[]> =
+        const result: Record<HitmanMap, LeaderboardRow[]> =
             this.getDefaultMapRecord([]);
         for (const map of getAllMaps()) {
             result[map] = [];
             for (const player in mapCount) {
                 if (mapCount[player][map] > 0) {
                     result[map].push({
-                        player: player,
-                        sortingScore:
-                            mapWins[player][map] / mapCount[player][map],
-                        displayScore:
-                            (
-                                (mapWins[player][map] / mapCount[player][map]) *
-                                100
-                            ).toFixed(2) + "%",
-                        secondaryScore: mapCount[player][map],
+                        columns: {
+                            Player: player,
+                            Winrate:
+                                mapWins[player][map] / mapCount[player][map],
+                            "Map played": mapCount[player][map],
+                        },
+                        order: 0,
+                        value: mapWins[player][map] / mapCount[player][map],
                     });
                 }
             }
-            result[map].sort((a, b) => b.sortingScore - a.sortingScore);
+            this.sortAndInferPlacementByValue(result[map]);
         }
 
-        return result;
+        const listifiedResult: FilterableLeaderboardRows[] = [];
+        for (const map of getAllMaps()) {
+            listifiedResult.push({
+                filter: { Map: map },
+                rows: result[map],
+            });
+        }
+
+        this.filterableCache = listifiedResult;
     }
 
     private getDefaultMapRecord<T>(value: T): Record<HitmanMap, T> {
@@ -95,6 +101,35 @@ export class PlayerSpecificMapWinrate implements LeaderboardPlayerStatistic {
             [HitmanMap.CHONGQING]: value,
             [HitmanMap.MENDOZA]: value,
             [HitmanMap.AMBROSE_ISLAND]: value,
+        };
+    }
+
+    getTableDefinition(): LeaderboardTableDefinition {
+        return {
+            name: "Best map winrate (specific map)",
+            category: "player",
+            subcategory: "Maps",
+            columns: [
+                {
+                    name: "Placement",
+                    type: LeaderboardColumnType.PLACEMENT_TAG,
+                },
+                { name: "Player", type: LeaderboardColumnType.PLAYER_NAME },
+                { name: "Winrate", type: LeaderboardColumnType.PERCENTAGE },
+                {
+                    name: "Map played",
+                    type: LeaderboardColumnType.TEXT,
+                    filterable: LeaderboardFilterType.NUMERIC,
+                    defaultFilter: 5,
+                },
+                {
+                    name: "Map",
+                    type: LeaderboardColumnType.HIDDEN,
+                    filterable: LeaderboardFilterType.MAP,
+                    defaultFilter: HitmanMap.PARIS,
+                    serverSideFilter: true,
+                },
+            ],
         };
     }
 }

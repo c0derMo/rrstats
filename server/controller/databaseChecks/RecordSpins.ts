@@ -23,7 +23,10 @@ export class RecordSpins implements DatabaseCheck {
     ): Promise<CheckResult> {
         this.uuidsToPlayers = {};
         const players = await Player.find({
-            select: ["uuid", "primaryName"],
+            select: {
+                uuid: true,
+                primaryName: true,
+            },
         });
         for (const player of players) {
             this.uuidsToPlayers[player.uuid] = player.primaryName;
@@ -38,7 +41,9 @@ export class RecordSpins implements DatabaseCheck {
             const topRecord = await MapRecord.findOne({
                 where: { map: map },
                 order: { timestamp: "DESC" },
-                select: ["time"],
+                select: {
+                    time: true,
+                },
             });
             if (topRecord == null) continue;
             const mapRecords = await MapRecord.find({
@@ -51,14 +56,14 @@ export class RecordSpins implements DatabaseCheck {
             if (knownIssues.includes(`${record.map}:${record.timestamp}`))
                 continue;
             const match = await Match.findOne({
-                select: [
-                    "uuid",
-                    "playerOne",
-                    "playerTwo",
-                    "competition",
-                    "round",
-                    "playedMaps",
-                ],
+                select: {
+                    uuid: true,
+                    playerOne: true,
+                    playerTwo: true,
+                    competition: true,
+                    round: true,
+                    playedMaps: true,
+                },
                 where: { uuid: record.match },
             });
 

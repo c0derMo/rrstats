@@ -8,6 +8,16 @@
     </div>
 </template>
 
+<style scoped>
+@reference "@/assets/main.css";
+
+@layer components {
+    div {
+        @apply bg-gray-400;
+    }
+}
+</style>
+
 <script setup lang="ts">
 const props = withDefaults(
     defineProps<{
@@ -16,7 +26,7 @@ const props = withDefaults(
         narrow?: boolean;
     }>(),
     {
-        color: "gray",
+        color: "",
         borderColor: "",
         narrow: false,
     },

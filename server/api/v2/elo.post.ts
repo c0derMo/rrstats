@@ -30,7 +30,10 @@ export default defineEventHandler<EloResponse>(async (event) => {
         where: {
             discordId: In(players),
         },
-        select: ["uuid", "discordId"],
+        select: {
+            uuid: true,
+            discordId: true,
+        },
     });
     const discordToPlayer = MapperService.createStringMapFromList(
         lookupPlayers,
@@ -38,11 +41,9 @@ export default defineEventHandler<EloResponse>(async (event) => {
         "uuid",
     );
 
-    const eloLB = (await LeaderboardController.getEntries(
-        "Elo rating",
-    )) as LeaderboardPlayerEntry[];
+    const eloLB = await LeaderboardController.getEntries("Elo Ratings");
     const eloByPlayer = new Map<string, number>(
-        eloLB.map((entry) => [entry.player, entry.sortingScore]),
+        eloLB.map((entry) => [entry.columns["Player"] as string, entry.value]),
     );
     const result: { discordId: string; elo: number }[] = [];
     for (const player of players) {

@@ -15,7 +15,7 @@
                     :items="dropdownItems"
                 />
             </div>
-            <div class="flex-grow mx-3 flex justify-center">
+            <div class="grow mx-3 flex justify-center">
                 <slot name="additionalChecks" />
             </div>
             <div class="w-fit">

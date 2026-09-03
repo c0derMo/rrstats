@@ -25,20 +25,22 @@ export default defineEventHandler<
         ]))
     ) {
         const rawPlayers = await Player.find({
-            select: [
-                "uuid",
-                "primaryName",
-                "accolade",
-                "defaultAccolade",
-                "nationality",
-            ],
+            select: {
+                uuid: true,
+                primaryName: true,
+                accolade: true,
+                defaultAccolade: true,
+                nationality: true,
+            },
         });
 
         return rawPlayers;
     }
 
     const rawPlayers = await Player.find({
-        select: ["primaryName"],
+        select: {
+            primaryName: true,
+        },
         where: {
             excludedFromSearch: Not(And(Not(false), Not(IsNull()))),
         },

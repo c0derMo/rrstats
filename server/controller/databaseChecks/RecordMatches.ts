@@ -24,7 +24,10 @@ export class RecordMatches implements DatabaseCheck {
     ): Promise<CheckResult> {
         this.uuidsToPlayers = {};
         const players = await Player.find({
-            select: ["uuid", "primaryName"],
+            select: {
+                uuid: true,
+                primaryName: true,
+            },
         });
         for (const player of players) {
             this.uuidsToPlayers[player.uuid] = player.primaryName;
@@ -34,13 +37,24 @@ export class RecordMatches implements DatabaseCheck {
         const issues: string[] = [];
 
         const mapRecords = await MapRecord.find({
-            select: ["match", "map", "player", "timestamp", "mapIndex"],
+            select: {
+                match: true,
+                map: true,
+                player: true,
+                timestamp: true,
+                mapIndex: true,
+            },
         });
         for (const record of mapRecords) {
             if (knownIssues.includes(`${record.map}:${record.timestamp}`))
                 continue;
             const match = await Match.findOne({
-                select: ["uuid", "playerOne", "playerTwo", "playedMaps"],
+                select: {
+                    uuid: true,
+                    playerOne: true,
+                    playerTwo: true,
+                    playedMaps: true,
+                },
                 where: { uuid: record.match },
             });
 
@@ -90,13 +104,24 @@ export class RecordMatches implements DatabaseCheck {
         }
 
         const genericRecords = await GenericRecord.find({
-            select: ["match", "record", "players", "timestamp", "maps"],
+            select: {
+                match: true,
+                record: true,
+                players: true,
+                timestamp: true,
+                maps: true,
+            },
         });
         for (const record of genericRecords) {
             if (knownIssues.includes(`${record.record}:${record.timestamp}`))
                 continue;
             const match = await Match.findOne({
-                select: ["uuid", "playerOne", "playerTwo", "playedMaps"],
+                select: {
+                    uuid: true,
+                    playerOne: true,
+                    playerTwo: true,
+                    playedMaps: true,
+                },
                 where: { uuid: record.match },
             });
 

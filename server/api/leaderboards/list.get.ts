@@ -1,11 +1,5 @@
 import LeaderboardController from "../../controller/LeaderboardController";
 
-export default defineEventHandler<
-    Promise<{
-        player: StatisticData<"player">[];
-        country: StatisticData<"country">[];
-        map: StatisticData<"map">[];
-    }>
->(() => {
+export default defineEventHandler<Promise<LeaderboardTableDefinition[]>>(() => {
     return LeaderboardController.getCategories();
 });

@@ -12,6 +12,7 @@ import EloController from "./EloController";
 import { isReady } from "../readyListener";
 import MatchCollection from "#shared/utils/playerStatistics/MatchCollection";
 import PlacementCollection from "#shared/utils/playerStatistics/PlacementCollection";
+import LeaderboardController from "./LeaderboardController";
 
 export default class PlayerStatisticController {
     private static cache: Map<string, IPlayerStatistics> = new Map();
@@ -61,6 +62,18 @@ export default class PlayerStatisticController {
             competitions,
         );
 
+        const rankings =
+            await LeaderboardController.getEntries("Roulette Rankings");
+        const playersRanking = rankings.find(
+            (ranking) => ranking.columns["Player"] === uuid,
+        ) ?? {
+            columns: {
+                Badge: "/rankingBadges/bronze.png",
+            },
+            order: -1,
+            value: 0,
+        };
+
         PlayerStatisticController.cache.set(uuid, {
             winrate: matchCollection.winrate(),
             mapWinrate: matchCollection.mapWinrate(),
@@ -84,6 +97,11 @@ export default class PlayerStatisticController {
             mapPBs: matchCollection.mapPBs(),
             eloProgression:
                 EloController.getInstance().getEloProgressionOfPlayer(uuid),
+            ranking: {
+                placement: playersRanking.order,
+                score: playersRanking.value,
+                badgeUrl: playersRanking.columns["Badge"] as string,
+            },
         });
     }
 }
@@ -106,14 +124,12 @@ export class PlayerStatisticDatabaseListener implements EntitySubscriberInterfac
         if (!isReady()) {
             return;
         }
-        if (
-            !(
-                entity instanceof Player ||
-                entity instanceof Match ||
-                entity instanceof CompetitionPlacement ||
-                entity instanceof Competition
-            )
-        ) {
+        if (!(
+            entity instanceof Player ||
+            entity instanceof Match ||
+            entity instanceof CompetitionPlacement ||
+            entity instanceof Competition
+        )) {
             return;
         }
 

@@ -4,7 +4,7 @@
         :open="showDialog"
         @closed="$emit('close')"
     >
-        <CardComponent class="max-h-screen !overflow-visible">
+        <CardComponent class="max-h-screen overflow-visible!">
             <TextInputComponent
                 v-model="matchData.uuid"
                 class="w-full mb-2"

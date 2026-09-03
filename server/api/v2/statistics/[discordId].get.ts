@@ -39,7 +39,9 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
     }
 
     const player = await Player.findOne({
-        select: ["uuid"],
+        select: {
+            uuid: true,
+        },
         where: { discordId: playerDiscordId },
     });
     if (player == null) {
@@ -60,7 +62,10 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
     ].filter((v) => v != null);
 
     const players = await Player.find({
-        select: ["uuid", "discordId"],
+        select: {
+            uuid: true,
+            discordId: true,
+        },
         where: { uuid: In(playersToQuery) },
     });
     const playerLookupMap = MapperService.createStringMapFromList(
@@ -78,15 +83,17 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
 
     for (let mapIdx = 0; mapIdx < statistics.mapPBs.length; mapIdx++) {
         const pb = statistics.mapPBs[mapIdx];
-        const mapPBs = (await LeaderboardController.getEntries(
-            "Personal best on map",
-            mapIdx,
-        )) as LeaderboardPlayerEntry[];
-        const playerIndex = mapPBs.findIndex((p) => p.player === player.uuid);
-        if (playerIndex < 0) {
+        const mapPBs = await LeaderboardController.getEntries(
+            "Personal Best (specific map)",
+            { Map: mapIdx },
+        );
+        const playerIndex = mapPBs.find(
+            (p) => p.columns["Player"] === player.uuid,
+        );
+        if (playerIndex == null) {
             pb.placement = -1;
         } else {
-            pb.placement = playerIndex + 1;
+            pb.placement = playerIndex.order;
         }
         pb.total = mapPBs.length;
 
