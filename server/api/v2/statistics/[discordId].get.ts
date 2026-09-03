@@ -87,13 +87,13 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
             "Personal Best (specific map)",
             { Map: mapIdx },
         );
-        const playerIndex = mapPBs.findIndex(
+        const playerIndex = mapPBs.find(
             (p) => p.columns["Player"] === player.uuid,
         );
-        if (playerIndex < 0) {
+        if (playerIndex == null) {
             pb.placement = -1;
         } else {
-            pb.placement = playerIndex + 1;
+            pb.placement = playerIndex.order;
         }
         pb.total = mapPBs.length;
 
