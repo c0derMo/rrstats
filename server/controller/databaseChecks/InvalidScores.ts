@@ -19,7 +19,10 @@ export class InvalidScores implements DatabaseCheck {
         knownIssues: string[],
     ): Promise<CheckResult> {
         const players = await Player.find({
-            select: ["uuid", "primaryName"],
+            select: {
+                uuid: true,
+                primaryName: true
+            },
         });
         const uuidsToPlayers: Record<string, string> = {};
         for (const player of players) {

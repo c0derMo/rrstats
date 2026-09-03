@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const allUserAuths = (
-        await User.find({ select: ["authorizationKey"] })
+        await User.find({ select: { authorizationKey: true } })
     ).map((u) => u.authorizationKey);
     const newUsers = await readBody<IUser[]>(event);
 

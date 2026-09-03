@@ -30,7 +30,10 @@ export default defineEventHandler<EloResponse>(async (event) => {
         where: {
             discordId: In(players),
         },
-        select: ["uuid", "discordId"],
+        select: {
+            uuid: true,
+            discordId: true
+        },
     });
     const discordToPlayer = MapperService.createStringMapFromList(
         lookupPlayers,

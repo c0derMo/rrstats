@@ -22,7 +22,9 @@ export default defineEventHandler<PlayerResponse>(async (event) => {
     }
 
     const player = await Player.findOne({
-        select: ["uuid"],
+        select: {
+            uuid: true
+        },
         where: { discordId: playerDiscordId },
     });
     if (player == null) {
@@ -32,18 +34,18 @@ export default defineEventHandler<PlayerResponse>(async (event) => {
     }
 
     const matches = await Match.find({
-        select: [
-            "timestamp",
-            "playerOne",
-            "playerTwo",
-            "playerOneScore",
-            "playerTwoScore",
-            "competition",
-            "round",
-            "platform",
-            "playedMaps",
-            "bannedMaps",
-        ],
+        select: {
+            timestamp: true,
+            playerOne: true,
+            playerTwo: true,
+            playerOneScore: true,
+            playerTwoScore: true,
+            competition: true,
+            round: true,
+            platform: true,
+            playedMaps: true,
+            bannedMaps: true
+        },
         where: [{ playerOne: player.uuid }, { playerTwo: player.uuid }],
     });
 
@@ -52,7 +54,10 @@ export default defineEventHandler<PlayerResponse>(async (event) => {
         ...matches.map((m) => m.playerTwo),
     ];
     const players = await Player.find({
-        select: ["uuid", "discordId"],
+        select: {
+            uuid: true,
+            discordId: true
+        },
         where: { uuid: In(playersToQuery) },
     });
     const playerLookupMap: Record<string, string> = {};

@@ -26,7 +26,9 @@ export default defineEventHandler<MapResponse>(async (event) => {
     const recordTime = await MapRecord.findOne({
         where: { map: map.map as HitmanMap },
         order: { timestamp: "DESC" },
-        select: ["time"],
+        select: {
+            time: true
+        },
     });
     if (recordTime == null) {
         throw createError({
@@ -43,7 +45,10 @@ export default defineEventHandler<MapResponse>(async (event) => {
     const matchesToQuery = allRecords.map((record) => record.match);
 
     const queriedPlayers = await Player.find({
-        select: ["primaryName", "uuid"],
+        select: {
+            primaryName: true,
+            uuid: true
+        },
         where: { uuid: In(playersToQuery) },
     });
     const playerLookupMap: Record<string, string> = {};
@@ -51,7 +56,10 @@ export default defineEventHandler<MapResponse>(async (event) => {
         playerLookupMap[player.uuid] = player.primaryName;
     }
     const queriedMatches = await Match.find({
-        select: ["competition", "uuid"],
+        select: {
+            competition: true,
+            uuid: true
+        },
         where: { uuid: In(matchesToQuery) },
     });
     const matchLookupMap: Record<string, string> = {};

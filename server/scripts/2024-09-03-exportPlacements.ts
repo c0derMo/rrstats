@@ -7,7 +7,7 @@ import { CompetitionPlacement } from "../model/Competition";
 
 async function main() {
     const dataSource = new DataSource({
-        type: "sqlite",
+        type: "better-sqlite3",
         database: "rrstats.db",
         entities: [CompetitionPlacement, Player],
     });

@@ -39,7 +39,9 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
     }
 
     const player = await Player.findOne({
-        select: ["uuid"],
+        select: {
+            uuid: true
+        },
         where: { discordId: playerDiscordId },
     });
     if (player == null) {
@@ -60,7 +62,10 @@ export default defineEventHandler<StatisticsReponse>(async (event) => {
     ].filter((v) => v != null);
 
     const players = await Player.find({
-        select: ["uuid", "discordId"],
+        select: {
+            uuid: true,
+            discordId: true
+        },
         where: { uuid: In(playersToQuery) },
     });
     const playerLookupMap = MapperService.createStringMapFromList(

@@ -219,7 +219,12 @@ export default class HitmapsIntegration {
     ): Promise<string> {
         const playerInDb = await Player.findOne({
             where: { discordId },
-            select: ["primaryName", "alternativeNames", "uuid", "discordId"],
+            select: {
+                primaryName: true,
+                alternativeNames: true,
+                uuid: true,
+                discordId: true
+            },
         });
         if (playerInDb === null) {
             // Player doesn't exist - creating new
@@ -258,7 +263,9 @@ export default class HitmapsIntegration {
                     }),
                 ),
             },
-            select: ["hitmapsMatchId"],
+            select: {
+                hitmapsMatchId: true
+            },
         });
 
         if (existingMatches.length === matches.length) {

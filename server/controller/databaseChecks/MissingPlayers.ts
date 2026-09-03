@@ -20,7 +20,13 @@ export class MissingPlayers implements DatabaseCheck {
         knownIssues: string[],
     ): Promise<CheckResult> {
         const allMatches = await Match.find({
-            select: ["uuid", "playerOne", "playerTwo", "competition", "round"],
+            select: {
+                uuid: true,
+                playerOne: true,
+                playerTwo: true,
+                competition: true,
+                round: true
+            },
             where: { competition: Not(In(ignoredCompetitions)) },
         });
         const allPlayers = allMatches
@@ -29,7 +35,9 @@ export class MissingPlayers implements DatabaseCheck {
         const dedupedPlayers = new Set<string>(allPlayers);
 
         const playerObjects = await Player.find({
-            select: ["uuid"],
+            select: {
+                uuid: true
+            },
             where: { uuid: In([...dedupedPlayers]) },
         });
         const existingUUIDs = playerObjects.map((player) => player.uuid);

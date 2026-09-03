@@ -13,7 +13,7 @@ const ignoredComps: string[] = ["RR14"];
 
 async function main() {
     const dataSource = new DataSource({
-        type: "sqlite",
+        type: "better-sqlite3",
         database: "rrstats.db",
         entities: [CompetitionPlacement, Player, Competition, Match, PlayedMap],
     });

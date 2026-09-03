@@ -20,7 +20,10 @@ export class MissingPlacements implements DatabaseCheck {
         knownIssues: string[],
     ): Promise<CheckResult> {
         const players = await Player.find({
-            select: ["uuid", "primaryName"],
+            select: {
+                uuid: true,
+                primaryName: true
+            },
         });
         const uuidsToPlayers: Record<string, string> = {};
         for (const player of players) {
@@ -46,7 +49,9 @@ export class MissingPlacements implements DatabaseCheck {
             );
             const placements = (
                 await CompetitionPlacement.find({
-                    select: ["competition"],
+                    select: {
+                        competition: true
+                    },
                     where: { player: player.uuid },
                 })
             ).map((placement) => placement.competition);

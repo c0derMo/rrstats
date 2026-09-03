@@ -91,7 +91,11 @@ export class RookieAccoladeUpdateSubscriber implements EntitySubscriberInterface
                     uuid: event.entity.player,
                     defaultAccolade: "Roulette Rookie",
                 },
-                select: ["accolade", "defaultAccolade", "uuid"],
+                select: {
+                    accolade: true,
+                    defaultAccolade: true,
+                    uuid: true
+                },
             });
             if (rookiePlayer == null) {
                 return;

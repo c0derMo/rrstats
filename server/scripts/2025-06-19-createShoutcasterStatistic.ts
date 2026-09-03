@@ -23,7 +23,11 @@ async function main() {
     console.log("Database connection established.");
 
     const matches = await Match.find({
-        select: ["uuid", "competition", "shoutcasters"],
+        select: {
+            uuid: true,
+            competition: true,
+            shoutcasters: true
+        },
         order: {
             timestamp: "ASC",
         },

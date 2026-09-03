@@ -37,7 +37,9 @@ export default defineEventHandler<Promise<PlayerRecord[]>>(async (event) => {
                 time: Not(genericRecord.time),
             },
             order: { timestamp: "ASC" },
-            select: ["timestamp"],
+            select: {
+                timestamp: true
+            },
         });
         allRecords.push({
             record: genericRecord.record,
@@ -55,7 +57,9 @@ export default defineEventHandler<Promise<PlayerRecord[]>>(async (event) => {
                 time: Not(mapRecord.time),
             },
             order: { timestamp: "ASC" },
-            select: ["timestamp"],
+            select: {
+                timestamp: true
+            },
         });
         allRecords.push({
             map: mapRecord.map,
