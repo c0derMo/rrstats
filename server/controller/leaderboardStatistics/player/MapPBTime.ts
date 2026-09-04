@@ -22,6 +22,7 @@ export class PlayerMapPBTime extends ServerSideFilteredLeaderboardStatistic {
             )
             .groupBy("match.playerOne")
             .addGroupBy("map.map")
+            .addGroupBy("match.competition")
             .getRawMany<{
                 player: string;
                 map: HitmanMap;
@@ -40,6 +41,7 @@ export class PlayerMapPBTime extends ServerSideFilteredLeaderboardStatistic {
             )
             .groupBy("match.playerTwo")
             .addGroupBy("map.map")
+            .addGroupBy("match.competition")
             .getRawMany<{
                 player: string;
                 map: HitmanMap;

@@ -35,6 +35,8 @@ ENV NODE_ENV=production
 ENV PORT=$PORT
 
 COPY --from=build /src/.output /src/.output
+COPY --link package.json package-lock.json .
+RUN npm install pg better-sqlite3
 
 EXPOSE $PORT
 VOLUME /rrstats
