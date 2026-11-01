@@ -87,7 +87,7 @@ export default class DatabaseConnector {
             poolSize: dbType === "postgres" ? 20 : undefined,
             invalidWhereValuesBehavior: {
                 undefined: "ignore",
-            }
+            },
         } as DataSourceOptions);
     }
 

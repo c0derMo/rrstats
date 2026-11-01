@@ -4,6 +4,7 @@
             v-model="value"
             :placeholder="placeholder"
             class="w-full"
+            :mount-focussed="mountFocussed"
             @keydown="onKeyDown"
             @focus-change="(value) => (isFocussed = value)"
         />
@@ -44,11 +45,15 @@ const props = withDefaults(
         suggestions?: string[];
         placeholder?: string;
         defaultText?: string;
+        suggestWhenEmpty?: boolean;
+        mountFocussed?: boolean;
     }>(),
     {
         suggestions: () => [],
         placeholder: "",
         defaultText: "",
+        suggestWhenEmpty: false,
+        mountFocussed: false,
     },
 );
 
@@ -58,7 +63,7 @@ const isFocussed = ref(false);
 const isDropdownFocussed = ref(false);
 
 const currentSuggestions = computed(() => {
-    if (value.value === "") {
+    if (value.value === "" && !props.suggestWhenEmpty) {
         return [];
     }
     return props.suggestions
@@ -104,8 +109,9 @@ function confirmEntry(suggestionIndex?: number, disableEmit = false) {
     }
     if (!disableEmit) {
         emits("confirm", value.value);
-        if (document.activeElement instanceof HTMLElement)
+        if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
+        }
     }
 }
 

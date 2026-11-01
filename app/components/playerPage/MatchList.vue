@@ -10,12 +10,33 @@
         @closed="showDownload = false"
     />
 
-    <div class="w-4/5 mx-auto">
-        <TextInputComponent
-            v-model="searchFilter"
-            class="w-full mb-4"
-            placeholder="Search"
+    <div class="w-4/5 mx-auto flex flex-col gap-1 mb-4">
+        <MatchFilter
+            :matches="props.matches"
+            @filtered-matches="(f) => (filteredMatches = f)"
         />
+        <!-- <AutocompleteComponent
+            class="w-full"
+            placeholder="Filter..."
+            :suggestions="filterTags.map(f => f.prefix)"
+            :deselect-on-confirm="false"
+            suggest-when-empty
+            @input="(v) => searchFilter = v"
+            @confirm="confirmFilter"
+        />
+        <div v-if="selectedFilterTag != null" class="italic">{{ selectedFilterTag.description }}</div>
+        <div class="flex flex-row gap-2 flex-wrap">
+            <FilterTag>Opponent: CurryMaker</FilterTag>
+            <FilterTag>Played map: Berlin</FilterTag>
+            <FilterTag>Won map: Mendoza</FilterTag>
+            <FilterTag>Banned: Mendoza</FilterTag>
+            <FilterTag>Match win</FilterTag>
+            <FilterTag>Player score: 6</FilterTag>
+            <FilterTag>Opponent score: 2</FilterTag> -->
+        <!-- <FilterTag v-for="(tag, idx) of selectedFilters" :key="idx">
+                {{ tag.prefix }} {{ tag.value }}
+            </FilterTag>
+        </div> -->
     </div>
 
     <!-- Mobile table -->
@@ -174,7 +195,6 @@ const mobileHeaders = [
 ];
 
 const matchToShow: Ref<IMatch | null> = ref(null);
-const searchFilter = ref("");
 const showDownload = ref(false);
 
 const props = withDefaults(
@@ -190,24 +210,26 @@ const props = withDefaults(
 const players = usePlayers();
 await players.queryFromMatches(props.matches);
 
+const filteredMatches = ref(props.matches);
+
 const filteredSortedMatches = computed(() => {
-    return props.matches
-        .filter((m) => {
-            if (searchFilter.value === "") return true;
+    // return props.matches
+    //     .filter((m) => {
+    //         if (searchFilter.value === "") return true;
 
-            const searchableValues = [
-                m.competition,
-                players.get(m.playerOne),
-                players.get(m.playerTwo),
-                m.round,
-                ...m.playedMaps.map((map) => getMap(map.map)!.abbreviation),
-            ];
+    //         const searchableValues = [
+    //             m.competition,
+    //             players.get(m.playerOne),
+    //             players.get(m.playerTwo),
+    //             m.round,
+    //             ...m.playedMaps.map((map) => getMap(map.map)!.abbreviation),
+    //         ];
 
-            return searchableValues.some((s) =>
-                s.toLowerCase().includes(searchFilter.value.toLowerCase()),
-            );
-        })
-        .sort((a, b) => b.timestamp - a.timestamp);
+    //         return searchableValues.some((s) =>
+    //             s.toLowerCase().includes(searchFilter.value.toLowerCase()),
+    //         );
+    //     })
+    return filteredMatches.value.toSorted((a, b) => b.timestamp - a.timestamp);
 });
 
 function getLocalWinningPlayer(match: IMatch): WinningPlayer {
