@@ -39,6 +39,7 @@ const emits = defineEmits<{
     input: [value: string];
     defocus: [];
     focus: [];
+    keydown: [ev: KeyboardEvent];
 }>();
 const props = withDefaults(
     defineProps<{
@@ -76,6 +77,7 @@ const currentSuggestions = computed(() => {
 });
 
 function onKeyDown(event: KeyboardEvent) {
+    emits("keydown", event);
     if (event.key === "ArrowDown") {
         selectedSuggestion.value = clampToRegion(
             selectedSuggestion.value + 1,

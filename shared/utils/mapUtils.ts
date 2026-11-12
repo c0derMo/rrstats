@@ -519,6 +519,12 @@ export const getMapByName = (name: string): HitmanMapInfo | undefined => {
     return findByAttribute("name", name);
 };
 
+export const getMapByAbbreviation = (
+    abbreviation: string,
+): HitmanMapInfo | undefined => {
+    return findByAttribute("abbreviation", abbreviation);
+};
+
 export const getAllMaps = (): HitmanMap[] => {
     return maps
         .filter((m) => m.map !== OptionalMap.NO_MAP)
