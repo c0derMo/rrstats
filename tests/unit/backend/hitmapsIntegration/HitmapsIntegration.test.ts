@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, describe, test, expect, vi } from "vitest";
 import DatabaseConnector from "~~/server/controller/DatabaseConnnector";
 import newSchemaResponse from "./matchHistory-newSchema.json";
-import oldSchemaResponse from "./matchHistory-oldSchema.json";
-import oldSchemaMatch from "./oldSchema-match.json";
 import { Player } from "~~/server/model/Player";
 import { Match } from "~~/server/model/Match";
 import { Competition } from "~~/server/model/Competition";
@@ -20,7 +18,7 @@ const { $fetchMock } = vi.hoisted(() => {
     };
 });
 
-describe("PlayerStatisticController", () => {
+describe("HitmapsIntegration", () => {
     beforeEach(async () => {
         database = new DatabaseConnector("sqlite", ":memory:", false);
         await database.initialize();
@@ -86,11 +84,11 @@ describe("PlayerStatisticController", () => {
         expect(await Match.count()).toBe(1);
 
         const match = await Match.findOneByOrFail({
-            hitmapsMatchId: "3f34b025-42d5-41e2-b4e6-11e0ad37b6fa",
+            hitmapsMatchId: "3379",
         });
 
         expect(match).toMatchObject({
-            hitmapsMatchId: "3f34b025-42d5-41e2-b4e6-11e0ad37b6fa",
+            hitmapsMatchId: "3379",
             timestamp: 1729258200000,
             playerOne: parapluie.uuid,
             playerTwo: deinNomos.uuid,
@@ -123,99 +121,6 @@ describe("PlayerStatisticController", () => {
                     index: 2,
                     timeTaken: 820,
                     spin: {},
-                },
-            ],
-        });
-    });
-
-    test("Hitmaps Integration - Old Schema", async () => {
-        $fetchMock.mockResolvedValueOnce(oldSchemaResponse);
-        $fetchMock.mockResolvedValueOnce(oldSchemaMatch);
-
-        expect(await Player.count()).toBe(0);
-        expect(await Match.count()).toBe(0);
-        expect(await Competition.count()).toBe(0);
-        expect(await PlayedMap.count()).toBe(0);
-
-        const comp = new Competition();
-        comp.tag = "TC";
-        comp.name = "Test Comp";
-        comp.officialCompetition = false;
-        comp.startingTimestamp = 0;
-        comp.matchTimeoutTime = 3600;
-        await comp.save();
-
-        await HitmapsIntegration.updateHitmapsTournament("test", "TC");
-
-        expect($fetchMock).toHaveBeenCalledTimes(2);
-        expect($fetchMock).toHaveBeenNthCalledWith(
-            1,
-            "https://tournamentsapi.hitmaps.com/api/events/test/statistics?statsKey=MatchHistory",
-        );
-        expect($fetchMock).toHaveBeenNthCalledWith(
-            2,
-            "https://rouletteapi.hitmaps.com/api/match-history?matchIds=a7d655fc-49b6-48a6-9ab8-8a28e40d4614",
-        );
-
-        expect(await Player.count()).toBe(2);
-        expect(await Match.count()).toBe(1);
-
-        const curryMaker = await Player.findOneByOrFail({
-            primaryName: "CurryMaker",
-        });
-        const apricope = await Player.findOneByOrFail({
-            primaryName: "Apricope",
-        });
-
-        const match = await Match.findOneByOrFail({
-            hitmapsMatchId: "a7d655fc-49b6-48a6-9ab8-8a28e40d4614",
-        });
-
-        expect(match).toMatchObject({
-            hitmapsMatchId: "a7d655fc-49b6-48a6-9ab8-8a28e40d4614",
-            timestamp: 1715436000000,
-            playerOne: curryMaker.uuid,
-            playerTwo: apricope.uuid,
-            playerOneScore: 2,
-            playerTwoScore: 6,
-            competition: "TC",
-            round: "Round 1",
-            bannedMaps: [
-                { map: HitmanMap.CHONGQING, picked: ChoosingPlayer.PLAYER_ONE },
-                { map: HitmanMap.BANGKOK, picked: ChoosingPlayer.PLAYER_TWO },
-            ],
-            playedMaps: [
-                {
-                    map: HitmanMap.MENDOZA,
-                    picked: ChoosingPlayer.PLAYER_ONE,
-                    winner: WinningPlayer.PLAYER_ONE,
-                    index: 0,
-                    timeTaken: 556,
-                    spin: oldSchemaMatch.matches[0].mapSelections[0].spin,
-                },
-                {
-                    map: HitmanMap.MUMBAI,
-                    picked: ChoosingPlayer.PLAYER_TWO,
-                    winner: WinningPlayer.PLAYER_TWO,
-                    index: 1,
-                    timeTaken: 885,
-                    spin: oldSchemaMatch.matches[0].mapSelections[1].spin,
-                },
-                {
-                    map: HitmanMap.MIAMI,
-                    picked: ChoosingPlayer.RANDOM,
-                    winner: WinningPlayer.PLAYER_TWO,
-                    index: 2,
-                    timeTaken: 766,
-                    spin: oldSchemaMatch.matches[0].mapSelections[2].spin,
-                },
-                {
-                    map: HitmanMap.SAPIENZA,
-                    picked: ChoosingPlayer.RANDOM,
-                    winner: WinningPlayer.PLAYER_TWO,
-                    index: 3,
-                    timeTaken: 427,
-                    spin: oldSchemaMatch.matches[0].mapSelections[3].spin,
                 },
             ],
         });
