@@ -68,7 +68,20 @@
                 }
             ],
             "platform": "All",
-            "round": null
+            "round": null,
+            "cast": {
+                "mainCaster": {
+                    "discordId": "292699566782939137",
+                    "name": "currymaker"
+                },
+                "mainCasterUrl": "https://twitch.tv/currymaker",
+                "cocasters": [
+                    {
+                        "discordId": "412288950854746113",
+                        "name": "in4fun"
+                    }
+                ]
+            }
         }
     ]
 }

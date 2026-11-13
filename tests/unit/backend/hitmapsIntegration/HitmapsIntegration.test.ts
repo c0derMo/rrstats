@@ -37,6 +37,22 @@ describe("HitmapsIntegration", () => {
         expect(await Competition.count()).toBe(0);
         expect(await PlayedMap.count()).toBe(0);
 
+        const curryMaker = new Player();
+        curryMaker.primaryName = "CurryMaker";
+        curryMaker.alternativeNames = [];
+        curryMaker.discordId = "292699566782939137";
+        curryMaker.accolade = "Roulette Rookie";
+        curryMaker.defaultAccolade = "Roulette Rookie";
+        await curryMaker.save();
+
+        const in4Fun = new Player();
+        in4Fun.primaryName = "In4Fun";
+        in4Fun.alternativeNames = [];
+        in4Fun.discordId = "412288950854746113";
+        in4Fun.accolade = "Roulette Rookie";
+        in4Fun.defaultAccolade = "Roulette Rookie";
+        await in4Fun.save();
+
         const parapluie = new Player();
         parapluie.primaryName = "Parapluie";
         parapluie.alternativeNames = [];
@@ -123,6 +139,7 @@ describe("HitmapsIntegration", () => {
                     spin: {},
                 },
             ],
+            shoutcasters: ["CurryMaker", "In4Fun"],
         });
     });
 });
