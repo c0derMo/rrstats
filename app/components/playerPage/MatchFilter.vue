@@ -414,7 +414,7 @@ function selectFilterType(input: string) {
 }
 
 function stageTwoConfirm(value: string) {
-    if (stageTwoValue.value == "" && !selectedTagType.value?.noSecondStage) {
+    if (value == "" && !selectedTagType.value?.noSecondStage) {
         return;
     }
 
