@@ -49,7 +49,11 @@
                                     >
                                         Ranking:
                                         {{ statistics.ranking.score }}
-                                        <span v-if="statistics.ranking.placement > 0">
+                                        <span
+                                            v-if="
+                                                statistics.ranking.placement > 0
+                                            "
+                                        >
                                             (#{{
                                                 statistics.ranking.placement
                                             }})

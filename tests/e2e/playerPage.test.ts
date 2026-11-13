@@ -161,6 +161,40 @@ test.describe("Player Page", () => {
         ]);
     });
 
+    test("Matches filter", async ({ page }) => {
+        await page.goto("/In4Fun");
+
+        const table = page.locator("table").nth(2);
+        await page.locator('input[type="text"]').fill("Opponent:");
+        await page.locator('input[type="text"]').fill("Yannini");
+        await page.locator('input[type="text"]').press("Enter");
+        await page.locator('input[type="text"]').blur();
+
+        await expectTableRow(table.locator("tbody").nth(0), [
+            "RRWC2024",
+            "Round 2",
+            "Yannini",
+            "0 - 8",
+            "In4Fun",
+            ["COL", "SGA", "MIA", "AMB"],
+        ]);
+
+        await page.getByText("Opponent: Yannini").click();
+        await page.locator('input[type="text"]').fill("Played map:");
+        await page.locator('input[type="text"]').fill("Whittleton Creek");
+        await page.locator('input[type="text"]').press("Enter");
+        await page.locator('input[type="text"]').blur();
+
+        await expectTableRow(table.locator("tbody").nth(0), [
+            "RRWC2024",
+            "Semi-Finals",
+            "In4Fun",
+            "6 - 12",
+            "Scruffy",
+            ["MEN", "CHO", "WC", "BER", "BKK", "HOK", "COL", "SAP", "DUB"],
+        ]);
+    });
+
     test("Achievement grid", async ({ page }) => {
         await page.goto("/In4Fun");
 

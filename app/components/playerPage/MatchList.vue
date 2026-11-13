@@ -10,11 +10,11 @@
         @closed="showDownload = false"
     />
 
-    <div class="w-4/5 mx-auto">
-        <TextInputComponent
-            v-model="searchFilter"
-            class="w-full mb-4"
-            placeholder="Search"
+    <div class="w-4/5 mx-auto flex flex-col gap-1 mb-4">
+        <MatchFilter
+            :matches="props.matches"
+            :local-player="localPlayer"
+            @filtered-matches="(f) => (filteredMatches = f)"
         />
     </div>
 
@@ -174,7 +174,6 @@ const mobileHeaders = [
 ];
 
 const matchToShow: Ref<IMatch | null> = ref(null);
-const searchFilter = ref("");
 const showDownload = ref(false);
 
 const props = withDefaults(
@@ -190,24 +189,10 @@ const props = withDefaults(
 const players = usePlayers();
 await players.queryFromMatches(props.matches);
 
+const filteredMatches = ref(props.matches);
+
 const filteredSortedMatches = computed(() => {
-    return props.matches
-        .filter((m) => {
-            if (searchFilter.value === "") return true;
-
-            const searchableValues = [
-                m.competition,
-                players.get(m.playerOne),
-                players.get(m.playerTwo),
-                m.round,
-                ...m.playedMaps.map((map) => getMap(map.map)!.abbreviation),
-            ];
-
-            return searchableValues.some((s) =>
-                s.toLowerCase().includes(searchFilter.value.toLowerCase()),
-            );
-        })
-        .sort((a, b) => b.timestamp - a.timestamp);
+    return filteredMatches.value.toSorted((a, b) => b.timestamp - a.timestamp);
 });
 
 function getLocalWinningPlayer(match: IMatch): WinningPlayer {
