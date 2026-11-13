@@ -26,17 +26,16 @@ export interface HitmapsTournamentMatch {
         competitorName: string;
         selectionType: "Ban" | "Pick" | "Random";
         mapSlug: string;
-        mapStartedAt?: string;
+        mapStartedAt: string;
         resultVerifiedAt?: string;
         winnerFinishedAt?: string;
         winnerDiscordId?: string;
-        mapJson?: string;
+        mapJson: string;
         roundType: string;
         state: string;
     }[];
     platform: string;
     round: number | null;
-    rrstatsLookupId?: string;
     cast: {
         mainCaster: {
             discordId: string;
@@ -48,26 +47,6 @@ export interface HitmapsTournamentMatch {
             name: string;
         }[];
     } | null;
-}
-
-interface GameModeMatchIdHitmapsTournamentMatch extends HitmapsTournamentMatch {
-    gameModeMatchId: string;
-}
-
-interface NewHitmapsTournamentMatch extends HitmapsTournamentMatch {
-    maps: {
-        competitorId: number;
-        competitorName: string;
-        selectionType: "Ban" | "Pick" | "Random";
-        mapSlug: string;
-        mapStartedAt: string;
-        resultVerifiedAt?: string;
-        winnerFinishedAt?: string;
-        winnerDiscordId?: string;
-        mapJson: string;
-        roundType: string;
-        state: string;
-    }[];
 }
 
 interface HitmapsMapJson {
@@ -181,31 +160,6 @@ export default class HitmapsIntegration {
         }
     }
 
-    private static async fetchHitmapsMatches(
-        hitmapsMatchIds: string[],
-    ): Promise<HitmapsMatch[]> {
-        if (hitmapsMatchIds.length <= 0) {
-            return [];
-        }
-        if (hitmapsMatchIds.length > 200) {
-            const listOne = hitmapsMatchIds.slice(0, 200);
-            const listTwo = hitmapsMatchIds.slice(200);
-            return (await this.fetchHitmapsMatches(listOne)).concat(
-                await this.fetchHitmapsMatches(listTwo),
-            );
-        }
-        const listOfMatches = hitmapsMatchIds.join(",");
-
-        try {
-            const request = await $fetch<{ matches: HitmapsMatch[] }>(
-                `https://rouletteapi.hitmaps.com/api/match-history?matchIds=${listOfMatches}`,
-            );
-            return request.matches;
-        } catch {
-            return [];
-        }
-    }
-
     private static async createNewPlayer(
         primaryName: string,
         discordId: string,
@@ -257,20 +211,12 @@ export default class HitmapsIntegration {
         matches: HitmapsTournamentMatch[],
         tournamentSlug: string,
     ) {
-        matches.forEach((m) => {
-            let lookupId = m.gameModeMatchId;
-            if (lookupId == null) {
-                lookupId = String(m.id);
-            }
-            m.rrstatsLookupId = lookupId;
-        });
-
         // Avoid adding duplicate matches
         const existingMatches = await Match.find({
             where: {
                 hitmapsMatchId: In(
                     matches.map((m) => {
-                        return m.rrstatsLookupId;
+                        return String(m.id);
                     }),
                 ),
             },
@@ -295,39 +241,9 @@ export default class HitmapsIntegration {
         const matchesToSave: Match[] = [];
 
         // New Matches
-        for (const newMatch of filteredMatches.newVersion) {
+        for (const newMatch of filteredMatches) {
             const additionalInfo = HitmapsIntegration.transformNewMatch(
                 newMatch,
-                competition,
-            );
-            matchesToSave.push(
-                await HitmapsIntegration.handleMatch(
-                    newMatch,
-                    additionalInfo,
-                    tournamentSlug,
-                    competition,
-                ),
-            );
-        }
-
-        // Old Matches
-        const hitmapsMatches = await this.fetchHitmapsMatches(
-            filteredMatches.matchId.map((m) => m.gameModeMatchId),
-        );
-
-        for (const newMatch of filteredMatches.matchId) {
-            const fullMatch = hitmapsMatches.find(
-                (m) => m.matchupId === newMatch.gameModeMatchId,
-            );
-            if (!fullMatch) {
-                logger.error(
-                    `Got hitmaps tournament match without detailed information: ${newMatch.gameModeMatchId}`,
-                );
-                continue;
-            }
-            const additionalInfo = HitmapsIntegration.transformOldMatch(
-                newMatch,
-                fullMatch,
                 competition,
             );
             matchesToSave.push(
@@ -347,82 +263,8 @@ export default class HitmapsIntegration {
         }
     }
 
-    private static transformOldMatch(
-        match: GameModeMatchIdHitmapsTournamentMatch,
-        fullMatch: HitmapsMatch,
-        competition: Competition | null,
-    ): AdditionalMatchInfo {
-        const result = {
-            spinTimes: [],
-            mapWinners: [],
-            spins: [],
-        } as AdditionalMatchInfo;
-
-        let pickIndex = 0;
-
-        for (const map of match.maps) {
-            if (map.selectionType === "Ban") {
-                result.spinTimes.push(-1);
-                result.mapWinners.push(null);
-                result.spins.push(null);
-                continue;
-            }
-
-            let pickedMap = fullMatch.mapSelections[pickIndex];
-            while (
-                !pickedMap?.complete &&
-                pickIndex < fullMatch.mapSelections.length
-            ) {
-                pickIndex++;
-                pickedMap = fullMatch.mapSelections[pickIndex];
-            }
-
-            if (pickIndex >= fullMatch.mapSelections.length) {
-                break;
-            }
-
-            if (pickedMap.winnerName === match.competitors[0].challongeName) {
-                result.mapWinners.push(WinningPlayer.PLAYER_ONE);
-            } else if (
-                pickedMap.winnerName === match.competitors[1].challongeName
-            ) {
-                result.mapWinners.push(WinningPlayer.PLAYER_TWO);
-            } else {
-                result.mapWinners.push(WinningPlayer.DRAW);
-            }
-
-            let spinTime = competition?.matchTimeoutTime ?? -1;
-            if (pickedMap.mapStartedAt != null) {
-                const startingTime = DateTime.fromISO(pickedMap.mapStartedAt);
-                if (pickedMap.winnerFinishedAt != null) {
-                    const endingTime = DateTime.fromISO(
-                        pickedMap.winnerFinishedAt,
-                    );
-                    spinTime = Math.floor(
-                        Math.abs(startingTime.diff(endingTime).as("seconds")),
-                    );
-                } else if (
-                    pickedMap.resultVerifiedAt != null &&
-                    ld.last(result.mapWinners) !== WinningPlayer.DRAW
-                ) {
-                    const endingTime = DateTime.fromISO(
-                        pickedMap.resultVerifiedAt,
-                    );
-                    spinTime = Math.floor(
-                        Math.abs(startingTime.diff(endingTime).as("seconds")),
-                    );
-                }
-            }
-            result.spinTimes.push(spinTime);
-            result.spins.push(pickedMap.spin);
-            pickIndex++;
-        }
-
-        return result;
-    }
-
     private static transformNewMatch(
-        match: NewHitmapsTournamentMatch,
+        match: HitmapsTournamentMatch,
         competition: Competition | null,
     ): AdditionalMatchInfo {
         const result = {
@@ -498,7 +340,7 @@ export default class HitmapsIntegration {
         competition: Competition | null,
     ): Promise<Match> {
         const newMatch = new Match();
-        newMatch.hitmapsMatchId = match.rrstatsLookupId!;
+        newMatch.hitmapsMatchId = String(match.id);
         newMatch.timestamp = DateTime.fromISO(
             match.matchScheduledAt,
         ).toMillis();
@@ -660,19 +502,13 @@ export default class HitmapsIntegration {
     private static filterAndSort(
         matches: HitmapsTournamentMatch[],
         existingMatches: Match[],
-    ): {
-        matchId: GameModeMatchIdHitmapsTournamentMatch[];
-        newVersion: NewHitmapsTournamentMatch[];
-    } {
-        const result = {
-            matchId: [] as GameModeMatchIdHitmapsTournamentMatch[],
-            newVersion: [] as NewHitmapsTournamentMatch[],
-        };
+    ): HitmapsTournamentMatch[] {
+        const result: HitmapsTournamentMatch[] = [];
 
         const existingMatchIds = existingMatches.map((m) => m.hitmapsMatchId);
 
         const remainingMatches = matches.filter(
-            (v) => !existingMatchIds.includes(v.rrstatsLookupId!),
+            (v) => !existingMatchIds.includes(String(v.id)),
         );
 
         for (const match of remainingMatches) {
@@ -686,26 +522,12 @@ export default class HitmapsIntegration {
                     return map.mapStartedAt != null && map.mapJson != null;
                 })
             ) {
-                result.newVersion.push(match as NewHitmapsTournamentMatch);
+                result.push(match);
                 continue;
-            }
-
-            if (
-                match.gameModeMatchId != null &&
-                match.gameModeMatchId !== "00000000-0000-0000-0000-000000000000"
-            ) {
-                result.matchId.push(
-                    match as GameModeMatchIdHitmapsTournamentMatch,
-                );
             }
         }
 
-        result.matchId.sort((a, b) => {
-            return DateTime.fromISO(a.matchScheduledAt)
-                .diff(DateTime.fromISO(b.matchScheduledAt))
-                .as("milliseconds");
-        });
-        result.newVersion.sort((a, b) => {
+        result.sort((a, b) => {
             return DateTime.fromISO(a.matchScheduledAt)
                 .diff(DateTime.fromISO(b.matchScheduledAt))
                 .as("milliseconds");
