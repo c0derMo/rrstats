@@ -536,7 +536,7 @@ describe("Player Leaderboards", () => {
         });
         expect.soft(players[2]).toEqual({
             columns: {
-                Player: playerNamesToUUIDs['Hardware'],
+                Player: playerNamesToUUIDs["Hardware"],
                 Winrate: 1,
                 "Random picked maps": 2,
             },

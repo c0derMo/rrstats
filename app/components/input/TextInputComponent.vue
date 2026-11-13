@@ -73,6 +73,7 @@ const props = withDefaults(
         error?: boolean;
         disabled?: boolean;
         step?: string | number;
+        mountFocussed?: boolean;
     }>(),
     {
         placeholder: "",
@@ -81,6 +82,7 @@ const props = withDefaults(
         error: false,
         disabled: false,
         step: undefined,
+        mountFocussed: false,
     },
 );
 
@@ -90,6 +92,7 @@ const emits = defineEmits<{
     keydown: [key: KeyboardEvent];
 }>();
 
+const input = ref<HTMLInputElement>();
 const isFocused = ref(false);
 const nonEmptyOrFocussed = computed(() => {
     return (
@@ -112,5 +115,11 @@ function formatReturnValue(originalValue: string) {
 
 watch(isFocused, (newValue) => {
     emits("focus-change", newValue);
+});
+
+onMounted(() => {
+    if (props.mountFocussed && input.value != null) {
+        input.value.focus();
+    }
 });
 </script>

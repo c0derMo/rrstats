@@ -89,6 +89,27 @@ describe("mapUtils", () => {
         });
     });
 
+    test("getMapByAbbreviation - New York", () => {
+        const map = getMapByAbbreviation("NY");
+        expect(map).toEqual({
+            map: HitmanMap.NEW_YORK,
+            abbreviation: "NY",
+            color: "#c6a641",
+            slug: "golden-handshake",
+            name: "New York",
+            backgroundImage:
+                "https://media.hitmaps.com/img/hitman3/locations/location_greedy_raccoon/background.jpg",
+            season: 2,
+            targets: [
+                {
+                    name: "Athena Savalas",
+                    tileUrl:
+                        "https://media.hitmaps.com/img/hitman3/actors/racoon_athena_savalas.jpg",
+                },
+            ],
+        });
+    });
+
     test("getAllMaps", () => {
         const allMaps = getAllMaps();
         expect(allMaps.length).toBe(19);
