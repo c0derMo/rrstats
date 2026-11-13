@@ -37,6 +37,17 @@ export interface HitmapsTournamentMatch {
     platform: string;
     round: number | null;
     rrstatsLookupId?: string;
+    cast: {
+        mainCaster: {
+            discordId: string;
+            name: string;
+        };
+        mainCasterUrl: string;
+        cocasters: {
+            discordId: string;
+            name: string;
+        }[];
+    } | null;
 }
 
 interface GameModeMatchIdHitmapsTournamentMatch extends HitmapsTournamentMatch {
@@ -613,6 +624,34 @@ export default class HitmapsIntegration {
 
         if (match.platform !== "All") {
             newMatch.platform = match.platform;
+        }
+
+        if (match.cast != null) {
+            const casterDiscordIds = [
+                match.cast.mainCaster.discordId,
+                ...match.cast.cocasters.map((caster) => caster.discordId),
+            ];
+            const casterNames = [];
+            for (const caster of casterDiscordIds) {
+                const player = await Player.findOne({
+                    where: {
+                        discordId: caster,
+                    },
+                    select: {
+                        uuid: true,
+                        primaryName: true,
+                        discordId: true,
+                    },
+                });
+                if (player != null) {
+                    casterNames.push(player.primaryName);
+                }
+            }
+
+            if (casterNames.length === casterDiscordIds.length) {
+                // We found all casters
+                newMatch.shoutcasters = casterNames;
+            }
         }
 
         return newMatch;
