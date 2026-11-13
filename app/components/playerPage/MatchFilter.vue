@@ -20,7 +20,7 @@
                 </div>
                 <AutocompleteComponent
                     class="w-full"
-                    placeholer="Filter..."
+                    placeholder="Filter..."
                     mount-focussed
                     :suggest-when-empty="
                         !selectedTagType.disableSuggestWhenEmpty
@@ -372,7 +372,7 @@ const filterTags: FilterTag[] = [
         prefix: "Forfeit",
         description: "Filters for forfeit matches",
         filterFunc: (_, match) => {
-            return match.playerOneScore + match.playerTwoScore === 1;
+            return match.playerOneScore + match.playerTwoScore <= 1;
         },
         options: [],
         noSecondStage: true,
