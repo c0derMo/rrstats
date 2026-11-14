@@ -13,7 +13,10 @@ export class PlayerMapsWonInARow extends BaseLeaderboardStatistic {
                 "match.playerOne",
                 "match.playerTwo",
                 "map.winner",
+                "map.index",
                 "match.timestamp",
+                "match.uuid",
+                "map.uuid",
             ])
             .orderBy("match.timestamp", "ASC")
             .getMany();
@@ -22,7 +25,9 @@ export class PlayerMapsWonInARow extends BaseLeaderboardStatistic {
         );
 
         for (const match of matches) {
-            for (const map of match.playedMaps) {
+            for (const map of match.playedMaps.toSorted(
+                (a, b) => a.index - b.index,
+            )) {
                 if (map.winner === WinningPlayer.PLAYER_ONE) {
                     streakInfo
                         .get(match.playerOne)

@@ -16,6 +16,9 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
                 "map.map",
                 "map.winner",
                 "map.forfeit",
+                "map.index",
+                "match.uuid",
+                "map.uuid",
             ])
             .orderBy("match.timestamp", "ASC")
             .getMany();
@@ -25,7 +28,9 @@ export class PlayerSameMapWonInARow extends BaseLeaderboardStatistic {
         >(() => new DefaultedMap(() => new StreakCounter()));
 
         for (const match of matches) {
-            for (const map of match.playedMaps) {
+            for (const map of match.playedMaps.toSorted(
+                (a, b) => a.index - b.index,
+            )) {
                 if (map.forfeit) continue;
 
                 if (map.winner === WinningPlayer.PLAYER_ONE) {
