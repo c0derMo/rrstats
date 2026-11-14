@@ -7,11 +7,11 @@
                 <tr>
                     <th>Pos</th>
                     <th>Player</th>
-                    <th>Mat</th>
-                    <th>W</th>
-                    <th>D</th>
-                    <th>L</th>
-                    <th>Pts</th>
+                    <th class="w-8">Mat</th>
+                    <th class="w-8">W</th>
+                    <th class="w-8">D</th>
+                    <th class="w-8">L</th>
+                    <th class="w-8">Pts</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,6 +53,7 @@
                     <th
                         v-for="(player, idx) of props.players"
                         :key="idx"
+                        class="w-11"
                         style="writing-mode: sideways-lr"
                     >
                         {{ playerLookup.get(player.name) }}
@@ -68,6 +69,7 @@
                     >
                         <div
                             v-if="currentlyShowing === ShowingStat.SCORE"
+                            class="text-center"
                             :style="getScoreColor(leftPlayer, rightPlayer)"
                         >
                             {{ getScoreLine(leftPlayer, rightPlayer) }}
