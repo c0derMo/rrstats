@@ -24,7 +24,7 @@
                         'dark:bg-red-800 bg-red-400': isPlayerNotAdvancing(idx),
                     }"
                 >
-                    <td class="text-right">{{ idx + 1 }}</td>
+                    <td class="text-right pr-2">{{ idx + 1 }}</td>
                     <td class="text-left">
                         {{ playerLookup.get(player.name) }}
                     </td>
@@ -143,24 +143,21 @@ const playerLookup = usePlayers();
 await playerLookup.queryPlayers(props.players.map((p) => p.name));
 
 const sortedPlayers = computed(() => {
-    const preSort = [...props.players].sort((a, b) => b.points - a.points);
+    let preSort = [...props.players].sort((a, b) => b.points - a.points);
 
-    if (props.positionOverrides !== undefined) {
+    if (props.positionOverrides != null) {
         for (let i = 0; i < preSort.length; i++) {
-            if (
-                props.positionOverrides[i] !== undefined &&
-                preSort[i].name !== props.positionOverrides[i]
-            ) {
-                let tmp = preSort[i];
-                for (let j = 1; j < preSort.length - i; j++) {
-                    if (tmp.name === props.positionOverrides[i]) {
-                        break;
-                    }
-                    const tmp2 = preSort[i + j];
-                    preSort[i + j] = tmp;
-                    tmp = tmp2;
+            if (props.positionOverrides[i] != null) {
+                const player = preSort.find(
+                    (p) => p.name === props.positionOverrides[i],
+                );
+                if (player == null) {
+                    continue;
                 }
-                preSort[i] = tmp;
+                preSort = preSort.filter(
+                    (p) => p.name != props.positionOverrides[i],
+                );
+                preSort = [...preSort.slice(0, i), player, ...preSort.slice(i)];
             }
         }
     }
