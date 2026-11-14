@@ -10,7 +10,7 @@ import {
     type UpdateEvent,
 } from "typeorm";
 import { isReady } from "../readyListener";
-import consola from "consola";
+import { consola } from "consola";
 import type { BaseLeaderboardStatistic } from "./leaderboardStatistics/BaseLeaderboardStatistic";
 
 import { PlayerRouletteRankings } from "./leaderboardStatistics/player/RouletteRankings";

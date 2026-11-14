@@ -3,7 +3,7 @@ import { Player } from "../../model/Player";
 import { In } from "typeorm";
 import { DateTime } from "luxon";
 import { Competition } from "~~/server/model/Competition";
-import consola from "consola";
+import { consola } from "consola";
 import ld from "lodash";
 import { PlayedMap } from "~~/server/model/PlayedMap";
 

@@ -1,7 +1,7 @@
 import { Competition } from "../model/Competition";
 import { Match } from "../model/Match";
 import ld from "lodash";
-import consola from "consola";
+import { consola } from "consola";
 import { DateTime } from "luxon";
 import {
     EventSubscriber,

@@ -5,7 +5,7 @@ import type {
 } from "./AchievementController";
 import { DiscordWebhookNotifier } from "./notifiers/DiscordWebhookNotifier";
 import type { Notifier } from "./notifiers/NotifierInterface";
-import consola from "consola";
+import { consola } from "consola";
 
 const logger = consola.withTag("rrstats:notifications");
 

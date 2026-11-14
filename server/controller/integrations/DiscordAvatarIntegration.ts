@@ -1,5 +1,5 @@
 import type { FetchError } from "ofetch";
-import consola from "consola";
+import { consola } from "consola";
 
 interface DiscordCacheEntry {
     lastRequest: number;
