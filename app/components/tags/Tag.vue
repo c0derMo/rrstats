@@ -13,7 +13,7 @@
 
 @layer components {
     div {
-        @apply bg-gray-400;
+        @apply dark:bg-gray-500 bg-gray-400;
     }
 }
 </style>

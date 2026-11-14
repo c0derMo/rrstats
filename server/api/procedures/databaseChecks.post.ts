@@ -2,7 +2,7 @@ import { AuthController } from "~~/server/controller/AuthController";
 import DatabaseCheckController, {
     type CheckResult,
 } from "~~/server/controller/DatabaseCheckController";
-import consola from "consola";
+import { consola } from "consola";
 
 export default defineEventHandler<Promise<CheckResult[]>>(async (event) => {
     const body = await readBody<{

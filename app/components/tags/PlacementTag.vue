@@ -17,13 +17,13 @@ const text = computed(() => {
 
 const color = computed(() => {
     const placement = props.placement ?? 4;
-    if (placement > 3) {
-        return "bg-gray-500";
-    } else if (placement > 2) {
-        return "bg-bronze";
-    } else if (placement > 1) {
+    if (placement === 1) {
+        return "bg-golden";
+    } else if (placement === 2) {
         return "bg-silver";
+    } else if (placement === 3) {
+        return "bg-bronze";
     }
-    return "bg-golden";
+    return "";
 });
 </script>

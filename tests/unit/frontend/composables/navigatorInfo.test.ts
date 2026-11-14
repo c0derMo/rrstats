@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, test, vi, afterAll } from "vitest";
 
-describe("useNavigatorInfo()", () => {
-    const { $fetchMock } = vi.hoisted(() => {
-        const mock = vi.fn();
-        vi.stubGlobal("$fetch", mock);
-        return {
-            $fetchMock: mock,
-        };
-    });
+const { $fetchMock } = vi.hoisted(() => {
+    const mock = vi.fn();
+    vi.stubGlobal("$fetch", mock);
+    return {
+        $fetchMock: mock,
+    };
+});
 
+describe("useNavigatorInfo()", () => {
     afterEach(() => {
         vi.resetAllMocks();
         clearNuxtState(["navigator"]);

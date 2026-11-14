@@ -171,7 +171,7 @@
             </CardComponent>
 
             <div class="flex 2xl:flex-row gap-5 flex-col-reverse">
-                <CardComponent class="2xl:w-3/12 w-full overflow-visible!">
+                <CardComponent class="2xl:w-3/12 w-full">
                     <TabbedContainer
                         :tabs="['Competitions', 'Opponents', 'Records']"
                     >
@@ -192,7 +192,7 @@
                         </template>
                     </TabbedContainer>
                 </CardComponent>
-                <CardComponent class="grow overflow-visible! relative">
+                <CardComponent class="grow relative">
                     <IndefiniteProgressBar
                         v-if="stillLoading"
                         class="mb-2 absolute top-0 left-0"
@@ -204,7 +204,7 @@
                 </CardComponent>
             </div>
 
-            <CardComponent class="overflow-visible!">
+            <CardComponent>
                 <TabbedContainer
                     :tabs="[
                         'Maps',

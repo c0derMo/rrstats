@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import consola from "consola";
+import { consola } from "consola";
 
 interface CacheEntry {
     disguises: string[];

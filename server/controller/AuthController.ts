@@ -1,7 +1,7 @@
 import { User } from "../model/User";
 import type { H3Event } from "h3";
 import { randomBytes } from "crypto";
-import consola from "consola";
+import { consola } from "consola";
 
 interface SessionData {
     discordId?: string;

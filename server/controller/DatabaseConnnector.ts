@@ -20,7 +20,7 @@ import { LeaderboardDatabaseListener } from "./LeaderboardController";
 import { PlayerStatisticDatabaseListener } from "./PlayerStatisticController";
 import { Match } from "../model/Match";
 import { User } from "../model/User";
-import consola from "consola";
+import { consola } from "consola";
 import { EloDatabaseListener } from "./EloController";
 import { Achievement } from "../model/Achievement";
 import {

@@ -1,6 +1,6 @@
 import { Achievement } from "../model/Achievement";
 import { Match } from "../model/Match";
-import consola from "consola";
+import { consola } from "consola";
 import {
     type EntitySubscriberInterface,
     EventSubscriber,
