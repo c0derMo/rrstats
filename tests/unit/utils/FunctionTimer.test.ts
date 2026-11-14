@@ -10,23 +10,24 @@ import {
 import consola from "consola";
 import { DateTime } from "luxon";
 
+vi.mock("consola", () => {
+    const logFn = vi.fn();
+
+    const consola = {
+        withTag: vi.fn().mockImplementation(() => {
+            return {
+                log: logFn,
+            };
+        }),
+    };
+
+    return {
+        consola: consola,
+        default: consola,
+    };
+});
+
 describe("FunctionTimer", () => {
-    vi.mock("consola", () => {
-        const logFn = vi.fn();
-
-        const consola = {
-            default: {
-                withTag: vi.fn().mockImplementation(() => {
-                    return {
-                        log: logFn,
-                    };
-                }),
-            },
-        };
-
-        return consola;
-    });
-
     let _ogDtNow: () => DateTime;
     let dtNowFunc: Mock;
 

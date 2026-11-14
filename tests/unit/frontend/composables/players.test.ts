@@ -1,14 +1,14 @@
 import { test, expect, vi, afterEach, describe, afterAll } from "vitest";
 
-describe("usePlayers()", () => {
-    const { $fetchMock } = vi.hoisted(() => {
-        const mock = vi.fn();
-        vi.stubGlobal("$fetch", mock);
-        return {
-            $fetchMock: mock,
-        };
-    });
+const { $fetchMock } = vi.hoisted(() => {
+    const mock = vi.fn();
+    vi.stubGlobal("$fetch", mock);
+    return {
+        $fetchMock: mock,
+    };
+});
 
+describe("usePlayers()", () => {
     afterEach(() => {
         vi.resetAllMocks();
         clearNuxtState(["players", "inversePlayers"]);
