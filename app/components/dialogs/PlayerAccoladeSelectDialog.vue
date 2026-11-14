@@ -4,7 +4,7 @@
         @click-outside="dialogOpen = false"
         @closed="emit('close')"
     >
-        <CardComponent class="flex flex-col gap-3 overflow-visible!">
+        <CardComponent class="flex flex-col gap-3">
             <h1 class="text-3xl">Change your accolade</h1>
 
             <div class="flex flex-col">

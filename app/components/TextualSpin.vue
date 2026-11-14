@@ -5,8 +5,8 @@
         }}</span>
         <ul v-if="spin">
             <li v-for="(target, idx) in spin.targetConditions" :key="idx">
-                <span class="font-bold">{{ target.target.name }}</span
-                >: {{ buildKillMethod(target.killMethod) }} as
+                <span class="font-bold">{{ target.target.name }}</span>:
+                {{ buildKillMethod(target.killMethod) }} as
                 {{ target.disguise.name }}
                 {{ buildComplications(target.complications) }}
             </li>

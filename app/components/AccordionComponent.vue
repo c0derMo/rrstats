@@ -27,7 +27,7 @@
     </CardComponent>
 </template>
 
-<style>
+<style scoped>
 .collapse-enter-from,
 .collapse-leave-to {
     max-height: 0px;

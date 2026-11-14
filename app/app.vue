@@ -75,6 +75,7 @@
 
                 <NuxtPage :user="user" />
             </NuxtLayout>
+            <div id="teleports" />
         </div>
     </div>
 </template>

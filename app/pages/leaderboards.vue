@@ -17,9 +17,7 @@
                 />
             </CardComponent>
 
-            <CardComponent
-                class="grow overflow-visible! relative flex flex-col gap-2"
-            >
+            <CardComponent class="grow relative flex flex-col gap-2">
                 <IndefiniteProgressBar
                     v-if="leaderboardLoading"
                     class="absolute top-0 left-0"
