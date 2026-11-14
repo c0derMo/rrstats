@@ -17,7 +17,7 @@ test.describe("Leaderboards Page", () => {
         await expect(tabs.getByText("Highest winrate")).toBeVisible();
 
         await tabs.getByText("Matches").first().click();
-        await tabs.getByText("Maps").nth(2).click();
+        await tabs.getByText("Maps").nth(1).click();
 
         await expect(
             tabs.getByText("Most maps played", { exact: true }),
@@ -50,7 +50,7 @@ test.describe("Leaderboards Page", () => {
             tabs.getByText("Personal Best (specific map)"),
         ).toBeVisible();
 
-        await tabs.getByText("Maps").nth(2).click();
+        await tabs.getByText("Maps").nth(1).click();
         await tabs.getByText("Participation").first().click();
 
         await expect(tabs.getByText("Most RRs played")).toBeVisible();

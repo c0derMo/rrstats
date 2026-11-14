@@ -143,7 +143,7 @@ test.describe("Spin Page", () => {
 
         const dropdown = page.locator("div.w-fit.w-full > .relative");
         await dropdown.getByText("-- all maps --").first().click();
-        await dropdown.getByText("New York").click();
+        await page.locator(".dropdown").getByText("New York").click();
 
         const table = page.locator("table");
 
@@ -179,7 +179,7 @@ test.describe("Spin Page", () => {
 
         const dropdown = page.locator("div.w-fit.w-full > .relative");
         await dropdown.getByText("-- all maps --").first().click();
-        await dropdown.getByText("New York").click();
+        await page.locator(".dropdown").getByText("New York").click();
 
         await page.getByText("Statistics").first().click();
 
