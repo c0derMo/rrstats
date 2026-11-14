@@ -27,18 +27,17 @@
 
         <Transition
             name="collapse"
-            @enter="updateFullHeight"
-            @leave="updateFullHeight"
+            @enter="updateElementPosition"
+            @leave="updateElementPosition"
         >
             <Teleport v-if="showDropdown" to="#teleports">
                 <div
                     ref="dropdown"
-                    class="z-50 fixed bg-neutral-100 dark:bg-neutral-700 rounded-xs overflow-y-auto flex-col w-fit"
+                    class="z-50 fixed bg-neutral-100 dark:bg-neutral-700 rounded-xs overflow-y-auto flex-col w-fit dropdown"
                     :class="{
                         'origin-top': !shouldDropUp,
                         'origin-bottom': shouldDropUp,
                     }"
-                    :style="dropdownStyle"
                 >
                     <div
                         v-for="(item, idx) of convertedItems"
@@ -83,60 +82,14 @@ const emit = defineEmits<{
 const showDropdown = ref(false);
 
 const element: Ref<HTMLElement | null> = ref(null);
-const dropdown: Ref<HTMLElement | null> = ref(null);
+const dropdown = useTemplateRef("dropdown");
 
-const viewportHeight = ref(0);
-const dropdownLeft = ref(0);
-
+const shouldDropUp = ref(false);
 const fullHeight = ref("100vh");
-
-function updateFullHeight(el: Element) {
-    if (element.value == null) {
-        return;
-    }
-
-    updateElementPosition();
-
-    const rect = element.value.getBoundingClientRect();
-
-    if (shouldDropUp.value) {
-        const height = Math.min(rect.top - 10, el.scrollHeight);
-        fullHeight.value = `${height}px`;
-    } else {
-        const height = Math.min(
-            viewportHeight.value - rect.bottom - 10,
-            el.scrollHeight,
-        );
-        fullHeight.value = `${height}px`;
-    }
-}
-
-const shouldDropUp = computed(() => {
-    if (!element.value) return false;
-
-    return (
-        viewportHeight.value - element.value.getBoundingClientRect().bottom <
-        200
-    );
-});
-
-const dropdownStyle = computed(() => {
-    if (!element.value) {
-        return { display: "none" };
-    }
-
-    const rect = element.value.getBoundingClientRect();
-
-    return {
-        left: `${dropdownLeft.value}px`,
-        top: shouldDropUp.value ? "auto" : `${rect.bottom}px`,
-        bottom: shouldDropUp.value
-            ? `${viewportHeight.value - rect.top}px`
-            : "auto",
-        height: fullHeight.value,
-        minWidth: `${rect.width}px`,
-    };
-});
+const left = ref("auto");
+const top = ref("auto");
+const bottom = ref("auto");
+const width = ref("auto");
 
 const convertedItems: ComputedRef<ExtendedOption[]> = computed(() => {
     if (props.items.length === 0) {
@@ -154,19 +107,37 @@ const convertedItems: ComputedRef<ExtendedOption[]> = computed(() => {
 });
 
 function updateElementPosition() {
-    if (!element.value) return;
-
-    viewportHeight.value = window.innerHeight;
+    if (!element.value || !dropdown.value) return;
 
     const rect = element.value.getBoundingClientRect();
     const menuWidth = dropdown.value?.offsetWidth ?? rect.width;
 
-    let left = props.alignRight ? rect.right - menuWidth : rect.left;
+    shouldDropUp.value = window.innerHeight - rect.bottom < 200;
 
+    let localLeft = props.alignRight ? rect.right - menuWidth : rect.left;
     // Keep the dropdown inside the horizontal viewport.
-    left = Math.max(8, Math.min(left, window.innerWidth - menuWidth - 8));
+    localLeft = Math.max(
+        8,
+        Math.min(localLeft, window.innerWidth - menuWidth - 8),
+    );
 
-    dropdownLeft.value = left;
+    top.value = shouldDropUp.value ? "auto" : `${rect.bottom}px`;
+    bottom.value = shouldDropUp.value
+        ? `${window.innerHeight - rect.top}px`
+        : "auto";
+    width.value = `${rect.width}px`;
+    left.value = `${localLeft}px`;
+
+    if (shouldDropUp.value) {
+        const height = Math.min(rect.top - 10, dropdown.value.scrollHeight);
+        fullHeight.value = `${height}px`;
+    } else {
+        const height = Math.min(
+            window.innerHeight - rect.bottom - 10,
+            dropdown.value.scrollHeight,
+        );
+        fullHeight.value = `${height}px`;
+    }
 }
 
 function selectItem(item: ExtendedOption) {
@@ -202,7 +173,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .collapse-enter-from,
 .collapse-leave-to {
-    max-height: 0px;
+    max-height: 0px !important;
     opacity: 0;
 }
 
@@ -225,5 +196,13 @@ onBeforeUnmount(() => {
     .collapse-leave-active {
         transition-property: none;
     }
+}
+
+.dropdown {
+    left: v-bind(left);
+    top: v-bind(top);
+    bottom: v-bind(bottom);
+    max-height: v-bind(fullHeight);
+    min-width: v-bind(width);
 }
 </style>
