@@ -142,7 +142,7 @@ watch(value, () => {
 watch(isFocussed, (value) => {
     if (value) {
         emits("focus");
-    } else {
+    } else if (!isDropdownFocussed.value) {
         emits("defocus");
     }
 });
